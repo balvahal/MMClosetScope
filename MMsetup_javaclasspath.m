@@ -6,6 +6,11 @@
 % appended to a text file named |javaclasspath.txt|. From then on, every
 % time MATLAB starts the files located in this text file will be added to
 % the MATLAB's static JAVA path.
+%
+% Verify the MATLAB java path using the command |javaclasspath|.
+%
+% Verify Micro-Manager is responding using the commands |import mmcorej.*;
+% mmc=CMMCore|.
 %% Inputs
 % * |path2MM|, the root directory of the Micro-Manager software
 %% Outputs
