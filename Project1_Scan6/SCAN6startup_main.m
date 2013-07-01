@@ -6,8 +6,7 @@
 % NONE
 %% Outputs
 % NONE
-function [] = SCAN6startup_main
+function mmhandle = SCAN6startup_main
 %% Initialize
 %
 [mmhandle] = SCAN6startup_initialize;
-disp('hello');
