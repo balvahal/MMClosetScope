@@ -17,8 +17,29 @@
 %% Outputs
 % mmcore
 % mmgui
-function [mmcore, mmgui] = SCAN6startup_initialize()
+function [mmhandle] = SCAN6startup_initialize()
+%% Create the GUI and the core API object
+%
 import org.micromanager.MMStudioMainFrame;
-mmgui = MMStudioMainFrame(false);
-mmgui.show;
-mmcore = mmgui.getCore;
+mmhandle.gui = MMStudioMainFrame(false);
+mmhandle.gui.show;
+pause(40); % This is very hackish. You have 40 seconds to load the configuration file.
+mmhandle.core = mmhandle.gui.getCore;
+%%
+% Wait for the gui object to finish initialization and then create the core
+% object.
+% mmhandle.core = [];
+% while ~isa(mmhandle.core,'mmcorej.CMMCore')
+%     class(mmhandle.core)
+%     mmhandle.core = mmhandle.gui.getCore;
+% end
+% disp('before');
+% mmhandle.core.waitForConfig;
+% disp('after');
+%% Obtain the object that represents multi-dimensional-acquisition
+%
+mmhandle.mda = mmhandle.gui.getAcquisitionEngine();
+%% Find the xy device and the focus device
+%
+mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
+mmhandle.FocusDevice = mmhandle.core.getFocusDevice;

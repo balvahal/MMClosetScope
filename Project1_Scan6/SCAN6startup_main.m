@@ -9,4 +9,5 @@
 function [] = SCAN6startup_main
 %% Initialize
 %
-[mmcore, mmgui] = SCAN6startup_initialize;
+[mmhandle] = SCAN6startup_initialize;
+disp('hello');
