@@ -41,5 +41,7 @@ end
 %% Move stage
 mmhandle.core.setPosition(mmhandle.FocusDevice, z);
 mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
-mmhandle.core.waitForSystem();
+while mmhandle.core.deviceBusy(mmhandle.xyStageDevice);
+    fprintf('xy is busy\n');
+end
 mmhandle = SCAN6general_getXYZ(mmhandle);
