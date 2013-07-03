@@ -15,7 +15,7 @@
 % * |path2MM|, the root directory of the Micro-Manager software
 %% Outputs
 % NONE
-function [] = MMjavaclasspath(path2MM)
+function [] = MMsetup_javaclasspath(path2MM)
 %%
 fileList = getAllFiles(path2MM);
 fileListJarBool = regexp(fileList,'.jar$','end');
