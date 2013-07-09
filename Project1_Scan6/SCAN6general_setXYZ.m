@@ -5,11 +5,12 @@
 % * x, y, z target positions
 %% Outputs
 % * mmhandle, the struct that contains micro-manager objects
-function mmhandle = SCAN6general_setXYZ(mmhandle, pos, direction, varargin)
+function mmhandle = SCAN6general_setXYZ(mmhandle, pos, varargin)
 p = inputParser;
 addRequired(p, 'mmhandle', @isstruct);
 addRequired(p, 'pos', @(x) numel(x) >=1 && numel(x) <=3);
 addOptional(p, 'direction', 'x', @(x) any(strcmp(x,{'x', 'y', 'z'})));
+parse(p,mmhandle,pos,varargin{:});
 %%
 % Define default positions as the current ones
 mmhandle = SCAN6general_getXYZ(mmhandle);
@@ -39,9 +40,25 @@ switch numPos
 end
 %% Exception handling
 %% Move stage
+% Move to the z position
 mmhandle.core.setPosition(mmhandle.FocusDevice, z);
-mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
-while mmhandle.core.deviceBusy(mmhandle.xyStageDevice);
-    fprintf('xy is busy\n');
+%%
+% wait for the focus finish moving
+while mmhandle.core.deviceBusy(mmhandle.FocusDevice)
+    pause(0.05);
+    mmhandle = SCAN6general_getXYZ(mmhandle);
+    fprintf('z is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
 end
+%%
+% move to the xy position
+mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
+%%
+% wait for the stage to finish moving
+while mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
+    pause(0.05);
+    mmhandle = SCAN6general_getXYZ(mmhandle);
+    fprintf('xy is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
+end
+%%
+% save the new position
 mmhandle = SCAN6general_getXYZ(mmhandle);

@@ -43,3 +43,4 @@ mmhandle.mda = mmhandle.gui.getAcquisitionEngine();
 %
 mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
 mmhandle.FocusDevice = mmhandle.core.getFocusDevice;
+mmhandle = SCAN6general_getXYZ(mmhandle);
