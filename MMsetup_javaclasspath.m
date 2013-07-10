@@ -1,4 +1,4 @@
-%% MATLAB's javaclasspath for Micro-Manager java classes
+%% MATLAB's javaclasspath for Micro-Manager java classes 1
 % Run this script before first using MATLAB and Micro-Manager together.
 % This script will locate all of the |*.jar| files within the Micro-Manager
 % directory tree and save their locations to a text file. The text file is
