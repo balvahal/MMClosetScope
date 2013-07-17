@@ -15,15 +15,16 @@
 %% Inputs
 % NONE
 %% Outputs
-% mmcore
-% mmgui
+% * mmcore
+% * mmgui
 function [mmhandle] = SCAN6startup_initialize()
 %% Create the GUI and the core API object
 %
+hmsg = msgbox('Click ''OK'' after the micromanager configuration file has been loaded.','Wait For Configuration');
 import org.micromanager.MMStudioMainFrame;
 mmhandle.gui = MMStudioMainFrame(false);
 mmhandle.gui.show;
-pause(40); % This is very hackish. You have 40 seconds to load the configuration file.
+uiwait(hmsg);
 mmhandle.core = mmhandle.gui.getCore;
 %%
 % Wait for the gui object to finish initialization and then create the core
