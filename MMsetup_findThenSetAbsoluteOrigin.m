@@ -1,10 +1,14 @@
 %% Find and set the origin for the x, y, and z positions of the device
-% The x and y origin is the lower-right corner for the closet-scope
-% stage(so perhaps it was installed 180 degrees incorrectly);
+% The x and y origin is the lower-right corner for the closet-scope stage;
+% Perhaps it was installed 180 degrees incorrectly, because traditionally
+% the upper-left is the origin.
 %
 % Normally the upper-left is preferred, because this will reflect the
 % origin of matlab matrices and 3D axes traditionally drawn on paper. The
 % origin z position is the lowest position the scope can achieve.
+%
+% The corner of origin is determined by repeatedly subtracting a distance
+% from x, y, and z components until the stage no longer moves.
 %% Inputs
 % mmhandle
 %% Outputs
@@ -21,8 +25,8 @@ deltaUpperTolerance = 10; %10 microns
 deltaLowerLimit = 1; %1 micron
 timerlength = 2;
 %%
-% attempt to reach a 1 micron tolerance or try |timerLength| times with the delta less
-% than 10 microns.
+% attempt to reach a 1 micron tolerance or try |timerLength| times with the
+% delta less than 10 microns.
 while deltaZ > deltaLowerLimit || timer < timerlength
     mmhandle = SCAN6general_setXYZ(mmhandle,z0-stepsize,'z');
     deltaZ = abs(mmhandle.pos(3)-z0);
