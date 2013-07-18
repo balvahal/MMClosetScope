@@ -1,7 +1,16 @@
 %% Find and set the origin for the x, y, and z positions of the device
-% The x and y origin is the lower-right corner for the closet-scope stage;
-% Perhaps it was installed 180 degrees incorrectly, because traditionally
-% the upper-left is the origin.
+% After testing this function I found it to be of little value. It is
+% easier to choose a relative origin and then define a coordinate system
+% from there. This is especially true, because of stage drift and subtle
+% movements in the sample. Anchor the relative origin to an image of a
+% particular spot of the sample and then later redefine the relative origin
+% using this image.
+%
+% Initially I found, the x and y origin in the lower-right corner for the
+% closet-scope stage; I thought it was installed 180 degrees incorrectly,
+% because traditionally the upper-left is the origin. However, I later
+% discovered the origin can be relocated using hardware settings
+% |TransposeMirrorX| and |TransposeMirrorY|.
 %
 % Normally the upper-left is preferred, because this will reflect the
 % origin of matlab matrices and 3D axes traditionally drawn on paper. The

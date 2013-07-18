@@ -1,11 +1,16 @@
 %% Estimate the center and radius of circle with >2 points on the perimeter
 % The center of a circle and its radius can be estimated using at least 3
 % points on the perimeter. 
+%
+% Why was this function created? Aligning the center of a dish with an
+% objective can be challenging by eye. It is easier to identify the
+% perimeter at the plastic-glass interface of a Mattek dish through and
+% objective and then calculating the circle center from this information.
 %% Inputs
 % * perimdata = an array of paired coordinates that is n x 2.
 %% Outputs
-% * x = the center x coordinate
-% * y = the center y coordinate
+% * xc = the center x coordinate
+% * yc = the center y coordinate
 % * r = the radius of the circle
 function [xc,yc,r] = SCAN6config_estimateCircle(perimdata)
 x1 = perimdata(1,1); 
@@ -18,6 +23,7 @@ coeffy = (xn.^2 + yn.^2 - x1^2 - y1^2)./(2*(yn-y1));
 r = (perimdata(:,1)-xc).^2 + (perimdata(:,2)-yc).^2;
 r = mean(r);
 r = sqrt(r);
+
 
 function [b,a]=leastsquaresfit(x,y)
 %%
