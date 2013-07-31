@@ -127,3 +127,6 @@ mmhandle.ShutterDevice = mmhandle.core.getShutterDevice;
 % from the micromanager gui. Default devices used by the *core*, e.g. those
 % found from |core.getCameraDevice|, can also be seen and changed in the
 % property browser.
+%
+% * |TIFilterBlock1| has the filters.
+% * |TINosePiece| has the objectives. Check the _Label_ property.
