@@ -78,3 +78,52 @@ mmhandle = SCAN6general_getXYZ(mmhandle);
 % speed.
 % * |'Binning'| = 1, 2, 4, or 8.
 mmhandle.CameraDevice = mmhandle.core.getCameraDevice;
+%% Channel Presets
+% In micromanager, there are the concepts of "Groups" and "Presets". Groups
+% are sets of parameters that are changed togther. For instance, a simple
+% group would consist of a filter and a shutter. This is a fundamental
+% pairing in Micromanager and a special group called *Channel* is reserved
+% for this very purpose.
+%
+% Presets are values assigned to the parameters in a Group to make repeated
+% changes easier.The YFP filter will always be paired with the shutter to
+% the fluorescence lamp and a brightfield image will always be paired with
+% the shutter to the brightfield lamp. Taking consecutive images between
+% the brightfield channel and the YFP channel would consist of changing the
+% presets in the *Channel* group from *YFP* to *BF* for instance.
+%
+% Apparently, this check can also be made using the method
+% |core.getChannelGroup|.
+%
+% This function assumes the Channel group exists, but a check is made
+% first...
+groups = mmhandle.core.getAvailableConfigGroups.toArray; %the output is a java.lang.String[]
+% Convert the java.lang.String[] to an cell array of strings.
+groups = cell(groups);
+% Confirm the group *Channel* is present
+if ~any(strcmp('Channel',groups))
+    error('SCAN6init:noChannel','The group ''Channel'' could not be found.');
+end
+%%
+% The *Presets* or *Configs* for the *Channel* group are identified.
+%
+% Should the closet scope and curtain scope have different names for their
+% presets? The filters are physically different, yet are often the same
+% part number. I am not certain what the best approach is.
+%
+% Configs can be check in MATLAB via the following commands (example given):
+% # |a = core.getConfigData('Channel','Cy5');|
+% # |b = a.getVerbose;|
+% # |b = char(b);|
+Channel = mmhandle.core.getAvailableConfigs('Channel').toArray;
+mmhandle.Channel = cell(Channel);
+%% Shutter Device
+%
+mmhandle.ShutterDevice = mmhandle.core.getShutterDevice;
+%% Nikon TI specific devices
+% The devices that are specific to the Nikon TI microscope can be
+% determined by |core.getAvailableDevices('NikonTI').toArray;|. Available
+% Devices and their properties can also be seen in the Property Browser
+% from the micromanager gui. Default devices used by the *core*, e.g. those
+% found from |core.getCameraDevice|, can also be seen and changed in the
+% property browser.
