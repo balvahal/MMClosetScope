@@ -25,4 +25,4 @@ mmhandle.core.snapImage; %MATLAB will wait for this method to finish, unlike XYZ
 I = mmhandle.core.getImage;
 width = mmhandle.core.getImageWidth;
 height = mmhandle.core.getImageHeight;
-mmhandle.I = reshape(I,[height,width]);
+mmhandle.I = transpose(reshape(I,[width,height]));
