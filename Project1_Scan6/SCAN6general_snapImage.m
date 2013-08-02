@@ -25,4 +25,9 @@ mmhandle.core.snapImage; %MATLAB will wait for this method to finish, unlike XYZ
 I = mmhandle.core.getImage;
 width = mmhandle.core.getImageWidth;
 height = mmhandle.core.getImageHeight;
+if mmhandle.core.getBytesPerPixel == 1 %this indicates an 8bit image
+    I = typecast(I,'uint8');
+elseif mmhandle.core.getBytesPerPixel == 2 %this indicates a 16bit image
+    I = typecast(I,'uint16');
+end
 mmhandle.I = transpose(reshape(I,[width,height]));
