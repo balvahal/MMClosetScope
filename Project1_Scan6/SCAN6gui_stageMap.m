@@ -55,6 +55,10 @@ function SCAN6gui_stageMap_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for SCAN6gui_stageMap
 handles.output = hObject;
 
+% add mmhandles to the main figure handles
+guiMainInputIndex = find(strcmp(varargin, 'gui_main'));
+handles.gui_main = varargin{guiMainInputIndex+1};
+
 % Function Handles
 handles.updateInfo = @stageMap_updateInfo;
 

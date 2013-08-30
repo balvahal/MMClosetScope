@@ -22,7 +22,7 @@ function varargout = SCAN6gui_defineCoverslipArea(varargin)
 
 % Edit the above text to modify the response to help SCAN6gui_defineCoverslipArea
 
-% Last Modified by GUIDE v2.5 29-Aug-2013 15:33:35
+% Last Modified by GUIDE v2.5 30-Aug-2013 10:18:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,6 +55,10 @@ function SCAN6gui_defineCoverslipArea_OpeningFcn(hObject, eventdata, handles, va
 % Choose default command line output for SCAN6gui_defineCoverslipArea
 handles.output = hObject;
 
+% add mmhandles to the main figure handles
+guiMainInputIndex = find(strcmp(varargin, 'gui_main'));
+handles.gui_main = varargin{guiMainInputIndex+1};
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -73,19 +77,19 @@ function varargout = SCAN6gui_defineCoverslipArea_OutputFcn(hObject, eventdata, 
 varargout{1} = handles.output;
 
 
-% --- Executes on selection change in listbox1.
-function listbox1_Callback(hObject, eventdata, handles)
-% hObject    handle to listbox1 (see GCBO)
+% --- Executes on selection change in listboxPts.
+function listboxPts_Callback(hObject, eventdata, handles)
+% hObject    handle to listboxPts (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns listbox1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listbox1
+% Hints: contents = cellstr(get(hObject,'String')) returns listboxPts contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listboxPts
 
 
 % --- Executes during object creation, after setting all properties.
-function listbox1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listbox1 (see GCBO)
+function listboxPts_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listboxPts (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -96,16 +100,28 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
+% --- Executes on button press in pushbuttonAdd.
+function pushbuttonAdd_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbuttonAdd (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+%
+% retrieve the mmhandles and get the stage position from the microscope
+mainHandles = guidata(handles.gui_main);
+if isempty(mainHandles.sampleIndex)
+    return;
+end
+mainHandles.mmhandle = SCAN6general_getXYZ(mainHandles.mmhandle);
+mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts{end+1}
+pdata(end+1,1:2) = mmhandle.pos(1:2); %#ok<*AGROW>
+mmhandle.map6well(i).center = [xc,yc];
+mmhandle.map6well(i).radius = r;
+    
+[xc,yc,r] = SCAN6config_estimateCircle(pcell{i});
 
-
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
+% --- Executes on button press in pushbuttonSubtract.
+function pushbuttonSubtract_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbuttonSubtract (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 

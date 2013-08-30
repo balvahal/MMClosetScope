@@ -58,15 +58,15 @@ handles.output = hObject;
 % Remember the figure that encompasses the gui
 handles.gui_main = hObject;
 
-% add mmhandles to the main figure handles
-mmhandlesInputIndex = find(strcmp(varargin, 'mmhandles'));
-if isempty(mmhandlesInputIndex)
+% add mmhandle to the main figure handles
+mmhandleInputIndex = find(strcmp(varargin, 'mmhandle'));
+if isempty(mmhandleInputIndex)
     disp('*****');
-    disp('Improper input arguments. Pass in mmhandles');
+    disp('Improper input arguments. Pass in mmhandle');
     disp('*****');
     %delete(hObject);
 else
-    handles.mmhandles = varargin{mmhandlesInputIndex+1};
+    handles.mmhandle = varargin{mmhandleInputIndex+1};
 end
 
 % SCAN6gui_main.fig is the parent gui. Launch the children guis and
@@ -80,6 +80,7 @@ handles.sampleList = false(1,6); %Tallies the "wells" that have samples to be im
 handles.sampleIndex = []; %Identifies the "active well", the sample that is actively being defined or altered by the user.
 handles.sampleInfo = struct('circumferencePts',{}...
     ,'center',{}...
+    ,'radius',{}...
     ,'upperLeftCorner',{}...
     ,'lowerRightCorner',{}...
     );
