@@ -22,7 +22,7 @@ function varargout = SCAN6gui_stageMap(varargin)
 
 % Edit the above text to modify the response to help SCAN6gui_stageMap
 
-% Last Modified by GUIDE v2.5 29-Aug-2013 15:34:11
+% Last Modified by GUIDE v2.5 01-Sep-2013 22:32:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,9 +55,11 @@ function SCAN6gui_stageMap_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for SCAN6gui_stageMap
 handles.output = hObject;
 
-% add mmhandles to the main figure handles
+% add the main figure handles to the current figure handles
 guiMainInputIndex = find(strcmp(varargin, 'gui_main'));
 handles.gui_main = varargin{guiMainInputIndex+1};
+% remember the current figure handles
+handles.gui_self = hObject;
 
 % Function Handles
 handles.updateInfo = @stageMap_updateInfo;
@@ -94,3 +96,12 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 function stageMap_updateInfo(hObject)
 % hObject   handle to the main figure
 handles = guidata(hObject);
+
+
+% --- Executes during object creation, after setting all properties.
+function axes1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes1

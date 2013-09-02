@@ -55,9 +55,11 @@ function SCAN6gui_defineCoverslipArea_OpeningFcn(hObject, eventdata, handles, va
 % Choose default command line output for SCAN6gui_defineCoverslipArea
 handles.output = hObject;
 
-% add mmhandles to the main figure handles
+% add the main figure handles to the current figure handles
 guiMainInputIndex = find(strcmp(varargin, 'gui_main'));
 handles.gui_main = varargin{guiMainInputIndex+1};
+% remember the current figure handles
+handles.gui_self = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -112,19 +114,52 @@ if isempty(mainHandles.sampleIndex)
     return;
 end
 mainHandles.mmhandle = SCAN6general_getXYZ(mainHandles.mmhandle);
-mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts{end+1}
-pdata(end+1,1:2) = mmhandle.pos(1:2); %#ok<*AGROW>
-mmhandle.map6well(i).center = [xc,yc];
-mmhandle.map6well(i).radius = r;
-    
-[xc,yc,r] = SCAN6config_estimateCircle(pcell{i});
+mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts(end+1,1:2) = mainHandles.mmhandle.pos(1:2);
+% estimate the size of the coverslip area using this new information
+[xc,yc,r] = SCAN6config_estimateCircle(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts);
+mainHandles.sampleInfo(mainHandles.sampleIndex).center = [xc,yc];
+mainHandles.sampleInfo(mainHandles.sampleIndex).radius = r;
+% add this position data to the listboxPts
+listboxPtsContents = get(handles.listboxPts,'String');
+listboxPtsContents{end+1} = sprintf('%2d.%7.0f || %7.0f',length(listboxPtsContents),xc,yc);
+set(handles.listboxPts,'String',listboxPtsContents);
+% update the handles
+guidata(handles.gui_main, mainHandles);
+guidata(handles.gui_self, handles);
 
 % --- Executes on button press in pushbuttonSubtract.
 function pushbuttonSubtract_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbuttonSubtract (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+index_selected = get(handles.listboxPts,'Value');
+if isempty(index_selected)
+    return;
+end
+% retrieve the main handles
+mainHandles = guidata(handles.gui_main);
+if isempty(mainHandles.sampleIndex)
+    return;
+end
+% remove selected data point from the main handles struct and the
+% listboxPts
+mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts(index_selected,:) = [];
+%
+listboxPtsContents = get(handles.listboxPts,'String');
+listboxPtsContents(index_selected) = [];
+if isempty(listboxPtsContents)
+    set(handles.listboxPts,'Value',[]);
+elseif length(listboxPtsContents)<index_selected
+    set(handles.listboxPts,'Value',length(listboxPtsContents));
+end
+set(handles.listboxPts,'String',listboxPtsContents);
+% estimate the size of the coverslip area after removing this information
+[xc,yc,r] = SCAN6config_estimateCircle(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts);
+mainHandles.sampleInfo(mainHandles.sampleIndex).center = [xc,yc];
+mainHandles.sampleInfo(mainHandles.sampleIndex).radius = r;
+% update the handles
+guidata(handles.gui_main, mainHandles);
+guidata(handles.gui_self, handles);
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)

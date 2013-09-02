@@ -89,7 +89,7 @@ handles.sampleInfo = struct('circumferencePts',{}...
 guidata(hObject, handles);
 
 % UIWAIT makes SCAN6gui_main wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -99,7 +99,8 @@ function varargout = SCAN6gui_main_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Get default command line output from handles structure
+% Set the output to mmhandle
+handles.output = handles.mmhandle;
 varargout{1} = handles.output;
 
 
@@ -270,6 +271,8 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
+uiresume(hObject);
+disp('this will print after you click resume');
 delete(hObject);
 delete(handles.gui_defineCoverslipArea);
 delete(handles.gui_stageMap);
