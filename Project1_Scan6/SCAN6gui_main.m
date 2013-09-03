@@ -22,7 +22,7 @@ function varargout = SCAN6gui_main(varargin)
 
 % Edit the above text to modify the response to help SCAN6gui_main
 
-% Last Modified by GUIDE v2.5 03-Sep-2013 02:37:20
+% Last Modified by GUIDE v2.5 03-Sep-2013 11:00:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -69,14 +69,16 @@ else
     handles.mmhandle = varargin{mmhandleInputIndex+1};
 end
 
-% Variables
+% ----- Variables
 handles.sampleList = false(1,6); %Tallies the "wells" that have samples to be imaged.
 handles.sampleIndex = []; %Identifies the "active well", the sample that is actively being defined or altered by the user.
 handles.sampleInfo = struct('circumferencePts',[]...
-    ,'center',[]...
-    ,'radius',[]...
-    ,'upperLeftCorner',[]...
-    ,'lowerRightCorner',[]...
+    ,'center',[] ...
+    ,'radius',[] ...
+    ,'upperLeftCorner',[] ...
+    ,'lowerRightCorner',[] ...
+    ,'isMaxImages',false ...
+    ,'numberOfImages',0 ...
     );
 handles.sampleInfo(6).circumferencePts = []; %Set the expected maximum number of samples here
 % Get the pixels per character for this monitor and computer system
@@ -90,6 +92,17 @@ Char_SS = get(0,'screensize');
 ppChar = Pix_SS./Char_SS;
 handles.ppChar = ppChar(3:4);
 set(0,'units',myunits);
+
+% Get the image size in micrometers to help define the upperleft and
+% lowerright corners of the imaging rectangle
+pixelSize = handles.mmhandle.core.getPixelSizeUm;
+pixWidth = handles.mmhandle.core.getImageWidth;
+pixHeight = handles.mmhandle.core.getImageHeight;
+handles.imageWidth = pixWidth*pixelSize; % in micrometers
+handles.imageHeight = pixHeight*pixelSize; % in micrometers
+
+% ----- Function Handles
+handles.updateInfo = @main_updateInfo;
 
 % Update handles structure to reflect the new variables and functions
 guidata(hObject, handles);
@@ -168,6 +181,7 @@ guidata(handles.gui_main, handles);
 % update other figures
 stageMapHandles = guidata(handles.gui_stageMap);
 stageMapHandles.updateInfo(handles.gui_main);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes during object creation, after setting all properties.
 function listboxTrue_CreateFcn(hObject, eventdata, handles)
@@ -307,21 +321,53 @@ function checkboxMaxImages_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkboxMaxImages
+if isempty(handles.sampleIndex)||...
+        isempty(handles.sampleInfo(handles.sampleIndex).center)||...
+        isempty(handles.sampleInfo(handles.sampleIndex).radius)||...
+        isnan(handles.sampleInfo(handles.sampleIndex).radius)
+        set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
+    return
+end
+if handles.sampleInfo(handles.sampleIndex).isMaxImages
+    set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
+    handles.sampleInfo(handles.sampleIndex).isMaxImages = false;
+    return
+end
+%Update the status of the checkbox
+set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Max'));
+handles.sampleInfo(handles.sampleIndex).isMaxImages = true;
+%Use 1.5x image dimensions as a tolerance for the maximum area
+tolX = 1.5*handles.imageWidth;
+tolY = 1.5*handles.imageHeight;
+%Find the corners of the square that maximizes the area within the
+%circular coverslip.
+handles.sampleInfo(sampleIndex).upperLeftCorner = ...
+    [(handles.sampleInfo(handles.sampleIndex).center(1) - (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolX)),...
+    (handles.sampleInfo(handles.sampleIndex).center(2) - (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolY))];
+handles.sampleInfo(handles.sampleIndex).lowerRightCorner = ...
+    [(handles.sampleInfo(handles.sampleIndex).center(1) + (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolX)),...
+    (handles.sampleInfo(handles.sampleIndex).center(2) + (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolY))];
+% estimate the number of images
+handles.sampleInfo(sampleIndex).numberOfImages = ...
+    ceil((handles.sampleInfo(handles.sampleIndex).lowerRightCorner(1)-handles.sampleInfo(handles.sampleIndex).upperLeftCorner(1))/handles.imageWidth)*...
+ceil((handles.sampleInfo(handles.sampleIndex).lowerRightCorner(2)-handles.sampleInfo(handles.sampleIndex).upperLeftCorner(2))/handles.imageHeight);    
+
+% update the handles
+guidata(handles.gui_main, handles);
 
 
-
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function editNumberOfImages_Callback(hObject, eventdata, handles)
+% hObject    handle to editNumberOfImages (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+% Hints: get(hObject,'String') returns contents of editNumberOfImages as text
+%        str2double(get(hObject,'String')) returns contents of editNumberOfImages as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function editNumberOfImages_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editNumberOfImages (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -329,4 +375,16 @@ function edit1_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+% --- Updates the information displayed on the main figure whenever the
+% sampleIndex is changed
+function main_updateInfo(hObject)
+% hObject   handle to the main figure
+handles = guidata(hObject);
+
+if handles.sampleInfo(handles.sampleIndex).isMaxImages
+    set(handles.checkboxMaxImages,'Value','Max');
+else
+    set(handles.checkboxMaxImages,'Value','Min');
 end

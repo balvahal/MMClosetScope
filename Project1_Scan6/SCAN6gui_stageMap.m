@@ -62,7 +62,7 @@ mainHandles = guidata(handles.gui_main);
 % remember the current figure handles
 handles.gui_self = hObject;
 
-% Function Handles
+% ----- Function Handles
 handles.updateInfo = @stageMap_updateInfo;
 
 % Resize axes so that the width and height are the same ratio as the
