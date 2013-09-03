@@ -13,10 +13,34 @@
 % * yc = the center y coordinate
 % * r = the radius of the circle
 function [xc,yc,r] = SCAN6config_estimateCircle(perimdata)
+if size(perimdata,1)<3
+    warning('SCAN6cng_estCir:NotEnoughPts','The input array of (x,y) coordinates did not contain enough data points to make an estimate.');
+    [xc,yc,r] = deal(NaN);
+    return
+end
 x1 = perimdata(1,1); 
 y1 = perimdata(1,2);
 xn = perimdata(2:end,1);
 yn = perimdata(2:end,2);
+%% Proofread the data points
+% * data points should not be identical with the first value.
+% * there is a singularity if the y-value of the first point is the same as
+% the y-value of an nth point. This must also be avoided.
+% * the "coeffx" should not be too large and bias the estimate
+testnumx = xn-x1;
+testnumy = yn-y1;
+testsumchk = testnumx+testnumy ~= 0;
+if ~all(testsumchk)
+    warning('SCAN6cng_estCir:firstValRedundant','The first pair of points in the input array of (x,y) coordinates is identical to another pair of points in the array.');
+    [xc,yc,r] = deal(NaN);
+    return
+end
+if ~all(testnumy)
+    warning('SCAN6cng_estCir:firstValYRedundant','The first y-value in the input array of (x,y) coordinates is identical to another y-value in the array.');
+    [xc,yc,r] = deal(NaN);
+    return
+end
+%% Calculate the estimate for the center and radius
 coeffx = (xn-x1)./(yn-y1);
 coeffy = (xn.^2 + yn.^2 - x1^2 - y1^2)./(2*(yn-y1));
 [xc,yc] = leastsquaresfit(coeffx,coeffy);

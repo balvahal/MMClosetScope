@@ -22,7 +22,7 @@ function varargout = SCAN6gui_main(varargin)
 
 % Edit the above text to modify the response to help SCAN6gui_main
 
-% Last Modified by GUIDE v2.5 29-Aug-2013 23:31:18
+% Last Modified by GUIDE v2.5 03-Sep-2013 02:37:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -69,27 +69,42 @@ else
     handles.mmhandle = varargin{mmhandleInputIndex+1};
 end
 
+% Variables
+handles.sampleList = false(1,6); %Tallies the "wells" that have samples to be imaged.
+handles.sampleIndex = []; %Identifies the "active well", the sample that is actively being defined or altered by the user.
+handles.sampleInfo = struct('circumferencePts',[]...
+    ,'center',[]...
+    ,'radius',[]...
+    ,'upperLeftCorner',[]...
+    ,'lowerRightCorner',[]...
+    );
+handles.sampleInfo(6).circumferencePts = []; %Set the expected maximum number of samples here
+% Get the pixels per character for this monitor and computer system
+% This information is vital for displaying properly proportioned
+% information when the units of the gui dimensions are characters.
+myunits = get(0,'units');
+set(0,'units','pixels');
+Pix_SS = get(0,'screensize');
+set(0,'units','characters');
+Char_SS = get(0,'screensize');
+ppChar = Pix_SS./Char_SS;
+handles.ppChar = ppChar(3:4);
+set(0,'units',myunits);
+
+% Update handles structure to reflect the new variables and functions
+guidata(hObject, handles);
+
 % SCAN6gui_main.fig is the parent gui. Launch the children guis and
 % send the parent gui object to each child gui.
 handles.gui_defineCoverslipArea = SCAN6gui_defineCoverslipArea('gui_main',handles.gui_main);
 set(handles.gui_defineCoverslipArea,'visible','off'); % initially hide this gui from the user
 handles.gui_stageMap = SCAN6gui_stageMap('gui_main',handles.gui_main);
 
-% Variables
-handles.sampleList = false(1,6); %Tallies the "wells" that have samples to be imaged.
-handles.sampleIndex = []; %Identifies the "active well", the sample that is actively being defined or altered by the user.
-handles.sampleInfo = struct('circumferencePts',{}...
-    ,'center',{}...
-    ,'radius',{}...
-    ,'upperLeftCorner',{}...
-    ,'lowerRightCorner',{}...
-    );
-
-% Update handles structure
+% Update handles structure to reflect the extra figure handles
 guidata(hObject, handles);
 
 % UIWAIT makes SCAN6gui_main wait for user response (see UIRESUME)
-uiwait(handles.figure1);
+%uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -271,8 +286,7 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
-uiresume(hObject);
-disp('this will print after you click resume');
+%uiresume(hObject);
 delete(hObject);
 delete(handles.gui_defineCoverslipArea);
 delete(handles.gui_stageMap);
@@ -284,3 +298,35 @@ function listboxTrue_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to listboxTrue (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in checkboxMaxImages.
+function checkboxMaxImages_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxMaxImages (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxMaxImages
+
+
+
+function edit1_Callback(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit1 as text
+%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

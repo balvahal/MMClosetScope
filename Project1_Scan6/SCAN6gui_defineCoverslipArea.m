@@ -27,11 +27,11 @@ function varargout = SCAN6gui_defineCoverslipArea(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @SCAN6gui_defineCoverslipArea_OpeningFcn, ...
-                   'gui_OutputFcn',  @SCAN6gui_defineCoverslipArea_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @SCAN6gui_defineCoverslipArea_OpeningFcn, ...
+    'gui_OutputFcn',  @SCAN6gui_defineCoverslipArea_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -69,7 +69,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = SCAN6gui_defineCoverslipArea_OutputFcn(hObject, eventdata, handles) 
+function varargout = SCAN6gui_defineCoverslipArea_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -109,19 +109,44 @@ function pushbuttonAdd_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %
 % retrieve the mmhandles and get the stage position from the microscope
+set(handles.textUserFeedback,'String',[]);
 mainHandles = guidata(handles.gui_main);
 if isempty(mainHandles.sampleIndex)
     return;
 end
 mainHandles.mmhandle = SCAN6general_getXYZ(mainHandles.mmhandle);
 mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts(end+1,1:2) = mainHandles.mmhandle.pos(1:2);
+% Proofread the data points
+% * data points should not be identical with the first value.
+% * there is a singularity if the y-value of the first point is the same as
+% the y-value of an nth point. This must also be avoided.
+if size(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts,1)>1
+testnumx = mainHandles.mmhandle.pos(1)-mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts(1,1);
+testnumy = mainHandles.mmhandle.pos(2)-mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts(1,2);
+testsumchk = testnumx+testnumy ~= 0;
+if ~all(testsumchk)
+    instring = {'The first pair of points in the input array of (x,y) coordinates is identical to another pair of points in the array. Choose another point.'};
+    outstring = textwrap(handles.textUserFeedback,instring); 
+    set(handles.textUserFeedback,'String',outstring);
+    return
+end
+if ~all(testnumy)
+    instring = {'The first y-value in the input array of (x,y) coordinates is identical to another y-value in the array. Choose another point.'};
+    outstring = textwrap(handles.textUserFeedback,instring); 
+    set(handles.textUserFeedback,'String',outstring);
+    return
+end
+end
 % estimate the size of the coverslip area using this new information
-[xc,yc,r] = SCAN6config_estimateCircle(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts);
-mainHandles.sampleInfo(mainHandles.sampleIndex).center = [xc,yc];
-mainHandles.sampleInfo(mainHandles.sampleIndex).radius = r;
+if size(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts,1)>2
+    [xc,yc,r] = SCAN6config_estimateCircle(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts);
+    mainHandles.sampleInfo(mainHandles.sampleIndex).center = [xc,yc];
+    mainHandles.sampleInfo(mainHandles.sampleIndex).radius = r;
+end
 % add this position data to the listboxPts
 listboxPtsContents = get(handles.listboxPts,'String');
-listboxPtsContents{end+1} = sprintf('%2d.%7.0f || %7.0f',length(listboxPtsContents),xc,yc);
+listboxPtsContents{end+1} = sprintf('%7.0f || %7.0f',mainHandles.mmhandle.pos(1),mainHandles.mmhandle.pos(2));
+set(handles.listboxPts,'Value',length(listboxPtsContents));
 set(handles.listboxPts,'String',listboxPtsContents);
 % update the handles
 guidata(handles.gui_main, mainHandles);
@@ -154,9 +179,14 @@ elseif length(listboxPtsContents)<index_selected
 end
 set(handles.listboxPts,'String',listboxPtsContents);
 % estimate the size of the coverslip area after removing this information
-[xc,yc,r] = SCAN6config_estimateCircle(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts);
-mainHandles.sampleInfo(mainHandles.sampleIndex).center = [xc,yc];
-mainHandles.sampleInfo(mainHandles.sampleIndex).radius = r;
+if size(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts,1)<3
+    mainHandles.sampleInfo(mainHandles.sampleIndex).center = [];
+    mainHandles.sampleInfo(mainHandles.sampleIndex).radius = [];
+else
+    [xc,yc,r] = SCAN6config_estimateCircle(mainHandles.sampleInfo(mainHandles.sampleIndex).circumferencePts);
+    mainHandles.sampleInfo(mainHandles.sampleIndex).center = [xc,yc];
+    mainHandles.sampleInfo(mainHandles.sampleIndex).radius = r;
+end
 % update the handles
 guidata(handles.gui_main, mainHandles);
 guidata(handles.gui_self, handles);

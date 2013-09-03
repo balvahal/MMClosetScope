@@ -18,6 +18,9 @@
 %
 % The corner of origin is determined by repeatedly subtracting a distance
 % from x, y, and z components until the stage no longer moves.
+%
+% Having looked at this function again, I still feel it has very little
+% value; it serves best as an example of simple micromanager code use.
 %% Inputs
 % mmhandle
 %% Outputs
