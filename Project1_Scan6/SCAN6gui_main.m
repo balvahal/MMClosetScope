@@ -103,6 +103,7 @@ handles.imageHeight = pixHeight*pixelSize; % in micrometers
 
 % ----- Function Handles
 handles.updateInfo = @main_updateInfo;
+handles.autopick = @main_autopickImageAreaGivenNumberOfImages;
 
 % Update handles structure to reflect the new variables and functions
 guidata(hObject, handles);
@@ -326,11 +327,13 @@ if isempty(handles.sampleIndex)||...
         isempty(handles.sampleInfo(handles.sampleIndex).radius)||...
         isnan(handles.sampleInfo(handles.sampleIndex).radius)
         set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
+        set(handles.editNumberOfImages,'Enable','on');
     return
 end
 if handles.sampleInfo(handles.sampleIndex).isMaxImages
     set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
     handles.sampleInfo(handles.sampleIndex).isMaxImages = false;
+    set(handles.editNumberOfImages,'Enable','on');
     return
 end
 %Update the status of the checkbox
@@ -341,7 +344,7 @@ tolX = 1.5*handles.imageWidth;
 tolY = 1.5*handles.imageHeight;
 %Find the corners of the square that maximizes the area within the
 %circular coverslip.
-handles.sampleInfo(sampleIndex).upperLeftCorner = ...
+handles.sampleInfo(handles.sampleIndex).upperLeftCorner = ...
     [(handles.sampleInfo(handles.sampleIndex).center(1) - (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolX)),...
     (handles.sampleInfo(handles.sampleIndex).center(2) - (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolY))];
 handles.sampleInfo(handles.sampleIndex).lowerRightCorner = ...
@@ -351,7 +354,8 @@ handles.sampleInfo(handles.sampleIndex).lowerRightCorner = ...
 handles.sampleInfo(sampleIndex).numberOfImages = ...
     ceil((handles.sampleInfo(handles.sampleIndex).lowerRightCorner(1)-handles.sampleInfo(handles.sampleIndex).upperLeftCorner(1))/handles.imageWidth)*...
 ceil((handles.sampleInfo(handles.sampleIndex).lowerRightCorner(2)-handles.sampleInfo(handles.sampleIndex).upperLeftCorner(2))/handles.imageHeight);    
-
+set(handles.editNumberOfImages,'String',num2str(handles.sampleInfo(handles.sampleIndex).numberOfImages));
+set(handles.editNumberOfImages,'Enable','inactive');
 % update the handles
 guidata(handles.gui_main, handles);
 
@@ -363,7 +367,23 @@ function editNumberOfImages_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of editNumberOfImages as text
 %        str2double(get(hObject,'String')) returns contents of editNumberOfImages as a double
-
+if isempty(handles.sampleIndex)
+    return
+end
+handles.sampleInfo(handles.sampleIndex).numberOfImages = str2double(get(hObject,'String'));
+if isnan(handles.sampleInfo(handles.sampleIndex).numberOfImages)||...
+        handles.sampleInfo(handles.sampleIndex).numberOfImages == 0
+    handles.sampleInfo(handles.sampleIndex).numberOfImages = 0;
+    handles.sampleInfo(handles.sampleIndex).upperLeftCorner = [];
+    handles.sampleInfo(handles.sampleIndex).lowerRightCorner = [];
+    set(hObject,'String','0');
+    % update the handles
+    guidata(handles.gui_main, handles);
+    return
+end
+% update the handles
+guidata(handles.gui_main, handles);
+handles.autopick(handles.gui_main);
 
 % --- Executes during object creation, after setting all properties.
 function editNumberOfImages_CreateFcn(hObject, eventdata, handles)
@@ -388,3 +408,36 @@ if handles.sampleInfo(handles.sampleIndex).isMaxImages
 else
     set(handles.checkboxMaxImages,'Value','Min');
 end
+
+% --- I found it a real challenge to devise a way to find a pair of
+% integers that when multiplied together come closest to a given number
+% while at the same time minimizing the difference between these two
+% integers. The optimal integer pair is the same number when the given
+% number is a perfect square. I could not think of a clever "mathy" way to
+% find this integer pair, but instead a method that will simply get the job
+% done. The constraint here is that no rectangle should be skinnier than
+% 16:9 ratio a la widescreen viewing.
+function main_autopickImageAreaGivenNumberOfImages(hObject)
+% hObject   handle to the main figure
+handles = guidata(hObject);
+numberOfImages = handles.sampleInfo(handles.sampleIndex).numberOfImages;
+% The rectangular shape of the image itself must be taken into account.
+pixWidth = handles.mmhandle.core.getImageWidth;
+pixHeight = handles.mmhandle.core.getImageHeight;
+widthCandidates = floor(sqrt(numberOfImages./(linspace(0.5625,1,10)*pixWidth/pixHeight)));
+objectiveArray = mod(numberOfImages,widthCandidates);
+[~,ind] = min(objectiveArray);
+width = widthCandidates(ind);
+height = floor(numberOfImages/width);
+handles.sampleInfo(handles.sampleIndex).numberOfImages = width*height;
+% update the edit box
+set(handles.editNumberOfImages,'String',num2str(handles.sampleInfo(handles.sampleIndex).numberOfImages));
+% update the coordinates for the upper-left and lower-right
+handles.sampleInfo(handles.sampleIndex).upperLeftCorner = ...
+    [(handles.sampleInfo(handles.sampleIndex).center(1) - handles.imageWidth*width/2),...
+    (handles.sampleInfo(handles.sampleIndex).center(2) - handles.imageHeight*height/2)];
+handles.sampleInfo(handles.sampleIndex).lowerRightCorner = ...
+    [(handles.sampleInfo(handles.sampleIndex).center(1) + handles.imageWidth*width/2),...
+    (handles.sampleInfo(handles.sampleIndex).center(2) + handles.imageHeight*height/2)];
+% update the handles
+guidata(handles.gui_main, handles);
