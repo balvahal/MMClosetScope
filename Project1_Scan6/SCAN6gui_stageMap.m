@@ -106,7 +106,8 @@ function stageMap_updateInfo(hObject)
 % hObject   handle to the main figure
 handles = guidata(hObject);
 stageMapHandles = guidata(handles.gui_stageMap);
-hold on;
+cla(stageMapHandles.axesStageMap,'reset')
+hold(stageMapHandles.axesStageMap,'on');
 for i = 1:length(handles.sampleInfo)
     % plot a circle of the predicted coverslip area
     if ~isempty(handles.sampleInfo(i).center)&&...
@@ -117,16 +118,20 @@ for i = 1:length(handles.sampleInfo)
     % plot the quadrangle shape of the area to be imaged
     if ~isempty(handles.sampleInfo(i).upperLeftCorner)&&...
             ~isempty(handles.sampleInfo(i).lowerRightCorner)
-        fill([handles.sampleInfo(i).upperLeftCorner(1);handles.sampleInfo(i).lowerRightCorner(1)],...
-            [handles.sampleInfo(i).upperLeftCorner(2);handles.sampleInfo(i).lowerRightCorner(2)],...
-            'LineWidth',1.5,'FaceColor','none','EdgeColor',[255 215 0]/255);
+        x1 = handles.sampleInfo(i).upperLeftCorner(1);
+        x2 = handles.sampleInfo(i).lowerRightCorner(1);
+        y1 = handles.sampleInfo(i).upperLeftCorner(2);
+        y2 = handles.sampleInfo(i).lowerRightCorner(2);
+        fill([x1;x2;x2;x1],...
+            [y1;y1;y2;y2],...
+            [0,0,0],'LineWidth',1.5,'FaceColor','none','EdgeColor',[255 215 0]/255,'Parent',stageMapHandles.axesStageMap);
     end
     % plot an 'x' at each user generated point
     if ~isempty(handles.sampleInfo(i).circumferencePts)
         scatter(stageMapHandles.axesStageMap,handles.sampleInfo(i).circumferencePts(:,1),handles.sampleInfo(i).circumferencePts(:,2),'x','sizedata',100,'CData',[0 0 0],'LineWidth',1.5);
     end
 end
-hold off;
+hold(stageMapHandles.axesStageMap,'off');
 % Format the axes to reflect the layout of the stage
 set(stageMapHandles.axesStageMap,'YDir','reverse');
 set(stageMapHandles.axesStageMap,'XLim',[0 handles.mmhandle.xyStageSize(1)]);

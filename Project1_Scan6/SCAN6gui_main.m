@@ -326,14 +326,16 @@ if isempty(handles.sampleIndex)||...
         isempty(handles.sampleInfo(handles.sampleIndex).center)||...
         isempty(handles.sampleInfo(handles.sampleIndex).radius)||...
         isnan(handles.sampleInfo(handles.sampleIndex).radius)
-        set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
-        set(handles.editNumberOfImages,'Enable','on');
+    set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
+    set(handles.editNumberOfImages,'Enable','on');
     return
 end
 if handles.sampleInfo(handles.sampleIndex).isMaxImages
     set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
     handles.sampleInfo(handles.sampleIndex).isMaxImages = false;
     set(handles.editNumberOfImages,'Enable','on');
+    % update the handles
+    guidata(handles.gui_main, handles);
     return
 end
 %Update the status of the checkbox
@@ -351,9 +353,9 @@ handles.sampleInfo(handles.sampleIndex).lowerRightCorner = ...
     [(handles.sampleInfo(handles.sampleIndex).center(1) + (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolX)),...
     (handles.sampleInfo(handles.sampleIndex).center(2) + (cos(pi/4)*handles.sampleInfo(handles.sampleIndex).radius - tolY))];
 % estimate the number of images
-handles.sampleInfo(sampleIndex).numberOfImages = ...
+handles.sampleInfo(handles.sampleIndex).numberOfImages = ...
     ceil((handles.sampleInfo(handles.sampleIndex).lowerRightCorner(1)-handles.sampleInfo(handles.sampleIndex).upperLeftCorner(1))/handles.imageWidth)*...
-ceil((handles.sampleInfo(handles.sampleIndex).lowerRightCorner(2)-handles.sampleInfo(handles.sampleIndex).upperLeftCorner(2))/handles.imageHeight);    
+    ceil((handles.sampleInfo(handles.sampleIndex).lowerRightCorner(2)-handles.sampleInfo(handles.sampleIndex).upperLeftCorner(2))/handles.imageHeight);
 set(handles.editNumberOfImages,'String',num2str(handles.sampleInfo(handles.sampleIndex).numberOfImages));
 set(handles.editNumberOfImages,'Enable','inactive');
 % update the handles
@@ -372,7 +374,8 @@ if isempty(handles.sampleIndex)
 end
 handles.sampleInfo(handles.sampleIndex).numberOfImages = str2double(get(hObject,'String'));
 if isnan(handles.sampleInfo(handles.sampleIndex).numberOfImages)||...
-        handles.sampleInfo(handles.sampleIndex).numberOfImages == 0
+        handles.sampleInfo(handles.sampleIndex).numberOfImages == 0||...
+        isempty(handles.sampleInfo(handles.sampleIndex).center)
     handles.sampleInfo(handles.sampleIndex).numberOfImages = 0;
     handles.sampleInfo(handles.sampleIndex).upperLeftCorner = [];
     handles.sampleInfo(handles.sampleIndex).lowerRightCorner = [];
@@ -404,9 +407,9 @@ function main_updateInfo(hObject)
 handles = guidata(hObject);
 
 if handles.sampleInfo(handles.sampleIndex).isMaxImages
-    set(handles.checkboxMaxImages,'Value','Max');
+    set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Max'));
 else
-    set(handles.checkboxMaxImages,'Value','Min');
+    set(handles.checkboxMaxImages,'Value',get(handles.checkboxMaxImages,'Min'));
 end
 
 % --- I found it a real challenge to devise a way to find a pair of
