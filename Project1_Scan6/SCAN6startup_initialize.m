@@ -23,12 +23,7 @@ import org.micromanager.MMStudioMainFrame;
 mmhandle.gui = MMStudioMainFrame(false);
 mmhandle.gui.show;
 uiwait(hmsg);
-mmhandle.core = mmhandle.gui.getCore;
-%%
-% Wait for the gui object to finish initialization and then create the core
-% object. mmhandle.core = []; while ~isa(mmhandle.core,'mmcorej.CMMCore')
-%     class(mmhandle.core) mmhandle.core = mmhandle.gui.getCore;
-% end disp('before'); mmhandle.core.waitForConfig; disp('after');
+mmhandle.core = mmhandle.gui.getMMCore;
 %% Obtain the object that represents multi-dimensional-acquisition
 %
 mmhandle.mda = mmhandle.gui.getAcquisitionEngine();
