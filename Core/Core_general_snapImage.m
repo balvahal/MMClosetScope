@@ -11,9 +11,9 @@ function mmhandle = Core_general_snapImage(mmhandle, varargin)
 %
 p = inputParser;
 addRequired(p, 'mmhandle', @isstruct);
-addOptional(p, 'channel', 'noinput', @isstr);
+addOptional(p, 'Channel', 'noinput', @isstr);
 parse(p,mmhandle, varargin{:});
-if ~strcmp(p.Results.channel,'noinput')
+if ~strcmp(p.Results.Channel,'noinput')
     mmhandle.core.setConfig('Channel',p.Results.channel);
     % Did the config load correctly?
     % |core.getProperty('TIFilterBlock1','Label')
