@@ -5,20 +5,22 @@ classdef SuperMDAPosition
     % * xyz: the location of the position in an array *[x, y, z]*. The
     % units are micrometers.
     properties
-        xyz
-        settings
+        Parent_MDAGroup;
+        settings;
+        xyz;
     end
     %%
     %
     methods
         %% The constructor method
         % The first argument is always mmhandle
-        function obj = SuperMDAPosition(mmhandle, my_xyz, my_settings)
+        function obj = SuperMDAPosition(mmhandle, my_Parent, my_xyz, my_settings)
             if nargin == 0
                 return
-            elseif nargin == 1
+            elseif nargin == 2
+                obj.Parent_MDAGroup = my_Parent;
                 obj.xyz = mmhandle.pos;
-                obj.settings = SuperMDAPositionSettings(mmhandle);
+                obj.settings = SuperMDAPositionSettings(mmhandle, obj);
                 return
             end
         end

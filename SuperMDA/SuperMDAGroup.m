@@ -18,7 +18,7 @@ classdef SuperMDAGroup
     properties
         duration = 0;
         filename_prefix = 'mda';
-        fundamental_period = 300; %5 minutes is the default
+        fundamental_period = 300; %5 minutes is the default. The units are seconds.
         output_directory;
         positions
     end
@@ -31,7 +31,7 @@ classdef SuperMDAGroup
             if nargin == 0
                 return
             elseif nargin == 1
-                obj.positions = SuperMDAPosition(mmhandle);
+                obj.positions = SuperMDAPosition(mmhandle, obj);
                 return
             end
         end
