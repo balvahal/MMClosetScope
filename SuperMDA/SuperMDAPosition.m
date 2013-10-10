@@ -5,7 +5,10 @@ classdef SuperMDAPosition
     % * xyz: the location of the position in an array *[x, y, z]*. The
     % units are micrometers.
     properties
+        continuous_focus_offset = 0;
+        continuous_focus_bool = false;
         Parent_MDAGroup;
+        position_order = 1;
         settings;
         xyz;
     end
