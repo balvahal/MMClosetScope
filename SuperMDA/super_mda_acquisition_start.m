@@ -32,16 +32,23 @@ for i = 1:length(SuperMDA)
 end
 
 MDAhandles.stack_function = cell(number_of_functions_to_execute_total,1);
-MDAhandles.stack_time_absolute = zeros(number_of_functions_to_execute_total,1);
-MDAhandles.stack_time_relative = zeros(number_of_functions_to_execute_total,1);
+stack_time_absolute = zeros(number_of_functions_to_execute_total,1);
+stack_time_relative = zeros(number_of_functions_to_execute_total,1);
 MDAhandles.stack_pointer = 1;
+
+number_group = zeros(number_of_functions_to_execute_total,1);
+number_position = zeros(number_of_functions_to_execute_total,1);
+
+
 counter = 0;
 for i = 1:length(SuperMDA)
     for j = 1:number_of_timepoints_in_group(i)
-        for k = 1:number_of_functions_to_execute_per_group(i)
-            counter = counter + 1;
+        for k = 1:length(SuperMDA(i).positions)
+            for h = 1:length(SuperMDA(i).positions(k).settings)
             
+            end
         end
     end
 end
+
 
