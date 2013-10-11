@@ -19,8 +19,10 @@ classdef SuperMDAGroup
         duration = 0;
         filename_prefix = 'mda';
         fundamental_period = 300; %5 minutes is the default. The units are seconds.
+        label = 'group';
         output_directory;
         positions
+        travel_offset = -800; %-800 micrometers in the z direction to avoid scraping the objective on the plate. We've always used 800 micrometers.
     end
     %%
     %

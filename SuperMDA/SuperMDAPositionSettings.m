@@ -9,7 +9,6 @@ classdef SuperMDAPositionSettings < hgsetget
     % acquired at each value offset in this list.
     properties
         timepoints;
-        timepoints_custom_bool = false;
         Channel = 1;
         exposure = 100;
         Parent_Position;
@@ -54,9 +53,6 @@ classdef SuperMDAPositionSettings < hgsetget
         %% Calculate timepoints
         %
         function calculate_timepoints(obj)
-            if obj.timepoints_custom_bool == true
-                return
-            end
             obj.timepoints = 0:obj.period_multiplier*obj.Parent_Position.Parent_MDAGroup.fundamental_period:obj.Parent_Position.Parent_MDAGroup.duration;
         end
         %% 

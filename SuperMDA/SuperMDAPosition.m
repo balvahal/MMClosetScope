@@ -7,6 +7,7 @@ classdef SuperMDAPosition
     properties
         continuous_focus_offset = 0;
         continuous_focus_bool = false;
+        label = 'position';
         Parent_MDAGroup;
         position_order = 1;
         settings;
