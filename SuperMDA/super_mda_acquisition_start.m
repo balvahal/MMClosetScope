@@ -51,4 +51,14 @@ for i = 1:length(SuperMDA)
     end
 end
 
-
+%% Execute the MDA according the the control hierarchy
+for i = 1:length(SuperMDA.groups)
+    for j = 1:length(SuperMDA.groups)
+        for k = 1:length(SuperMDA.settings)
+            %% Update the function history database
+            %% Execute the function for this setting
+            
+        end
+    end
+    %% Should I wait (and how long)?
+end
