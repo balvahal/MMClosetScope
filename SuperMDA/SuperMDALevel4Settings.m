@@ -9,9 +9,11 @@ classdef SuperMDALevel4Settings < hgsetget
     % acquired at each value offset in this list.
     properties
         timepoints;
+        timepoints_custom_bool = false;
         Channel = 1;
         exposure = 100;
-        Parent_Position;
+        label = 'settings';
+        Parent_MDAPosition;
         period_multiplier = 1;
         snap_function = @super_mda_snap_basic;
         z_origin_offset = 0;
@@ -30,7 +32,7 @@ classdef SuperMDALevel4Settings < hgsetget
             if nargin == 0
                 return
             elseif nargin == 2
-                obj.Parent_Position = my_Parent;
+                obj.Parent_MDAPosition = my_Parent;
                 % make z_stack
                 obj.create_z_stack_list;
                 return
@@ -53,7 +55,11 @@ classdef SuperMDALevel4Settings < hgsetget
         %% Calculate timepoints
         %
         function calculate_timepoints(obj)
-            obj.timepoints = 0:obj.period_multiplier*obj.Parent_Position.Parent_MDAGroup.fundamental_period:obj.Parent_Position.Parent_MDAGroup.duration;
+            if obj.timepoints_custom_bool
+                return
+            end
+            obj.timepoints = zeros(size(obj.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
+            obj.timepoints(1:obj.period_multiplier:length(obj.timepoints)) = 1;
         end
         %% 
         %

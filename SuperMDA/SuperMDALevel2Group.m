@@ -16,14 +16,11 @@ classdef SuperMDALevel2Group
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        duration = 0;
         filename_prefix = 'mda';
-        fundamental_period = 300; %5 minutes is the default. The units are seconds.
         label = 'group';
-        output_directory;
+        output_directory_group;
         Parent_MDAPrimary;
-        positions
-        travel_offset = -800; %-800 micrometers in the z direction to avoid scraping the objective on the plate. We've always used 800 micrometers.
+        positions;
     end
     %%
     %

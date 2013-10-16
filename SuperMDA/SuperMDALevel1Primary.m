@@ -17,11 +17,12 @@ classdef SuperMDALevel1Primary
     %
     properties
         duration = 0;
-        filename_prefix = 'mda';
         fundamental_period = 300; %5 minutes is the default. The units are seconds.
-        label = 'group';
-        output_directory;
-        groups
+        groups;
+        label = 'primary';
+        mda_clock_absolute;
+        mda_clock_relative = 0;
+        output_directory_primary;
         travel_offset = -800; %-800 micrometers in the z direction to avoid scraping the objective on the plate. We've always used 800 micrometers.
     end
     %%
@@ -37,5 +38,19 @@ classdef SuperMDALevel1Primary
                 return
             end
         end
+        %% Configure the relative clock
+        %
+        function obj = configure_clock_relative(obj)
+            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% Configure the absolute clock
+        % Convert the MDA object unit of time (seconds) to the
+        % MATLAB unit of time (days) for the serial date numbers, i.e. the
+        % number of days that have passed since January 1, 0000.
+        function obj = configure_clock_absolute(obj)
+            obj.mda_clock_absolute = now + obj.mda_clock_relative/86400;
+        end
+        %%
+        %
     end
 end

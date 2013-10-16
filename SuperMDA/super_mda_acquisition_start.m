@@ -45,20 +45,50 @@ for i = 1:length(SuperMDA)
     for j = 1:number_of_timepoints_in_group(i)
         for k = 1:length(SuperMDA(i).positions)
             for h = 1:length(SuperMDA(i).positions(k).settings)
-            
+                
             end
         end
     end
 end
-
-%% Execute the MDA according the the control hierarchy
+%% Update the dependent parameters in the MDA object
+% Some parameters in the MDA object are dependent on others. This
+% dependency came about from combining parameters that are easy to
+% configure by a user interface into data structures that are convenient to
+% code with.
+SuperMDA.configure_clock_relative;
 for i = 1:length(SuperMDA.groups)
-    for j = 1:length(SuperMDA.groups)
-        for k = 1:length(SuperMDA.settings)
-            %% Update the function history database
-            %% Execute the function for this setting
-            
+    for j = 1:length(SuperMDA.groups(i).positions)
+        for k = 1:length(SuperMDA.groups(i).positions(j).settings)
+            SuperMDA.groups(i).positions(j).settings(k).calculate_timepoints;
         end
     end
+end
+%% Execute the MDA according the the control hierarchy
+% Immediately before MDA begins the absolute clock must be started...
+SuperMDA.configure_clock_absolute;
+%%
+% Start the MDA
+for t = 1:length(SuperMDA.mda_clock_absolute)
+    
     %% Should I wait (and how long)?
+    if t >= length(SuperMDA.mda_clock_absolute)-1
+        continue
+    elseif now < SuperMDA.mda_clock_absolute(t+1)
+        
+    else
+        continue
+    end
+end
+%% the execute_SuperMDA
+    function execute_SuperMDA()
+        for in = 1:length(SuperMDA.groups)
+            for jn = 1:length(SuperMDA.groups(in).positions)
+                for kn = 1:length(SuperMDA.groups(in).positions(jn).settings)
+                    %% Update the function history database
+                    %% Execute the function for this setting
+                    
+                end
+            end
+        end
+    end
 end
