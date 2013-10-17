@@ -15,7 +15,8 @@ classdef SuperMDALevel4Settings < hgsetget
         label = 'settings';
         Parent_MDAPosition;
         period_multiplier = 1;
-        snap_function = @super_mda_snap_basic;
+        snap_function_name = 'super_mda_snap_basic';
+        snap_function_handle;
         z_origin_offset = 0;
         z_step_size = 0.3;
         z_stack_upper_offset = 0;
