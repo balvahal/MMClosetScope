@@ -19,7 +19,9 @@ z = [];
 % code with.
 SuperMDA.configure_clock_relative;
 for i1 = 1:length(SuperMDA.groups)
+    SuperMDA.groups(i1).group_function_handle = str2func(SuperMDA.groups(i1).group_function_name);
     for j1 = 1:length(SuperMDA.groups(i1).positions)
+        SuperMDA.groups(i1).positions(j1).position_function_handle = str2func(SuperMDA.groups(i1).positions(j1).position_function_name);
         for k1 = 1:length(SuperMDA.groups(i1).positions(j1).settings)
             SuperMDA.groups(i1).positions(j1).settings(k1).calculate_timepoints;
             SuperMDA.groups(i1).positions(j1).settings(k1).snap_function_handle = str2func(SuperMDA.groups(i1).positions(j1).settings(k1).snap_function_name);
@@ -45,7 +47,9 @@ end
 %% execute_SuperMDA, a nested function
     function execute_SuperMDA(~,~)
         for i2 = 1:length(SuperMDA.groups)
+            SuperMDA.groups(i2).group_function_handle(SuperMDA,i2);
             for j2 = 1:length(SuperMDA.groups(i2).positions)
+                SuperMDA.groups(i2).positions(j2).position_function_handle(SuperMDA,[i2,j2]);
                 for k2 = 1:length(SuperMDA.groups(i2).positions(j2).settings)
                     %% Update the function history database
                     

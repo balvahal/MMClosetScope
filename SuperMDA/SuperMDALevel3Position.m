@@ -10,6 +10,8 @@ classdef SuperMDALevel3Position
         label = 'position';
         Parent_MDAGroup;
         position_order = 1;
+        position_function_name = 'super_mda_position_basic';
+        position_function_handle;
         settings;
         xyz;
     end

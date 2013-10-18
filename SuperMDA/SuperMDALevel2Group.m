@@ -21,6 +21,8 @@ classdef SuperMDALevel2Group
         output_directory_group;
         Parent_MDAPrimary;
         positions;
+        group_function_name = 'super_mda_group_basic';
+        group_function_handle;
     end
     %%
     %
