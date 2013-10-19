@@ -42,21 +42,35 @@ while counter <= length(SuperMDA.mda_clock_absolute)
     elseif strcmp(timer_mda.Running,'off') && now > SuperMDA.mda_clock_absolute(counter)
         execute_SuperMDA;
         counter = counter + 1;
+    else
+        %%
+        % Here is the code block where the while loop runs in between
+        % execution of the MDA
+        
     end
 end
-%% execute_SuperMDA, a nested function
+
+%% Save a history of the MDA execution and the images created to a CSV file
+%
+export(SuperMDA.database_filenames,'File',fullfile(SuperMDA.output_directory,'SuperMDA_database_filenames.csv'),'Delimiter',',');
+%% Nested Functions
+%
     function execute_SuperMDA(~,~)
         for i2 = 1:length(SuperMDA.groups)
-            SuperMDA.groups(i2).group_function_handle(SuperMDA,i2);
+            mmhandle = SuperMDA.groups(i2).group_function_before_handle(mmhandle,SuperMDA,i2);
             for j2 = 1:length(SuperMDA.groups(i2).positions)
-                SuperMDA.groups(i2).positions(j2).position_function_handle(SuperMDA,[i2,j2]);
+                mmhandle = SuperMDA.groups(i2).positions(j2).position_function_before_handle(mmhandle,SuperMDA,i2,j2);
                 for k2 = 1:length(SuperMDA.groups(i2).positions(j2).settings)
-                    %% Update the function history database
-                    
-                    %% Execute the function for this setting
-                    SuperMDA.groups(i2).positions(j2).settings(k2).snap_function_handle(SuperMDA,[i2,j2,k2]);
+                    if SuperMDA.groups(i2).positions(j2).settings(k2).timepoints(counter) == true
+                        %% Update the function history database
+                        
+                        %% Execute the function for this setting
+                        mmhandle = SuperMDA.groups(i2).positions(j2).settings(k2).snap_function_handle(mmhandle,SuperMDA,i2,j2,k2,counter);
+                    end
                 end
+                mmhandle = SuperMDA.groups(i2).positions(j2).position_function_after_handle(mmhandle,SuperMDA,i2,j2);
             end
+            mmhandle = SuperMDA.groups(i2).group_function_after_handle(mmhandle,SuperMDA,i2);
         end
     end
 end

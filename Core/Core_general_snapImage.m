@@ -29,5 +29,12 @@ if mmhandle.core.getBytesPerPixel == 1 %this indicates an 8bit image
     I = typecast(I,'uint8');
 elseif mmhandle.core.getBytesPerPixel == 2 %this indicates a 16bit image
     I = typecast(I,'uint16');
+    %% Check the bit-depth of the camera
+    % If the bit-depth is less than 16-bits, then shift the raw image data
+    % to fill the 16-bits.
+    bitdepth = mmhandle.core.getProperty(mmhandle.CameraDevice,'BitDepth');
+    if bitdepth < 16
+        I = bitshift(I,16-bitdepth);
+    end
 end
 mmhandle.I = transpose(reshape(I,[width,height]));
