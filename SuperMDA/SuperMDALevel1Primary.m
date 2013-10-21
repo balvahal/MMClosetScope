@@ -22,7 +22,7 @@ classdef SuperMDALevel1Primary
         duration = 0;
         fundamental_period = 300; %5 minutes is the default. The units are seconds.
         groups;
-        label = 'primary';
+        object_type = 'primary';
         mda_clock_absolute;
         mda_clock_relative = 0;
         output_directory;

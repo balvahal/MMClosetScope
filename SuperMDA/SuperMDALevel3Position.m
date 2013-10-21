@@ -7,7 +7,8 @@ classdef SuperMDALevel3Position
     properties
         continuous_focus_offset = 0;
         continuous_focus_bool = false;
-        label = 'position';
+        label = 'pos';
+        object_type = 'position';
         Parent_MDAGroup;
         position_order = 1;
         position_function_after_name = 'super_mda_position_function_after_basic';

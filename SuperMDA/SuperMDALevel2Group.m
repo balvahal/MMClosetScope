@@ -16,8 +16,8 @@ classdef SuperMDALevel2Group
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        filename_prefix = 'mda';
-        label = 'group';
+        label = 'mda';
+        object_type = 'group';
         Parent_MDAPrimary;
         positions;
         group_function_after_name = 'super_mda_group_function_after_basic';

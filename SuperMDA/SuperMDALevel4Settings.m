@@ -10,9 +10,10 @@ classdef SuperMDALevel4Settings < hgsetget
     properties
         timepoints;
         timepoints_custom_bool = false;
+        binning = 1;
         Channel = 1;
         exposure = 100;
-        label = 'settings';
+        object_type = 'settings';
         Parent_MDAPosition;
         period_multiplier = 1;
         snap_function_name = 'super_mda_snap_basic';
