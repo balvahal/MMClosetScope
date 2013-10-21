@@ -18,6 +18,7 @@ z = [];
 % configure by a user interface into data structures that are convenient to
 % code with.
 SuperMDA.configure_clock_relative;
+max_number_of_images = 0;
 for i1 = 1:length(SuperMDA.groups)
     SuperMDA.groups(i1).group_function_handle = str2func(SuperMDA.groups(i1).group_function_name);
     for j1 = 1:length(SuperMDA.groups(i1).positions)
@@ -25,9 +26,17 @@ for i1 = 1:length(SuperMDA.groups)
         for k1 = 1:length(SuperMDA.groups(i1).positions(j1).settings)
             SuperMDA.groups(i1).positions(j1).settings(k1).calculate_timepoints;
             SuperMDA.groups(i1).positions(j1).settings(k1).snap_function_handle = str2func(SuperMDA.groups(i1).positions(j1).settings(k1).snap_function_name);
+            max_number_of_images = max_number_of_images + 1;
         end
     end
 end
+%%
+% initialize the dataset array that will store the history of the MDA. The
+% maximum number of images that can be taken by the MDA are also the
+% maximum number of rows in the dataset.
+max_number_of_images = max_number_of_images*length(SuperMDA.mda_clock_absolute);
+VarNames = {};
+SuperMDA.database_filenames = dataset(zeros(max_number_of_images,length(VarNames)),'VarNames',VarNames);
 %% Execute the MDA
 % Immediately before MDA begins the absolute clock must be started...
 SuperMDA.configure_clock_absolute;

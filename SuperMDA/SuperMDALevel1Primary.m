@@ -18,6 +18,7 @@ classdef SuperMDALevel1Primary
     properties
         database_execution;
         database_filenames;
+        database_counter = 0;
         duration = 0;
         fundamental_period = 300; %5 minutes is the default. The units are seconds.
         groups;
@@ -35,7 +36,7 @@ classdef SuperMDALevel1Primary
             if nargin == 0
                 return
             elseif nargin == 1
-                obj.groups = SuperMDALevel2Group(mmhandle, obj);
+                obj.groups = SuperMDALevel2Group(mmhandle, obj); %#ok<NODEF>
                 return
             end
         end
