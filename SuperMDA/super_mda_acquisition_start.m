@@ -3,15 +3,6 @@
 function super_mda_start_acquisition(mmhandle,SuperMDA)
 %% create a dataset that contains the relevant info for each timepoint
 %
-channel = {};
-exposure = [];
-filename = {};
-label_group = {};
-label_position = {};
-position_order = [];
-x = [];
-y = [];
-z = [];
 finalize_MDA;
 %% Execute the MDA
 % Immediately before MDA begins the absolute clock must be started...

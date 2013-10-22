@@ -64,8 +64,16 @@ mmhandle.mda = mmhandle.gui.getAcquisitionEngine();
 % * core.getYPosition
 % * core.getPosition = reads the current z position
 % * core.stop = stops (x,y) movement
+%
+% The FocusDevice is the z-drive in the microscope. The
+% AutoFocusDevice controls the perfect focus system of the microscope. The
+% AutoFocusStatusDevice reports the the status of the perfect focus system.
 mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
+mmhandle.core.setFocusDevice('TIZDrive');
 mmhandle.FocusDevice = mmhandle.core.getFocusDevice;
+mmhandle.core.setFocusDevice('TIPFSOffset');
+mmhandle.AutoFocusDevice = mmhandle.core.getFocusDevice;
+mmhandle.AutoFocusStatusDevice = mmhandle.core.getAutoFocusDevice;
 mmhandle = Core_general_getXYZ(mmhandle);
 %% Camera device
 % * |'Gain'| = can be from 0 to 255.
