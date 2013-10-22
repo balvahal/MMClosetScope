@@ -19,7 +19,7 @@ classdef SuperMDALevel2Group
         label = 'mda';
         object_type = 'group';
         Parent_MDAPrimary;
-        positions;
+        position;
         group_function_after_name = 'super_mda_group_function_after_basic';
         group_function_after_handle;
         group_function_before_name = 'super_mda_group_function_before_basic';
@@ -32,12 +32,12 @@ classdef SuperMDALevel2Group
     methods
         %% The constructor method
         % The first argument is always mmhandle
-        function obj = SuperMDAGroup(mmhandle, my_Parent, my_positions,my_fundamental_period)
+        function obj = SuperMDALevel2Group(mmhandle, my_Parent, my_positions,my_fundamental_period)
             if nargin == 0
                 return
-            elseif nargin == 1
+            elseif nargin == 2
                 obj.Parent_MDAPrimary = my_Parent;
-                obj.positions = SuperMDALevel3Position(mmhandle, obj);
+                obj.position = SuperMDALevel3Position(mmhandle, obj);
                 return
             end
         end

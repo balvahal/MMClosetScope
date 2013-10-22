@@ -1,6 +1,6 @@
 %%
 %
-classdef SuperMDALevel4Settings < hgsetget
+classdef SuperMDALevel4Settings
     %%
     % * Channel: an integer that specifies a Channel group preset
     % * exposure: in milliseconds
@@ -13,6 +13,7 @@ classdef SuperMDALevel4Settings < hgsetget
         binning = 1;
         Channel = 1;
         exposure = 100;
+        exposure_custom_bool = false;
         object_type = 'settings';
         Parent_MDAPosition;
         period_multiplier = 1;
@@ -30,7 +31,7 @@ classdef SuperMDALevel4Settings < hgsetget
     methods
         %% The constructor method
         % The first argument is always mmhandle
-        function obj = SuperMDAPositionSettings(mmhandle,my_Parent,my_wavelength,my_exposure,my_z_offset,my_z_stack,my_z_stack_bool,my_period_multiplier,my_snap_function)
+        function obj = SuperMDALevel4Settings(mmhandle,my_Parent,my_wavelength,my_exposure,my_z_offset,my_z_stack,my_z_stack_bool,my_period_multiplier,my_snap_function)
             if nargin == 0
                 return
             elseif nargin == 2
@@ -63,7 +64,20 @@ classdef SuperMDALevel4Settings < hgsetget
             obj.timepoints = zeros(size(obj.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
             obj.timepoints(1:obj.period_multiplier:length(obj.timepoints)) = 1;
         end
-        %% 
+        %% copy this setting
+        % 
+        function obj = copy_setting(obj)
+        end
+        %% Set exposures for all timepoints
+        % The exposures for all timepoints will be set for the exposure of
+        % the first timepoint
+        function set_exposures_for_all_timepoints(obj)
+            if obj.exposure_custom_bool && length(obj.exposure) == length(obj.timepoints)
+                return
+            end
+            obj.exposure = ones(size(obj.timepoints))*obj.exposure(1);
+        end
+        %%
         %
     end
 end

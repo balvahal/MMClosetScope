@@ -6,7 +6,7 @@ classdef SuperMDALevel3Position
     % units are micrometers.
     properties
         continuous_focus_offset = 0;
-        continuous_focus_bool = false;
+        continuous_focus_bool = true;
         label = 'pos';
         object_type = 'position';
         Parent_MDAGroup;
@@ -23,15 +23,20 @@ classdef SuperMDALevel3Position
     methods
         %% The constructor method
         % The first argument is always mmhandle
-        function obj = SuperMDAPosition(mmhandle, my_Parent, my_xyz, my_settings)
+        function obj = SuperMDALevel3Position(mmhandle, my_Parent, my_xyz, my_settings)
             if nargin == 0
                 return
             elseif nargin == 2
                 obj.Parent_MDAGroup = my_Parent;
                 obj.xyz = mmhandle.pos;
-                obj.settings = SuperMDAPositionSettings(mmhandle, obj);
+                obj.continuous_focus_offset = mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
+                obj.settings = SuperMDALevel4Settings(mmhandle, obj);
                 return
             end
+        end
+        %% copy this position
+        % 
+        function obj = copy_position(obj)
         end
     end
 end

@@ -21,7 +21,7 @@ classdef SuperMDALevel1Primary
         database_counter = 0;
         duration = 0;
         fundamental_period = 300; %5 minutes is the default. The units are seconds.
-        groups;
+        group;
         object_type = 'primary';
         mda_clock_absolute;
         mda_clock_relative = 0;
@@ -32,11 +32,11 @@ classdef SuperMDALevel1Primary
     methods
         %% The constructor method
         % The first argument is always mmhandle
-        function obj = SuperMDAGroup(mmhandle, my_positions,my_fundamental_period)
+        function obj = SuperMDALevel1Primary(mmhandle, my_positions,my_fundamental_period)
             if nargin == 0
                 return
             elseif nargin == 1
-                obj.groups = SuperMDALevel2Group(mmhandle, obj); %#ok<NODEF>
+                obj.group = SuperMDALevel2Group(mmhandle, obj); %#ok<NODEF>
                 return
             end
         end
