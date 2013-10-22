@@ -69,9 +69,9 @@ classdef SuperMDALevel4Settings
             obj.timepoints = zeros(size(obj.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
             obj.timepoints(1:obj.period_multiplier:length(obj.timepoints)) = 1;
         end
-        %% copy this setting
+        %% copy these settings
         % 
-        function obj = copy_setting(obj)
+        function obj = copy_settings(obj)
         end
         %% Set exposures for all timepoints
         % The exposures for all timepoints will be set for the exposure of
