@@ -1,6 +1,6 @@
 %%
 %
-classdef SuperMDALevel3Position
+classdef SuperMDALevel3Position < handle
     %%
     % * xyz: the location of the position in an array *[x, y, z]*. The
     % units are micrometers.
@@ -39,19 +39,33 @@ classdef SuperMDALevel3Position
                 return
             end
         end
-        %% copy this position
-        %
-        function obj = copy_position(obj)
+        %%
+        % Make a copy of a handle object.
+        function new = copy(obj)
+            % Instantiate new object of the same class.
+            new = feval(class(obj));
+            
+            % Copy all non-hidden properties.
+            p = properties(obj);
+            for i = 1:length(p)
+                new.(p{i}) = obj.(p{i});
+            end
+        end
+        %%
+        % Make a copy of a handle object.
+        function len = length(obj)
+            obj_array = obj.settings;
+            len = length(obj_array);
         end
         %% create new settings
         %
         function obj = new_settings(obj)
             %first, borrow the properties from the last settings to provide
             %a starting point and make sure the parent object is consistent
-            obj.settings(end+1) = obj.settings(end).copy_settings;
+            obj.settings(end+1) = obj.settings(end).copy;
             %second, change the position order to reflect the position of
             %this object in the object array
-            obj.settings(end).settings_order = length(obj.settings);
+            obj.settings(end).settings_order = obj.length;
         end
         %% change the same property for all settings
         %
@@ -59,43 +73,43 @@ classdef SuperMDALevel3Position
             switch(lower(my_property_name))
                 case 'timepoints'
                     if isnumeric(my_var)
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).timepoints = my_var;
                         end
                     end
                 case 'binning'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).binning = my_var;
                         end
                     end
                 case 'timepoints_custom_bool'
                     if islogical(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).timepoints_custom_bool = my_var;
                         end
                     end
                 case 'snap_function_name'
                     if ischar(my_var)
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).snap_function_name = my_var;
                         end
                     end
                 case 'Channel'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).Channel = my_var;
                         end
                     end
                 case 'exposure'
                     if isnumeric(my_var)
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).exposure = my_var;
                         end
                     end
                 case 'exposure_custom_bool'
                     if islogical(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).exposure_custom_bool = my_var;
                         end
                     end
@@ -103,49 +117,49 @@ classdef SuperMDALevel3Position
                     %This really shouldn't ever need to be called, because
                     %by definition every child shares the same parent
                     if isa(my_var,'SuperMDALevel3Position')
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).Parent_MDAPosition = my_var;
                         end
                     end
                 case 'period_multiplier'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).period_multiplier = my_var;
                         end
                     end
                 case 'z_origin_offset'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).z_origin_offset = my_var;
                         end
                     end
                 case 'z_step_size'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).z_step_size = my_var;
                         end
                     end
                 case 'z_stack'
                     if isnumeric(my_var)
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).z_stack = my_var;
                         end
                     end
                 case 'z_stack_upper_offset'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).z_stack_upper_offset = my_var;
                         end
                     end
                 case 'z_stack_lower_offset'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).z_stack_lower_offset = my_var;
                         end
                     end
                 case 'z_stack_bool'
                     if islogical(my_var) && length(my_var) == 1
-                        for i=1:length(obj.settings)
+                        for i=1:obj.length
                             obj.settings(i).z_stack_bool = my_var;
                         end
                     end

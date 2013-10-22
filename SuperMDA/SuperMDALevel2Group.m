@@ -4,7 +4,7 @@
 % settings at each position are coordinated in a group by having each
 % additional position duplicate the first defined position. The settings at
 % each position can be customized within each group if desired.
-classdef SuperMDALevel2Group
+classdef SuperMDALevel2Group < handle
     %%
     % * duration: the length of a time lapse experiment in seconds. A
     % duration of zero means only a single set of images are captured, e.g.
@@ -45,16 +45,24 @@ classdef SuperMDALevel2Group
                 return
             end
         end
-        %% copy this group
-        %
-        function obj = copy_group(obj)
+        %%
+        % Make a copy of a handle object.
+        function new = copy(obj)
+            % Instantiate new object of the same class.
+            new = feval(class(obj));
+            
+            % Copy all non-hidden properties.
+            p = properties(obj);
+            for i = 1:length(p)
+                new.(p{i}) = obj.(p{i});
+            end
         end
         %% create a new position
         %
         function obj = new_position(obj,mmhandle)
             %first, borrow the properties from the last position to provide
             %a starting point and make sure the parent object is consistent
-            obj.position(end+1) = obj.position(end).copy_position;
+            obj.position(end+1) = obj.position(end).copy;
             %second, add the current position information to this new
             %position
             mmhandle = Core_general_getXYZ(mmhandle);

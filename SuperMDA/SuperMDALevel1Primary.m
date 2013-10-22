@@ -4,7 +4,7 @@
 % settings at each position are coordinated in a group by having each
 % additional position duplicate the first defined position. The settings at
 % each position can be customized within each group if desired.
-classdef SuperMDALevel1Primary
+classdef SuperMDALevel1Primary < handle
     %%
     % * duration: the length of a time lapse experiment in seconds. A
     % duration of zero means only a single set of images are captured, e.g.
@@ -24,8 +24,8 @@ classdef SuperMDALevel1Primary
         mda_clock_absolute;
         mda_clock_pointer = 1;
         mda_clock_relative = 0;
-        mda_3loop_index= [1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop.
-        number_of_timepoints;
+        mda_3loop_index= [0,0,0]; %when looping through the MDA object, this will keep track of where it is in the loop.
+        number_of_timepoints = 1;
         output_directory;
     end
     %%
@@ -39,6 +39,19 @@ classdef SuperMDALevel1Primary
             elseif nargin == 1
                 obj.group = SuperMDALevel2Group(mmhandle, obj);
                 return
+            end
+        end
+        %%
+        %
+        % Make a copy of a handle object.
+        function new = copy(obj)
+            % Instantiate new object of the same class.
+            new = feval(class(obj));
+            
+            % Copy all non-hidden properties.
+            p = properties(obj);
+            for i = 1:length(p)
+                new.(p{i}) = obj.(p{i});
             end
         end
         %% Configure the relative clock
@@ -67,7 +80,7 @@ classdef SuperMDALevel1Primary
                         mydiff = abs(mydiff)+1;
                         obj.group(i).position(j).xyz(mydiff:end,:) = [];
                     elseif mydiff > 0
-                        obj.group(i).position(j).xyz(end+1:obj.number_of_timepoints,:) = ones(mydiff,3).*obj.group(i).position(j).xyz(end,:);
+                        obj.group(i).position(j).xyz(end+1:obj.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),obj.group(i).position(j).xyz(end,:));
                     end
                     for k = 1:length(obj.group(i).position(j).settings)
                         mydiff = obj.number_of_timepoints - length(obj.group(i).position(j).settings(k).timepoints);
