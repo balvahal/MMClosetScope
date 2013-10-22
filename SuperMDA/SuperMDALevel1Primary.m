@@ -16,14 +16,15 @@ classdef SuperMDALevel1Primary
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        database_execution;
         database_filenames;
-        database_counter = 0;
+        database_pointer = 1;
         duration = 0;
         fundamental_period = 300; %5 minutes is the default. The units are seconds.
         group;
         mda_clock_absolute;
+        mda_clock_pointer = 1;
         mda_clock_relative = 0;
+        mda_3loop_index= [1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop.
         number_of_timepoints;
         output_directory;
     end
@@ -139,6 +140,57 @@ classdef SuperMDALevel1Primary
                 otherwise
                     warning('primary:chg_all','The property entered was not recognized');
             end
+        end
+        %% finalize_MDA
+        %
+        function obj = finalize_MDA(obj)
+            %% Update the dependent parameters in the MDA object
+            % Some parameters in the MDA object are dependent on others. This
+            % dependency came about from combining parameters that are easy to
+            % configure by a user interface into data structures that are convenient to
+            % code with.
+            obj.update_children_to_reflect_number_of_timepoints;
+            max_number_of_images = 0;
+            for i = 1:length(obj.group)
+                obj.group(i).group_function_handle = str2func(obj.group(i).group_function_name);
+                for j = 1:length(obj.group(i).position)
+                    obj.group(i).position(j).position_function_handle = str2func(obj.group(i).position(j).position_function_name);
+                    for k = 1:length(obj.group(i).position(j).settings)
+                        obj.group(i).position(j).settings(k).calculate_timepoints;
+                        obj.group(i).position(j).settings(k).create_z_stack_list;
+                        obj.group(i).position(j).settings(k).snap_function_handle = str2func(obj.group(i).position(j).settings(k).snap_function_name);
+                        max_number_of_images = max_number_of_images + 1;
+                    end
+                end
+            end
+            %%
+            % initialize the dataset array that will store the history of the MDA. The
+            % maximum number of images that can be taken by the MDA are also the
+            % maximum number of rows in the dataset.
+            max_number_of_images = max_number_of_images*length(obj.mda_clock_relative);
+            VarNames_strings = {...
+                'Channel_name',...
+                'filename',...
+                'group_label',...
+                'position_label'};
+            VarNames_numeric = {...
+                'binning',...
+                'Channel_number',...
+                'continuous_focus_offset',...
+                'exposure',...
+                'matlab_serial_date_number',...
+                'position_order',...
+                'timepoint',...
+                'x',...
+                'y',...
+                'z'};
+            database_strings = cell(max_number_of_images+1,length(VarNames_strings));
+            database_strings(1,:) = VarNames_strings;
+            [database_strings{2:end,:}] = deal('');
+            database_numeric = cell(max_number_of_images+1,length(VarNames_numeric));
+            database_numeric(1,:) = VarNames_numeric;
+            [database_numeric{2:end,:}] = deal(0);
+            obj.database_filenames = horzcat(database_strings,database_numeric);
         end
     end
 end

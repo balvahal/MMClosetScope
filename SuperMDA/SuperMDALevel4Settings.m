@@ -8,7 +8,7 @@ classdef SuperMDALevel4Settings
     % * z_stack: a list of z-value offsets in micrometers. Images will be
     % acquired at each value offset in this list.
     properties
-        timepoints;
+        timepoints = 1;
         timepoints_custom_bool = false;
         binning = 1;
         Channel = 1;
@@ -41,7 +41,6 @@ classdef SuperMDALevel4Settings
                 return
             elseif nargin == 2
                 obj.Parent_MDAPosition = my_Parent;
-                % make z_stack
                 obj.create_z_stack_list;
                 return
             end

@@ -69,9 +69,9 @@ mmhandle.mda = mmhandle.gui.getAcquisitionEngine();
 % AutoFocusDevice controls the perfect focus system of the microscope. The
 % AutoFocusStatusDevice reports the the status of the perfect focus system.
 mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
-mmhandle.core.setFocusDevice('TIZDrive');
+%mmhandle.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
 mmhandle.FocusDevice = mmhandle.core.getFocusDevice;
-mmhandle.core.setFocusDevice('TIPFSOffset');
+%mmhandle.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
 mmhandle.AutoFocusDevice = mmhandle.core.getFocusDevice;
 mmhandle.AutoFocusStatusDevice = mmhandle.core.getAutoFocusDevice;
 mmhandle = Core_general_getXYZ(mmhandle);
