@@ -17,6 +17,11 @@ while SuperMDA.mda_clock_pointer <= length(SuperMDA.mda_clock_absolute)
         startat(timer_mda,SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer));
         SuperMDA.mda_clock_pointer = SuperMDA.mda_clock_pointer + 1;
     elseif strcmp(timer_mda.Running,'off') && now > SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer)
+        % This loop ensures the order of the timepoints is preserved
+        % instead of dropping timepoints to catch up to the next scheduled
+        % timepoint yet to be executed. This loop should activate for the
+        % first timepoint and then only if the run time of the SuperMDA is
+        % longer the time between executions.
         execute_SuperMDA;
         SuperMDA.mda_clock_pointer = SuperMDA.mda_clock_pointer + 1;
     else
