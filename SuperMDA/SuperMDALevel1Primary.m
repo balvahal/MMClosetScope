@@ -73,8 +73,8 @@ classdef SuperMDALevel1Primary < handle
         % length. This function will ensure they all have the same length.
         function obj = update_children_to_reflect_number_of_timepoints(obj)
             obj.configure_clock_relative;
-            for i = 1:length(obj.group)
-                for j = 1:length(obj.group(i).position)
+            for i = 1:max(size(obj.group))
+                for j = 1:max(size(obj.group(i).position))
                     mydiff = obj.number_of_timepoints - size(obj.group(i).position(j).xyz,1);
                     if mydiff < 0
                         mydiff = abs(mydiff)+1;
@@ -82,7 +82,7 @@ classdef SuperMDALevel1Primary < handle
                     elseif mydiff > 0
                         obj.group(i).position(j).xyz(end+1:obj.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),obj.group(i).position(j).xyz(end,:));
                     end
-                    for k = 1:length(obj.group(i).position(j).settings)
+                    for k = 1:max(size(obj.group(i).position(j).settings))
                         mydiff = obj.number_of_timepoints - length(obj.group(i).position(j).settings(k).timepoints);
                         if mydiff < 0
                             mydiff = abs(mydiff)+1;
@@ -114,25 +114,25 @@ classdef SuperMDALevel1Primary < handle
             switch(lower(my_property_name))
                 case 'travel_offset'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.group)
+                        for i=1:max(size(obj.group))
                             obj.group(i).travel_offset = my_var;
                         end
                     end
                 case 'travel_offset_bool'
                     if islogical(my_var) && length(my_var) == 1
-                        for i=1:length(obj.group)
+                        for i=1:max(size(obj.group))
                             obj.group(i).travel_offset_bool = my_var;
                         end
                     end
                 case 'group_function_after_name'
                     if ischar(my_var)
-                        for i=1:length(obj.group)
+                        for i=1:max(size(obj.group))
                             obj.group(i).group_function_after_name = my_var;
                         end
                     end
                 case 'group_function_before_name'
                     if ischar(my_var)
-                        for i=1:length(obj.group)
+                        for i=1:max(size(obj.group))
                             obj.group(i).group_function_before_name = my_var;
                         end
                     end
@@ -140,13 +140,13 @@ classdef SuperMDALevel1Primary < handle
                     %This really shouldn't ever need to be called, because
                     %by definition every child shares the same parent
                     if isa(my_var,'SuperMDALevel2Group')
-                        for i=1:length(obj.position)
+                        for i=1:max(size(obj.position))
                             obj.group(i).Parent_MDAGroup = my_var;
                         end
                     end
                 case 'label'
                     if ischar(my_var)
-                        for i=1:length(obj.group)
+                        for i=1:max(size(obj.group))
                             obj.group(i).label = my_var;
                         end
                     end
@@ -164,11 +164,11 @@ classdef SuperMDALevel1Primary < handle
             % code with.
             obj.update_children_to_reflect_number_of_timepoints;
             max_number_of_images = 0;
-            for i = 1:length(obj.group)
+            for i = 1:max(size(obj.group))
                 obj.group(i).group_function_handle = str2func(obj.group(i).group_function_name);
-                for j = 1:length(obj.group(i).position)
+                for j = 1:max(size(obj.group(i).position))
                     obj.group(i).position(j).position_function_handle = str2func(obj.group(i).position(j).position_function_name);
-                    for k = 1:length(obj.group(i).position(j).settings)
+                    for k = 1:max(size(obj.group(i).position(j).settings))
                         obj.group(i).position(j).settings(k).calculate_timepoints;
                         obj.group(i).position(j).settings(k).create_z_stack_list;
                         obj.group(i).position(j).settings(k).snap_function_handle = str2func(obj.group(i).position(j).settings(k).snap_function_name);
