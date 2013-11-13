@@ -11,8 +11,8 @@ classdef SuperMDALevel2Group < handle
     % for a scan slide feature.
     % * filename_prefix: the string that is placed at the front of the
     % image filename.
-    % * fundamental_period: the shortest period that images are taken
-    % in seconds.
+    % * fundamental_period: the shortest period that images are taken in
+    % seconds.
     % * output_directory: The directory where the output images are stored.
     %
     properties
@@ -57,6 +57,19 @@ classdef SuperMDALevel2Group < handle
                 new.(p{i}) = obj.(p{i});
             end
         end
+        %% Convert
+        %
+        % Make a copy of a handle object.
+        function obj = convert(obj,obj2)
+            % Make sure objects are of the same type
+            if class(obj) == class(obj2)
+                % Copy all non-hidden properties.
+                p = properties(obj);
+                for i = 1:length(p)
+                    obj.(p{i}) = obj2.(p{i});
+                end
+            end
+        end
         %% create a new position
         %
         function obj = new_position(obj,mmhandle)
@@ -70,7 +83,13 @@ classdef SuperMDALevel2Group < handle
             obj.position(end).continuous_focus_offset = mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
             %third, change the position order to reflect the position of
             %this object in the object array
-            obj.position(end).position_order = length(obj.position);
+            obj.position(end).position_order = obj.my_length;
+        end
+        %%
+        % Find the number of position objects.
+        function len = my_length(obj)
+            obj_array = obj.position;
+            len = length(obj_array);
         end
         %% change the same property for all positions
         %
@@ -78,43 +97,43 @@ classdef SuperMDALevel2Group < handle
             switch(lower(my_property_name))
                 case 'continuous_focus_offset'
                     if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).continuous_focus_offset = my_var;
                         end
                     end
                 case 'continuous_focus_bool'
                     if islogical(my_var) && length(my_var) == 1
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).continuous_focus_bool = my_var;
                         end
                     end
                 case 'xyz'
                     if isnumeric(my_var)
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).xyz = my_var;
                         end
                     end
                 case 'xyz_custom_bool'
                     if islogical(my_var) && length(my_var) == 1
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).xyz_custom_bool = my_var;
                         end
                     end
                 case 'position_function_after_name'
                     if ischar(my_var)
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).position_function_after_name = my_var;
                         end
                     end
                 case 'position_function_before_name'
                     if ischar(my_var)
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).position_function_before_name = my_var;
                         end
                     end
                 case 'settings'
                     if isa(my_var,'SuperMDALevel4Settings')
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).settings = my_var;
                         end
                     end
@@ -122,13 +141,13 @@ classdef SuperMDALevel2Group < handle
                     %This really shouldn't ever need to be called, because
                     %by definition every child shares the same parent
                     if isa(my_var,'SuperMDALevel2Group')
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).Parent_MDAGroup = my_var;
                         end
                     end
                 case 'label'
                     if ischar(my_var)
-                        for i=1:length(obj.position)
+                        for i=1:obj.my_length
                             obj.position(i).label = my_var;
                         end
                     end

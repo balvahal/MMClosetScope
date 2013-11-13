@@ -11,8 +11,8 @@ classdef SuperMDALevel1Primary < handle
     % for a scan slide feature.
     % * filename_prefix: the string that is placed at the front of the
     % image filename.
-    % * fundamental_period: the shortest period that images are taken
-    % in seconds.
+    % * fundamental_period: the shortest period that images are taken in
+    % seconds.
     % * output_directory: The directory where the output images are stored.
     %
     properties
@@ -41,7 +41,7 @@ classdef SuperMDALevel1Primary < handle
                 return
             end
         end
-        %%
+        %% Copy
         %
         % Make a copy of a handle object.
         function new = copy(obj)
@@ -54,6 +54,78 @@ classdef SuperMDALevel1Primary < handle
                 new.(p{i}) = obj.(p{i});
             end
         end
+        %% Convert
+        %
+        % Make a copy of a handle object.
+        function obj = convert(obj,obj2)
+            % Make sure objects are of the same type
+            if class(obj) == class(obj2)
+                % Copy all non-hidden properties.
+                p = properties(obj);
+                for i = 1:length(p)
+                    obj.(p{i}) = obj2.(p{i});
+                end
+            end
+        end
+        %% create a new group
+        %
+        function obj = new_group(obj)
+            %first, borrow the properties from the last group to provide a
+            %starting point and make sure the parent object is consistent
+            obj.group(end+1) = obj.group(end).copy_group;
+        end
+        %% Find the number of group objects.
+        %
+        function len = my_length(obj)
+            obj_array = obj.group;
+            len = length(obj_array);
+        end
+        %% change the same property for all group
+        %
+        function obj = change_all_group(obj,my_property_name,my_var)
+            switch(lower(my_property_name))
+                case 'travel_offset'
+                    if isnumeric(my_var) && length(my_var) == 1
+                        for i=1:obj.my_length
+                            obj.group(i).travel_offset = my_var;
+                        end
+                    end
+                case 'travel_offset_bool'
+                    if islogical(my_var) && length(my_var) == 1
+                        for i=1:obj.my_length
+                            obj.group(i).travel_offset_bool = my_var;
+                        end
+                    end
+                case 'group_function_after_name'
+                    if ischar(my_var)
+                        for i=1:obj.my_length
+                            obj.group(i).group_function_after_name = my_var;
+                        end
+                    end
+                case 'group_function_before_name'
+                    if ischar(my_var)
+                        for i=1:obj.my_length
+                            obj.group(i).group_function_before_name = my_var;
+                        end
+                    end
+                case 'parent_mdaprimary'
+                    %This really shouldn't ever need to be called, because
+                    %by definition every child shares the same parent
+                    if isa(my_var,'SuperMDALevel2Group')
+                        for i=1:max(size(obj.position))
+                            obj.group(i).Parent_MDAGroup = my_var;
+                        end
+                    end
+                case 'label'
+                    if ischar(my_var)
+                        for i=1:obj.my_length
+                            obj.group(i).label = my_var;
+                        end
+                    end
+                otherwise
+                    warning('primary:chg_all','The property entered was not recognized');
+            end
+        end
         %% Configure the relative clock
         %
         function obj = configure_clock_relative(obj)
@@ -61,19 +133,19 @@ classdef SuperMDALevel1Primary < handle
             obj.number_of_timepoints = length(obj.mda_clock_relative);
         end
         %% Configure the absolute clock
-        % Convert the MDA object unit of time (seconds) to the
-        % MATLAB unit of time (days) for the serial date numbers, i.e. the
-        % number of days that have passed since January 1, 0000.
+        % Convert the MDA object unit of time (seconds) to the MATLAB unit
+        % of time (days) for the serial date numbers, i.e. the number of
+        % days that have passed since January 1, 0000.
         function obj = configure_clock_absolute(obj)
             obj.mda_clock_absolute = now + obj.mda_clock_relative/86400;
         end
-        %% Update child objects to relfect number of timepoints
+        %% Update child objects to reflect number of timepoints
         % The highly customizable features of the mda include exposure, xyz
         % position, and timepoints. These properties must have the same
         % length. This function will ensure they all have the same length.
         function obj = update_children_to_reflect_number_of_timepoints(obj)
             obj.configure_clock_relative;
-            for i = 1:max(size(obj.group))
+            for i = 1:obj.my_length
                 for j = 1:max(size(obj.group(i).position))
                     mydiff = obj.number_of_timepoints - size(obj.group(i).position(j).xyz,1);
                     if mydiff < 0
@@ -101,70 +173,17 @@ classdef SuperMDALevel1Primary < handle
                 end
             end
         end
-        %% create a new group
-        %
-        function obj = new_group(obj)
-            %first, borrow the properties from the last group to provide
-            %a starting point and make sure the parent object is consistent
-            obj.group(end+1) = obj.group(end).copy_group;
-        end
-        %% change the same property for all group
-        %
-        function obj = change_all_group(obj,my_property_name,my_var)
-            switch(lower(my_property_name))
-                case 'travel_offset'
-                    if isnumeric(my_var) && length(my_var) == 1
-                        for i=1:max(size(obj.group))
-                            obj.group(i).travel_offset = my_var;
-                        end
-                    end
-                case 'travel_offset_bool'
-                    if islogical(my_var) && length(my_var) == 1
-                        for i=1:max(size(obj.group))
-                            obj.group(i).travel_offset_bool = my_var;
-                        end
-                    end
-                case 'group_function_after_name'
-                    if ischar(my_var)
-                        for i=1:max(size(obj.group))
-                            obj.group(i).group_function_after_name = my_var;
-                        end
-                    end
-                case 'group_function_before_name'
-                    if ischar(my_var)
-                        for i=1:max(size(obj.group))
-                            obj.group(i).group_function_before_name = my_var;
-                        end
-                    end
-                case 'parent_mdaprimary'
-                    %This really shouldn't ever need to be called, because
-                    %by definition every child shares the same parent
-                    if isa(my_var,'SuperMDALevel2Group')
-                        for i=1:max(size(obj.position))
-                            obj.group(i).Parent_MDAGroup = my_var;
-                        end
-                    end
-                case 'label'
-                    if ischar(my_var)
-                        for i=1:max(size(obj.group))
-                            obj.group(i).label = my_var;
-                        end
-                    end
-                otherwise
-                    warning('primary:chg_all','The property entered was not recognized');
-            end
-        end
         %% finalize_MDA
         %
         function obj = finalize_MDA(obj)
             %% Update the dependent parameters in the MDA object
-            % Some parameters in the MDA object are dependent on others. This
-            % dependency came about from combining parameters that are easy to
-            % configure by a user interface into data structures that are convenient to
-            % code with.
+            % Some parameters in the MDA object are dependent on others.
+            % This dependency came about from combining parameters that are
+            % easy to configure by a user interface into data structures
+            % that are convenient to code with.
             obj.update_children_to_reflect_number_of_timepoints;
             max_number_of_images = 0;
-            for i = 1:max(size(obj.group))
+            for i = 1:obj.my_length
                 obj.group(i).group_function_handle = str2func(obj.group(i).group_function_name);
                 for j = 1:max(size(obj.group(i).position))
                     obj.group(i).position(j).position_function_handle = str2func(obj.group(i).position(j).position_function_name);
@@ -177,9 +196,9 @@ classdef SuperMDALevel1Primary < handle
                 end
             end
             %%
-            % initialize the dataset array that will store the history of the MDA. The
-            % maximum number of images that can be taken by the MDA are also the
-            % maximum number of rows in the dataset.
+            % initialize the dataset array that will store the history of
+            % the MDA. The maximum number of images that can be taken by
+            % the MDA are also the maximum number of rows in the dataset.
             max_number_of_images = max_number_of_images*length(obj.mda_clock_relative);
             VarNames_strings = {...
                 'Channel_name',...

@@ -8,23 +8,31 @@ classdef SuperMDALevel4Settings < handle
     % * z_stack: a list of z-value offsets in micrometers. Images will be
     % acquired at each value offset in this list.
     properties
+        % Variables that can be adjusted on the fly for feedback
         timepoints = 1;
         timepoints_custom_bool = false;
-        binning = 1;
-        Channel = 1;
         exposure = 100;
         exposure_custom_bool = false;
-        Parent_MDAPosition;
+        % Variables that control what type of image will be captured
+        binning = 1;
+        Channel = 1;
         period_multiplier = 1;
-        settings_order = 1;
-        settings_function_name = 'super_mda_snap_basic';
-        settings_function_handle;
+        % Z-stack variables
         z_origin_offset = 0;
         z_step_size = 0.3;
         z_stack_upper_offset = 0;
         z_stack_lower_offset = 0;
         z_stack;
         z_stack_bool = false;
+        % The function to be executed
+        settings_function_name = 'super_mda_snap_basic';
+        settings_function_handle;
+        % Variables that define the relationship of this object to other
+        % objects in the SuperMDA hierarchy
+        Parent_MDAPosition;
+        settings_order = 1;
+        
+        
     end
     %%
     %
@@ -43,6 +51,31 @@ classdef SuperMDALevel4Settings < handle
                 obj.Parent_MDAPosition = my_Parent;
                 obj.create_z_stack_list;
                 return
+            end
+        end
+        %%
+        % Make a copy of a handle object.
+        function new = copy(obj)
+            % Instantiate new object of the same class.
+            new = feval(class(obj));
+            
+            % Copy all non-hidden properties.
+            p = properties(obj);
+            for i = 1:length(p)
+                new.(p{i}) = obj.(p{i});
+            end
+        end
+        %% Convert
+        %
+        % Make a copy of a handle object.
+        function obj = convert(obj,obj2)
+            % Make sure objects are of the same type
+            if class(obj) == class(obj2)
+                % Copy all non-hidden properties.
+                p = properties(obj);
+                for i = 1:length(p)
+                    obj.(p{i}) = obj2.(p{i});
+                end
             end
         end
         %% Make z_stack list
@@ -67,18 +100,6 @@ classdef SuperMDALevel4Settings < handle
             end
             obj.timepoints = zeros(size(obj.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
             obj.timepoints(1:obj.period_multiplier:length(obj.timepoints)) = 1;
-        end
-        %%
-        % Make a copy of a handle object.
-        function new = copy(obj)
-            % Instantiate new object of the same class.
-            new = feval(class(obj));
-            
-            % Copy all non-hidden properties.
-            p = properties(obj);
-            for i = 1:length(p)
-                new.(p{i}) = obj.(p{i});
-            end
         end
         %% Set exposures for all timepoints
         % The exposures for all timepoints will be set for the exposure of
