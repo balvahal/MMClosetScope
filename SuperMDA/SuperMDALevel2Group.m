@@ -57,10 +57,9 @@ classdef SuperMDALevel2Group < handle
                 new.(p{i}) = obj.(p{i});
             end
         end
-        %% Convert
+        %% clone
         %
-        % Make a copy of a handle object.
-        function obj = convert(obj,obj2)
+        function obj = clone(obj,obj2)
             % Make sure objects are of the same type
             if class(obj) == class(obj2)
                 % Copy all non-hidden properties.
@@ -78,12 +77,9 @@ classdef SuperMDALevel2Group < handle
             obj.position(end+1) = obj.position(end).copy;
             %second, add the current position information to this new
             %position
-            mmhandle = Core_general_getXYZ(mmhandle);
-            obj.position(end).xyz = mmhandle.pos;
-            obj.position(end).continuous_focus_offset = mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
-            %third, change the position order to reflect the position of
-            %this object in the object array
-            obj.position(end).position_order = obj.my_length;
+%             mmhandle = Core_general_getXYZ(mmhandle);
+%             obj.position(end).xyz = mmhandle.pos;
+%             obj.position(end).continuous_focus_offset = mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
         end
         %%
         % Find the number of position objects.

@@ -9,7 +9,6 @@ classdef SuperMDALevel3Position < handle
         continuous_focus_bool = true;
         label = 'position';
         Parent_MDAGroup;
-        position_order = 1;
         position_function_after_name = 'super_mda_position_function_after_basic';
         position_function_after_handle;
         position_function_before_name = 'super_mda_position_function_before_basic';
@@ -51,10 +50,9 @@ classdef SuperMDALevel3Position < handle
                 new.(p{i}) = obj.(p{i});
             end
         end
-        %% Convert
+        %% clone
         %
-        % Make a copy of a handle object.
-        function obj = convert(obj,obj2)
+        function obj = clone(obj,obj2)
             % Make sure objects are of the same type
             if class(obj) == class(obj2)
                 % Copy all non-hidden properties.
@@ -70,9 +68,6 @@ classdef SuperMDALevel3Position < handle
             %first, borrow the properties from the last settings to provide
             %a starting point and make sure the parent object is consistent
             obj.settings(end+1) = obj.settings(end).copy;
-            %second, change the position order to reflect the position of
-            %this object in the object array
-            obj.settings(end).settings_order = obj.my_length;
         end
         %%
         % Find the number of settings objects for this position.

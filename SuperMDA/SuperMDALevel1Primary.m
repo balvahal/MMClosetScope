@@ -54,10 +54,9 @@ classdef SuperMDALevel1Primary < handle
                 new.(p{i}) = obj.(p{i});
             end
         end
-        %% Convert
+        %% clone
         %
-        % Make a copy of a handle object.
-        function obj = convert(obj,obj2)
+        function obj = clone(obj,obj2)
             % Make sure objects are of the same type
             if class(obj) == class(obj2)
                 % Copy all non-hidden properties.
