@@ -25,14 +25,14 @@ mmhandle.SuperMDA.group.position.settings(3).timepoints(1:3) = 1;
 mmhandle.SuperMDA.group.position.settings(3).timepoints_custom_bool = true;
 %% Pause here to choose your positions
 %
-mmhandle.SuperMDA.group.new_position(mmhandle);
-mmhandle.SuperMDA.group.new_position(mmhandle);
-mmhandle.SuperMDA.group.new_position(mmhandle);
-mmhandle.SuperMDA.group.new_position(mmhandle);
-mmhandle.SuperMDA.group.new_position(mmhandle);
-mmhandle.SuperMDA.group.new_position(mmhandle);
-mmhandle.SuperMDA.group.new_position(mmhandle);
-mmhandle.SuperMDA.group.new_position(mmhandle);
+mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.new_position;
 mmhandle.SuperMDA.group.change_all_position('continuous_focus_bool',false);
 %% Make sure everything is consistent
 %

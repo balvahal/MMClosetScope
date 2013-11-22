@@ -71,7 +71,7 @@ classdef SuperMDALevel2Group < handle
         end
         %% create a new position
         %
-        function obj = new_position(obj,mmhandle)
+        function obj = new_position(obj)
             %first, borrow the properties from the last position to provide
             %a starting point and make sure the parent object is consistent
             obj.position(end+1) = obj.position(end).copy;
