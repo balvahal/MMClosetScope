@@ -16,7 +16,7 @@ classdef SuperMDALevel2Group < handle
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        label = 'mda';
+        label = '';
         Parent_MDAPrimary;
         position;
         group_function_after_name = 'super_mda_group_function_after_basic';
@@ -54,7 +54,17 @@ classdef SuperMDALevel2Group < handle
             % Copy all non-hidden properties.
             p = properties(obj);
             for i = 1:length(p)
-                new.(p{i}) = obj.(p{i});
+                if strcmp('position',p{i})
+                    for j=1:length(obj.(p{i}))
+                        if j==1
+                            new.(p{i}) = obj.(p{i})(j).copy;
+                        else
+                            new.(p{i})(j) = obj.(p{i})(j).copy;
+                        end
+                    end
+                else
+                    new.(p{i}) = obj.(p{i});
+                end
             end
         end
         %% clone
@@ -65,7 +75,18 @@ classdef SuperMDALevel2Group < handle
                 % Copy all non-hidden properties.
                 p = properties(obj);
                 for i = 1:length(p)
-                    obj.(p{i}) = obj2.(p{i});
+                    if strcmp('position',p{i})
+                        obj.(p{i}) = [];
+                        for j=1:length(obj.(p{i}))
+                            if j==1
+                                obj.(p{i}) = obj2.(p{i})(j).copy;
+                            else
+                                obj.(p{i})(j) = obj2.(p{i})(j).copy;
+                            end
+                        end
+                    else
+                        obj.(p{i}) = obj2.(p{i});
+                    end
                 end
             end
         end
@@ -77,9 +98,10 @@ classdef SuperMDALevel2Group < handle
             obj.position(end+1) = obj.position(end).copy;
             %second, add the current position information to this new
             %position
-%             mmhandle = Core_general_getXYZ(mmhandle);
-%             obj.position(end).xyz = mmhandle.pos;
-%             obj.position(end).continuous_focus_offset = mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
+            %             mmhandle = Core_general_getXYZ(mmhandle);
+            %             obj.position(end).xyz = mmhandle.pos;
+            %             obj.position(end).continuous_focus_offset =
+            %             mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
         end
         %%
         % Find the number of position objects.

@@ -51,7 +51,17 @@ classdef SuperMDALevel1Primary < handle
             % Copy all non-hidden properties.
             p = properties(obj);
             for i = 1:length(p)
-                new.(p{i}) = obj.(p{i});
+                if strcmp('group',p{i})
+                    for j=1:length(obj.(p{i}))
+                        if j==1
+                            new.(p{i}) = obj.(p{i})(j).copy;
+                        else
+                            new.(p{i})(j) = obj.(p{i})(j).copy;
+                        end
+                    end
+                else
+                    new.(p{i}) = obj.(p{i});
+                end
             end
         end
         %% clone
@@ -62,7 +72,18 @@ classdef SuperMDALevel1Primary < handle
                 % Copy all non-hidden properties.
                 p = properties(obj);
                 for i = 1:length(p)
-                    obj.(p{i}) = obj2.(p{i});
+                    if strcmp('group',p{i})
+                        obj.(p{i}) = [];
+                        for j=1:length(obj.(p{i}))
+                            if j==1
+                                obj.(p{i}) = obj2.(p{i})(j).copy;
+                            else
+                                obj.(p{i})(j) = obj2.(p{i})(j).copy;
+                            end
+                        end
+                    else
+                        obj.(p{i}) = obj2.(p{i});
+                    end
                 end
             end
         end

@@ -7,7 +7,7 @@ classdef SuperMDALevel3Position < handle
     properties
         continuous_focus_offset;
         continuous_focus_bool = true;
-        label = 'position';
+        label = '';
         Parent_MDAGroup;
         position_function_after_name = 'super_mda_position_function_after_basic';
         position_function_after_handle;
@@ -47,7 +47,17 @@ classdef SuperMDALevel3Position < handle
             % Copy all non-hidden properties.
             p = properties(obj);
             for i = 1:length(p)
-                new.(p{i}) = obj.(p{i});
+                if strcmp('settings',p{i})
+                    for j=1:length(obj.(p{i}))
+                        if j==1
+                            new.(p{i}) = obj.(p{i})(j).copy;
+                        else
+                            new.(p{i})(j) = obj.(p{i})(j).copy;
+                        end
+                    end
+                else
+                    new.(p{i}) = obj.(p{i});
+                end
             end
         end
         %% clone
@@ -58,7 +68,18 @@ classdef SuperMDALevel3Position < handle
                 % Copy all non-hidden properties.
                 p = properties(obj);
                 for i = 1:length(p)
-                    obj.(p{i}) = obj2.(p{i});
+                    if strcmp('settings',p{i})
+                        obj.(p{i}) = [];
+                        for j=1:length(obj.(p{i}))
+                            if j==1
+                                obj.(p{i}) = obj2.(p{i})(j).copy;
+                            else
+                                obj.(p{i})(j) = obj2.(p{i})(j).copy;
+                            end
+                        end
+                    else
+                        obj.(p{i}) = obj2.(p{i});
+                    end
                 end
             end
         end

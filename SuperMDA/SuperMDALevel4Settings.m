@@ -25,7 +25,7 @@ classdef SuperMDALevel4Settings < handle
         z_stack;
         z_stack_bool = false;
         % The function to be executed
-        settings_function_name = 'super_mda_snap_basic';
+        settings_function_name = 'super_mda_function_settings_basic';
         settings_function_handle;
         % Variables that define the relationship of this object to other
         % objects in the SuperMDA hierarchy
