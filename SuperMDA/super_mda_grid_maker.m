@@ -1,5 +1,6 @@
 %%
-%
+% It is assumed that the origin is in the ULC and x increases due east and
+% y increases due south when the stage is viewed from above.
 function [mmhandle,NOI,ULC,LRC] = super_mda_grid_maker(mmhandle,varargin)
 p = inputParser;
 addRequired(p, 'mmhandle', @isstruct);
@@ -8,9 +9,14 @@ addParameter(p, 'centroid', 'undefined', @(x) numel(x) == 3);
 addParameter(p, 'upper_left_corner', 'undefined', @(x) numel(x) == 3);
 addParameter(p, 'lower_right_corner', 'undefined', @(x) numel(x) == 3);
 addParameter(p, 'overlap', 0, @isnumeric);
+addParameter(p, 'overlap_units','px',@(x) any(strcmp(x,{'px', 'um'})));
 
 parse(p,mmhandle,varargin{:});
-
+    if strcmp(p.Results.overlap_units,'um')
+        overlap = round(p.Results.overlap/mmhandle.core.getPixelSizeUm);
+    elseif strcmp(p.Results.overlap_units,'px')
+        overlap = round(p.Results.overlap);
+    end
 %% Case 1: centroid + number_of_images
 %
 if (~strcmp(p.Results.centroid, 'undefined')) && (~strcmp(p.Results.number_of_images, 'undefined'))
@@ -26,12 +32,17 @@ if (~strcmp(p.Results.centroid, 'undefined')) && (~strcmp(p.Results.number_of_im
     height = floor(p.Results.number_of_images/width);
     NOI = width*height;
     % update the coordinates for the upper-left and lower-right
-    %ULC = ...
-        %[p.Results.centroid(1) - handles.imageWidth*width/2),...
-        %(handles.sampleInfo(handles.sampleIndex).center(2) - handles.imageHeight*height/2)];
-    handles.sampleInfo(handles.sampleIndex).lowerRightCorner = ...
-        [(handles.sampleInfo(handles.sampleIndex).center(1) + handles.imageWidth*width/2),...
-        (handles.sampleInfo(handles.sampleIndex).center(2) + handles.imageHeight*height/2)];
+    ULC = ...
+        [p.Results.centroid(1) - pixWidth*(width-overlap)/2*mmhandle.core.getPixelSizeUm,...
+        p.Results.centroid(2) - pixHeight*(height-overlap)/2*mmhandle.core.getPixelSizeUm,...
+        p.Results.centroid(3)];
+    LRC = ...
+        [p.Results.centroid(1) + pixWidth*(width-overlap)/2*mmhandle.core.getPixelSizeUm,...
+        p.Results.centroid(2) + pixHeight*(height-overlap)/2*mmhandle.core.getPixelSizeUm,...
+        p.Results.centroid(3)];
+elseif (~strcmp(p.Results.number_of_images, 'undefined')) && (~strcmp(p.Results.upper_left_corner, 'undefined')) && (~strcmp(p.Results.lower_right_corner, 'undefined'))
+    %% Adjust upper-left and lower-right corners if necessary
+    %    
 elseif (~strcmp(p.Results.upper_left_corner, 'undefined')) && (~strcmp(p.Results.lower_right_corner, 'undefined'))
     %% Adjust upper-left and lower-right corners if necessary
     %
