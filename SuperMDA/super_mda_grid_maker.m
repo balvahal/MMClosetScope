@@ -40,6 +40,8 @@ if (~strcmp(p.Results.centroid, 'undefined')) && (~strcmp(p.Results.number_of_im
         [p.Results.centroid(1) + pixWidth*(width-overlap)/2*mmhandle.core.getPixelSizeUm,...
         p.Results.centroid(2) + pixHeight*(height-overlap)/2*mmhandle.core.getPixelSizeUm,...
         p.Results.centroid(3)];
+%% Case 2: upper-left, lower-right, and number of images
+% Use when you want a given number of images to fill a given space
 elseif (~strcmp(p.Results.number_of_images, 'undefined')) && (~strcmp(p.Results.upper_left_corner, 'undefined')) && (~strcmp(p.Results.lower_right_corner, 'undefined'))
     %% Adjust upper-left and lower-right corners if necessary
     %    
