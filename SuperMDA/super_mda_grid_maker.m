@@ -86,6 +86,8 @@ for i = 1:(numel(fields))
 end
 decision_number = bin2dec(int2str(decision_array));
 
+        pixWidth = mmhandle.core.getImageWidth;
+        pixHeight = mmhandle.core.getImageHeight;
 switch decision_number
     case 36 %centroid + number_of_images
         %% Specify upper-left and lower-right corners
@@ -93,14 +95,13 @@ switch decision_number
         % The rectangular shape of the image will be automatically
         % generated. The number of images may not match the input number of
         % images.
-        pixWidth = mmhandle.core.getImageWidth;
-        pixHeight = mmhandle.core.getImageHeight;
+
         widthCandidates = floor(sqrt(p.Results.number_of_images./(linspace(0.5625,1,10)*pixWidth/pixHeight)));
         objectiveArray = mod(p.Results.number_of_images,widthCandidates);
         [~,ind] = min(objectiveArray);
-        width = widthCandidates(ind);
-        height = floor(p.Results.number_of_images/width);
-        NOI = width*height;
+        im_num_col = widthCandidates(ind);
+        im_num_row = floor(p.Results.number_of_images/im_num_col);
+        NOI = im_num_col*im_num_row;
         %% update the coordinates for the upper-left and lower-right
         % What is meant by ULC and LRC and the centroid? The ULC and LRC
         % are positions on the stage and do not represent any particular
@@ -120,35 +121,41 @@ switch decision_number
         % consistent. When images are abstracted as points the math will be
         % performed with reference to the first pixel of each image.
         ULC = ...
-            [p.Results.centroid(1) - (width-1)/2*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
-            p.Results.centroid(2) - (height-1)/2*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            [p.Results.centroid(1) - (im_num_col-1)/2*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            p.Results.centroid(2) - (im_num_row-1)/2*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             p.Results.centroid(3)];
         LRC = ...
-            [p.Results.centroid(1) + (width-1)/2*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
-            p.Results.centroid(2) + (height-1)/2*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            [p.Results.centroid(1) + (im_num_col-1)/2*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            p.Results.centroid(2) + (im_num_row-1)/2*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             p.Results.centroid(3)];
     case 35 %upper-left, lower-right, and number of images
         % Use when you want a given number of images to fill a given space.
         % This means the overlap (or underlap?) between images must be
         % calculated
-        pixWidth = mmhandle.core.getImageWidth;
-        pixHeight = mmhandle.core.getImageHeight;
         a = p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1);
         b = p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2);
-        width = sqrt(p.Results.number_of_images*a/b);
-        height = p.Results.number_of_images/width;
-        width = round(width);
-        height = round(height);
-        NOI = width*height;
+        im_num_col = sqrt(p.Results.number_of_images*a/b);
+        im_num_row = p.Results.number_of_images/im_num_col;
+        im_num_col = round(im_num_col);
+        im_num_row = round(im_num_row);
+        NOI = im_num_col*im_num_row;
         %%
-        overlap_x = (p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/width-pixWidth;
-        overlap_y = (p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/height-pixHeight;
+        overlap_x = (p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/im_num_col-pixWidth;
+        overlap_y = (p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/im_num_row-pixHeight;
         ULC = p.Results.upper_left_corner;
         LRC = ...
-            [ULC(1)+(width-1)*(pixWidth-overlap_x),...
-            ULC(1)+(height-1)*(pixHeight-overlap_y),...
+            [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x),...
+            ULC(2)+(im_num_row-1)*(pixHeight-overlap_y),...
             p.Results.lower_right_corner(3)];
     case 4 %upper-left and lower-right
+        im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/pixWidth)+1;
+        im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/pixHeight)+1;
+        NOI = im_num_col*im_num_row;
+        ULC = p.Results.upper_left_corner;
+        LRC = ...
+            [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x),...
+            ULC(2)+(im_num_row-1)*(pixHeight-overlap_y),...
+            p.Results.lower_right_corner(3)];
     otherwise
         error('GridMake:bad_param','The set parameters entered cannot be interpreted. Please specify a valid set of parameters');
 end
