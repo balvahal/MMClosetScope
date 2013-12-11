@@ -87,8 +87,8 @@ guidata(hObject, handles);
 
 % SCAN6gui_main.fig is the parent gui. Launch the children guis and
 % send the parent gui object to each child gui.
-%handles.gui_defineCoverslipArea = SCAN6gui_defineCoverslipArea('gui_main',handles.gui_main);
-%set(handles.gui_defineCoverslipArea,'visible','off'); % initially hide this gui from the user
+handles.gui_grid = SuperMDA_gui_grid('gui_main',handles.gui_main);
+%set(handles.gui_grid,'visible','off'); % initially hide this gui from the user
 %handles.gui_stageMap = SCAN6gui_stageMap('gui_main',handles.gui_main);
 %handles.gui_stage_list;
 %handles.gui_custom_timepoints;
