@@ -1,7 +1,7 @@
 %%
 % It is assumed that the origin is in the ULC and x increases due east and
 % y increases due south when the stage is viewed from above.
-function [mmhandle,NOI,ULC,LRC] = super_mda_grid_maker(mmhandle,varargin)
+function [mmhandle,grid] = super_mda_grid_maker(mmhandle,varargin)
 p = inputParser;
 addRequired(p, 'mmhandle', @isstruct);
 addParameter(p, 'number_of_images', 'undefined', @(x) mod(x,1)==0);
@@ -14,6 +14,7 @@ addParameter(p, 'overlap', 0, @isnumeric);
 addParameter(p, 'overlap_x', 'undefined', @isnumeric);
 addParameter(p, 'overlap_y', 'undefined', @isnumeric);
 addParameter(p, 'overlap_units','px',@(x) any(strcmp(x,{'px', 'um'})));
+addParameter(p, 'path_strategy','snake',@(x) any(strcmp(x,{'snake','CRLF'})));
 
 parse(p,mmhandle,varargin{:});
 %% the units of overlap must be pixels for the ensuing calculations
@@ -86,8 +87,8 @@ for i = 1:(numel(fields))
 end
 decision_number = bin2dec(int2str(decision_array));
 
-        pixWidth = mmhandle.core.getImageWidth;
-        pixHeight = mmhandle.core.getImageHeight;
+pixWidth = mmhandle.core.getImageWidth;
+pixHeight = mmhandle.core.getImageHeight;
 switch decision_number
     case 36 %centroid + number_of_images
         %% Specify upper-left and lower-right corners
@@ -95,7 +96,7 @@ switch decision_number
         % The rectangular shape of the image will be automatically
         % generated. The number of images may not match the input number of
         % images.
-
+        
         widthCandidates = floor(sqrt(p.Results.number_of_images./(linspace(0.5625,1,10)*pixWidth/pixHeight)));
         objectiveArray = mod(p.Results.number_of_images,widthCandidates);
         [~,ind] = min(objectiveArray);
@@ -144,19 +145,137 @@ switch decision_number
         overlap_y = (p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/im_num_row-pixHeight;
         ULC = p.Results.upper_left_corner;
         LRC = ...
-            [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x),...
-            ULC(2)+(im_num_row-1)*(pixHeight-overlap_y),...
+            [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            ULC(2)+(im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             p.Results.lower_right_corner(3)];
-    case 4 %upper-left and lower-right
-        im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/pixWidth)+1;
-        im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/pixHeight)+1;
+    case 34 %upper-left and number of images
+        widthCandidates = floor(sqrt(p.Results.number_of_images./(linspace(0.5625,1,10)*pixWidth/pixHeight)));
+        objectiveArray = mod(p.Results.number_of_images,widthCandidates);
+        [~,ind] = min(objectiveArray);
+        im_num_col = widthCandidates(ind);
+        im_num_row = floor(p.Results.number_of_images/im_num_col);
+        NOI = im_num_col*im_num_row;
+        
+        ULC = p.Results.upper_left_corner;
+        LRC = ...
+            [ULC(1) + (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            ULC(2) + (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            ULC(3)];
+    case 33 %lower-right and number of images
+        widthCandidates = floor(sqrt(p.Results.number_of_images./(linspace(0.5625,1,10)*pixWidth/pixHeight)));
+        objectiveArray = mod(p.Results.number_of_images,widthCandidates);
+        [~,ind] = min(objectiveArray);
+        im_num_col = widthCandidates(ind);
+        im_num_row = floor(p.Results.number_of_images/im_num_col);
+        NOI = im_num_col*im_num_row;
+        
+        LRC = p.Results.lower_right_corner;
+        ULC = ...
+            [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            LRC(3)];
+    case 28 %row, col, and centroid
+        im_num_col = p.Results.number_of_columns;
+        im_num_row = p.Results.number_of_rows;
+        NOI = im_num_col*im_num_row;
+        ULC = ...
+            [p.Results.centroid(1) - (im_num_col-1)/2*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            p.Results.centroid(2) - (im_num_row-1)/2*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            p.Results.centroid(3)];
+        LRC = ...
+            [p.Results.centroid(1) + (im_num_col-1)/2*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            p.Results.centroid(2) + (im_num_row-1)/2*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            p.Results.centroid(3)];
+    case 26 %row, col, and upper-left
+        im_num_col = p.Results.number_of_columns;
+        im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
         ULC = p.Results.upper_left_corner;
         LRC = ...
-            [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x),...
-            ULC(2)+(im_num_row-1)*(pixHeight-overlap_y),...
+            [ULC(1) + (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            ULC(2) + (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            ULC(3)];
+    case 25 %row, col, and lower-right
+        im_num_col = p.Results.number_of_columns;
+        im_num_row = p.Results.number_of_rows;
+        NOI = im_num_col*im_num_row;
+        LRC = p.Results.lower_right_corner;
+        ULC = ...
+            [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
+            LRC(3)];
+    case 4 %upper-left and lower-right
+        im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x))+1;
+        im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y))+1;
+        NOI = im_num_col*im_num_row;
+        ULC = p.Results.upper_left_corner;
+        LRC = ...
+            [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
+            ULC(2)+(im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             p.Results.lower_right_corner(3)];
     otherwise
         error('GridMake:bad_param','The set parameters entered cannot be interpreted. Please specify a valid set of parameters');
 end
+
+%% Create a list of positions that consist of the grid
+% This section of code depends on the following variables being properly
+% defined:
+%
+% * im_num_col
+% * im_num_row
+% * NOI
+% * overlap_x
+% * overlap_y
+% * pixHeight
+% * pixWidth
+% * ULC
+
+positions = zeros(NOI,3);
+position_labels = cell(NOI,1);
+if strcmp(p.Results.path_strategy,'CRLF')
+    for i=1:im_num_row
+        for j=1:im_num_col
+            ind = (i-1)*im_num_col+j;
+            positions(ind,:) = [...
+                ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                ULC(3)];
+            position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+        end
+    end
+elseif strcmp(p.Results.path_strategy,'snake')
+    ind = 0;
+    for i=1:im_num_row
+        if mod(i,2)==1
+        for j=1:im_num_col
+            ind = ind+1;
+            positions(ind,:) = [...
+                ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                ULC(3)];
+            position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+        end
+        else
+        for j=im_num_col:-1:1
+            ind = ind+1;
+            positions(ind,:) = [...
+                ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                ULC(3)];
+            position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+        end
+        end
+    end
+end
+%% package the output in a struct
+%
+grid.positions = positions;
+grid.position_labels = position_labels;
+grid.NOI = NOI;
+grid.ULC = ULC;
+grid.LRC = LRC;
+grid.im_num_col = im_num_col;
+grid.im_num_row = im_num_row;
+grid.overlap_x = overlap_x;
+grid.overlap_y = overlap_y;
 end
