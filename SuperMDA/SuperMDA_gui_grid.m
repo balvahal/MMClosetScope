@@ -56,9 +56,9 @@ function SuperMDA_gui_grid_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % add the main figure handles to the current figure handles
-%guiMainInputIndex = find(strcmp(varargin, 'gui_main'));
-%handles.gui_main = varargin{guiMainInputIndex+1};
-%mainHandles = guidata(handles.gui_main);
+guiMainInputIndex = find(strcmp(varargin, 'gui_main'));
+handles.gui_main = varargin{guiMainInputIndex+1};
+mainHandles = guidata(handles.gui_main);
 % remember the current figure handles
 handles.gui_self = hObject;
 

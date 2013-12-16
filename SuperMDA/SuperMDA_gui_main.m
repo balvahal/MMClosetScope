@@ -22,7 +22,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 21-Oct-2013 17:02:29
+% Last Modified by GUIDE v2.5 16-Dec-2013 16:21:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -74,7 +74,7 @@ handles.units_of_time_conversion = [1, 1/60, 1/3600, 1/86400;...
     60, 1, 1/60, 1/1440;...
     3600, 60, 1, 1/24;...
     86400, 1440, 24, 1];
-handles.units_of_time = get(handles.popupmenu_time_points_units_of_time,'Value');
+handles.units_of_time = get(handles.popupmenu_primary_time_points_units_of_time,'Value');
 % ----- Function Handles
 handles.updateInfo = @main_updateInfo;
 handles.load_super_mda = @main_load_super_mda;
@@ -110,19 +110,19 @@ function varargout = SuperMDA_figure_main_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-% --- Executes on selection change in listbox1.
-function listbox1_Callback(hObject, eventdata, handles)
-% hObject    handle to listbox1 (see GCBO)
+% --- Executes on selection change in listbox_primary.
+function listbox_primary_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox_primary (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns listbox1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listbox1
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox_primary contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox_primary
 
 
 % --- Executes during object creation, after setting all properties.
-function listbox1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listbox1 (see GCBO)
+function listbox_primary_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox_primary (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -133,19 +133,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu_time_points_units_of_time.
-function popupmenu_time_points_units_of_time_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu_time_points_units_of_time (see GCBO)
+% --- Executes on selection change in popupmenu_primary_time_points_units_of_time.
+function popupmenu_primary_time_points_units_of_time_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_primary_time_points_units_of_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_time_points_units_of_time contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu_time_points_units_of_time
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_primary_time_points_units_of_time contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_primary_time_points_units_of_time
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu_time_points_units_of_time_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu_time_points_units_of_time (see GCBO)
+function popupmenu_primary_time_points_units_of_time_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_primary_time_points_units_of_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -157,18 +157,18 @@ end
 
 
 
-function edit_time_points_period_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_time_points_period (see GCBO)
+function edit_primary_time_points_period_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_primary_time_points_period (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit_time_points_period as text
-%        str2double(get(hObject,'String')) returns contents of edit_time_points_period as a double
+% Hints: get(hObject,'String') returns contents of edit_primary_time_points_period as text
+%        str2double(get(hObject,'String')) returns contents of edit_primary_time_points_period as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit_time_points_period_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_time_points_period (see GCBO)
+function edit_primary_time_points_period_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_primary_time_points_period (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -180,18 +180,18 @@ end
 
 
 
-function edit_time_points_duration_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_time_points_duration (see GCBO)
+function edit_primary_time_points_duration_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_primary_time_points_duration (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit_time_points_duration as text
-%        str2double(get(hObject,'String')) returns contents of edit_time_points_duration as a double
+% Hints: get(hObject,'String') returns contents of edit_primary_time_points_duration as text
+%        str2double(get(hObject,'String')) returns contents of edit_primary_time_points_duration as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit_time_points_duration_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_time_points_duration (see GCBO)
+function edit_primary_time_points_duration_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_primary_time_points_duration (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -234,7 +234,7 @@ function main_updateInfo(hObject)
 % hObject   handle to the main figure
 handles = guidata(hObject);
 % primary time points
-units_of_time = get(handles.popupmenu_time_points_units_of_time,'Value');
+units_of_time = get(handles.popupmenu_primary_time_points_units_of_time,'Value');
 
 
 %
@@ -251,3 +251,153 @@ function pushbutton_primary_load_previous_mda_Callback(hObject, eventdata, handl
 % hObject    handle to pushbutton_primary_load_previous_mda (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit_primary_outputDirectory_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_primary_outputDirectory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_primary_outputDirectory as text
+%        str2double(get(hObject,'String')) returns contents of edit_primary_outputDirectory as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_primary_outputDirectory_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_primary_outputDirectory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_find_output_dir.
+function pushbutton_find_output_dir_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_find_output_dir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit_primary_numberOfTmpts_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_primary_numberOfTmpts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_primary_numberOfTmpts as text
+%        str2double(get(hObject,'String')) returns contents of edit_primary_numberOfTmpts as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_primary_numberOfTmpts_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_primary_numberOfTmpts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_group_addGroup.
+function pushbutton_group_addGroup_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_group_addGroup (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_group_substractGroup.
+function pushbutton_group_substractGroup_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_group_substractGroup (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit_group_functionBefore_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_group_functionBefore (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_group_functionBefore as text
+%        str2double(get(hObject,'String')) returns contents of edit_group_functionBefore as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_group_functionBefore_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_group_functionBefore (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_group_findBeforeFunction.
+function pushbutton_group_findBeforeFunction_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_group_findBeforeFunction (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit_group_function_after_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_group_function_after (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_group_function_after as text
+%        str2double(get(hObject,'String')) returns contents of edit_group_function_after as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_group_function_after_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_group_function_after (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_group_findAfterFunction.
+function pushbutton_group_findAfterFunction_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_group_findAfterFunction (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit_group_travel_offset_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_group_travel_offset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_group_travel_offset as text
+%        str2double(get(hObject,'String')) returns contents of edit_group_travel_offset as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_group_travel_offset_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_group_travel_offset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
