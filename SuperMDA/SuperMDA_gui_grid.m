@@ -22,7 +22,7 @@ function varargout = SuperMDA_gui_grid(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_gui_grid
 
-% Last Modified by GUIDE v2.5 11-Dec-2013 23:07:14
+% Last Modified by GUIDE v2.5 17-Dec-2013 11:37:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -512,3 +512,14 @@ function pushbutton_makegrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_makegrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+%delete(hObject);
+set(hObject,'visible','off');

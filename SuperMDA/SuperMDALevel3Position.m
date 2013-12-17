@@ -9,9 +9,9 @@ classdef SuperMDALevel3Position < handle
         continuous_focus_bool = true;
         label = '';
         Parent_MDAGroup;
-        position_function_after_name = 'super_mda_position_function_after_basic';
+        position_function_after_name = 'super_mda_function_position_after_basic';
         position_function_after_handle;
-        position_function_before_name = 'super_mda_position_function_before_basic';
+        position_function_before_name = 'super_mda_function_position_before_basic';
         position_function_before_handle;
         settings;
         xyz;

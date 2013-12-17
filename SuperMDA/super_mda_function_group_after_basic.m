@@ -1,6 +1,6 @@
 %%
 %
-function [mmhandle] = super_mda_group_function_after_basic(mmhandle,SuperMDA,i)
+function [mmhandle] = super_mda_function_group_after_basic(mmhandle,SuperMDA)
 %%
 %
 if SuperMDA.groups(i).travel_offset_bool

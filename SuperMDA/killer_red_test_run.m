@@ -67,6 +67,10 @@ mmhandle.SuperMDA.group.position(7).settings(3).exposure(3) = 100;
 mmhandle.SuperMDA.group.position(8).settings(3).exposure(3) = 100;
 mmhandle.SuperMDA.group.position(9).settings(3).exposure(3) = 100;
 mmhandle.SuperMDA.group.position.change_all_settings('exposure_custom_bool',true);
+%% Save the MDA
+%
+SuperMDA = mmhandle.SuperMDA;
+save('killerRedMDA.mat','SuperMDA');
 %% Run the MDA
 %   
 super_mda_acquisition_start(mmhandle);

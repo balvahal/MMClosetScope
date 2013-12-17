@@ -1,6 +1,6 @@
 %%
 %
-function [mmhandle] = super_mda_snap_function_basic(mmhandle,SuperMDA,i,j,k)
+function [mmhandle] = super_mda_function_settings_basic(mmhandle,SuperMDA)
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position
 mmhandle.core.setConfig('Channel',mmhandle.Channels{SuperMDA.groups(i).positions(j).settings(k).Channel});

@@ -16,17 +16,17 @@ classdef SuperMDALevel1Primary < handle
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        database_filenames;
-        database_pointer = 1;
+        database;
         duration = 0;
         fundamental_period = 300; %5 minutes is the default. The units are seconds.
         group;
         mda_clock_absolute;
         mda_clock_pointer = 1;
         mda_clock_relative = 0;
-        mda_3loop_index= [0,0,0]; %when looping through the MDA object, this will keep track of where it is in the loop.
         number_of_timepoints = 1;
         output_directory;
+        runtime_imagecounter = 0;
+        runtime_index = [0,0,0,0]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings]
     end
     %%
     %
@@ -195,31 +195,29 @@ classdef SuperMDALevel1Primary < handle
         end
         %% finalize_MDA
         %
-        function obj = finalize_MDA(obj)
+        function obj = run(obj)
             %% Update the dependent parameters in the MDA object
             % Some parameters in the MDA object are dependent on others.
             % This dependency came about from combining parameters that are
             % easy to configure by a user interface into data structures
             % that are convenient to code with.
             obj.update_children_to_reflect_number_of_timepoints;
-            max_number_of_images = 0;
             for i = 1:obj.my_length
-                obj.group(i).group_function_handle = str2func(obj.group(i).group_function_name);
+                obj.group(i).group_function_before_handle = str2func(obj.group(i).group_function_before_name);
                 for j = 1:max(size(obj.group(i).position))
-                    obj.group(i).position(j).position_function_handle = str2func(obj.group(i).position(j).position_function_name);
+                    obj.group(i).position(j).position_function_before_handle = str2func(obj.group(i).position(j).position_function_before_name);
                     for k = 1:max(size(obj.group(i).position(j).settings))
                         obj.group(i).position(j).settings(k).calculate_timepoints;
                         obj.group(i).position(j).settings(k).create_z_stack_list;
-                        obj.group(i).position(j).settings(k).snap_function_handle = str2func(obj.group(i).position(j).settings(k).snap_function_name);
-                        max_number_of_images = max_number_of_images + 1;
+                        obj.group(i).position(j).settings(k).settings_function_handle = str2func(obj.group(i).position(j).settings(k).settings_function_name);
                     end
+                    obj.group(i).position(j).position_function_after_handle = str2func(obj.group(i).position(j).position_function_after_name);
                 end
+                obj.group(i).group_function_after_handle = str2func(obj.group(i).group_function_after_name);
             end
             %%
             % initialize the dataset array that will store the history of
-            % the MDA. The maximum number of images that can be taken by
-            % the MDA are also the maximum number of rows in the dataset.
-            max_number_of_images = max_number_of_images*length(obj.mda_clock_relative);
+            % the MDA.
             VarNames_strings = {...
                 'Channel_name',...
                 'filename',...
@@ -236,13 +234,14 @@ classdef SuperMDALevel1Primary < handle
                 'x',...
                 'y',...
                 'z'};
-            database_strings = cell(max_number_of_images+1,length(VarNames_strings));
+            database_strings = cell(2,length(VarNames_strings));
             database_strings(1,:) = VarNames_strings;
             [database_strings{2:end,:}] = deal('');
-            database_numeric = cell(max_number_of_images+1,length(VarNames_numeric));
+            database_numeric = cell(2,length(VarNames_numeric));
             database_numeric(1,:) = VarNames_numeric;
             [database_numeric{2:end,:}] = deal(0);
-            obj.database_filenames = horzcat(database_strings,database_numeric);
+            database_filenames = horzcat(database_strings,database_numeric);
+            obj.database = cell2dataset(database_filenames);
         end
     end
 end

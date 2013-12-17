@@ -22,7 +22,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 17-Dec-2013 01:41:22
+% Last Modified by GUIDE v2.5 17-Dec-2013 13:14:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,7 +80,7 @@ handles.updateInfo = @main_updateInfo;
 handles.load_super_mda = @main_load_super_mda;
 
 % initialize a SuperMDA object
-handles.mmhandle.SuperMDA = SuperMDAGroup(handles.mmhandle);
+%handles.mmhandle.SuperMDA = SuperMDAGroup(handles.mmhandle);
 handles.updateInfo(handles.gui_main);
 % Update handles structure to reflect the new variables and functions
 guidata(hObject, handles);
@@ -88,7 +88,7 @@ guidata(hObject, handles);
 % SCAN6gui_main.fig is the parent gui. Launch the children guis and
 % send the parent gui object to each child gui.
 handles.gui_grid = SuperMDA_gui_grid('gui_main',handles.gui_main);
-%set(handles.gui_grid,'visible','off'); % initially hide this gui from the user
+set(handles.gui_grid,'visible','off'); % initially hide this gui from the user
 %handles.gui_stageMap = SCAN6gui_stageMap('gui_main',handles.gui_main);
 %handles.gui_stage_list;
 %handles.gui_custom_timepoints;
@@ -422,7 +422,7 @@ function pushbutton_position_addGrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_addGrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+set(handles.gui_grid,'visible','on');
 
 
 function edit_position__functionBefore_Callback(hObject, eventdata, handles)
@@ -607,5 +607,29 @@ function pushbutton_settings_pull_Callback(hObject, eventdata, handles)
 % --- Executes on button press in pushbutton_settings_push.
 function pushbutton_settings_push_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_settings_push (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+delete(hObject);
+
+
+% --- Executes on button press in pushbutton_position_copySettings1to1.
+function pushbutton_position_copySettings1to1_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_copySettings1to1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_position_copySettings1toAll.
+function pushbutton_position_copySettings1toAll_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_copySettings1toAll (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
