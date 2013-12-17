@@ -22,7 +22,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 16-Dec-2013 16:21:47
+% Last Modified by GUIDE v2.5 17-Dec-2013 01:41:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -306,16 +306,16 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton_group_addGroup.
-function pushbutton_group_addGroup_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_group_addGroup (see GCBO)
+% --- Executes on button press in pushbutton_group_add.
+function pushbutton_group_add_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_group_add (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in pushbutton_group_substractGroup.
-function pushbutton_group_substractGroup_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_group_substractGroup (see GCBO)
+% --- Executes on button press in pushbutton_group_drop.
+function pushbutton_group_drop_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_group_drop (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -401,3 +401,211 @@ function edit_group_travel_offset_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton_position_Add.
+function pushbutton_position_Add_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_Add (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_position_drop.
+function pushbutton_position_drop_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_drop (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_position_addGrid.
+function pushbutton_position_addGrid_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_addGrid (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit_position__functionBefore_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_position__functionBefore (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_position__functionBefore as text
+%        str2double(get(hObject,'String')) returns contents of edit_position__functionBefore as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_position__functionBefore_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_position__functionBefore (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_position_findBeforeFunction.
+function pushbutton_position_findBeforeFunction_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_findBeforeFunction (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit_position__functionAfter_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_position__functionAfter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_position__functionAfter as text
+%        str2double(get(hObject,'String')) returns contents of edit_position__functionAfter as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_position__functionAfter_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_position__functionAfter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_position_findAfterFunction.
+function pushbutton_position_findAfterFunction_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_findAfterFunction (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in togglebutton_position_changeAll.
+function togglebutton_position_changeAll_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton_position_changeAll (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton_position_changeAll
+
+
+% --- Executes on button press in togglebutton_group_changeAll.
+function togglebutton_group_changeAll_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton_group_changeAll (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton_group_changeAll
+
+
+% --- Executes on button press in pushbutton_position_reset.
+function pushbutton_position_reset_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_reset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_position_goto.
+function pushbutton_position_goto_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_goto (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_position_moveUp.
+function pushbutton_position_moveUp_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_moveUp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_position_moveDown.
+function pushbutton_position_moveDown_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_moveDown (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in togglebutton_settings_changeAll.
+function togglebutton_settings_changeAll_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton_settings_changeAll (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton_settings_changeAll
+
+
+
+function edit_settings_function_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_settings_function (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_settings_function as text
+%        str2double(get(hObject,'String')) returns contents of edit_settings_function as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_settings_function_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_settings_function (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_settings_findFunction.
+function pushbutton_settings_findFunction_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_findFunction (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_settings_add.
+function pushbutton_settings_add_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_add (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_settings_drop.
+function pushbutton_settings_drop_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_drop (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_settings_moveUp.
+function pushbutton_settings_moveUp_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_moveUp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_settings_moveDown.
+function pushbutton_settings_moveDown_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_moveDown (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_settings_pull.
+function pushbutton_settings_pull_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_pull (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_settings_push.
+function pushbutton_settings_push_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_push (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
