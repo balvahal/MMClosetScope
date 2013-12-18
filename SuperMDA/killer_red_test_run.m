@@ -16,8 +16,8 @@ mmhandle.SuperMDA.group.label = 'killer_red_test1';
 %
 mmhandle.SuperMDA.group.position.new_settings;
 mmhandle.SuperMDA.group.position.new_settings;
-mmhandle.SuperMDA.group.position.settings(2).Channel = 2;
-mmhandle.SuperMDA.group.position.settings(3).Channel = 3;
+mmhandle.SuperMDA.group.position.settings(2).channel = 2;
+mmhandle.SuperMDA.group.position.settings(3).channel = 3;
 mmhandle.SuperMDA = mmhandle.SuperMDA.configure_clock_relative;
 mmhandle.SuperMDA.update_children_to_reflect_number_of_timepoints;
 mmhandle.SuperMDA.group.position.settings(3).timepoints = zeros(size(mmhandle.SuperMDA.group.position.settings(3).timepoints));

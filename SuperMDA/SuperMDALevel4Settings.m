@@ -15,7 +15,7 @@ classdef SuperMDALevel4Settings < handle
         exposure_custom_bool = false;
         % Variables that control what type of image will be captured
         binning = 1;
-        Channel = 1;
+        channel = 1;
         period_multiplier = 1;
         % Z-stack variables
         z_origin_offset = 0;
@@ -106,7 +106,5 @@ classdef SuperMDALevel4Settings < handle
             end
             obj.exposure = ones(size(obj.timepoints))*obj.exposure(1);
         end
-        %%
-        %
     end
 end

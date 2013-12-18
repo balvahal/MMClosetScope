@@ -39,19 +39,21 @@ export(SuperMDA.database_filenames,'File',fullfile(SuperMDA.output_directory,'Su
 %
 %% execute_SuperMDA
 %
-    function execute_SuperMDA(~,~)
+    function execute_SuperMDA(~,~) %time functions automatically input two variables that are not needed.
+        SuperMDA.runtime_index(1) = SuperMDA.mda_clock_pointer;
         for i2 = 1:length(SuperMDA.groups)
-            SuperMDA.mda_3loop_index(1) = i2;
+            SuperMDA.runtime_index(2) = i2;
             mmhandle = SuperMDA.groups(i2).group_function_before_handle(mmhandle,SuperMDA);
             for j2 = 1:length(SuperMDA.groups(i2).positions)
-                SuperMDA.mda_3loop_index(2) = j2;
+                SuperMDA.runtime_index(3) = j2;
                 mmhandle = SuperMDA.groups(i2).positions(j2).position_function_before_handle(mmhandle,SuperMDA);
                 for k2 = 1:length(SuperMDA.groups(i2).positions(j2).settings)
-                    SuperMDA.mda_3loop_index(3) = k2;
+                    SuperMDA.runtime_index(4) = k2;
                     if SuperMDA.groups(i2).positions(j2).settings(k2).timepoints(SuperMDA.mda_clock_pointer) == true
                         %% Execute the function that will snap and save an image
                         %
                         mmhandle = SuperMDA.groups(i2).positions(j2).settings(k2).snap_function_handle(mmhandle,SuperMDA);
+                        export(SuperMDA.database,'file',fullfile(SuperMDA.output_directory,'SuperMDA.bsv'),'Delimiter','bar');
                     end
                 end
                 mmhandle = SuperMDA.groups(i2).positions(j2).position_function_after_handle(mmhandle,SuperMDA);
