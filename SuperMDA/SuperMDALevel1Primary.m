@@ -31,44 +31,15 @@ classdef SuperMDALevel1Primary < handle
     end
     %%
     %
+    events
+        database_updated;
+    end
+    %%
+    %
     methods
         %% The constructor method
         % The first argument is always mmhandle
         function obj = SuperMDALevel1Primary(mmhandle)
-            %%
-            % initialize the dataset array that will store the history of
-            % the MDA.
-            %
-            % the dataset is a very useful data structure in MATLAB, but it
-            % is not without its quirks. For instance, new rows can only be
-            % created by concatenating multiple datasets. Also,
-            % cell2dataset is used to initialize an empty dataset, which
-            % seems a bit hackish.
-            VarNames_strings = {...
-                'channel_name',...
-                'filename',...
-                'group_label',...
-                'position_label'};
-            VarNames_numeric = {...
-                'binning',...
-                'channel_number',...
-                'continuous_focus_offset',...
-                'exposure',...
-                'group_order',...
-                'matlab_serial_date_number',...
-                'position_order',...
-                'timepoint',...
-                'x',...
-                'y',...
-                'z',...
-                'z_order',...
-                'image_description'};
-            database_strings = cell(1,length(VarNames_strings));
-            database_strings(1,:) = VarNames_strings;
-            database_numeric = cell(1,length(VarNames_numeric));
-            database_numeric(1,:) = VarNames_numeric;
-            database_filenames = horzcat(database_strings,database_numeric);
-            obj.database = cell2dataset(database_filenames);
             %%
             %
             if nargin == 0
@@ -234,6 +205,37 @@ classdef SuperMDALevel1Primary < handle
         %% finalize_MDA
         %
         function obj = finalize_MDA(obj)
+            %%
+            % initialize the dataset array that will store the history of
+            % the MDA.
+            %
+            % the dataset is a very useful data structure in MATLAB, but it
+            % is not without its quirks. For instance, new rows can only be
+            % created by concatenating multiple datasets. Also,
+            % cell2dataset is used to initialize an empty dataset, which
+            % seems a bit hackish.
+            VarNames_strings = {...
+                'channel_name',...
+                'filename',...
+                'group_label',...
+                'position_label'};
+            VarNames_numeric = {...
+                'binning',...
+                'channel_number',...
+                'continuous_focus_offset',...
+                'exposure',...
+                'group_order',...
+                'matlab_serial_date_number',...
+                'position_order',...
+                'timepoint',...
+                'x',...
+                'y',...
+                'z',...
+                'z_order'};
+            VarNames_image_description = {...
+                'image_description'};
+            database_filenames = horzcat(VarNames_strings,VarNames_numeric,VarNames_image_description);
+            obj.database = cell2dataset(database_filenames);
             %% Update the dependent parameters in the MDA object
             % Some parameters in the MDA object are dependent on others.
             % This dependency came about from combining parameters that are
@@ -241,8 +243,10 @@ classdef SuperMDALevel1Primary < handle
             % that are convenient to code with.
             for i = 1:obj.my_length
                 obj.group(i).group_function_before_handle = str2func(obj.group(i).group_function_before_name);
+                obj.group(i).label = isnullstr(obj.group(i).label);
                 for j = 1:max(size(obj.group(i).position))
                     obj.group(i).position(j).position_function_before_handle = str2func(obj.group(i).position(j).position_function_before_name);
+                    obj.group(i).position(j).label = isnullstr(obj.group(i).position(j).label);
                     for k = 1:max(size(obj.group(i).position(j).settings))
                         if ~obj.group(i).position(j).settings(k).timepoints_custom_bool
                             obj.group(i).position(j).settings(k).calculate_timepoints;
@@ -255,13 +259,19 @@ classdef SuperMDALevel1Primary < handle
                 obj.group(i).group_function_after_handle = str2func(obj.group(i).group_function_after_name);
             end
             obj.update_children_to_reflect_number_of_timepoints;
+            function strout = isnullstr(str)
+                if isempty(str)
+                    strout = 'isnull';
+                else
+                    strout = str;
+                end
+            end
         end
         %% update_database
         %
         function obj = update_database(obj,filename,image_description)
             runtime_index2 = num2cell(obj.runtime_index); % a quirk about assigning the contents or a vector to multiple variables means the vector must first be made into a cell.
             [t,g,p,s,z] = deal(runtime_index2{:});
-            
             my_dataset = dataset(...
                 {obj.channel_names{obj.group(g).position(p).settings(s).channel},'channel_name'},...
                 {filename,'filename'},...
@@ -280,7 +290,8 @@ classdef SuperMDALevel1Primary < handle
                 {obj.group(g).position(p).settings(s).z_stack(z),'z'},...
                 {z,'z_order'},...
                 {image_description,'image_description'});
-            obj.dataset = [obj.dataset;my_dataset]; %add a new row to the dataset
+            obj.database = [obj.database;my_dataset]; %add a new row to the dataset
+            notify(obj,'database_updated');
         end
     end
 end
