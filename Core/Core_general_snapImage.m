@@ -32,7 +32,7 @@ elseif mmhandle.core.getBytesPerPixel == 2 %this indicates a 16bit image
     %% Check the bit-depth of the camera
     % If the bit-depth is less than 16-bits, then shift the raw image data
     % to fill the 16-bits.
-    bitdepth = mmhandle.core.getProperty(mmhandle.CameraDevice,'BitDepth');
+    bitdepth = str2double(mmhandle.core.getProperty(mmhandle.CameraDevice,'BitDepth').toCharArray');
     if bitdepth < 16
         I = bitshift(I,16-bitdepth);
     end

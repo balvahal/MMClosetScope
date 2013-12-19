@@ -26,6 +26,7 @@ mmhandle.SuperMDA.group.position.settings(3).timepoints_custom_bool = true;
 %% Pause here to choose your positions
 %
 mmhandle.SuperMDA.group.new_position;
+mmhandle.SuperMDA.group.position(2).xyz = [100,101,2];
 mmhandle.SuperMDA.group.new_position;
 mmhandle.SuperMDA.group.new_position;
 mmhandle.SuperMDA.group.new_position;
