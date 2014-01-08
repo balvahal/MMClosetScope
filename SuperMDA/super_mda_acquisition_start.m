@@ -15,7 +15,6 @@ timer_mda = timer('TimerFcn',@execute_SuperMDA);
 while SuperMDA.mda_clock_pointer <= length(SuperMDA.mda_clock_absolute)
     if strcmp(timer_mda.Running,'off') && now < SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer)
         startat(timer_mda,SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer));
-        SuperMDA.mda_clock_pointer = SuperMDA.mda_clock_pointer + 1;
     elseif strcmp(timer_mda.Running,'off') && now > SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer)
         % This loop ensures the order of the timepoints is preserved
         % instead of dropping timepoints to catch up to the next scheduled
@@ -23,7 +22,6 @@ while SuperMDA.mda_clock_pointer <= length(SuperMDA.mda_clock_absolute)
         % first timepoint and then only if the run time of the SuperMDA is
         % longer the time between executions.
         execute_SuperMDA;
-        SuperMDA.mda_clock_pointer = SuperMDA.mda_clock_pointer + 1;
     else
         %%
         % Here is the code block where the while loop runs in between
@@ -60,5 +58,6 @@ export(SuperMDA.database,'file',fullfile(SuperMDA.output_directory,'SuperMDA.bsv
             end
             mmhandle = SuperMDA.group(i2).group_function_after_handle(mmhandle,SuperMDA);
         end
+        SuperMDA.mda_clock_pointer = SuperMDA.mda_clock_pointer + 1;
     end
 end

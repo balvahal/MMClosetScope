@@ -3,12 +3,12 @@ mmhandle = Core_startup_initialize;
 %
 mmhandle.SuperMDA = SuperMDALevel1Primary(mmhandle);
 %% Primary Level Settings
-% set the imaging period to be 10 minutes
-mmhandle.SuperMDA.fundamental_period = 600;
+% set the imaging period to be 1.5 minutes
+mmhandle.SuperMDA.fundamental_period = 90;
 % set the duration to be 16 hours or 57600 seconds
 mmhandle.SuperMDA.duration = 57600;
 % set the output directory to be...
-mmhandle.SuperMDA.output_directory = 'C:\Users\kk128\Documents\Test';%'D:\Kyle\killerredtest';
+mmhandle.SuperMDA.output_directory = 'C:\Users\Kyle\Documents\MATLAB\killeredtest';%'C:\Users\kk128\Documents\Test';%'D:\Kyle\killerredtest';
 % Group Level Settings
 % set the label to something informative
 mmhandle.SuperMDA.group.label = 'killer_red_test1';

@@ -265,7 +265,7 @@ classdef SuperMDALevel1Primary < handle
 %                 if isempty(str)
 %                     strout = 'isnull';
 %                 else
-%                     strout = str;
+                     strout = str;
 %                 end
             end
         end
