@@ -19,6 +19,8 @@ mmhandle.SuperMDA.group.position.new_settings;
 mmhandle.SuperMDA.group.position.settings(2).channel = 2;
 mmhandle.SuperMDA.group.position.settings(3).channel = 3;
 mmhandle.SuperMDA = mmhandle.SuperMDA.configure_clock_relative;
+mmhandle.SuperMDA.group.position(1).settings(1).exposure(1) = 200;
+mmhandle.SuperMDA.group.position(1).settings(2).exposure(1) = 300;
 mmhandle.SuperMDA.update_children_to_reflect_number_of_timepoints;
 mmhandle.SuperMDA.group.position.settings(3).timepoints = zeros(size(mmhandle.SuperMDA.group.position.settings(3).timepoints));
 mmhandle.SuperMDA.group.position.settings(3).timepoints(1:3) = 1;

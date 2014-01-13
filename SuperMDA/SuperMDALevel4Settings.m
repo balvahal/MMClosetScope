@@ -11,7 +11,7 @@ classdef SuperMDALevel4Settings < handle
         % Variables that can be adjusted on the fly for feedback
         timepoints = 1;
         timepoints_custom_bool = false;
-        exposure = 100;
+        exposure = 0;
         exposure_custom_bool = false;
         % Variables that control what type of image will be captured
         binning = 1;

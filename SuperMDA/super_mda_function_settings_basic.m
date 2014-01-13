@@ -3,6 +3,7 @@
 function [mmhandle] = super_mda_function_settings_basic(mmhandle,SuperMDA)
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position
+t = SuperMDA.runtime_index(1);
 i = SuperMDA.runtime_index(2);
 j = SuperMDA.runtime_index(3);
 k = SuperMDA.runtime_index(4);
@@ -20,7 +21,7 @@ for h = 1:length(SuperMDA.group(i).position(j).settings(k).z_stack)
     SuperMDA.runtime_index(5) = h;
     %% Move the z-position
     %
-    pos_z = SuperMDA.group(i).position(j).settings(k).z_origin_offset + SuperMDA.group(i).position(j).settings(k).z_stack(h);
+    pos_z = SuperMDA.group(i).position(j).settings(k).z_origin_offset + SuperMDA.group(i).position(j).settings(k).z_stack(h)+SuperMDA.group(i).position(j).xyz(t,3);
     mmhandle = Core_general_setXYZ(mmhandle,pos_z,'direction','z');
     %% Snap and Image
     %
@@ -29,7 +30,7 @@ for h = 1:length(SuperMDA.group(i).position(j).settings(k).z_stack)
     imwrite(mmhandle.I,fullfile(pngpath,filenamePNG),'png','bitdepth',16);
 	%% Update the database
     %
-    image_description = 'isnull';
+    image_description = '';
     SuperMDA.update_database(filenamePNG,image_description);
     disp(filenamePNG);
 end

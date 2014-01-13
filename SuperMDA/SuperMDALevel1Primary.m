@@ -178,7 +178,7 @@ classdef SuperMDALevel1Primary < handle
                 for j = 1:max(size(obj.group(i).position))
                     mydiff = obj.number_of_timepoints - size(obj.group(i).position(j).xyz,1);
                     if mydiff < 0
-                        mydiff = abs(mydiff)+1;
+                        mydiff = obj.number_of_timepoints+1;
                         obj.group(i).position(j).xyz(mydiff:end,:) = [];
                     elseif mydiff > 0
                         obj.group(i).position(j).xyz(end+1:obj.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),obj.group(i).position(j).xyz(end,:));
@@ -186,14 +186,14 @@ classdef SuperMDALevel1Primary < handle
                     for k = 1:max(size(obj.group(i).position(j).settings))
                         mydiff = obj.number_of_timepoints - length(obj.group(i).position(j).settings(k).timepoints);
                         if mydiff < 0
-                            mydiff = abs(mydiff)+1;
+                            mydiff = obj.number_of_timepoints+1;
                             obj.group(i).position(j).settings(k).timepoints(mydiff:end) = [];
                         elseif mydiff > 0
                             obj.group(i).position(j).settings(k).timepoints(end+1:obj.number_of_timepoints) = 1;
                         end
                         mydiff = obj.number_of_timepoints - length(obj.group(i).position(j).settings(k).exposure);
                         if mydiff < 0
-                            mydiff = abs(mydiff)+1;
+                            mydiff = obj.number_of_timepoints+1;
                             obj.group(i).position(j).settings(k).exposure(mydiff:end) = [];
                         elseif mydiff > 0
                             obj.group(i).position(j).settings(k).exposure(end+1:obj.number_of_timepoints) = obj.group(i).position(j).settings(k).exposure(end);
@@ -273,7 +273,7 @@ classdef SuperMDALevel1Primary < handle
         %
         function obj = update_database(obj,filename,image_description)
             runtime_index2 = num2cell(obj.runtime_index); % a quirk about assigning the contents or a vector to multiple variables means the vector must first be made into a cell.
-            [t,g,p,s,z] = deal(runtime_index2{:});
+            [t,g,p,s,z] = deal(runtime_index2{:}); %[timepoint,group,position,settings,z_stack]
             my_dataset = dataset(...
                 {cellstr(obj.channel_names{obj.group(g).position(p).settings(s).channel}),'channel_name'},...
                 {cellstr(filename),'filename'},...
@@ -287,10 +287,10 @@ classdef SuperMDALevel1Primary < handle
                 {now,'matlab_serial_date_number'},...
                 {p,'position_order'},...
                 {t,'timepoint'},...
-                {obj.group(g).position(p).xyz(1),'x'},...
-                {obj.group(g).position(p).xyz(2),'y'},...
-                {obj.group(g).position(p).settings(s).z_stack(z),'z'},...
-                {z,'z_order'},...
+                {obj.group(g).position(p).xyz(t,1),'x'},...
+                {obj.group(g).position(p).xyz(t,2),'y'},...
+                {obj.group(g).position(p).settings(s).z_origin_offset + obj.group(g).position(p).settings(s).z_stack(z)+obj.group(g).position(p).xyz(t,3),'z'},...
+                {z,'z_order'},... %the order of zstack from bottom to top
                 {cellstr(image_description),'image_description'});
             obj.database = [obj.database;my_dataset]; %add a new row to the dataset
             notify(obj,'database_updated');
