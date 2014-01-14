@@ -37,9 +37,6 @@ mmhandle.SuperMDA.group.new_position;
 mmhandle.SuperMDA.group.new_position;
 mmhandle.SuperMDA.group.new_position;
 mmhandle.SuperMDA.group.change_all_position('continuous_focus_bool',false);
-%% Make sure everything is consistent
-%
-mmhandle.SuperMDA.update_children_to_reflect_number_of_timepoints;
 %% There will be 9 positions and each position will have a different exposure
 %
 mmhandle.SuperMDA.group.position(1).settings(3).exposure(1) = 100;
