@@ -173,8 +173,9 @@ classdef SuperMDALevel1Primary < handle
             obj.mda_clock_absolute = now + obj.mda_clock_relative/86400;
         end
         %% Update child objects to reflect number of timepoints
-        % The highly customizable features of the mda include exposure, xyz, and timepoints. These properties must have the same
-        % length. This function will ensure they all have the same length.
+        % The highly customizable features of the mda include exposure,
+        % xyz, and timepoints. These properties must have the same length.
+        % This function will ensure they all have the same length.
         function obj = update_children_to_reflect_number_of_timepoints(obj)
             obj.configure_clock_relative;
             for i = 1:obj.my_length
@@ -300,6 +301,8 @@ classdef SuperMDALevel1Primary < handle
             evtdata.AffectedObject.update_children_to_reflect_number_of_timepoints;
             switch evtdata.Source.Name
                 case 'duration'
+                    evtdata.AffectedObject.duration = evtdata.AffectedObject.mda_clock_relative(end);
+                case 'fundamental_period'
                     evtdata.AffectedObject.duration = evtdata.AffectedObject.mda_clock_relative(end);
             end
         end
