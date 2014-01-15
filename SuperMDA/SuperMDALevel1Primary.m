@@ -249,10 +249,8 @@ classdef SuperMDALevel1Primary < handle
             % that are convenient to code with.
             for i = 1:obj.my_length
                 obj.group(i).group_function_before_handle = str2func(obj.group(i).group_function_before_name);
-                obj.group(i).label = isnullstr(obj.group(i).label);
                 for j = 1:max(size(obj.group(i).position))
                     obj.group(i).position(j).position_function_before_handle = str2func(obj.group(i).position(j).position_function_before_name);
-                    obj.group(i).position(j).label = isnullstr(obj.group(i).position(j).label);
                     for k = 1:max(size(obj.group(i).position(j).settings))
                         if ~obj.group(i).position(j).settings(k).timepoints_custom_bool
                             obj.group(i).position(j).settings(k).calculate_timepoints;
@@ -265,15 +263,6 @@ classdef SuperMDALevel1Primary < handle
                 obj.group(i).group_function_after_handle = str2func(obj.group(i).group_function_after_name);
             end
             obj.update_children_to_reflect_number_of_timepoints;
-            %%
-            % The dataset structure does not            
-            function strout = isnullstr(str)
-%                 if isempty(str)
-%                     strout = 'isnull';
-%                 else
-                     strout = str;
-%                 end
-            end
         end
         %% update_database
         %
@@ -309,6 +298,10 @@ classdef SuperMDALevel1Primary < handle
         % The customizables are xyz, exposure, and timepoints
         function updateCustomizables(~,evtdata)
             evtdata.AffectedObject.update_children_to_reflect_number_of_timepoints;
+            switch evtdata.Source.Name
+                case 'duration'
+                    evtdata.AffectedObject.duration = evtdata.AffectedObject.mda_clock_relative(end);
+            end
         end
     end
 end
