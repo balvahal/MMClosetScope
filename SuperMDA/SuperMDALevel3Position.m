@@ -5,7 +5,7 @@ classdef SuperMDALevel3Position < handle
     % * xyz: the location of the position in an array *[x, y, z]*. The
     % units are micrometers.
     properties
-        continuous_focus_offset;
+        continuous_focus_offset; %always a positive number
         continuous_focus_bool = true;
         label = '';
         Parent_MDAGroup;
@@ -15,8 +15,10 @@ classdef SuperMDALevel3Position < handle
         position_function_before_handle;
         settings_order;
         settings;
-        xyz;
         xyz_custom_bool = false;
+    end
+    properties (SetObservable)
+        xyz;
     end
     %%
     %
@@ -32,6 +34,7 @@ classdef SuperMDALevel3Position < handle
             if nargin == 0
                 return
             elseif nargin == 2
+                addlistener(obj,'xyz','PostSet',@SuperMDALevel3Position.updateCustomizables);
                 obj.Parent_MDAGroup = my_Parent;
                 obj.xyz = mmhandle.pos;
                 obj.continuous_focus_offset = mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
@@ -196,6 +199,19 @@ classdef SuperMDALevel3Position < handle
                     end
                 otherwise
                     warning('settings:chg_all','The property entered was not recognized');
+            end
+        end
+    end
+    methods (Static)
+        %% update array length of customizables
+        % The customizables are xyz, exposure, and timepoints
+        function updateCustomizables(~,evtdata)
+            mydiff = evtdata.AffectedObject.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints - size(evtdata.AffectedObject.xyz,1);
+            if mydiff < 0
+                mydiff2 = evtdata.AffectedObject.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints+1;
+                evtdata.AffectedObject.xyz(mydiff2:end,:) = [];
+            elseif mydiff > 0
+                evtdata.AffectedObject.xyz(end+1:evtdata.AffectedObject.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),evtdata.AffectedObject.xyz(end,:));
             end
         end
     end

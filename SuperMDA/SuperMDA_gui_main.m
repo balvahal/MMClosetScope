@@ -300,15 +300,15 @@ if isempty(handles.mmhandle.SuperMDA.group_order) || ...
 end
 uitable_group_cell = cell(handles.mmhandle.SuperMDA.my_length,6);
 j=1;
-for i=handles.mmhandle.SuperMDA.group_order
-    uitable_group_cell(j,1) = handles.mmhandle.SuperMDA.group(i).label;
-    uitable_group_cell(j,2) = handles.mmhandle.SuperMDA.group(i).travel_offset;
-    uitable_group_cell(j,3) = handles.mmhandle.SuperMDA.group(i).my_length;
-    uitable_group_cell(j,4) = handles.mmhandle.SuperMDA.group(i).group_function_before_name;
-    uitable_group_cell(j,5) = handles.mmhandle.SuperMDA.group(i).group_function_after_name;
-    uitable_group_cell(j,6) = i;
-    j=j+1;
-end
+% for i=handles.mmhandle.SuperMDA.group_order
+%     uitable_group_cell(j,1) = handles.mmhandle.SuperMDA.group(i).label;
+%     uitable_group_cell(j,2) = handles.mmhandle.SuperMDA.group(i).travel_offset;
+%     uitable_group_cell(j,3) = handles.mmhandle.SuperMDA.group(i).my_length;
+%     uitable_group_cell(j,4) = handles.mmhandle.SuperMDA.group(i).group_function_before_name;
+%     uitable_group_cell(j,5) = handles.mmhandle.SuperMDA.group(i).group_function_after_name;
+%     uitable_group_cell(j,6) = i;
+%     j=j+1;
+% end
 set(handles.uitable_group,'Data',uitable_group_cell);
 %%%%%%%%%%% %%%%%%%%%%%
 % % %

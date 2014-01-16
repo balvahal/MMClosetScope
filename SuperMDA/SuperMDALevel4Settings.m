@@ -9,9 +9,7 @@ classdef SuperMDALevel4Settings < handle
     % acquired at each value offset in this list.
     properties
         % Variables that can be adjusted on the fly for feedback
-        timepoints = 1;
         timepoints_custom_bool = false;
-        exposure = 0;
         exposure_custom_bool = false;
         % Variables that control what type of image will be captured
         binning = 1;
@@ -31,6 +29,10 @@ classdef SuperMDALevel4Settings < handle
         % objects in the SuperMDA hierarchy
         Parent_MDAPosition;
     end
+    properties (SetObservable)
+        exposure;
+        timepoints;
+    end
     %%
     %
     methods
@@ -45,8 +47,12 @@ classdef SuperMDALevel4Settings < handle
             if nargin == 0
                 return
             elseif nargin == 2
+                addlistener(obj,'exposure','PostSet',@SuperMDALevel4Settings.updateCustomizables);
+                addlistener(obj,'timepoints','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 obj.Parent_MDAPosition = my_Parent;
                 obj.create_z_stack_list;
+                obj.exposure = 0;
+                obj.timepoints = 1;
                 return
             end
         end
@@ -105,6 +111,32 @@ classdef SuperMDALevel4Settings < handle
                 return
             end
             obj.exposure = ones(size(obj.timepoints))*obj.exposure(1);
+        end
+    end
+    %%
+    %
+    methods (Static)
+        %% update array length of customizables
+        % The customizables are xyz, exposure, and timepoints
+        function updateCustomizables(~,evtdata)
+            switch evtdata.Source.Name
+                case 'exposure'
+                    mydiff = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints - length(evtdata.AffectedObject.exposure);
+                    if mydiff < 0
+                        mydiff2 = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints+1;
+                        evtdata.AffectedObject.exposure(mydiff2:end,:) = [];
+                    elseif mydiff > 0
+                        evtdata.AffectedObject.exposure(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),evtdata.AffectedObject.exposure(end));
+                    end
+                case 'timepoints'
+                    mydiff = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints - length(evtdata.AffectedObject.timepoints);
+                    if mydiff < 0
+                        mydiff2 = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints+1;
+                        evtdata.AffectedObject.timepoints(mydiff2:end,:) = [];
+                    elseif mydiff > 0
+                        evtdata.AffectedObject.timepoints(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),evtdata.AffectedObject.timepoints(end));
+                    end
+            end
         end
     end
 end
