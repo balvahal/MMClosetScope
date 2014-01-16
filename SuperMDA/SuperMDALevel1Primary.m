@@ -19,6 +19,7 @@ classdef SuperMDALevel1Primary < handle
         channel_names;
         database;
         group;
+        group_order;
         mda_clock_absolute;
         mda_clock_pointer = 1;
         mda_clock_relative = 0;

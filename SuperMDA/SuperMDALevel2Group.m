@@ -23,6 +23,7 @@ classdef SuperMDALevel2Group < handle
         group_function_after_handle;
         group_function_before_name = 'super_mda_function_group_before_basic';
         group_function_before_handle;
+        position_order;
         travel_offset = -1000; %-1000 micrometers in the z direction to avoid scraping the objective on the bottom of a plate holder.
         travel_offset_bool = true;
     end

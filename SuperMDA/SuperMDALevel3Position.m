@@ -13,6 +13,7 @@ classdef SuperMDALevel3Position < handle
         position_function_after_handle;
         position_function_before_name = 'super_mda_function_position_before_basic';
         position_function_before_handle;
+        settings_order;
         settings;
         xyz;
         xyz_custom_bool = false;
