@@ -8,20 +8,15 @@ classdef SuperMDALevel4Settings < handle
     % * z_stack: a list of z-value offsets in micrometers. Images will be
     % acquired at each value offset in this list.
     properties
-        % Variables that can be adjusted on the fly for feedback
-        timepoints_custom_bool = false;
-        exposure_custom_bool = false;
         % Variables that control what type of image will be captured
         binning = 1;
         channel = 1;
-        period_multiplier = 1;
         % Z-stack variables
         z_origin_offset = 0;
         z_step_size = 0.3;
         z_stack_upper_offset = 0;
         z_stack_lower_offset = 0;
         z_stack;
-        z_stack_bool = false;
         % The function to be executed
         settings_function_name = 'super_mda_function_settings_basic';
         settings_function_handle;
@@ -30,7 +25,9 @@ classdef SuperMDALevel4Settings < handle
         Parent_MDAPosition;
     end
     properties (SetObservable)
+        % Variables that can be adjusted on the fly for feedback
         exposure;
+        period_multiplier;
         timepoints;
     end
     %%
@@ -49,15 +46,18 @@ classdef SuperMDALevel4Settings < handle
             elseif nargin == 2
                 addlistener(obj,'exposure','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 addlistener(obj,'timepoints','PostSet',@SuperMDALevel4Settings.updateCustomizables);
+                addlistener(obj,'period_multipler','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 obj.Parent_MDAPosition = my_Parent;
                 obj.create_z_stack_list;
                 obj.exposure = 0;
                 obj.timepoints = 1;
+                obj.period_multiplier = 1;
                 return
             end
         end
-        %%
-        % Make a copy of a handle object.
+        %% copy
+        % Makes a new instance of a settings object with the same info as
+        % source object.
         function new = copy(obj)
             % Instantiate new object of the same class.
             new = feval(class(obj));
@@ -69,7 +69,8 @@ classdef SuperMDALevel4Settings < handle
             end
         end
         %% clone
-        %
+        % Copies the information from the second input object into the
+        % first input object
         function obj = clone(obj,obj2)
             % Make sure objects are of the same type
             if class(obj) == class(obj2)
@@ -94,24 +95,6 @@ classdef SuperMDALevel4Settings < handle
                 obj.z_stack_upper_offset = obj.z_stack(end);
             end
         end
-        %% Calculate timepoints
-        %
-        function obj = calculate_timepoints(obj)
-            if obj.timepoints_custom_bool
-                return
-            end
-            obj.timepoints = zeros(size(obj.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
-            obj.timepoints(1:obj.period_multiplier:length(obj.timepoints)) = 1;
-        end
-        %% Set exposures for all timepoints
-        % The exposures for all timepoints will be set for the exposure of
-        % the first timepoint
-        function obj = set_exposures_for_all_timepoints(obj)
-            if obj.exposure_custom_bool && length(obj.exposure) == length(obj.timepoints)
-                return
-            end
-            obj.exposure = ones(size(obj.timepoints))*obj.exposure(1);
-        end
     end
     %%
     %
@@ -134,8 +117,13 @@ classdef SuperMDALevel4Settings < handle
                         mydiff2 = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints+1;
                         evtdata.AffectedObject.timepoints(mydiff2:end,:) = [];
                     elseif mydiff > 0
-                        evtdata.AffectedObject.timepoints(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = 1;
+                        %evtdata.AffectedObject.timepoints(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:)= 1;
+                        evtdata.AffectedObject.timepoints = zeros(size(evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
+                        evtdata.AffectedObject.timepoints(1:evtdata.AffectedObject.period_multiplier:length(evtdata.AffectedObject.timepoints)) = 1;
                     end
+                case 'period_multiplier'
+                    evtdata.AffectedObject.timepoints = zeros(size(evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
+                    evtdata.AffectedObject.timepoints(1:evtdata.AffectedObject.period_multiplier:length(evtdata.AffectedObject.timepoints)) = 1;
             end
         end
     end

@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 16-Jan-2014 19:46:49
+% Last Modified by GUIDE v2.5 17-Jan-2014 15:57:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -881,9 +881,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton26.
-function pushbutton26_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton26 (see GCBO) eventdata  reserved - to be
+% --- Executes on button press in pushbutton_awesomeAppsLaunch.
+function pushbutton_awesomeAppsLaunch_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_awesomeAppsLaunch (see GCBO) eventdata  reserved - to be
 % defined in a future version of MATLAB handles    structure with handles
 % and user data (see GUIDATA)
 
@@ -962,3 +962,17 @@ if isempty(eventdata.Indices)
 else
     set(hObject,'UserData',eventdata.Indices(1,1));
 end
+
+
+% --- Executes on button press in pushbutton_settings_setZUpper.
+function pushbutton_settings_setZUpper_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_setZUpper (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_settings_setZLower.
+function pushbutton_settings_setZLower_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_settings_setZLower (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

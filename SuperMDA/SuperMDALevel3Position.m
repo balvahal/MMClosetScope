@@ -15,7 +15,6 @@ classdef SuperMDALevel3Position < handle
         position_function_before_handle;
         settings_order;
         settings;
-        xyz_custom_bool = false;
     end
     properties (SetObservable)
         xyz;
@@ -117,12 +116,6 @@ classdef SuperMDALevel3Position < handle
                             obj.settings(i).binning = my_var;
                         end
                     end
-                case 'timepoints_custom_bool'
-                    if islogical(my_var) && length(my_var) == 1
-                        for i=1:obj.my_length
-                            obj.settings(i).timepoints_custom_bool = my_var;
-                        end
-                    end
                 case 'snap_function_name'
                     if ischar(my_var)
                         for i=1:obj.my_length
@@ -139,12 +132,6 @@ classdef SuperMDALevel3Position < handle
                     if isnumeric(my_var)
                         for i=1:obj.my_length
                             obj.settings(i).exposure = my_var;
-                        end
-                    end
-                case 'exposure_custom_bool'
-                    if islogical(my_var) && length(my_var) == 1
-                        for i=1:obj.my_length
-                            obj.settings(i).exposure_custom_bool = my_var;
                         end
                     end
                 case 'parent_mdaposition'

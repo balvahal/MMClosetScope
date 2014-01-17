@@ -132,12 +132,6 @@ classdef SuperMDALevel2Group < handle
                             obj.position(i).xyz = my_var;
                         end
                     end
-                case 'xyz_custom_bool'
-                    if islogical(my_var) && length(my_var) == 1
-                        for i=1:obj.my_length
-                            obj.position(i).xyz_custom_bool = my_var;
-                        end
-                    end
                 case 'position_function_after_name'
                     if ischar(my_var)
                         for i=1:obj.my_length
