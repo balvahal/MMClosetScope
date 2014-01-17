@@ -126,7 +126,7 @@ classdef SuperMDALevel4Settings < handle
                         mydiff2 = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints+1;
                         evtdata.AffectedObject.exposure(mydiff2:end,:) = [];
                     elseif mydiff > 0
-                        evtdata.AffectedObject.exposure(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),evtdata.AffectedObject.exposure(end));
+                        evtdata.AffectedObject.exposure(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = evtdata.AffectedObject.exposure(end);
                     end
                 case 'timepoints'
                     mydiff = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints - length(evtdata.AffectedObject.timepoints);
@@ -134,7 +134,7 @@ classdef SuperMDALevel4Settings < handle
                         mydiff2 = evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints+1;
                         evtdata.AffectedObject.timepoints(mydiff2:end,:) = [];
                     elseif mydiff > 0
-                        evtdata.AffectedObject.timepoints(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),evtdata.AffectedObject.timepoints(end));
+                        evtdata.AffectedObject.timepoints(end+1:evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.number_of_timepoints,:) = 1;
                     end
             end
         end
