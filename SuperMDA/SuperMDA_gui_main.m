@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 17-Jan-2014 15:57:31
+% Last Modified by GUIDE v2.5 17-Jan-2014 16:30:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -472,6 +472,9 @@ function pushbutton_group_drop_Callback(hObject, eventdata, handles)
 % handles and user data (see GUIDATA)
 myRow = get(handles.uitable_group,'UserData');
 myDat = get(handles.uitable_group,'Data');
+if size(myDat,1) == 1
+    return;
+end
 group_number = myDat{myRow,6};
 handles.mmhandle.SuperMDA.group(group_number) = [];
 % Update handles structure
@@ -976,3 +979,11 @@ function pushbutton_settings_setZLower_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_settings_setZLower (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes during object creation, after setting all properties.
+function uitable_group_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to uitable_group (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+set(hObject,'UserData',1);

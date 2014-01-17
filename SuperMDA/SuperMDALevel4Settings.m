@@ -46,7 +46,7 @@ classdef SuperMDALevel4Settings < handle
             elseif nargin == 2
                 addlistener(obj,'exposure','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 addlistener(obj,'timepoints','PostSet',@SuperMDALevel4Settings.updateCustomizables);
-                addlistener(obj,'period_multipler','PostSet',@SuperMDALevel4Settings.updateCustomizables);
+                addlistener(obj,'period_multiplier','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 obj.Parent_MDAPosition = my_Parent;
                 obj.create_z_stack_list;
                 obj.exposure = 0;
