@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 17-Jan-2014 16:30:08
+% Last Modified by GUIDE v2.5 20-Jan-2014 03:17:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -667,7 +667,7 @@ mypwd = pwd;
 cd(handles.mmhandle.SuperMDA.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-before');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).position_function_before_name = regexp(filename,'.*(?=\.m)','match');
+    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('position_function_before_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The position-function-before selection was invalid.');
 end
@@ -711,7 +711,7 @@ mypwd = pwd;
 cd(handles.mmhandle.SuperMDA.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-after');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).position_function_after_name = regexp(filename,'.*(?=\.m)','match');
+    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('position_function_after_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The position-function-after selection was invalid.');
 end
@@ -1007,9 +1007,14 @@ function uitable_group_CellSelectionCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)\
 myVal = get(hObject,'UserData');
 if isempty(eventdata.Indices) && myVal > size(get(handles.uitable_group,'Data'),1)
-    set(hObject,'UserData',size(get(handles.uitable_group,'Data'),1));
+    myInd = size(get(handles.uitable_group,'Data'),1);
+    set(hObject,'UserData',myInd);
 elseif isempty(eventdata.Indices)
-    return
+    if length(myVal) > 1
+        myInd = myVal(1);
+    else
+    myInd = myVal;
+    end
 else
     myDat = get(hObject,'Data');
     myInd = unique(eventdata.Indices(:,1));
@@ -1017,7 +1022,14 @@ else
         myInd(myInd==1)=[];
     end
     set(hObject,'UserData',myInd);
+    if length(myInd)>1
+        myInd = myInd(1);
+    end
 end
+handles.SuperMDA_index(1) = myInd;
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 
 % --- Executes on button press in pushbutton_settings_setZUpper.
@@ -1040,3 +1052,24 @@ function uitable_group_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 set(hObject,'UserData',1);
+
+
+% --- Executes when selected cell(s) is changed in uitable_position.
+function uitable_position_CellSelectionCallback(hObject, eventdata, handles)
+% hObject    handle to uitable_position (see GCBO)
+% eventdata  structure with the following fields (see UITABLE)
+%	Indices: row and column indices of the cell(s) currently selecteds
+% handles    structure with handles and user data (see GUIDATA)
+myVal = get(hObject,'UserData');
+if isempty(eventdata.Indices) && myVal > size(get(handles.uitable_position,'Data'),1)
+    set(hObject,'UserData',size(get(handles.uitable_position,'Data'),1));
+elseif isempty(eventdata.Indices)
+    return
+else
+    myDat = get(hObject,'Data');
+    myInd = unique(eventdata.Indices(:,1));
+    if length(myInd)==size(myDat,1)
+        myInd(myInd==1)=[];
+    end
+    set(hObject,'UserData',myInd);
+end
