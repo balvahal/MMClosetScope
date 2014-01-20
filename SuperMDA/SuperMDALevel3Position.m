@@ -36,7 +36,7 @@ classdef SuperMDALevel3Position < handle
                 addlistener(obj,'xyz','PostSet',@SuperMDALevel3Position.updateCustomizables);
                 obj.Parent_MDAGroup = my_Parent;
                 obj.xyz = mmhandle.pos;
-                obj.continuous_focus_offset = mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
+                obj.continuous_focus_offset = str2double(mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position'));
                 obj.settings = SuperMDALevel4Settings(mmhandle, obj);
                 return
             end

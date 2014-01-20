@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 20-Jan-2014 03:17:30
+% Last Modified by GUIDE v2.5 20-Jan-2014 14:49:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -346,7 +346,32 @@ set(handles.uitable_group,'Data',uitable_group_cell);
 %%%
 %%% POSITION
 %%%
-
+% uitable_position
+if isempty(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order) || ...
+        ~isempty(setdiff(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order,(1:handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length))) || ...
+        length(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order)~=handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length
+    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order = (1:handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length);
+end
+uitable_position_cell = cell(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length,10);
+j=1;
+for i=handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order
+    uitable_position_cell{j,1} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).label;
+    uitable_position_cell{j,2} = i;
+    if handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).continuous_focus_bool
+        uitable_position_cell{j,3} = 'yes';
+    else
+        uitable_position_cell{j,3} = 'no';
+    end
+    uitable_position_cell{j,4} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1);
+    uitable_position_cell{j,5} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(2);
+    uitable_position_cell{j,6} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(3);
+    uitable_position_cell{j,7} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).continuous_focus_offset;
+    uitable_position_cell{j,8} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).group_function_before_name;
+    uitable_position_cell{j,9} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).group_function_after_name;
+    uitable_position_cell{j,10} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).my_length;
+    j=j+1;
+end
+set(handles.uitable_position,'Data',uitable_position_cell);
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
@@ -490,6 +515,9 @@ myDat = get(handles.uitable_group,'Data');
 if size(myDat,1) == 1
     return;
 end
+if size(myDat,1) == length(myRow)
+    myRow(1) = [];
+end
 group_number = cell2mat(myDat(myRow,2));
 handles.mmhandle.SuperMDA.group(group_number) = [];
 my_group_order_number = sort(handles.mmhandle.SuperMDA.group_order(myRow));
@@ -624,14 +652,37 @@ function pushbutton_position_Add_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_Add (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).new_position;
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in pushbutton_position_drop.
 function pushbutton_position_drop_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_drop (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-
+myRow = get(handles.uitable_position,'UserData');
+myDat = get(handles.uitable_position,'Data');
+if size(myDat,1) == 1
+    return;
+end
+if size(myDat,1) == length(myRow)
+    myRow(1) = [];
+end
+position_number = cell2mat(myDat(myRow,2));
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number) = [];
+my_position_order_number = sort(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow));
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = [];
+my_adjustment = zeros(size(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order));
+for i = 1:length(my_position_order_number)
+    my_logic = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order > my_position_order_number(i);
+    my_adjustment = my_adjustment+ones(size(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order))*-1.*my_logic;
+end
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order + my_adjustment;
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in pushbutton_position_addGrid.
 function pushbutton_position_addGrid_Callback(hObject, eventdata, handles)
@@ -766,14 +817,42 @@ function pushbutton_position_moveUp_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_moveUp (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-
+myRow = get(handles.uitable_position,'UserData');
+if length(myRow) > 1
+    myRow = myRow(1);
+end
+myDat = get(handles.uitable_position,'Data');
+if size(myDat,1) == 1 || myRow == 1
+    return;
+end
+my_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order;
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow-1) = my_order(myRow);
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = my_order(myRow-1);
+set(handles.uitable_position,'UserData',myRow-1);
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in pushbutton_position_moveDown.
 function pushbutton_position_moveDown_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_moveDown (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-
+myRow = get(handles.uitable_position,'UserData');
+if length(myRow) > 1
+    myRow = myRow(1);
+end
+myDat = get(handles.uitable_position,'Data');
+if size(myDat,1) == 1 || myRow == size(myDat,1);
+    return;
+end
+my_group_order = handles.mmhandle.group(handles.SuperMDA_index(1)).position_order;
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow+1) = my_group_order(myRow);
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = my_group_order(myRow+1);
+set(handles.uitable_position,'UserData',myRow+1);
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in togglebutton_settings_changeAll.
 function togglebutton_settings_changeAll_Callback(hObject, eventdata, handles)
@@ -1004,7 +1083,7 @@ myDat = get(handles.uitable_group,'Data');
 group_number = myDat{myRow,2};
 switch myCol
     case 1
-        handles.mmhandle.SuperMDA.group(group_number).label = myDat{myRow,1};
+        handles.mmhandle.SuperMDA.group(group_number).label = eventdata.NewData;
     case 3
         if strcmp(eventdata.NewData,'yes')
             handles.mmhandle.SuperMDA.group(group_number).travel_offset_bool=true;
@@ -1035,11 +1114,7 @@ elseif isempty(eventdata.Indices)
         myInd = myVal;
     end
 else
-    myDat = get(hObject,'Data');
     myInd = unique(eventdata.Indices(:,1));
-    if length(myInd)==size(myDat,1)
-        myInd(myInd==1)=[];
-    end
     set(hObject,'UserData',myInd);
     if length(myInd)>1
         myInd = myInd(1);
@@ -1080,15 +1155,106 @@ function uitable_position_CellSelectionCallback(hObject, eventdata, handles)
 %	Indices: row and column indices of the cell(s) currently selecteds
 % handles    structure with handles and user data (see GUIDATA)
 myVal = get(hObject,'UserData');
-if isempty(eventdata.Indices) && myVal > size(get(handles.uitable_position,'Data'),1)
-    set(hObject,'UserData',size(get(handles.uitable_position,'Data'),1));
-elseif isempty(eventdata.Indices)
-    return
-else
-    myDat = get(hObject,'Data');
-    myInd = unique(eventdata.Indices(:,1));
-    if length(myInd)==size(myDat,1)
-        myInd(myInd==1)=[];
-    end
+% eventdata.Indices is empty when the data in the uigroup is changed
+if isempty(eventdata.Indices) && (min(myVal) > size(get(handles.uitable_position,'Data'),1))
+    myInd = size(get(handles.uitable_position,'Data'),1);
     set(hObject,'UserData',myInd);
+elseif isempty(eventdata.Indices)
+    if length(myVal) > 1
+        myInd = min(myVal);
+    else
+        myInd = myVal;
+    end
+else
+    myInd = unique(eventdata.Indices(:,1));
+    set(hObject,'UserData',myInd);
+    if length(myInd)>1
+        myInd = myInd(1);
+    end
 end
+handles.SuperMDA_index(2) = myInd;
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
+
+% --- Executes during object creation, after setting all properties.
+function uitable_position_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to uitable_position (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+set(hObject,'UserData',1);
+
+
+% --- Executes during object creation, after setting all properties.
+function uitable_settings_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to uitable_settings (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+set(hObject,'UserData',1);
+
+
+% --- Executes when selected cell(s) is changed in uitable_settings.
+function uitable_settings_CellSelectionCallback(hObject, eventdata, handles)
+% hObject    handle to uitable_settings (see GCBO)
+% eventdata  structure with the following fields (see UITABLE)
+%	Indices: row and column indices of the cell(s) currently selecteds
+% handles    structure with handles and user data (see GUIDATA)
+myVal = get(hObject,'UserData');
+% eventdata.Indices is empty when the data in the uigroup is changed
+if isempty(eventdata.Indices) && (min(myVal) > size(get(handles.uitable_settings,'Data'),1))
+    myInd = size(get(handles.uitable_settings,'Data'),1);
+    set(hObject,'UserData',myInd);
+elseif isempty(eventdata.Indices)
+    if length(myVal) > 1
+        myInd = min(myVal);
+    else
+        myInd = myVal;
+    end
+else
+    myInd = unique(eventdata.Indices(:,1));
+    set(hObject,'UserData',myInd);
+    if length(myInd)>1
+        myInd = myInd(1);
+    end
+end
+handles.SuperMDA_index(3) = myInd;
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
+
+
+% --- Executes when entered data in editable cell(s) in uitable_position.
+function uitable_position_CellEditCallback(hObject, eventdata, handles)
+% hObject    handle to uitable_position (see GCBO)
+% eventdata  structure with the following fields (see UITABLE)
+%	Indices: row and column indices of the cell(s) edited
+%	PreviousData: previous data for the cell(s) edited
+%	EditData: string(s) entered by the user
+%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
+%	Error: error string when failed to convert EditData to appropriate value for Data
+% handles    structure with handles and user data (see GUIDATA)
+myCol = eventdata.Indices(2);
+myRow = eventdata.Indices(1);
+myDat = get(handles.uitable_position,'Data');
+position_number = myDat{myRow,2};
+switch myCol
+    case 1
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).label = eventdata.NewData;
+    case 3
+        if strcmp(eventdata.NewData,'yes')
+            handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_bool=true;
+        else
+            handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_bool=false;
+        end
+    case 4
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).xyz(1) = eventdata.NewData;
+    case 5
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).xyz(2) = eventdata.NewData;
+    case 6
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).xyz(3) = eventdata.NewData;
+    case 7
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_offset = eventdata.NewData;
+end
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
