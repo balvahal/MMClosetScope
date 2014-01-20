@@ -93,11 +93,14 @@ classdef SuperMDALevel2Group < handle
         end
         %% create a new position
         %
-        function obj = new_position(obj)
+        function obj = new_position(obj,mmhandle)
             %first, borrow the properties from the last position to provide
             %a starting point and make sure the parent object is consistent
             obj.position(end+1) = obj.position(end).copy;
             obj.position_order(end+1) = obj.my_length;
+            mmhandle = Core_general_getXYZ(mmhandle);
+            obj.position(end).continuous_focus_offset = str2double(mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position'));
+            obj.position(end).xyz = mmhandle.pos;
             %second, add the current position information to this new
             %position
             %             mmhandle = Core_general_getXYZ(mmhandle);

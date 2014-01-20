@@ -35,6 +35,7 @@ classdef SuperMDALevel3Position < handle
             elseif nargin == 2
                 addlistener(obj,'xyz','PostSet',@SuperMDALevel3Position.updateCustomizables);
                 obj.Parent_MDAGroup = my_Parent;
+                mmhandle = Core_general_getXYZ(mmhandle);
                 obj.xyz = mmhandle.pos;
                 obj.continuous_focus_offset = str2double(mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position'));
                 obj.settings = SuperMDALevel4Settings(mmhandle, obj);

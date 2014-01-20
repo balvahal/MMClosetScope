@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 20-Jan-2014 14:49:02
+% Last Modified by GUIDE v2.5 20-Jan-2014 16:17:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -79,6 +79,10 @@ if isempty(mmhandleInputIndex)
 else
     handles.mmhandle = varargin{mmhandleInputIndex+1};
 end
+% update the settings table options
+myColumnFormat = get(handles.uitable_settings,'ColumnFormat');
+myColumnFormat{1} = handles.mmhandle.Channel';
+set(handles.uitable_settings,'ColumnFormat',myColumnFormat);
 % ----- Variables
 %
 %
@@ -652,7 +656,7 @@ function pushbutton_position_Add_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_Add (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).new_position;
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).new_position(handles.mmhandle);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -798,19 +802,25 @@ function togglebutton_group_changeAll_Callback(hObject, eventdata, handles)
 % togglebutton_group_changeAll
 
 
-% --- Executes on button press in pushbutton_position_reset.
-function pushbutton_position_reset_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_position_reset (see GCBO) eventdata
+% --- Executes on button press in pushbutton_position_update.
+function pushbutton_position_update_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_position_update (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-
+handles.mmhandle = Core_general_getXYZ(handles.mmhandle);
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz = handles.mmhandle.pos;
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).continuous_focus_offset = str2double(handles.mmhandle.core.getProperty(handles.mmhandle.AutoFocusDevice,'Position'));
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in pushbutton_position_goto.
 function pushbutton_position_goto_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_goto (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-
+handles.mmhandle = Core_general_setXYZ(handles.mmhandle, handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz);
+guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_position_moveUp.
 function pushbutton_position_moveUp_Callback(hObject, eventdata, handles)
@@ -1192,7 +1202,6 @@ function uitable_settings_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 set(hObject,'UserData',1);
 
-
 % --- Executes when selected cell(s) is changed in uitable_settings.
 function uitable_settings_CellSelectionCallback(hObject, eventdata, handles)
 % hObject    handle to uitable_settings (see GCBO)
@@ -1254,6 +1263,41 @@ switch myCol
         handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).xyz(3) = eventdata.NewData;
     case 7
         handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_offset = eventdata.NewData;
+end
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
+
+
+% --- Executes when entered data in editable cell(s) in uitable_settings.
+function uitable_settings_CellEditCallback(hObject, eventdata, handles)
+% hObject    handle to uitable_settings (see GCBO)
+% eventdata  structure with the following fields (see UITABLE)
+%	Indices: row and column indices of the cell(s) edited
+%	PreviousData: previous data for the cell(s) edited
+%	EditData: string(s) entered by the user
+%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
+%	Error: error string when failed to convert EditData to appropriate value for Data
+% handles    structure with handles and user data (see GUIDATA)
+myCol = eventdata.Indices(2);
+myRow = eventdata.Indices(1);
+myDat = get(handles.uitable_settings,'Data');
+my_number = myDat{myRow,2};
+switch myCol
+    case 1
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).channel = find(strcmp(eventdata.NewData,handles.mmhandle.Channel));
+    case 2
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).exposure = eventdata.NewData;
+    case 3
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).binning = eventdata.NewData;
+    case 4
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_step_size = eventdata.NewData;
+    case 5
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_stack_upper_offset = eventdata.NewData;
+    case 6
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_stack_lower_offset = eventdata.NewData;
+    case 7
+        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_origin_offset = eventdata.NewData;
 end
 % Update handles structure
 guidata(hObject, handles);
