@@ -13,7 +13,7 @@ classdef SuperMDALevel3Position < handle
         position_function_after_handle;
         position_function_before_name = 'super_mda_function_position_before_basic';
         position_function_before_handle;
-        settings_order;
+        settings_order = 1;
         settings;
     end
     properties (SetObservable)
@@ -92,6 +92,7 @@ classdef SuperMDALevel3Position < handle
             %first, borrow the properties from the last settings to provide
             %a starting point and make sure the parent object is consistent
             obj.settings(end+1) = obj.settings(end).copy;
+            obj.settings_order(end+1) = obj.my_length;
         end
         %%
         % Find the number of settings objects for this position.

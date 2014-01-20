@@ -23,7 +23,7 @@ classdef SuperMDALevel2Group < handle
         group_function_after_handle;
         group_function_before_name = 'super_mda_function_group_before_basic';
         group_function_before_handle;
-        position_order;
+        position_order = 1;
         travel_offset = -1000; %-1000 micrometers in the z direction to avoid scraping the objective on the bottom of a plate holder.
         travel_offset_bool = true;
     end
@@ -97,6 +97,7 @@ classdef SuperMDALevel2Group < handle
             %first, borrow the properties from the last position to provide
             %a starting point and make sure the parent object is consistent
             obj.position(end+1) = obj.position(end).copy;
+            obj.position_order(end+1) = obj.my_length;
             %second, add the current position information to this new
             %position
             %             mmhandle = Core_general_getXYZ(mmhandle);

@@ -19,7 +19,7 @@ classdef SuperMDALevel1Primary < handle
         channel_names;
         database;
         group;
-        group_order;
+        group_order = 1;
         mda_clock_absolute;
         mda_clock_pointer = 1;
         mda_clock_relative = 0;
@@ -107,6 +107,7 @@ classdef SuperMDALevel1Primary < handle
             %first, borrow the properties from the last group to provide a
             %starting point and make sure the parent object is consistent
             obj.group(end+1) = obj.group(end).copy;
+            obj.group_order(end+1) = obj.my_length;
         end
         %% Find the number of group objects.
         %

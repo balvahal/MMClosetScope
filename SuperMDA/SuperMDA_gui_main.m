@@ -52,7 +52,17 @@ function SuperMDA_figure_main_OpeningFcn(hObject, eventdata, handles, varargin)
 % figure eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA) varargin
 % command line arguments to SuperMDA_figure_main (see VARARGIN)
-
+%%%%%%%%%%% %%%%%%%%%%%
+% % %
+%%%%%%%%%%% %%%%%%%%%%%
+% % %
+%%%%%%%%%%% %%%%%%%%%%%
+% This is ALPHA version 0.1 of SuperMDA
+%%%%%%%%%%% %%%%%%%%%%%
+% % %
+%%%%%%%%%%% %%%%%%%%%%%
+% % %
+%%%%%%%%%%% %%%%%%%%%%%
 % Choose default command line output for SuperMDA_figure_main
 handles.output = hObject;
 
@@ -475,8 +485,14 @@ myDat = get(handles.uitable_group,'Data');
 if size(myDat,1) == 1
     return;
 end
-group_number = myDat{myRow,6};
+group_number = cell2mat(myDat(myRow,6));
 handles.mmhandle.SuperMDA.group(group_number) = [];
+my_group_order_number = handles.mmhandle.SuperMDA.group_order(group_number);
+handles.mmhandle.SuperMDA.group_order(group_number) = [];
+my_logic = handles.mmhandle.SuperMDA.group_order > my_group_order_number;
+my_adjustment = ones(size(handles.mmhandle.SuperMDA.group_order))*-1.*my_logic;
+handles.mmhandle.SuperMDA.group_order = handles.mmhandle.SuperMDA.group_order + my_adjustment;
+
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -514,7 +530,7 @@ mypwd = pwd;
 cd(handles.mmhandle.SuperMDA.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-before');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).group_function_before_name = regexp(filename,'.*(?=\.m)','match');
+    handles.mmhandle.SuperMDA.change_all_group('group_function_before_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The group-function-before selection was invalid.');
 end
@@ -557,7 +573,7 @@ mypwd = pwd;
 cd(handles.mmhandle.SuperMDA.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-after');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).group_function_after_name = regexp(filename,'.*(?=\.m)','match');
+    handles.mmhandle.SuperMDA.change_all_group('group_function_after_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The group-function-before selection was invalid.');
 end
@@ -909,6 +925,21 @@ function pushbutton_group_move_up_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_group_move_up (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
+myRow = get(handles.uitable_group,'UserData');
+if length(myRow) > 1
+    myRow = myRow(1);
+end
+myDat = get(handles.uitable_group,'Data');
+if size(myDat,1) == 1 || myRow == 1
+    return;
+end
+my_group_order = handles.mmhandle.SuperMDA.group_order;
+handles.mmhandle.SuperMDA.group_order(myRow-1) = my_group_order(myRow);
+handles.mmhandle.SuperMDA.group_order(myRow) = my_group_order(myRow-1);
+set(handles.uitable_group,'UserData',myRow-1);
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 
 % --- Executes on button press in pushbutton_group_move_down.
@@ -916,7 +947,21 @@ function pushbutton_group_move_down_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_group_move_down (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
-
+myRow = get(handles.uitable_group,'UserData');
+if length(myRow) > 1
+    myRow = myRow(1);
+end
+myDat = get(handles.uitable_group,'Data');
+if size(myDat,1) == 1 || myRow == size(myDat,1);
+    return;
+end
+my_group_order = handles.mmhandle.SuperMDA.group_order;
+handles.mmhandle.SuperMDA.group_order(myRow+1) = my_group_order(myRow);
+handles.mmhandle.SuperMDA.group_order(myRow) = my_group_order(myRow+1);
+set(handles.uitable_group,'UserData',myRow+1);
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in pushbutton_run_mfile.
 function pushbutton_run_mfile_Callback(hObject, eventdata, handles)
@@ -959,11 +1004,19 @@ function uitable_group_CellSelectionCallback(hObject, eventdata, handles)
 % hObject    handle to uitable_group (see GCBO)
 % eventdata  structure with the following fields (see UITABLE)
 %	Indices: row and column indices of the cell(s) currently selecteds
-% handles    structure with handles and user data (see GUIDATA)
-if isempty(eventdata.Indices)
+% handles    structure with handles and user data (see GUIDATA)\
+myVal = get(hObject,'UserData');
+if isempty(eventdata.Indices) && myVal > size(get(handles.uitable_group,'Data'),1)
     set(hObject,'UserData',size(get(handles.uitable_group,'Data'),1));
+elseif isempty(eventdata.Indices)
+    return
 else
-    set(hObject,'UserData',eventdata.Indices(1,1));
+    myDat = get(hObject,'Data');
+    myInd = unique(eventdata.Indices(:,1));
+    if length(myInd)==size(myDat,1)
+        myInd(myInd==1)=[];
+    end
+    set(hObject,'UserData',myInd);
 end
 
 
