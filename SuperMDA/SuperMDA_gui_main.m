@@ -275,13 +275,11 @@ function pushbutton_time_points_customize_Callback(hObject, eventdata, handles)
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
-%%%%%%%%%%% %%%%%%%%%%%
-%%%%%%%%%%% %%%%%%%%%%%
+%%%%%%%%%%% %%%%%%%%%%% %%%%%%%%%%%
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
-%%%%%%%%%%% %%%%%%%%%%%
-%%%%%%%%%%% %%%%%%%%%%%
+%%%%%%%%%%% %%%%%%%%%%% %%%%%%%%%%%
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
@@ -302,6 +300,9 @@ end
 % --- Updates the information displayed on the main figure whenever the
 % sampleIndex is changed
 function main_updateInfo(hObject)
+%%%
+%%% PRIMARY
+%%%
 % hObject   handle to the main figure primary time points
 handles = guidata(hObject);
 units_of_time_conversion = [1, 1/60, 1/3600, 1/86400;... % from seconds to
@@ -315,6 +316,9 @@ set(handles.edit_primary_time_points_duration,'String',num2str(my_value));
 set(handles.edit_primary_numberOfTmpts,'String',num2str(handles.mmhandle.SuperMDA.number_of_timepoints));
 % edit_primary_outputDirectory
 set(handles.edit_primary_outputDirectory,'String',handles.mmhandle.SuperMDA.output_directory);
+%%%
+%%% GROUP
+%%%
 % edit_group_travel_offset
 set(handles.edit_group_travel_offset,'String',num2str(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).travel_offset));
 % uitable_group
@@ -327,34 +331,35 @@ uitable_group_cell = cell(handles.mmhandle.SuperMDA.my_length,6);
 j=1;
 for i=handles.mmhandle.SuperMDA.group_order
     uitable_group_cell{j,1} = handles.mmhandle.SuperMDA.group(i).label;
+    uitable_group_cell{j,2} = i;
     if handles.mmhandle.SuperMDA.group(i).travel_offset_bool
-        uitable_group_cell{j,2} = 'yes';
+        uitable_group_cell{j,3} = 'yes';
     else
-        uitable_group_cell{j,2} = 'no';
+        uitable_group_cell{j,3} = 'no';
     end
-    uitable_group_cell{j,3} = handles.mmhandle.SuperMDA.group(i).my_length;
-    uitable_group_cell{j,4} = handles.mmhandle.SuperMDA.group(i).group_function_before_name;
-    uitable_group_cell{j,5} = handles.mmhandle.SuperMDA.group(i).group_function_after_name;
-    uitable_group_cell{j,6} = i;
+    uitable_group_cell{j,4} = handles.mmhandle.SuperMDA.group(i).my_length;
+    uitable_group_cell{j,5} = handles.mmhandle.SuperMDA.group(i).group_function_before_name;
+    uitable_group_cell{j,6} = handles.mmhandle.SuperMDA.group(i).group_function_after_name;
     j=j+1;
 end
 set(handles.uitable_group,'Data',uitable_group_cell);
+%%%
+%%% POSITION
+%%%
+
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
-%%%%%%%%%%% %%%%%%%%%%%
-%%%%%%%%%%% %%%%%%%%%%%
+%%%%%%%%%%% %%%%%%%%%%% %%%%%%%%%%%
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
-%%%%%%%%%%% %%%%%%%%%%%
-%%%%%%%%%%% %%%%%%%%%%%
+%%%%%%%%%%% %%%%%%%%%%% %%%%%%%%%%%
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
-%%%%%%%%%%% %%%%%%%%%%%
-%%%%%%%%%%% %%%%%%%%%%%
+%%%%%%%%%%% %%%%%%%%%%% %%%%%%%%%%%
 % % %
 %%%%%%%%%%% %%%%%%%%%%%
 % % %
@@ -485,14 +490,16 @@ myDat = get(handles.uitable_group,'Data');
 if size(myDat,1) == 1
     return;
 end
-group_number = cell2mat(myDat(myRow,6));
+group_number = cell2mat(myDat(myRow,2));
 handles.mmhandle.SuperMDA.group(group_number) = [];
-my_group_order_number = handles.mmhandle.SuperMDA.group_order(group_number);
-handles.mmhandle.SuperMDA.group_order(group_number) = [];
-my_logic = handles.mmhandle.SuperMDA.group_order > my_group_order_number;
-my_adjustment = ones(size(handles.mmhandle.SuperMDA.group_order))*-1.*my_logic;
+my_group_order_number = sort(handles.mmhandle.SuperMDA.group_order(myRow));
+handles.mmhandle.SuperMDA.group_order(myRow) = [];
+my_adjustment = zeros(size(handles.mmhandle.SuperMDA.group_order));
+for i = 1:length(my_group_order_number)
+    my_logic = handles.mmhandle.SuperMDA.group_order > my_group_order_number(i);
+    my_adjustment = my_adjustment+ones(size(handles.mmhandle.SuperMDA.group_order))*-1.*my_logic;
+end
 handles.mmhandle.SuperMDA.group_order = handles.mmhandle.SuperMDA.group_order + my_adjustment;
-
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -808,7 +815,18 @@ function pushbutton_settings_findFunction_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_settings_findFunction (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
-
+mypwd = pwd;
+cd(handles.mmhandle.SuperMDA.output_directory);
+[filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
+if exist(fullfile(pathname,filename),'file')
+    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).change_all_settings('settings_function_name',regexp(filename,'.*(?=\.m)','match'));
+else
+    disp('The settings-function selection was invalid.');
+end
+cd(mypwd);
+% Update handles structure
+guidata(hObject, handles);
+handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in pushbutton_settings_add.
 function pushbutton_settings_add_Callback(hObject, eventdata, handles)
@@ -902,9 +920,9 @@ end
 
 % --- Executes on button press in pushbutton_awesomeAppsLaunch.
 function pushbutton_awesomeAppsLaunch_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_awesomeAppsLaunch (see GCBO) eventdata  reserved - to be
-% defined in a future version of MATLAB handles    structure with handles
-% and user data (see GUIDATA)
+% hObject    handle to pushbutton_awesomeAppsLaunch (see GCBO) eventdata
+% reserved - to be defined in a future version of MATLAB handles
+% structure with handles and user data (see GUIDATA)
 
 
 % --- Executes on button press in pushbutton_primary_save_mda.
@@ -923,8 +941,8 @@ cd(mypwd);
 % --- Executes on button press in pushbutton_group_move_up.
 function pushbutton_group_move_up_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_group_move_up (see GCBO) eventdata
-% reserved - to be defined in a future version of MATLAB handles
-% structure with handles and user data (see GUIDATA)
+% reserved - to be defined in a future version of MATLAB handles structure
+% with handles and user data (see GUIDATA)
 myRow = get(handles.uitable_group,'UserData');
 if length(myRow) > 1
     myRow = myRow(1);
@@ -945,8 +963,8 @@ handles.updateInfo(handles.gui_main);
 % --- Executes on button press in pushbutton_group_move_down.
 function pushbutton_group_move_down_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_group_move_down (see GCBO) eventdata
-% reserved - to be defined in a future version of MATLAB handles
-% structure with handles and user data (see GUIDATA)
+% reserved - to be defined in a future version of MATLAB handles structure
+% with handles and user data (see GUIDATA)
 myRow = get(handles.uitable_group,'UserData');
 if length(myRow) > 1
     myRow = myRow(1);
@@ -972,26 +990,26 @@ function pushbutton_run_mfile_Callback(hObject, eventdata, handles)
 
 % --- Executes when entered data in editable cell(s) in uitable_group.
 function uitable_group_CellEditCallback(hObject, eventdata, handles)
-% hObject    handle to uitable_group (see GCBO)
-% eventdata  structure with the following fields (see UITABLE)
-%	Indices: row and column indices of the cell(s) edited
-%	PreviousData: previous data for the cell(s) edited
-%	EditData: string(s) entered by the user
-%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
-%	Error: error string when failed to convert EditData to appropriate value for Data
+% hObject    handle to uitable_group (see GCBO) eventdata  structure with
+% the following fields (see UITABLE)
+%	Indices: row and column indices of the cell(s) edited PreviousData:
+%	previous data for the cell(s) edited EditData: string(s) entered by the
+%	user NewData: EditData or its converted form set on the Data property.
+%	Empty if Data was not changed Error: error string when failed to
+%	convert EditData to appropriate value for Data
 % handles    structure with handles and user data (see GUIDATA)
 myCol = eventdata.Indices(2);
 myRow = eventdata.Indices(1);
 myDat = get(handles.uitable_group,'Data');
-group_number = myDat{myRow,6};
+group_number = myDat{myRow,2};
 switch myCol
     case 1
         handles.mmhandle.SuperMDA.group(group_number).label = myDat{myRow,1};
-    case 2
+    case 3
         if strcmp(eventdata.NewData,'yes')
-        handles.mmhandle.SuperMDA.group(group_number).travel_offset_bool=true;
+            handles.mmhandle.SuperMDA.group(group_number).travel_offset_bool=true;
         else
-        handles.mmhandle.SuperMDA.group(group_number).travel_offset_bool=false;
+            handles.mmhandle.SuperMDA.group(group_number).travel_offset_bool=false;
         end
 end
 % Update handles structure
@@ -1001,19 +1019,20 @@ handles.updateInfo(handles.gui_main);
 
 % --- Executes when selected cell(s) is changed in uitable_group.
 function uitable_group_CellSelectionCallback(hObject, eventdata, handles)
-% hObject    handle to uitable_group (see GCBO)
-% eventdata  structure with the following fields (see UITABLE)
+% hObject    handle to uitable_group (see GCBO) eventdata  structure with
+% the following fields (see UITABLE)
 %	Indices: row and column indices of the cell(s) currently selecteds
 % handles    structure with handles and user data (see GUIDATA)\
 myVal = get(hObject,'UserData');
-if isempty(eventdata.Indices) && myVal > size(get(handles.uitable_group,'Data'),1)
+% eventdata.Indices is empty when the data in the uigroup is changed
+if isempty(eventdata.Indices) && (min(myVal) > size(get(handles.uitable_group,'Data'),1))
     myInd = size(get(handles.uitable_group,'Data'),1);
     set(hObject,'UserData',myInd);
 elseif isempty(eventdata.Indices)
     if length(myVal) > 1
-        myInd = myVal(1);
+        myInd = min(myVal);
     else
-    myInd = myVal;
+        myInd = myVal;
     end
 else
     myDat = get(hObject,'Data');
@@ -1034,30 +1053,30 @@ handles.updateInfo(handles.gui_main);
 
 % --- Executes on button press in pushbutton_settings_setZUpper.
 function pushbutton_settings_setZUpper_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_settings_setZUpper (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% hObject    handle to pushbutton_settings_setZUpper (see GCBO) eventdata
+% reserved - to be defined in a future version of MATLAB handles
+% structure with handles and user data (see GUIDATA)
 
 
 % --- Executes on button press in pushbutton_settings_setZLower.
 function pushbutton_settings_setZLower_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_settings_setZLower (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% hObject    handle to pushbutton_settings_setZLower (see GCBO) eventdata
+% reserved - to be defined in a future version of MATLAB handles
+% structure with handles and user data (see GUIDATA)
 
 
 % --- Executes during object creation, after setting all properties.
 function uitable_group_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to uitable_group (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% hObject    handle to uitable_group (see GCBO) eventdata  reserved - to be
+% defined in a future version of MATLAB handles    empty - handles not
+% created until after all CreateFcns called
 set(hObject,'UserData',1);
 
 
 % --- Executes when selected cell(s) is changed in uitable_position.
 function uitable_position_CellSelectionCallback(hObject, eventdata, handles)
-% hObject    handle to uitable_position (see GCBO)
-% eventdata  structure with the following fields (see UITABLE)
+% hObject    handle to uitable_position (see GCBO) eventdata  structure
+% with the following fields (see UITABLE)
 %	Indices: row and column indices of the cell(s) currently selecteds
 % handles    structure with handles and user data (see GUIDATA)
 myVal = get(hObject,'UserData');
