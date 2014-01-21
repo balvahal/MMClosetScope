@@ -13,9 +13,6 @@ classdef SuperMDALevel4Settings < handle
         channel = 1;
         % Z-stack variables
         z_origin_offset = 0;
-        z_step_size = 0.3;
-        z_stack_upper_offset = 0;
-        z_stack_lower_offset = 0;
         z_stack;
         % The function to be executed
         settings_function_name = 'super_mda_function_settings_basic';
@@ -29,6 +26,9 @@ classdef SuperMDALevel4Settings < handle
         exposure;
         period_multiplier;
         timepoints;
+        z_step_size = 0.3;
+        z_stack_upper_offset = 0;
+        z_stack_lower_offset = 0;
     end
     %%
     %
@@ -47,6 +47,9 @@ classdef SuperMDALevel4Settings < handle
                 addlistener(obj,'exposure','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 addlistener(obj,'timepoints','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 addlistener(obj,'period_multiplier','PostSet',@SuperMDALevel4Settings.updateCustomizables);
+                addlistener(obj,'z_step_size','PostSet',@SuperMDALevel4Settings.updateCustomizables);
+                addlistener(obj,'z_stack_upper_offset','PostSet',@SuperMDALevel4Settings.updateCustomizables);
+                addlistener(obj,'z_stack_lower_offset','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 obj.Parent_MDAPosition = my_Parent;
                 obj.create_z_stack_list;
                 obj.exposure = 0;
@@ -124,6 +127,12 @@ classdef SuperMDALevel4Settings < handle
                 case 'period_multiplier'
                     evtdata.AffectedObject.timepoints = zeros(size(evtdata.AffectedObject.Parent_MDAPosition.Parent_MDAGroup.Parent_MDAPrimary.mda_clock_relative));
                     evtdata.AffectedObject.timepoints(1:evtdata.AffectedObject.period_multiplier:length(evtdata.AffectedObject.timepoints)) = 1;
+                case 'z_step_size'
+                    evtdata.AffectedObject.create_z_stack_list;
+                case 'z_stack_upper_offset'
+                    evtdata.AffectedObject.create_z_stack_list;
+                case 'z_stack_lower_offset'
+                    evtdata.AffectedObject.create_z_stack_list;
             end
         end
     end

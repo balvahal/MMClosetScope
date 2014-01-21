@@ -32,5 +32,6 @@ for h = 1:length(SuperMDA.group(i).position(j).settings(k).z_stack)
     %
     image_description = '';
     SuperMDA.update_database(filenamePNG,image_description);
-    disp(filenamePNG);
+    imshow(mmhandle.I);
+    title(filenamePNG);
 end
