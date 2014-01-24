@@ -68,10 +68,18 @@ mmhandle.mda = mmhandle.gui.getAcquisitionEngine();
 % The FocusDevice is the z-drive in the microscope. The
 % AutoFocusDevice controls the perfect focus system of the microscope. The
 % AutoFocusStatusDevice reports the the status of the perfect focus system.
+%
+% For the Nikon Ti Eclipse that we use in the Lahav Lab the Z-drive and
+% perfect focus system are both defined as "FocusDevice". To get the label
+% of each device the names must be known ahead of time and hard-coded
+% below. The section of code below is therefore unique to the Lahav Lab
+% setup and will likely cause an error on scopes that are not Nikon Ti
+% Eclipse. To remedy this error determine the names of the focus drives
+% using the micro-manager gui and exploring the device/property browser.
 mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
-%mmhandle.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
+mmhandle.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
 mmhandle.FocusDevice = mmhandle.core.getFocusDevice;
-%mmhandle.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
+mmhandle.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
 mmhandle.AutoFocusDevice = mmhandle.core.getFocusDevice;
 mmhandle.AutoFocusStatusDevice = mmhandle.core.getAutoFocusDevice;
 mmhandle = Core_general_getXYZ(mmhandle);

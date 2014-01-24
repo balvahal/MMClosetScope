@@ -285,7 +285,7 @@ classdef SuperMDALevel1Primary < handle
         end
         %% update_database
         %
-        function obj = update_database(obj,filename,image_description)
+        function obj = update_database(obj,filename,image_description,mmhandle)
             runtime_index2 = num2cell(obj.runtime_index); % a quirk about assigning the contents or a vector to multiple variables means the vector must first be made into a cell.
             [t,g,p,s,z] = deal(runtime_index2{:}); %[timepoint,group,position,settings,z_stack]
             my_dataset = dataset(...
@@ -313,7 +313,7 @@ classdef SuperMDALevel1Primary < handle
                 {z,'z_order'},... %the order of zstack from bottom to top
                 {cellstr(image_description),'image_description'});
             obj.database = [obj.database;my_dataset]; %add a new row to the dataset
-            notify(obj,'database_updated');
+            notify(obj,'database_updated',SuperMDA_event_database_updated(mmhandle));
         end
     end
     %%

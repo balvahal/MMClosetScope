@@ -12,6 +12,7 @@ function mmhandle = Core_general_snapImage(mmhandle, varargin)
 p = inputParser;
 addRequired(p, 'mmhandle', @isstruct);
 addOptional(p, 'Channel', 'noinput', @isstr);
+addOptional(p, 'Exposure', -1, @isinteger);
 parse(p,mmhandle, varargin{:});
 if ~strcmp(p.Results.Channel,'noinput')
     mmhandle.core.setConfig('Channel',p.Results.channel);
@@ -19,8 +20,13 @@ if ~strcmp(p.Results.Channel,'noinput')
     % |core.getProperty('TIFilterBlock1','Label')
     % |core.getProperty(mmhandle.ShutterDevice,'Name')|
 end
+if p.Results.Exposure >= 0
+    mmhandle.core.setExposure(p.Results.Exposure);
+end
 %%
 %
+% snapImage cannot be called twice in a row or an error will be thrown.
+% getImage must be called inbetween uses of snapImage.
 mmhandle.core.snapImage; %MATLAB will wait for this method to finish, unlike XYZ movement.
 I = mmhandle.core.getImage;
 width = mmhandle.core.getImageWidth;
@@ -32,7 +38,7 @@ elseif mmhandle.core.getBytesPerPixel == 2 %this indicates a 16bit image
     %% Check the bit-depth of the camera
     % If the bit-depth is less than 16-bits, then shift the raw image data
     % to fill the 16-bits.
-    bitdepth = str2double(mmhandle.core.getProperty(mmhandle.CameraDevice,'BitDepth').toCharArray');
+    bitdepth = str2double(mmhandle.core.getProperty(mmhandle.CameraDevice,'Bits per Channel').toCharArray');
     if bitdepth < 16
         I = bitshift(I,16-bitdepth);
     end

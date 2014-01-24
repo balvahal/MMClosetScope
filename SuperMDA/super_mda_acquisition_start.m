@@ -5,6 +5,10 @@ function super_mda_acquisition_start(mmhandle)
 %
 SuperMDA = mmhandle.SuperMDA;
 SuperMDA.finalize_MDA;
+%% Create update window
+% Create a figure that will show the latest image acquired by the SuperMDA.
+figUpdate = SuperMDA_gui_imageLastTaken('mmhandle',mmhandle);
+mylistener1 = addlistener(SuperMDA,'database_updated',@(src,evnt)super_mda_function_database_updated(figUpdate,src,evnt));
 %% Execute the MDA
 % Immediately before MDA begins the absolute clock must be started...
 SuperMDA.configure_clock_absolute;
