@@ -5,7 +5,7 @@ classdef SuperMDA_event_database_updated < event.EventData
 
    methods
       function data = SuperMDA_event_database_updated(mmhandle)
-         data.I = mmhandle.I;
+         data.mmhandle = mmhandle;
       end
    end
 end

@@ -563,6 +563,7 @@ for i = 1:length(my_group_order_number)
     my_adjustment = my_adjustment+ones(size(handles.mmhandle.SuperMDA.group_order))*-1.*my_logic;
 end
 handles.mmhandle.SuperMDA.group_order = handles.mmhandle.SuperMDA.group_order + my_adjustment;
+set(handles.uitable_group,'UserData',handles.mmhandle.SuperMDA.my_length);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -715,6 +716,7 @@ for i = 1:length(my_position_order_number)
     my_adjustment = my_adjustment+ones(size(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order))*-1.*my_logic;
 end
 handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order + my_adjustment;
+set(handles.uitable_position,'UserData',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -887,9 +889,9 @@ myDat = get(handles.uitable_position,'Data');
 if size(myDat,1) == 1 || myRow == size(myDat,1);
     return;
 end
-my_group_order = handles.mmhandle.group(handles.SuperMDA_index(1)).position_order;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow+1) = my_group_order(myRow);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = my_group_order(myRow+1);
+my_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order;
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow+1) = my_order(myRow);
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = my_order(myRow+1);
 set(handles.uitable_position,'UserData',myRow+1);
 % Update handles structure
 guidata(hObject, handles);
@@ -985,6 +987,7 @@ end
 handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order + my_adjustment;
 handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
 handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
+set(handles.uitable_settings,'UserData',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1024,9 +1027,9 @@ myDat = get(handles.uitable_settings,'Data');
 if size(myDat,1) == 1 || myRow == size(myDat,1);
     return;
 end
-my_group_order = handles.mmhandle.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow+1) = my_group_order(myRow);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = my_group_order(myRow+1);
+my_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order;
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow+1) = my_order(myRow);
+handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = my_order(myRow+1);
 set(handles.uitable_settings,'UserData',myRow+1);
 handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
 % Update handles structure
@@ -1219,7 +1222,9 @@ else
         myInd = myInd(1);
     end
 end
-handles.SuperMDA_index(1) = myInd;
+handles.SuperMDA_index(1) = handles.mmhandle.SuperMDA.group_order(myInd);
+handles.SuperMDA_index(2) = 1;
+handles.SuperMDA_index(3) = 1;
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1271,7 +1276,8 @@ else
         myInd = myInd(1);
     end
 end
-handles.SuperMDA_index(2) = myInd;
+handles.SuperMDA_index(2) = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myInd);
+handles.SuperMDA_index(3) = 1;
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1315,7 +1321,7 @@ else
         myInd = myInd(1);
     end
 end
-handles.SuperMDA_index(3) = myInd;
+handles.SuperMDA_index(3) = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myInd);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);

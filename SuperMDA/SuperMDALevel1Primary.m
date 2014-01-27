@@ -151,6 +151,19 @@ classdef SuperMDALevel1Primary < handle
                             obj.group(i).Parent_MDAGroup = my_var;
                         end
                     end
+                case 'position'
+                    if isa(my_var,'SuperMDALevel3Position')
+                        for i=1:obj.my_length
+                            obj.group(i).position = [];
+                            for j=1:length(my_var)
+                                if j == 1
+                                    obj.group(i).position = my_var(j).copy;
+                                else
+                                    obj.group(i).position(j) = my_var(j).copy;
+                                end
+                            end
+                        end
+                    end
                 case 'position_order'
                     if isnumeric(my_var)
                         for i=1:obj.my_length
