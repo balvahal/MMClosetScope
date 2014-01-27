@@ -124,10 +124,10 @@ classdef SuperMDALevel3Position < handle
                             obj.settings(i).snap_function_name = my_var;
                         end
                     end
-                case 'Channel'
+                case 'channel'
                     if isnumeric(my_var) && length(my_var) == 1
                         for i=1:obj.my_length
-                            obj.settings(i).Channel = my_var;
+                            obj.settings(i).channel = my_var;
                         end
                     end
                 case 'exposure'

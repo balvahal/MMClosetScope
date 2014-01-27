@@ -21,7 +21,7 @@ if ~strcmp(p.Results.Channel,'noinput')
     % |core.getProperty(mmhandle.ShutterDevice,'Name')|
 end
 if p.Results.Exposure >= 0
-    mmhandle.core.setExposure(p.Results.Exposure);
+    mmhandle.core.setExposure(mmhandle.CameraDevice,p.Results.Exposure);
 end
 %%
 %

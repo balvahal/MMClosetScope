@@ -151,6 +151,12 @@ classdef SuperMDALevel1Primary < handle
                             obj.group(i).Parent_MDAGroup = my_var;
                         end
                     end
+                case 'position_order'
+                    if isnumeric(my_var)
+                        for i=1:obj.my_length
+                            obj.group(i).position_order = my_var;
+                        end
+                    end
                 case 'label'
                     if ischar(my_var)
                         for i=1:obj.my_length
@@ -265,6 +271,10 @@ classdef SuperMDALevel1Primary < handle
                         ~isempty(setdiff(obj.group(i).position_order,(1:obj.group(i).my_length))) || ...
                         length(obj.group(i).position_order)~=obj.group(i).my_length
                     obj.group(i).position_order = (1:obj.group(i).my_length);
+                end
+                if isempty(obj.group(i).label)
+                    mystr = sprintf('group%d',i);
+                    obj.group(i).label = mystr;
                 end
                 for j = 1:max(size(obj.group(i).position))
                     obj.group(i).position(j).position_function_before_handle = str2func(obj.group(i).position(j).position_function_before_name);

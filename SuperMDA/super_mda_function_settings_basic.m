@@ -8,7 +8,7 @@ i = SuperMDA.runtime_index(2); %group
 j = SuperMDA.runtime_index(3); %position
 k = SuperMDA.runtime_index(4); %settings
 mmhandle.core.setConfig('Channel',SuperMDA.channel_names{SuperMDA.group(i).position(j).settings(k).channel});
-mmhandle.core.setExposure(SuperMDA.group(i).position(j).settings(k).exposure(t));
+mmhandle.core.setExposure(mmhandle.CameraDevice,SuperMDA.group(i).position(j).settings(k).exposure(t));
 %% Check to make sure the directory tree exists to store image files
 %
 pngpath = fullfile(SuperMDA.output_directory,SuperMDA.group(i).label);

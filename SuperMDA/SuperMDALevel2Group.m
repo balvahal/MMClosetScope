@@ -151,7 +151,20 @@ classdef SuperMDALevel2Group < handle
                 case 'settings'
                     if isa(my_var,'SuperMDALevel4Settings')
                         for i=1:obj.my_length
-                            obj.position(i).settings = my_var;
+                            obj.position(i).settings = [];
+                            for j=1:length(my_var)
+                                if j == 1
+                                    obj.position(i).settings = my_var(j).copy;
+                                else
+                                    obj.position(i).settings(j) = my_var(j).copy;
+                                end
+                            end
+                        end
+                    end
+                case 'settings_order'
+                    if isnumeric(my_var)
+                        for i=1:obj.my_length
+                            obj.position(i).settings_order = my_var;
                         end
                     end
                 case 'parent_mdagroup'

@@ -16,7 +16,7 @@ end
         pos_next = mmhandle.pos + [0,0,SuperMDA.group(i).travel_offset];
         mmhandle = Core_general_setXYZ(mmhandle,pos_next(3),'direction','z');
         %% find and travel to next position
-        if length(SuperMDA.group) == 1 || i == length(SuperMDA.group)
+        if length(SuperMDA.group) == 1 || i == SuperMDA.my_length
             pos_next = SuperMDA.group(1).position(1).xyz;
         else
             pos_next = SuperMDA.group(i+1).position(1).xyz;
