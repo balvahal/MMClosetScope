@@ -1,6 +1,6 @@
 classdef SuperMDA_event_database_updated < event.EventData
    properties
-      I
+      mmhandle
    end
 
    methods

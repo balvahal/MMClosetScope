@@ -366,9 +366,9 @@ for i=handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order
     else
         uitable_position_cell{j,3} = 'no';
     end
-    uitable_position_cell{j,4} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1);
-    uitable_position_cell{j,5} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(2);
-    uitable_position_cell{j,6} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(3);
+    uitable_position_cell{j,4} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1,1);
+    uitable_position_cell{j,5} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1,2);
+    uitable_position_cell{j,6} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1,3);
     uitable_position_cell{j,7} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).continuous_focus_offset;
     uitable_position_cell{j,8} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).position_function_before_name;
     uitable_position_cell{j,9} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).position_function_after_name;

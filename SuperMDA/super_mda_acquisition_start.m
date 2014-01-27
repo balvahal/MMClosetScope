@@ -5,6 +5,7 @@ function super_mda_acquisition_start(mmhandle)
 %
 SuperMDA = mmhandle.SuperMDA;
 SuperMDA.finalize_MDA;
+quit_flag = true;
 %% Create update window
 % Create a figure that will show the latest image acquired by the SuperMDA.
 figUpdate = SuperMDA_gui_imageLastTaken('mmhandle',mmhandle);
@@ -16,10 +17,10 @@ SuperMDA.configure_clock_absolute;
 % Start the MDA
 SuperMDA.mda_clock_pointer = 1;
 timer_mda = timer('TimerFcn',@execute_SuperMDA);
-while SuperMDA.mda_clock_pointer <= length(SuperMDA.mda_clock_absolute)
-    if strcmp(timer_mda.Running,'off') && now < SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer)
+while quit_flag
+    if quit_flag && strcmp(timer_mda.Running,'off') && now < SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer)
         startat(timer_mda,SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer));
-    elseif strcmp(timer_mda.Running,'off') && now > SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer)
+    elseif quit_flag && strcmp(timer_mda.Running,'off') && now > SuperMDA.mda_clock_absolute(SuperMDA.mda_clock_pointer)
         % This loop ensures the order of the timepoints is preserved
         % instead of dropping timepoints to catch up to the next scheduled
         % timepoint yet to be executed. This loop should activate for the
@@ -33,10 +34,12 @@ while SuperMDA.mda_clock_pointer <= length(SuperMDA.mda_clock_absolute)
         
     end
 end
-
 %% Save a history of the MDA execution and the images created to a CSV file
 %
 export(SuperMDA.database,'file',fullfile(SuperMDA.output_directory,'SuperMDA.bsv'),'Delimiter','bar');
+delete(mylistener1);
+disp('SuperMDA is finished.');
+
 %% Nested Functions
 %
 %% execute_SuperMDA
@@ -54,8 +57,10 @@ export(SuperMDA.database,'file',fullfile(SuperMDA.output_directory,'SuperMDA.bsv
                     if SuperMDA.group(i2).position(j2).settings(k2).timepoints(SuperMDA.mda_clock_pointer) == true
                         %% Execute the function that will snap and save an image
                         %
+                        tic
                         mmhandle = SuperMDA.group(i2).position(j2).settings(k2).settings_function_handle(mmhandle,SuperMDA);
                         export(SuperMDA.database,'file',fullfile(SuperMDA.output_directory,'SuperMDA.bsv'),'Delimiter','bar');
+                        toc
                     end
                 end
                 mmhandle = SuperMDA.group(i2).position(j2).position_function_after_handle(mmhandle,SuperMDA);
@@ -63,5 +68,9 @@ export(SuperMDA.database,'file',fullfile(SuperMDA.output_directory,'SuperMDA.bsv
             mmhandle = SuperMDA.group(i2).group_function_after_handle(mmhandle,SuperMDA);
         end
         SuperMDA.mda_clock_pointer = SuperMDA.mda_clock_pointer + 1;
+        if SuperMDA.mda_clock_pointer > length(SuperMDA.mda_clock_absolute)
+            quit_flag = false;
+            SuperMDA.mda_clock_pointer = SuperMDA.mda_clock_pointer - 1;
+        end 
     end
 end
