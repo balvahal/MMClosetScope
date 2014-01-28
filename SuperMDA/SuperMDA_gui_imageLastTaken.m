@@ -22,7 +22,7 @@ function varargout = SuperMDA_gui_imageLastTaken(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_gui_imageLastTaken
 
-% Last Modified by GUIDE v2.5 24-Jan-2014 15:37:45
+% Last Modified by GUIDE v2.5 28-Jan-2014 17:45:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -99,3 +99,15 @@ function varargout = SuperMDA_gui_imageLastTaken_OutputFcn(hObject, eventdata, h
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+
+
+% --- Executes during object creation, after setting all properties.
+function axes_imageLastTaken_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes_imageLastTaken (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes_imageLastTaken
+axis(hObject,'off');
+% Update handles structure
+guidata(hObject, handles);

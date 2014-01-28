@@ -104,6 +104,10 @@ handles.updateInfo(handles.gui_main);
 % the parent gui object to each child gui.
 handles.gui_grid = SuperMDA_gui_grid('gui_main',handles.gui_main);
 set(handles.gui_grid,'visible','off'); % initially hide this gui from the user
+% Create update window
+% Create a figure that will show the latest image acquired by the SuperMDA.
+handles.gui_update = SuperMDA_gui_imageLastTaken('mmhandle',handles.mmhandle);
+handles.mylistener1 = addlistener(handles.mmhandle.SuperMDA,'database_updated',@(src,evnt)super_mda_function_database_updated(handles.gui_update,src,evnt));
 %handles.gui_stageMap = SCAN6gui_stageMap('gui_main',handles.gui_main);
 %handles.gui_stage_list; handles.gui_custom_timepoints;
 % Update handles structure
@@ -1057,7 +1061,9 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % defined in a future version of MATLAB handles    structure with handles
 % and user data (see GUIDATA)
 
-% Hint: delete(hObject) closes the figure
+% Hint: delete(hObject) closes the figure\
+handles = guidata(hObject);
+delete(handles.mylistener1);
 delete(hObject);
 
 
