@@ -52,10 +52,8 @@ disp('SuperMDA is finished.');
                     if SuperMDA.group(i2).position(j2).settings(k2).timepoints(SuperMDA.mda_clock_pointer) == true
                         %% Execute the function that will snap and save an image
                         %
-                        tic
                         mmhandle = SuperMDA.group(i2).position(j2).settings(k2).settings_function_handle(mmhandle,SuperMDA);
-                        export(SuperMDA.database,'file',fullfile(SuperMDA.output_directory,'SuperMDA.bsv'),'Delimiter','bar');
-                        toc
+                        writetable(SuperMDA.database,fullfile(SuperMDA.output_directory,'SuperMDA.txt'),'Delimiter','\t');
                     end
                 end
                 mmhandle = SuperMDA.group(i2).position(j2).position_function_after_handle(mmhandle,SuperMDA);
