@@ -30,15 +30,15 @@ function [mmhandle] = MMsetup_findThenSetAbsoluteOrigin(mmhandle)
 %
 mmhandle = SCAN6general_getXYZ(mmhandle);
 z0 = mmhandle.pos(3);
-stepsize = 1000; %move in 1000 micrometer steps, this value was chosen arbitrarily as not too big and not too small, though it doesn't really matter in the end.
+stepsize = 50; 
 deltaZ = stepsize; %initialize deltaZ
 timer = 0;
-deltaUpperTolerance = 10; %10 microns
-deltaLowerLimit = 1; %1 micron
+deltaUpperTolerance = 50; %50 microns or 150 xy-pixels at 20x
+deltaLowerLimit = 10; %10 micron or 30 xy-pixels at 20x
 timerlength = 2;
 %%
-% attempt to reach a 1 micron tolerance or try |timerLength| times with the
-% delta less than 10 microns.
+% attempt to reach a 10 micron tolerance or try |timerLength| times with the
+% delta less than 50 microns.
 while deltaZ > deltaLowerLimit || timer < timerlength
     mmhandle = SCAN6general_setXYZ(mmhandle,z0-stepsize,'z');
     deltaZ = abs(mmhandle.pos(3)-z0);

@@ -156,6 +156,11 @@ classdef Gamepad_Logitech_F310 < handle
         end
         %%
         %
+        function delete(obj)
+            delete(obj.joy_timer);
+        end
+        %%
+        %
         function obj = read_joy(obj)
             [obj.joystk,obj.button,obj.pov] = read(obj.joy);
             

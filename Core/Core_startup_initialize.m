@@ -76,13 +76,24 @@ mmhandle.mda = mmhandle.gui.getAcquisitionEngine();
 % setup and will likely cause an error on scopes that are not Nikon Ti
 % Eclipse. To remedy this error determine the names of the focus drives
 % using the micro-manager gui and exploring the device/property browser.
-mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
-mmhandle.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
-mmhandle.FocusDevice = mmhandle.core.getFocusDevice;
-mmhandle.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
-mmhandle.AutoFocusDevice = mmhandle.core.getFocusDevice;
-mmhandle.AutoFocusStatusDevice = mmhandle.core.getAutoFocusDevice;
-mmhandle = Core_general_getXYZ(mmhandle);
+%
+% The computer name will be used as a unique identifier to know when the
+% computer that is connected to the Nikon Ti Eclipse is in use.
+my_comp_name = mmhandle.core.getHostName.toCharArray';
+if strcmp(my_comp_name,'LB89-6A-45FA')
+    mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
+    mmhandle.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
+    mmhandle.FocusDevice = mmhandle.core.getFocusDevice;
+    mmhandle.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
+    mmhandle.AutoFocusDevice = mmhandle.core.getFocusDevice;
+    mmhandle.AutoFocusStatusDevice = mmhandle.core.getAutoFocusDevice;
+else
+    mmhandle.xyStageDevice = mmhandle.core.getXYStageDevice;
+    mmhandle.FocusDevice = mmhandle.core.getFocusDevice;
+    mmhandle.AutoFocusDevice = mmhandle.core.getFocusDevice;
+    mmhandle.AutoFocusStatusDevice = mmhandle.core.getAutoFocusDevice;
+end
+    mmhandle = Core_general_getXYZ(mmhandle);
 %% Camera device
 % * |'Gain'| = can be from 0 to 255.
 % * |'ScanMode'| = 1 for normal scan speed and less noise. 2 for fast scan
@@ -150,12 +161,12 @@ mmhandle.ShutterDevice = mmhandle.core.getShutterDevice;
 mmhandle.core.setProperty(mmhandle.xyStageDevice,'TransposeMirrorX',1);
 mmhandle.core.setProperty(mmhandle.xyStageDevice,'TransposeMirrorY',1);
 %% The size of the XY Stage (Closet Scope)
-% The following piece of information was collected manually. First, the xy origin was set
-% by moving the objective to its limit in one corner. Then, the objective
-% was moved to the opposite corner and its coordinates were retrieved.
-% These coordinates represent the height and width of the area that the
-% objective can travel. Beware that this information is relevant if the
-% absolute origin of the stage is known. Unfortunately, the stage is
+% The following piece of information was collected manually. First, the xy
+% origin was set by moving the objective to its limit in one corner. Then,
+% the objective was moved to the opposite corner and its coordinates were
+% retrieved. These coordinates represent the height and width of the area
+% that the objective can travel. Beware that this information is relevant
+% if the absolute origin of the stage is known. Unfortunately, the stage is
 % typically navigated with reference to a relative origin, so this
 % information may be of limited use. For the record...
 %

@@ -44,21 +44,21 @@ end
 mmhandle.core.setPosition(mmhandle.FocusDevice, z);
 %%
 % wait for the focus finish moving
-while mmhandle.core.deviceBusy(mmhandle.FocusDevice)
-    pause(0.05);
-    mmhandle = SCAN6general_getXYZ(mmhandle);
-    fprintf('z is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
-end
+% while mmhandle.core.deviceBusy(mmhandle.FocusDevice)
+%     pause(0.05);
+%     mmhandle = SCAN6general_getXYZ(mmhandle);
+%     fprintf('z is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
+% end
 %%
 % move to the xy position
 mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
 %%
 % wait for the stage to finish moving
-while mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-    pause(0.05);
-    mmhandle = SCAN6general_getXYZ(mmhandle);
-    fprintf('xy is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
-end
-%%
-% save the new position
-mmhandle = SCAN6general_getXYZ(mmhandle);
+% while mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
+%     pause(0.05);
+%     mmhandle = SCAN6general_getXYZ(mmhandle);
+%     fprintf('xy is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
+% end
+% %%
+% % save the new position
+% mmhandle = SCAN6general_getXYZ(mmhandle);

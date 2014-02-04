@@ -234,15 +234,17 @@ classdef SuperMDALevel1Primary < handle
         %
         function obj = finalize_MDA(obj)
             %%
-            % initialize the dataset array that will store the history of
+            % initialize the table that will store the history of
             % the MDA.
-            %
-            % the dataset is a very useful data structure in MATLAB, but it
-            % is not without its quirks. For instance, new rows can only be
-            % created by concatenating multiple datasets. Also,
-            % cell2dataset is used to initialize an empty dataset, which
-            % seems a bit hackish.
             obj.database = table;
+            
+            SuperMDAtable = table(...
+                obj.number_of_timepoints,...
+                {obj.output_directory},...
+                obj.duration,...
+                obj.fundamental_period,...
+                'VariableNames',{'number_of_timepoints','output_directory','duration','fundamental_period'});
+            writetable(SuperMDAtable,fullfile(obj.output_directory,'SuperMDA_config.txt'),'Delimiter','\t');
             %% Update the dependent parameters in the MDA object
             % Some parameters in the MDA object are dependent on others.
             % This dependency came about from combining parameters that are
@@ -310,7 +312,7 @@ classdef SuperMDALevel1Primary < handle
                 obj.group(g).position(p).xyz(t,3),...
                 z,... %the order of zstack from bottom to top
                 cellstr(image_description),...
-            'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_order','timepoint','x','y','z','z_order','image_description'});
+                'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_order','timepoint','x','y','z','z_order','image_description'});
             obj.database = [obj.database;my_dataset]; %add a new row to the dataset
             notify(obj,'database_updated',SuperMDA_event_database_updated(mmhandle));
         end

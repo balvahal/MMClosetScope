@@ -7,7 +7,7 @@
 % * mmhandle, the struct that contains micro-manager objects
 function mmhandle = Core_general_setXYZ(mmhandle, pos, varargin)
 p = inputParser;
-addRequired(p, 'mmhandle', @isstruct);
+addRequired(p, 'mmhandle', @(x) isa(x,'Core_MicroManagerHandle'));
 addRequired(p, 'pos', @(x) numel(x) >=1 && numel(x) <=3);
 addOptional(p, 'direction', 'x', @(x) any(strcmp(x,{'x', 'y', 'z'})));
 parse(p,mmhandle,pos,varargin{:});
@@ -44,21 +44,21 @@ end
 mmhandle.core.setPosition(mmhandle.FocusDevice, z);
 %%
 % wait for the focus finish moving
-while mmhandle.core.deviceBusy(mmhandle.FocusDevice)
-    pause(0.05);
-    mmhandle = Core_general_getXYZ(mmhandle);
-    fprintf('z is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
-end
+% while mmhandle.core.deviceBusy(mmhandle.FocusDevice)
+%     pause(0.05);
+%     mmhandle = Core_general_getXYZ(mmhandle);
+%     fprintf('z is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
+% end
 %%
 % move to the xy position
 mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
 %%
 % wait for the stage to finish moving
-while mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-    pause(0.05);
-    mmhandle = Core_general_getXYZ(mmhandle);
-    fprintf('xy is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
-end
+% while mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
+%     pause(0.05);
+%     mmhandle = Core_general_getXYZ(mmhandle);
+%     fprintf('xy is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
+% end
 %%
 % save the new position
 mmhandle = Core_general_getXYZ(mmhandle);
