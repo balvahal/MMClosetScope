@@ -12,7 +12,7 @@ classdef Core_MicroManagerHandle < handle
         CameraDevice
         Channel
         ShutterDevice
-        xyStageSize
+        xyStageLimits
         Timer_pos
         Timer_pos_counter
         Timer_pos_previous_pos
@@ -61,6 +61,9 @@ classdef Core_MicroManagerHandle < handle
             if strcmp(my_comp_name,'LB89-6A-45FA')
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
+                [mfilepath,~,~] = fileparts(mfilename('fullpath'));
+                mytable = readtable(fullfile(mfilepath,'settings_LB89-6A-45FA.txt'));
+                obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
             end
             
             obj.Timer_pos_counter = 0;

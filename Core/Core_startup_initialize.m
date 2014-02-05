@@ -152,6 +152,8 @@ mmhandle.ShutterDevice = mmhandle.core.getShutterDevice;
 %
 % * |TIFilterBlock1| has the filters.
 % * |TINosePiece| has the objectives. Check the _Label_ property.
+my_comp_name = mmhandle.core.getHostName.toCharArray';
+if strcmp(my_comp_name,'LB89-6A-45FA')
 %% The directionality of the XY Stage (Closet Scope)
 % The directionality of the stage on the closet scope is opposite to what
 % it should be in both the x and y direction. Perhaps when the stage was
@@ -172,4 +174,7 @@ mmhandle.core.setProperty(mmhandle.xyStageDevice,'TransposeMirrorY',1);
 %
 % * x = 116328 microns
 % * y = 76260 microns
-mmhandle.xyStageSize = [116328,76260];
+[mfilepath,~,~] = fileparts(mfilename('fullpath'));
+mytable = readtable(fullfile(mfilepath,'settings_LB89-6A-45FA.txt'));
+mmhandle.xyStageLimits = [116328,76260];
+end

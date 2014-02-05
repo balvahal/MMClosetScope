@@ -35,22 +35,23 @@
 % mmhandle
 %% Outputs
 % mmhandle
-function [mmhandle] = MMsetup_findThenSetAbsoluteOrigin(mmhandle)
+function [mmhandle] = Core_special_findThenSetAbsoluteOrigin(mmhandle)
 hmsg = msgbox('Please remove anything currently in the stage holder to ensure safe exploration of the microscope movement limitations.','Warning');
 uiwait(hmsg);
+[mfilepath,~,~] = fileparts(mfilename('fullpath'));
+mytable = readtable(fullfile(mfilepath,'settings_LB89-6A-45FA.txt'));
 %% Z: Move the objective to its lower limit
 %
-a.setXYZ(a.pos + [0,0,-100000]);
+mmhandle.setXYZ(mmhandle.pos + [0,0,-100000]);
 myflag = true;
 while myflag
 if ~mmhandle.core.deviceBusy(mmhandle.FocusDevice)
     myflag = false;
 end
 end
-mmhandle.core.setOrigin(mmhandle.FocusDevice);
 %% XY: Move the stage to its upper-left most corner
 %
-a.setXYZ(a.pos + [-1000000,-1000000,0]);
+mmhandle.setXYZ(mmhandle.pos + [-1000000,-1000000,0]);
 myflag = true;
 while myflag
 if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
@@ -58,14 +59,22 @@ if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
 end
 end
 mmhandle.core.setOriginXY(mmhandle.xyStageDevice);
+mmhandle.getXYZ;
+mytable.xlim1 = mmhandle.pos(1);
+mytable.ylim1 = mmhandle.pos(2);
 %% XY: Move the stage to the lower-right corner
 %
-a.setXYZ(a.pos + [1000000,1000000,0]);
+mmhandle.setXYZ(mmhandle.pos + [1000000,1000000,0]);
 myflag = true;
 while myflag
 if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
     myflag = false;
 end
 end
+mmhandle.getXYZ;
+mytable.xlim2 = mmhandle.pos(1);
+mytable.ylim2 = mmhandle.pos(2);
 %% update the settings file with the new information
 %
+writetable(mytable,fullfile(mfilepath,'settings_LB89-6A-45FA.txt'));
+mmhandle.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
