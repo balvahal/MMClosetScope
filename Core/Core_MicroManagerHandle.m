@@ -103,7 +103,6 @@ classdef Core_MicroManagerHandle < handle
             if obj.Timer_pos_counter > 2
                 obj.core.stop(obj.xyStageDevice);
             end
-            disp(obj.pos);
         end
         %% Get x, y, and z position of microscope
         %
