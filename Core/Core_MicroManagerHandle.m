@@ -16,6 +16,7 @@ classdef Core_MicroManagerHandle < handle
         Timer_pos
         Timer_pos_counter
         Timer_pos_previous_pos
+        I
     end
     properties (SetObservable)
         pos
@@ -120,6 +121,21 @@ classdef Core_MicroManagerHandle < handle
                 Core_general_setXYZ(obj,pos);
             else
                 Core_general_setXYZ(obj,pos,celldisp(varargin));
+            end
+        end
+                %% Get x, y, and z position of microscope
+        %
+        function [obj] = snapImage(obj,varargin)
+            %%
+            % I've gotten in the habit of creating separate m-files for
+            % longer methods. When the methods use a varargin input the
+            % following if statement unpacks the varargin, so that the
+            % m-file sees the data as if this "middle-method" did not
+            % exist.
+            if isempty(varargin)
+                Core_general_snapImage(obj);
+            else
+                Core_general_snapImage(obj,celldisp(varargin));
             end
         end
     end

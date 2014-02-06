@@ -10,7 +10,7 @@ function mmhandle = Core_general_snapImage(mmhandle, varargin)
 %% Snap the image
 %
 p = inputParser;
-addRequired(p, 'mmhandle', @isstruct);
+addRequired(p, 'mmhandle', @(x) isa(x,'Core_MicroManagerHandle'));
 addOptional(p, 'Channel', 'noinput', @isstr);
 addOptional(p, 'Exposure', -1, @isinteger);
 parse(p,mmhandle, varargin{:});
