@@ -1,2 +1,2 @@
-xlim1,ylim1,xlim2,ylim2
-1,0,115659,76233
+xlim1,ylim1,xlim2,ylim2,zmax,zmin
+0,0,115995,76346,9682.37514427863,0

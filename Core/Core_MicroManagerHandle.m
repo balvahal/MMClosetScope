@@ -13,10 +13,14 @@ classdef Core_MicroManagerHandle < handle
         Channel
         ShutterDevice
         xyStageLimits
+        zLimits
         Timer_pos
         Timer_pos_counter
         Timer_pos_previous_pos
         I
+        %% gui handles
+        %
+        gui_StageMap
     end
     properties (SetObservable)
         pos
@@ -69,7 +73,7 @@ classdef Core_MicroManagerHandle < handle
             
             obj.Timer_pos_counter = 0;
             obj.Timer_pos_previous_pos = obj.pos;
-            obj.Timer_pos = timer('ExecutionMode','fixedRate','Period',1,'TimerFcn',@(~,~) obj.getXYZ); %it seems to take approx. 0.2 seconds to read the position from the microscope. If a timer's callback takes longer to execute than the period MATLAB it will seem as if MATLAB is unresponsive from the command line.
+            obj.Timer_pos = timer('ExecutionMode','fixedRate','Period',1,'TimerFcn',@(~,~) obj.Timer_pos_fun); %it seems to take approx. 0.2 seconds to read the position from the microscope. If a timer's callback takes longer to execute than the period MATLAB it will seem as if MATLAB is unresponsive from the command line.
             start(obj.Timer_pos);
         end
         %%
@@ -79,8 +83,9 @@ classdef Core_MicroManagerHandle < handle
         end
         %% Get x, y, and z position of microscope
         %
-        function [obj] = getXYZ(obj)
+        function [my_pos] = getXYZ(obj)
             Core_general_getXYZ(obj);
+            my_pos = obj.pos;
             %%
             % The two if-statements below are meant to be a fail safe
             % should the stage not recognize that it has reached its
@@ -123,7 +128,7 @@ classdef Core_MicroManagerHandle < handle
                 Core_general_setXYZ(obj,pos,celldisp(varargin));
             end
         end
-                %% Get x, y, and z position of microscope
+        %% Get x, y, and z position of microscope
         %
         function [obj] = snapImage(obj,varargin)
             %%
@@ -137,6 +142,11 @@ classdef Core_MicroManagerHandle < handle
             else
                 Core_general_snapImage(obj,celldisp(varargin));
             end
+        end
+        %%
+        %
+        function [obj] = Timer_pos_fun(obj)
+            Core_timer_Timer_pos_fun(obj);
         end
     end
     methods (Static)

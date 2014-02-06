@@ -22,7 +22,7 @@ function varargout = SCAN6gui_stageMap(varargin)
 
 % Edit the above text to modify the response to help SCAN6gui_stageMap
 
-% Last Modified by GUIDE v2.5 03-Sep-2013 02:27:10
+% Last Modified by GUIDE v2.5 06-Feb-2014 15:52:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
