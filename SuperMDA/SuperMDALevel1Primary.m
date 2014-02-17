@@ -27,6 +27,7 @@ classdef SuperMDALevel1Primary < handle
         output_directory;
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
+        runtime_timer;
         mm
     end
     properties (SetObservable)
@@ -54,6 +55,7 @@ classdef SuperMDALevel1Primary < handle
                 obj.group = SuperMDALevel2Group(obj);
                 addlistener(obj,'duration','PostSet',@SuperMDALevel1Primary.updateCustomizables);
                 addlistener(obj,'fundamental_period','PostSet',@SuperMDALevel1Primary.updateCustomizables);
+                runtime_timer = timer('TimerFcn',@(~,~) obj.execute);
                 return
             end
         end
@@ -199,124 +201,52 @@ classdef SuperMDALevel1Primary < handle
         % The highly customizable features of the mda include exposure,
         % xyz, and timepoints. These properties must have the same length.
         % This function will ensure they all have the same length.
-        function obj = update_children_to_reflect_number_of_timepoints(obj)
-            obj.configure_clock_relative;
-            for i = 1:obj.my_length
-                for j = 1:obj.group(i).my_length
-                    % xyz
-                    mydiff = obj.number_of_timepoints - size(obj.group(i).position(j).xyz,1);
-                    if mydiff < 0
-                        mydiff2 = obj.number_of_timepoints+1;
-                        obj.group(i).position(j).xyz(mydiff2:end,:) = [];
-                    elseif mydiff > 0
-                        obj.group(i).position(j).xyz(end+1:obj.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),obj.group(i).position(j).xyz(end,:));
-                    end
-                    for k = 1:obj.group(i).position(j).my_length
-                        % timepoints
-                        mydiff = obj.number_of_timepoints - length(obj.group(i).position(j).settings(k).timepoints);
-                        if mydiff < 0
-                            mydiff2 = obj.number_of_timepoints+1;
-                            obj.group(i).position(j).settings(k).timepoints(mydiff2:end) = [];
-                        elseif mydiff > 0
-                            obj.group(i).position(j).settings(k).timepoints(end+1:obj.number_of_timepoints) = 1;
-                        end
-                        % exposure
-                        mydiff = obj.number_of_timepoints - length(obj.group(i).position(j).settings(k).exposure);
-                        if mydiff < 0
-                            mydiff2 = obj.number_of_timepoints+1;
-                            obj.group(i).position(j).settings(k).exposure(mydiff2:end) = [];
-                        elseif mydiff > 0
-                            obj.group(i).position(j).settings(k).exposure(end+1:obj.number_of_timepoints) = obj.group(i).position(j).settings(k).exposure(end);
-                        end
-                    end
-                end
-            end
+        function obj = reflect_number_of_timepoints(obj)
+            super_mda_method_reflect_number_of_timepoints(obj);
         end
         %% finalize_MDA
         %
         function obj = finalize_MDA(obj)
-            %%
-            % initialize the table that will store the history of
-            % the MDA.
-            obj.database = table;
-            
-            SuperMDAtable = table(...
-                obj.number_of_timepoints,...
-                {obj.output_directory},...
-                obj.duration,...
-                obj.fundamental_period,...
-                'VariableNames',{'number_of_timepoints','output_directory','duration','fundamental_period'});
-            writetable(SuperMDAtable,fullfile(obj.output_directory,'SuperMDA_config.txt'),'Delimiter','\t');
-            %% Update the dependent parameters in the MDA object
-            % Some parameters in the MDA object are dependent on others.
-            % This dependency came about from combining parameters that are
-            % easy to configure by a user interface into data structures
-            % that are convenient to code with.
-            if isempty(obj.group_order) || ...
-                    ~isempty(setdiff(obj.group_order,(1:obj.my_length))) || ...
-                    length(obj.group_order)~=obj.my_length
-                obj.group_order = (1:obj.my_length);
-            end
-            for i = 1:obj.my_length
-                obj.group(i).group_function_before_handle = str2func(obj.group(i).group_function_before_name);
-                if isempty(obj.group(i).position_order) || ...
-                        ~isempty(setdiff(obj.group(i).position_order,(1:obj.group(i).my_length))) || ...
-                        length(obj.group(i).position_order)~=obj.group(i).my_length
-                    obj.group(i).position_order = (1:obj.group(i).my_length);
-                end
-                if isempty(obj.group(i).label)
-                    mystr = sprintf('group%d',i);
-                    obj.group(i).label = mystr;
-                end
-                for j = 1:max(size(obj.group(i).position))
-                    obj.group(i).position(j).position_function_before_handle = str2func(obj.group(i).position(j).position_function_before_name);
-                    for k = 1:max(size(obj.group(i).position(j).settings))
-                        obj.group(i).position(j).settings(k).create_z_stack_list;
-                        obj.group(i).position(j).settings(k).settings_function_handle = str2func(obj.group(i).position(j).settings(k).settings_function_name);
-                    end
-                    obj.group(i).position(j).position_function_after_handle = str2func(obj.group(i).position(j).position_function_after_name);
-                    if isempty(obj.group(i).position(j).settings_order) || ...
-                            ~isempty(setdiff(obj.group(i).position(j).settings_order,(1:obj.group(i).position(j).my_length))) || ...
-                            length(obj.group(i).position(j).settings_order)~=obj.group(i).position(j).my_length
-                        obj.group(i).position(j).settings_order = (1:obj.group(i).position(j).my_length);
-                    end
-                end
-                obj.group(i).group_function_after_handle = str2func(obj.group(i).group_function_after_name);
-            end
-            obj.update_children_to_reflect_number_of_timepoints;
+            super_mda_method_finalize_MDA(obj);
         end
         %% update_database
         %
         function obj = update_database(obj,filename,image_description)
-            runtime_index2 = num2cell(obj.runtime_index); % a quirk about assigning the contents or a vector to multiple variables means the vector must first be made into a cell.
-            [t,g,p,s,z] = deal(runtime_index2{:}); %[timepoint,group,position,settings,z_stack]
-            my_dataset = table(...
-                cellstr(obj.channel_names{obj.group(g).position(p).settings(s).channel}),...
-                cellstr(filename),...
-                cellstr(obj.group(g).label),...
-                cellstr(obj.group(g).position(p).label),...
-                obj.group(g).position(p).settings(s).binning,...
-                obj.group(g).position(p).settings(s).channel,...
-                obj.group(g).position(p).continuous_focus_offset,...
-                obj.group(g).position(p).continuous_focus_bool,...
-                obj.group(g).position(p).settings(s).exposure(t),...
-                g,...
-                obj.group_order(g),...
-                now,...
-                p,...
-                obj.group(g).position_order(p),...
-                obj.group(g).position(p).settings_order(s),...
-                t,...
-                obj.group(g).position(p).xyz(t,1),...
-                obj.group(g).position(p).xyz(t,2),...
-                obj.group(g).position(p).settings(s).z_origin_offset + ...
-                obj.group(g).position(p).settings(s).z_stack(z) + ...
-                obj.group(g).position(p).xyz(t,3),...
-                z,... %the order of zstack from bottom to top
-                cellstr(image_description),...
-                'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_order','timepoint','x','y','z','z_order','image_description'});
-            obj.database = [obj.database;my_dataset]; %add a new row to the dataset
-            notify(obj,'database_updated',SuperMDA_event_database_updated(obj.mm));
+            super_mda_method_update_database(obj,filename,image_description);
+        end
+        %% database to CellProfiler CSV
+        %
+        function obj = database2CellProfilerCSV(obj)
+            super_mda_method_database2CellProfilerCSV(obj);
+        end
+        %% start acquisition
+        %
+        function obj = start_acquisition(obj)
+            obj.finalize_MDA;
+            obj.configure_clock_absolute;
+            obj.runtime_timer.StopFcn = @(~,~,obj) super_mda_function_runtime_timer_stopfcn(obj);
+            startat(obj.runtime_timer,obj.mda_clock_absolute(obj.mda_clock_pointer));
+        end
+        %% stop acquisition
+        %
+        function obj = stop_acquisition(obj)
+            obj.runtime_timer.StopFcn = '';
+            stop(obj.runtime_timer);
+        end
+        %% pause acquisition
+        %
+        function obj = pause_acquisition(obj)
+            
+        end
+        %% resume acquisition
+        %
+        function obj = resume_acquisition(obj)
+            
+        end
+        %% execute 1 round of acquisition
+        %
+        function obj = execute(obj)
+            super_mda_method_execute(obj);
         end
     end
     %%
