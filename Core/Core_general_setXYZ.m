@@ -16,7 +16,7 @@ parse(p,mmhandle,pos,varargin{:});
 mmhandle = Core_general_getXYZ(mmhandle);
 x = mmhandle.pos(1);
 y = mmhandle.pos(2);
-z = mmhandle.pos(3);
+z = mmhandle.pos(3); %#ok<NASGU>
 %% Determine user defined changes
 % Determine number of elements in pos
 numPos = numel(pos);
@@ -25,40 +25,31 @@ switch numPos
         switch p.Results.direction
             case 'x'
                 x = pos;
+                % move to the xy position
+                mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
             case 'y'
                 y = pos;
+                % move to the xy position
+                mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
             case 'z'
                 z = pos;
+                % Move to the z position
+                mmhandle.core.setPosition(mmhandle.FocusDevice, z);
         end
     case 2
         x = pos(1);
         y = pos(2);
+        % move to the xy position
+        mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
     case 3
         x = pos(1);
         y = pos(2);
         z = pos(3);
+        % Move to the z position
+        mmhandle.core.setPosition(mmhandle.FocusDevice, z);
+        % move to the xy position
+        mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
 end
-%% Exception handling
-%% Move stage
-% Move to the z position
-mmhandle.core.setPosition(mmhandle.FocusDevice, z);
-%%
-% wait for the focus finish moving
-% while mmhandle.core.deviceBusy(mmhandle.FocusDevice)
-%     pause(0.05);
-%     mmhandle = Core_general_getXYZ(mmhandle);
-%     fprintf('z is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
-% end
-%%
-% move to the xy position
-mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
-%%
-% wait for the stage to finish moving
-% while mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-%     pause(0.05);
-%     mmhandle = Core_general_getXYZ(mmhandle);
-%     fprintf('xy is busy, x=%2.3e y=%2.3e z=%2.3e \n',mmhandle.pos);
-% end
 %%
 % save the new position
 mmhandle = Core_general_getXYZ(mmhandle);

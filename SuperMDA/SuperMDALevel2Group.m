@@ -23,6 +23,7 @@ classdef SuperMDALevel2Group < handle
         group_function_after_handle;
         group_function_before_name = 'super_mda_function_group_before_basic';
         group_function_before_handle;
+        mm
         position_order = 1;
         travel_offset = -1000; %-1000 micrometers in the z direction to avoid scraping the objective on the bottom of a plate holder.
         travel_offset_bool = true;
@@ -37,12 +38,13 @@ classdef SuperMDALevel2Group < handle
         % sacraficing to much customization. After the creation of the
         % SuperMDA tiered-object use the new_group method to add another
         % group object.
-        function obj = SuperMDALevel2Group(mmhandle, my_Parent)
+        function obj = SuperMDALevel2Group(my_Parent)
             if nargin == 0
                 return
             elseif nargin == 2
                 obj.Parent_MDAPrimary = my_Parent;
-                obj.position = SuperMDALevel3Position(mmhandle, obj);
+                obj.mm = my_Parent.mm;
+                obj.position = SuperMDALevel3Position(obj);
                 return
             end
         end
@@ -93,20 +95,14 @@ classdef SuperMDALevel2Group < handle
         end
         %% create a new position
         %
-        function obj = new_position(obj,mmhandle)
+        function obj = new_position(obj)
             %first, borrow the properties from the last position to provide
             %a starting point and make sure the parent object is consistent
             obj.position(end+1) = obj.position(end).copy;
             obj.position_order(end+1) = obj.my_length;
-            mmhandle = Core_general_getXYZ(mmhandle);
-            obj.position(end).continuous_focus_offset = str2double(mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position'));
-            obj.position(end).xyz = mmhandle.pos;
-            %second, add the current position information to this new
-            %position
-            %             mmhandle = Core_general_getXYZ(mmhandle);
-            %             obj.position(end).xyz = mmhandle.pos;
-            %             obj.position(end).continuous_focus_offset =
-            %             mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position');
+            obj.mm.getXYZ;
+            obj.position(end).continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+            obj.position(end).xyz = obj.mm.pos;
         end
         %%
         % Find the number of position objects.

@@ -27,6 +27,7 @@ classdef SuperMDALevel1Primary < handle
         output_directory;
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
+        mm
     end
     properties (SetObservable)
         duration = 0;
@@ -48,8 +49,9 @@ classdef SuperMDALevel1Primary < handle
             if nargin == 0
                 return
             elseif nargin == 1
+                obj.mm = mmhandle;
                 obj.channel_names = mmhandle.Channel;
-                obj.group = SuperMDALevel2Group(mmhandle, obj);
+                obj.group = SuperMDALevel2Group(obj);
                 addlistener(obj,'duration','PostSet',@SuperMDALevel1Primary.updateCustomizables);
                 addlistener(obj,'fundamental_period','PostSet',@SuperMDALevel1Primary.updateCustomizables);
                 return
@@ -285,7 +287,7 @@ classdef SuperMDALevel1Primary < handle
         end
         %% update_database
         %
-        function obj = update_database(obj,filename,image_description,mmhandle)
+        function obj = update_database(obj,filename,image_description)
             runtime_index2 = num2cell(obj.runtime_index); % a quirk about assigning the contents or a vector to multiple variables means the vector must first be made into a cell.
             [t,g,p,s,z] = deal(runtime_index2{:}); %[timepoint,group,position,settings,z_stack]
             my_dataset = table(...
@@ -314,7 +316,7 @@ classdef SuperMDALevel1Primary < handle
                 cellstr(image_description),...
                 'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_order','timepoint','x','y','z','z_order','image_description'});
             obj.database = [obj.database;my_dataset]; %add a new row to the dataset
-            notify(obj,'database_updated',SuperMDA_event_database_updated(mmhandle));
+            notify(obj,'database_updated',SuperMDA_event_database_updated(obj.mm));
         end
     end
     %%

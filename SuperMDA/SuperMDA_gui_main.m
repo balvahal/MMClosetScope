@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 21-Jan-2014 14:24:52
+% Last Modified by GUIDE v2.5 16-Feb-2014 23:04:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,20 +68,20 @@ handles.output = hObject;
 
 % Remember the figure that encompasses the gui
 handles.gui_main = hObject;
-
-% add mmhandle to the main figure handles
-mmhandleInputIndex = find(strcmp(varargin, 'mmhandle'));
+% add SuperMDA to the main figure handles
+mmhandleInputIndex = find(strcmp(varargin, 'SuperMDA'));
 if isempty(mmhandleInputIndex)
     disp('*****');
-    disp('Missing input argument. Pass in mmhandle');
+    disp('Missing input argument. Pass in SuperMDA');
     disp('*****');
-    %delete(hObject);
+    delete(hObject);
 else
-    handles.mmhandle = varargin{mmhandleInputIndex+1};
+    handles.smda = varargin{mmhandleInputIndex+1};
+    handles.mm = handles.smda.mm;
 end
 % update the settings table options
 myColumnFormat = get(handles.uitable_settings,'ColumnFormat');
-myColumnFormat{1} = handles.mmhandle.Channel';
+myColumnFormat{1} = handles.mm.Channel';
 set(handles.uitable_settings,'ColumnFormat',myColumnFormat);
 % ----- Variables
 %
@@ -95,8 +95,7 @@ handles.updateInfo = @main_updateInfo;
 handles.load_super_mda = @main_load_super_mda;
 
 % initialize a SuperMDA object
-handles.mmhandle.SuperMDA = SuperMDALevel1Primary(handles.mmhandle);
-handles.mmhandle.SuperMDA.output_directory = pwd;
+handles.smda.output_directory = pwd;
 % Update handles structure to reflect the new variables and functions
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -106,8 +105,8 @@ handles.gui_grid = SuperMDA_gui_grid('gui_main',handles.gui_main);
 set(handles.gui_grid,'visible','off'); % initially hide this gui from the user
 % Create update window
 % Create a figure that will show the latest image acquired by the SuperMDA.
-handles.gui_update = SuperMDA_gui_imageLastTaken('mmhandle',handles.mmhandle);
-handles.mylistener1 = addlistener(handles.mmhandle.SuperMDA,'database_updated',@(src,evnt)super_mda_function_database_updated(handles.gui_update,src,evnt));
+handles.gui_update = SuperMDA_gui_imageLastTaken('mmhandle',handles.mm);
+handles.mylistener1 = addlistener(handles.smda,'database_updated',@(src,evnt)super_mda_function_database_updated(handles.gui_update,src,evnt));
 %handles.gui_stageMap = SCAN6gui_stageMap('gui_main',handles.gui_main);
 %handles.gui_stage_list; handles.gui_custom_timepoints;
 % Update handles structure
@@ -162,11 +161,11 @@ units_of_time_conversion = [1, 1/60, 1/3600, 1/86400;... % from seconds to
     60, 1, 1/60, 1/1440;... % from minutes to
     3600, 60, 1, 1/24;... % from hours to
     86400, 1440, 24, 1]; % from days to
-my_value = handles.mmhandle.SuperMDA.fundamental_period;
+my_value = handles.smda.fundamental_period;
 my_value = my_value*units_of_time_conversion(1,get(hObject,'Value'));
 set(handles.edit_primary_time_points_period,'String',num2str(my_value));
 
-my_value = handles.mmhandle.SuperMDA.duration;
+my_value = handles.smda.duration;
 my_value = my_value*units_of_time_conversion(1,get(hObject,'Value'));
 set(handles.edit_primary_time_points_duration,'String',num2str(my_value));
 handles.primary_timepoints_UoT = get(hObject,'Value');
@@ -208,10 +207,10 @@ units_of_time_conversion = [1, 1/60, 1/3600, 1/86400;... % from seconds to
     86400, 1440, 24, 1]; % from days to
 my_value = str2double(get(hObject,'String'));
 my_value = my_value*units_of_time_conversion(get(handles.popupmenu_primary_time_points_units_of_time,'Value'),1);
-handles.mmhandle.SuperMDA.fundamental_period = my_value;
+handles.smda.fundamental_period = my_value;
 
 %my_value =
-%handles.mmhandle.SuperMDA.duration*units_of_time_conversion(1,get(handles.popupmenu_primary_time_points_units_of_time,'Value'));
+%handles.smda.duration*units_of_time_conversion(1,get(handles.popupmenu_primary_time_points_units_of_time,'Value'));
 %set(handles.edit_primary_time_points_duration,'String',num2str(my_value));
 
 % Update handles structure
@@ -247,7 +246,7 @@ units_of_time_conversion = [1, 1/60, 1/3600, 1/86400;... % from seconds to
     86400, 1440, 24, 1]; % from days to
 my_value = str2double(get(hObject,'String'));
 my_value = my_value*units_of_time_conversion(get(handles.popupmenu_primary_time_points_units_of_time,'Value'),1);
-handles.mmhandle.SuperMDA.duration = my_value;
+handles.smda.duration = my_value;
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -318,36 +317,36 @@ units_of_time_conversion = [1, 1/60, 1/3600, 1/86400;... % from seconds to
     3600, 60, 1, 1/24;... % from hours to
     86400, 1440, 24, 1]; % from days to
 % edit_primary_time_points_duration
-my_value = handles.mmhandle.SuperMDA.duration*units_of_time_conversion(1,get(handles.popupmenu_primary_time_points_units_of_time,'Value'));
+my_value = handles.smda.duration*units_of_time_conversion(1,get(handles.popupmenu_primary_time_points_units_of_time,'Value'));
 set(handles.edit_primary_time_points_duration,'String',num2str(my_value));
 % edit_primary_numberOfTmpts
-set(handles.edit_primary_numberOfTmpts,'String',num2str(handles.mmhandle.SuperMDA.number_of_timepoints));
+set(handles.edit_primary_numberOfTmpts,'String',num2str(handles.smda.number_of_timepoints));
 % edit_primary_outputDirectory
-set(handles.edit_primary_outputDirectory,'String',handles.mmhandle.SuperMDA.output_directory);
+set(handles.edit_primary_outputDirectory,'String',handles.smda.output_directory);
 %%%
 %%% GROUP
 %%%
 % edit_group_travel_offset
-set(handles.edit_group_travel_offset,'String',num2str(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).travel_offset));
+set(handles.edit_group_travel_offset,'String',num2str(handles.smda.group(handles.SuperMDA_index(1)).travel_offset));
 % uitable_group
-if isempty(handles.mmhandle.SuperMDA.group_order) || ...
-        ~isempty(setdiff(handles.mmhandle.SuperMDA.group_order,(1:handles.mmhandle.SuperMDA.my_length))) || ...
-        length(handles.mmhandle.SuperMDA.group_order)~=handles.mmhandle.SuperMDA.my_length
-    handles.mmhandle.SuperMDA.group_order = (1:handles.mmhandle.SuperMDA.my_length);
+if isempty(handles.smda.group_order) || ...
+        ~isempty(setdiff(handles.smda.group_order,(1:handles.smda.my_length))) || ...
+        length(handles.smda.group_order)~=handles.smda.my_length
+    handles.smda.group_order = (1:handles.smda.my_length);
 end
-uitable_group_cell = cell(handles.mmhandle.SuperMDA.my_length,6);
+uitable_group_cell = cell(handles.smda.my_length,6);
 j=1;
-for i=handles.mmhandle.SuperMDA.group_order
-    uitable_group_cell{j,1} = handles.mmhandle.SuperMDA.group(i).label;
+for i=handles.smda.group_order
+    uitable_group_cell{j,1} = handles.smda.group(i).label;
     uitable_group_cell{j,2} = i;
-    if handles.mmhandle.SuperMDA.group(i).travel_offset_bool
+    if handles.smda.group(i).travel_offset_bool
         uitable_group_cell{j,3} = 'yes';
     else
         uitable_group_cell{j,3} = 'no';
     end
-    uitable_group_cell{j,4} = handles.mmhandle.SuperMDA.group(i).my_length;
-    uitable_group_cell{j,5} = handles.mmhandle.SuperMDA.group(i).group_function_before_name;
-    uitable_group_cell{j,6} = handles.mmhandle.SuperMDA.group(i).group_function_after_name;
+    uitable_group_cell{j,4} = handles.smda.group(i).my_length;
+    uitable_group_cell{j,5} = handles.smda.group(i).group_function_before_name;
+    uitable_group_cell{j,6} = handles.smda.group(i).group_function_after_name;
     j=j+1;
 end
 set(handles.uitable_group,'Data',uitable_group_cell);
@@ -355,52 +354,52 @@ set(handles.uitable_group,'Data',uitable_group_cell);
 %%% POSITION
 %%%
 % uitable_position
-if isempty(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order) || ...
-        ~isempty(setdiff(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order,(1:handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length))) || ...
-        length(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order)~=handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order = (1:handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length);
+if isempty(handles.smda.group(handles.SuperMDA_index(1)).position_order) || ...
+        ~isempty(setdiff(handles.smda.group(handles.SuperMDA_index(1)).position_order,(1:handles.smda.group(handles.SuperMDA_index(1)).my_length))) || ...
+        length(handles.smda.group(handles.SuperMDA_index(1)).position_order)~=handles.smda.group(handles.SuperMDA_index(1)).my_length
+    handles.smda.group(handles.SuperMDA_index(1)).position_order = (1:handles.smda.group(handles.SuperMDA_index(1)).my_length);
 end
-uitable_position_cell = cell(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length,10);
+uitable_position_cell = cell(handles.smda.group(handles.SuperMDA_index(1)).my_length,10);
 j=1;
-for i=handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order
-    uitable_position_cell{j,1} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).label;
+for i=handles.smda.group(handles.SuperMDA_index(1)).position_order
+    uitable_position_cell{j,1} = handles.smda.group(handles.SuperMDA_index(1)).position(i).label;
     uitable_position_cell{j,2} = i;
-    if handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).continuous_focus_bool
+    if handles.smda.group(handles.SuperMDA_index(1)).position(i).continuous_focus_bool
         uitable_position_cell{j,3} = 'yes';
     else
         uitable_position_cell{j,3} = 'no';
     end
-    uitable_position_cell{j,4} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1,1);
-    uitable_position_cell{j,5} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1,2);
-    uitable_position_cell{j,6} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).xyz(1,3);
-    uitable_position_cell{j,7} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).continuous_focus_offset;
-    uitable_position_cell{j,8} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).position_function_before_name;
-    uitable_position_cell{j,9} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).position_function_after_name;
-    uitable_position_cell{j,10} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(i).my_length;
+    uitable_position_cell{j,4} = handles.smda.group(handles.SuperMDA_index(1)).position(i).xyz(1,1);
+    uitable_position_cell{j,5} = handles.smda.group(handles.SuperMDA_index(1)).position(i).xyz(1,2);
+    uitable_position_cell{j,6} = handles.smda.group(handles.SuperMDA_index(1)).position(i).xyz(1,3);
+    uitable_position_cell{j,7} = handles.smda.group(handles.SuperMDA_index(1)).position(i).continuous_focus_offset;
+    uitable_position_cell{j,8} = handles.smda.group(handles.SuperMDA_index(1)).position(i).position_function_before_name;
+    uitable_position_cell{j,9} = handles.smda.group(handles.SuperMDA_index(1)).position(i).position_function_after_name;
+    uitable_position_cell{j,10} = handles.smda.group(handles.SuperMDA_index(1)).position(i).my_length;
     j=j+1;
 end
 set(handles.uitable_position,'Data',uitable_position_cell);
 %%%
 %%% SETTINGS
 %%%
-if isempty(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order) || ...
-        ~isempty(setdiff(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order,(1:handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length))) || ...
-        length(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order)~=handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order = (1:handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length);
+if isempty(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order) || ...
+        ~isempty(setdiff(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order,(1:handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length))) || ...
+        length(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order)~=handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length
+    handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order = (1:handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length);
 end
-uitable_settings_cell = cell(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length,11);
+uitable_settings_cell = cell(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length,11);
 j=1;
-for i=handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order
-    uitable_settings_cell{j,1} = handles.mmhandle.Channel{handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).channel};
-    uitable_settings_cell{j,2} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).exposure(1);
-    uitable_settings_cell{j,3} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).binning;
-    uitable_settings_cell{j,4} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_step_size;
-    uitable_settings_cell{j,5} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_stack_upper_offset;
-    uitable_settings_cell{j,6} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_stack_lower_offset;
-    uitable_settings_cell{j,7} = length(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_stack);
-    uitable_settings_cell{j,8} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_origin_offset;
-    uitable_settings_cell{j,9} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).period_multiplier;
-    uitable_settings_cell{j,10} = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).settings_function_name;
+for i=handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order
+    uitable_settings_cell{j,1} = handles.mm.Channel{handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).channel};
+    uitable_settings_cell{j,2} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).exposure(1);
+    uitable_settings_cell{j,3} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).binning;
+    uitable_settings_cell{j,4} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_step_size;
+    uitable_settings_cell{j,5} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_stack_upper_offset;
+    uitable_settings_cell{j,6} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_stack_lower_offset;
+    uitable_settings_cell{j,7} = length(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_stack);
+    uitable_settings_cell{j,8} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).z_origin_offset;
+    uitable_settings_cell{j,9} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).period_multiplier;
+    uitable_settings_cell{j,10} = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(i).settings_function_name;
     uitable_settings_cell{j,11} = i;
     j=j+1;
 end
@@ -431,11 +430,11 @@ function pushbutton_primary_load_mda_Callback(hObject, eventdata, handles)
 % with handles and user data (see GUIDATA)
 uiwait(warndlg('The current SuperMDA will be erased!','Load a SuperMDA','modal'));
 mypwd = pwd;
-cd(handles.mmhandle.SuperMDA.output_directory);
+cd(handles.smda.output_directory);
 [filename,pathname] = uigetfile({'*.mat'},'Load a SuperMDA');
 if exist(fullfile(pathname,filename),'file')
     load(fullfile(pathname,filename),'SuperMDA');
-    handles.mmhandle.SuperMDA = SuperMDA;
+    handles.smda = SuperMDA;
 else
     disp('The SuperMDA file selected was invalid.');
 end
@@ -455,7 +454,7 @@ function edit_primary_outputDirectory_Callback(hObject, eventdata, handles)
 %        edit_primary_outputDirectory as a double
 folder_name = get(hObject,'String');
 if exist(folder_name,'dir')
-    handles.mmhandle.SuperMDA.output_directory = folder_name;
+    handles.smda.output_directory = folder_name;
 else
     str = sprintf('''%s'' is not a directory',folder_name);
     disp(str);
@@ -486,7 +485,7 @@ function pushbutton_find_output_dir_Callback(hObject, eventdata, handles)
 % with handles and user data (see GUIDATA)
 folder_name = uigetdir;
 if exist(folder_name,'dir')
-    handles.mmhandle.SuperMDA.output_directory = folder_name;
+    handles.smda.output_directory = folder_name;
 else
     str = sprintf('''%s'' is not a directory',foldername);
     disp(str);
@@ -509,7 +508,7 @@ my_value = str2double(get(hObject,'String'));
 if my_value < 1
     my_value = 1;
 end
-handles.mmhandle.SuperMDA.duration = (my_value-1)*handles.mmhandle.SuperMDA.fundamental_period;
+handles.smda.duration = (my_value-1)*handles.smda.fundamental_period;
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -532,12 +531,12 @@ function pushbutton_group_add_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_group_add (see GCBO) eventdata  reserved
 % - to be defined in a future version of MATLAB handles    structure with
 % handles and user data (see GUIDATA)
-handles.mmhandle.SuperMDA.new_group;
-if handles.mmhandle.SuperMDA.group(end).my_length > 1
-    handles.mmhandle.SuperMDA.group(end).position(2:end) = [];
-    handles.mmhandle = Core_general_getXYZ(handles.mmhandle);
-    handles.mmhandle.SuperMDA.group(end).position(1).xyz = handles.mmhandle.pos;
-    handles.mmhandle.SuperMDA.group(end).position(1).continuous_focus_offset = str2double(handles.mmhandle.core.getProperty(handles.mmhandle.AutoFocusDevice,'Position'));
+handles.smda.new_group;
+if handles.smda.group(end).my_length > 1
+    handles.smda.group(end).position(2:end) = [];
+    handles.mm = Core_general_getXYZ(handles.mm);
+    handles.smda.group(end).position(1).xyz = handles.mm.pos;
+    handles.smda.group(end).position(1).continuous_focus_offset = str2double(handles.mm.core.getProperty(handles.mm.AutoFocusDevice,'Position'));
 end
 % Update handles structure
 guidata(hObject, handles);
@@ -558,16 +557,16 @@ if size(myDat,1) == length(myRow)
     myRow(1) = [];
 end
 group_number = cell2mat(myDat(myRow,2));
-handles.mmhandle.SuperMDA.group(group_number) = [];
-my_group_order_number = sort(handles.mmhandle.SuperMDA.group_order(myRow));
-handles.mmhandle.SuperMDA.group_order(myRow) = [];
-my_adjustment = zeros(size(handles.mmhandle.SuperMDA.group_order));
+handles.smda.group(group_number) = [];
+my_group_order_number = sort(handles.smda.group_order(myRow));
+handles.smda.group_order(myRow) = [];
+my_adjustment = zeros(size(handles.smda.group_order));
 for i = 1:length(my_group_order_number)
-    my_logic = handles.mmhandle.SuperMDA.group_order > my_group_order_number(i);
-    my_adjustment = my_adjustment+ones(size(handles.mmhandle.SuperMDA.group_order))*-1.*my_logic;
+    my_logic = handles.smda.group_order > my_group_order_number(i);
+    my_adjustment = my_adjustment+ones(size(handles.smda.group_order))*-1.*my_logic;
 end
-handles.mmhandle.SuperMDA.group_order = handles.mmhandle.SuperMDA.group_order + my_adjustment;
-set(handles.uitable_group,'UserData',handles.mmhandle.SuperMDA.my_length);
+handles.smda.group_order = handles.smda.group_order + my_adjustment;
+set(handles.uitable_group,'UserData',handles.smda.my_length);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -602,10 +601,10 @@ function pushbutton_group_findBeforeFunction_Callback(hObject, eventdata, handle
 % eventdata  reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
 mypwd = pwd;
-cd(handles.mmhandle.SuperMDA.output_directory);
+cd(handles.smda.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-before');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.change_all_group('group_function_before_name',regexp(filename,'.*(?=\.m)','match'));
+    handles.smda.change_all_group('group_function_before_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The group-function-before selection was invalid.');
 end
@@ -645,10 +644,10 @@ function pushbutton_group_findAfterFunction_Callback(hObject, eventdata, handles
 % eventdata  reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
 mypwd = pwd;
-cd(handles.mmhandle.SuperMDA.output_directory);
+cd(handles.smda.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-after');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.change_all_group('group_function_after_name',regexp(filename,'.*(?=\.m)','match'));
+    handles.smda.change_all_group('group_function_after_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The group-function-before selection was invalid.');
 end
@@ -669,7 +668,7 @@ function edit_group_travel_offset_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of
 %        edit_group_travel_offset as a double
 my_travelOffset = str2double(get(hObject,'String'));
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).travel_offset = my_travelOffset;
+handles.smda.group(handles.SuperMDA_index(1)).travel_offset = my_travelOffset;
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -692,7 +691,7 @@ function pushbutton_position_Add_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_Add (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).new_position(handles.mmhandle);
+handles.smda.group(handles.SuperMDA_index(1)).new_position(handles.mm);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -711,16 +710,16 @@ if size(myDat,1) == length(myRow)
     myRow(1) = [];
 end
 position_number = cell2mat(myDat(myRow,2));
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number) = [];
-my_position_order_number = sort(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow));
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = [];
-my_adjustment = zeros(size(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order));
+handles.smda.group(handles.SuperMDA_index(1)).position(position_number) = [];
+my_position_order_number = sort(handles.smda.group(handles.SuperMDA_index(1)).position_order(myRow));
+handles.smda.group(handles.SuperMDA_index(1)).position_order(myRow) = [];
+my_adjustment = zeros(size(handles.smda.group(handles.SuperMDA_index(1)).position_order));
 for i = 1:length(my_position_order_number)
-    my_logic = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order > my_position_order_number(i);
-    my_adjustment = my_adjustment+ones(size(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order))*-1.*my_logic;
+    my_logic = handles.smda.group(handles.SuperMDA_index(1)).position_order > my_position_order_number(i);
+    my_adjustment = my_adjustment+ones(size(handles.smda.group(handles.SuperMDA_index(1)).position_order))*-1.*my_logic;
 end
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order + my_adjustment;
-set(handles.uitable_position,'UserData',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).my_length);
+handles.smda.group(handles.SuperMDA_index(1)).position_order = handles.smda.group(handles.SuperMDA_index(1)).position_order + my_adjustment;
+set(handles.uitable_position,'UserData',handles.smda.group(handles.SuperMDA_index(1)).my_length);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -763,10 +762,10 @@ function pushbutton_position_findBeforeFunction_Callback(hObject, eventdata, han
 % eventdata  reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
 mypwd = pwd;
-cd(handles.mmhandle.SuperMDA.output_directory);
+cd(handles.smda.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-before');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('position_function_before_name',regexp(filename,'.*(?=\.m)','match'));
+    handles.smda.group(handles.SuperMDA_index(1)).change_all_position('position_function_before_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The position-function-before selection was invalid.');
 end
@@ -807,10 +806,10 @@ function pushbutton_position_findAfterFunction_Callback(hObject, eventdata, hand
 % eventdata  reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
 mypwd = pwd;
-cd(handles.mmhandle.SuperMDA.output_directory);
+cd(handles.smda.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-after');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('position_function_after_name',regexp(filename,'.*(?=\.m)','match'));
+    handles.smda.group(handles.SuperMDA_index(1)).change_all_position('position_function_after_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The position-function-after selection was invalid.');
 end
@@ -844,9 +843,9 @@ function pushbutton_position_update_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_update (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-handles.mmhandle = Core_general_getXYZ(handles.mmhandle);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz = handles.mmhandle.pos;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).continuous_focus_offset = str2double(handles.mmhandle.core.getProperty(handles.mmhandle.AutoFocusDevice,'Position'));
+handles.mm = Core_general_getXYZ(handles.mm);
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz = handles.mm.pos;
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).continuous_focus_offset = str2double(handles.mm.core.getProperty(handles.mm.AutoFocusDevice,'Position'));
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -856,7 +855,7 @@ function pushbutton_position_goto_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_goto (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-handles.mmhandle = Core_general_setXYZ(handles.mmhandle, handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz);
+handles.mm = Core_general_setXYZ(handles.mm, handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz);
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_position_moveUp.
@@ -872,9 +871,9 @@ myDat = get(handles.uitable_position,'Data');
 if size(myDat,1) == 1 || myRow == 1
     return;
 end
-my_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow-1) = my_order(myRow);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = my_order(myRow-1);
+my_order = handles.smda.group(handles.SuperMDA_index(1)).position_order;
+handles.smda.group(handles.SuperMDA_index(1)).position_order(myRow-1) = my_order(myRow);
+handles.smda.group(handles.SuperMDA_index(1)).position_order(myRow) = my_order(myRow-1);
 set(handles.uitable_position,'UserData',myRow-1);
 % Update handles structure
 guidata(hObject, handles);
@@ -893,9 +892,9 @@ myDat = get(handles.uitable_position,'Data');
 if size(myDat,1) == 1 || myRow == size(myDat,1);
     return;
 end
-my_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow+1) = my_order(myRow);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myRow) = my_order(myRow+1);
+my_order = handles.smda.group(handles.SuperMDA_index(1)).position_order;
+handles.smda.group(handles.SuperMDA_index(1)).position_order(myRow+1) = my_order(myRow);
+handles.smda.group(handles.SuperMDA_index(1)).position_order(myRow) = my_order(myRow+1);
 set(handles.uitable_position,'UserData',myRow+1);
 % Update handles structure
 guidata(hObject, handles);
@@ -942,10 +941,10 @@ function pushbutton_settings_findFunction_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB handles
 % structure with handles and user data (see GUIDATA)
 mypwd = pwd;
-cd(handles.mmhandle.SuperMDA.output_directory);
+cd(handles.smda.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
 if exist(fullfile(pathname,filename),'file')
-    handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).change_all_settings('settings_function_name',regexp(filename,'.*(?=\.m)','match'));
+    handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).change_all_settings('settings_function_name',regexp(filename,'.*(?=\.m)','match'));
 else
     disp('The settings-function selection was invalid.');
 end
@@ -959,9 +958,9 @@ function pushbutton_settings_add_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_settings_add (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).new_settings;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).new_settings;
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -980,18 +979,18 @@ if size(myDat,1) == length(myRow)
     myRow(1) = [];
 end
 my_number = cell2mat(myDat(myRow,11));
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number) = [];
-my_order_number = sort(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow));
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = [];
-my_adjustment = zeros(size(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order));
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number) = [];
+my_order_number = sort(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow));
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = [];
+my_adjustment = zeros(size(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order));
 for i = 1:length(my_order_number)
-    my_logic = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order > my_order_number(i);
-    my_adjustment = my_adjustment+ones(size(handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order))*-1.*my_logic;
+    my_logic = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order > my_order_number(i);
+    my_adjustment = my_adjustment+ones(size(handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order))*-1.*my_logic;
 end
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order + my_adjustment;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
-set(handles.uitable_settings,'UserData',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length);
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order + my_adjustment;
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
+set(handles.uitable_settings,'UserData',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1009,11 +1008,11 @@ myDat = get(handles.uitable_settings,'Data');
 if size(myDat,1) == 1 || myRow == 1
     return;
 end
-my_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow-1) = my_order(myRow);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = my_order(myRow-1);
+my_order = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order;
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow-1) = my_order(myRow);
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = my_order(myRow-1);
 set(handles.uitable_settings,'UserData',myRow-1);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1031,11 +1030,11 @@ myDat = get(handles.uitable_settings,'Data');
 if size(myDat,1) == 1 || myRow == size(myDat,1);
     return;
 end
-my_order = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order;
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow+1) = my_order(myRow);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = my_order(myRow+1);
+my_order = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order;
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow+1) = my_order(myRow);
+handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myRow) = my_order(myRow+1);
 set(handles.uitable_settings,'UserData',myRow+1);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1118,8 +1117,8 @@ function pushbutton_primary_save_mda_Callback(hObject, eventdata, handles)
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
 mypwd = pwd;
-cd(handles.mmhandle.SuperMDA.output_directory);
-SuperMDA = handles.mmhandle.SuperMDA;
+cd(handles.smda.output_directory);
+SuperMDA = handles.smda;
 [filename,pathname] = uiputfile({'*.mat'},'Save a SuperMDA','mySuperMDA.mat');
 save(fullfile(pathname,filename),'SuperMDA');
 cd(mypwd);
@@ -1138,9 +1137,9 @@ myDat = get(handles.uitable_group,'Data');
 if size(myDat,1) == 1 || myRow == 1
     return;
 end
-my_group_order = handles.mmhandle.SuperMDA.group_order;
-handles.mmhandle.SuperMDA.group_order(myRow-1) = my_group_order(myRow);
-handles.mmhandle.SuperMDA.group_order(myRow) = my_group_order(myRow-1);
+my_group_order = handles.smda.group_order;
+handles.smda.group_order(myRow-1) = my_group_order(myRow);
+handles.smda.group_order(myRow) = my_group_order(myRow-1);
 set(handles.uitable_group,'UserData',myRow-1);
 % Update handles structure
 guidata(hObject, handles);
@@ -1160,20 +1159,20 @@ myDat = get(handles.uitable_group,'Data');
 if size(myDat,1) == 1 || myRow == size(myDat,1);
     return;
 end
-my_group_order = handles.mmhandle.SuperMDA.group_order;
-handles.mmhandle.SuperMDA.group_order(myRow+1) = my_group_order(myRow);
-handles.mmhandle.SuperMDA.group_order(myRow) = my_group_order(myRow+1);
+my_group_order = handles.smda.group_order;
+handles.smda.group_order(myRow+1) = my_group_order(myRow);
+handles.smda.group_order(myRow) = my_group_order(myRow+1);
 set(handles.uitable_group,'UserData',myRow+1);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
 
-% --- Executes on button press in pushbutton_run_mfile.
-function pushbutton_run_mfile_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_run_mfile (see GCBO) eventdata  reserved
+% --- Executes on button press in pushbutton_quick_snap.
+function pushbutton_quick_snap_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_quick_snap (see GCBO) eventdata  reserved
 % - to be defined in a future version of MATLAB handles    structure with
 % handles and user data (see GUIDATA)
-
+SuperMDA_gui_main_pushbutton_quick_snap_Callback_infig(handles.gui_main);
 
 % --- Executes when entered data in editable cell(s) in uitable_group.
 function uitable_group_CellEditCallback(hObject, eventdata, handles)
@@ -1191,12 +1190,12 @@ myDat = get(handles.uitable_group,'Data');
 group_number = myDat{myRow,2};
 switch myCol
     case 1
-        handles.mmhandle.SuperMDA.group(group_number).label = eventdata.NewData;
+        handles.smda.group(group_number).label = eventdata.NewData;
     case 3
         if strcmp(eventdata.NewData,'yes')
-            handles.mmhandle.SuperMDA.group(group_number).travel_offset_bool=true;
+            handles.smda.group(group_number).travel_offset_bool=true;
         else
-            handles.mmhandle.SuperMDA.group(group_number).travel_offset_bool=false;
+            handles.smda.group(group_number).travel_offset_bool=false;
         end
 end
 % Update handles structure
@@ -1228,7 +1227,7 @@ else
         myInd = myInd(1);
     end
 end
-handles.SuperMDA_index(1) = handles.mmhandle.SuperMDA.group_order(myInd);
+handles.SuperMDA_index(1) = handles.smda.group_order(myInd);
 handles.SuperMDA_index(2) = 1;
 handles.SuperMDA_index(3) = 1;
 % Update handles structure
@@ -1282,7 +1281,7 @@ else
         myInd = myInd(1);
     end
 end
-handles.SuperMDA_index(2) = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position_order(myInd);
+handles.SuperMDA_index(2) = handles.smda.group(handles.SuperMDA_index(1)).position_order(myInd);
 handles.SuperMDA_index(3) = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -1327,7 +1326,7 @@ else
         myInd = myInd(1);
     end
 end
-handles.SuperMDA_index(3) = handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myInd);
+handles.SuperMDA_index(3) = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order(myInd);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1349,21 +1348,21 @@ myDat = get(handles.uitable_position,'Data');
 position_number = myDat{myRow,2};
 switch myCol
     case 1
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).label = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).label = eventdata.NewData;
     case 3
         if strcmp(eventdata.NewData,'yes')
-            handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_bool=true;
+            handles.smda.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_bool=true;
         else
-            handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_bool=false;
+            handles.smda.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_bool=false;
         end
     case 4
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).xyz(1) = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(1) = eventdata.NewData;
     case 5
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).xyz(2) = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(2) = eventdata.NewData;
     case 6
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).xyz(3) = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(3) = eventdata.NewData;
     case 7
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_offset = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_offset = eventdata.NewData;
 end
 % Update handles structure
 guidata(hObject, handles);
@@ -1386,24 +1385,24 @@ myDat = get(handles.uitable_settings,'Data');
 my_number = myDat{myRow,11};
 switch myCol
     case 1
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).channel = find(strcmp(eventdata.NewData,handles.mmhandle.Channel));
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).channel = find(strcmp(eventdata.NewData,handles.mm.Channel));
     case 2
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).exposure = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).exposure = eventdata.NewData;
     case 3
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).binning = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).binning = eventdata.NewData;
     case 4
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_step_size = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_step_size = eventdata.NewData;
     case 5
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_stack_upper_offset = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_stack_upper_offset = eventdata.NewData;
     case 6
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_stack_lower_offset = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_stack_lower_offset = eventdata.NewData;
     case 8
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_origin_offset = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).z_origin_offset = eventdata.NewData;
     case 9
-        handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).period_multiplier = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings(my_number).period_multiplier = eventdata.NewData;
 end
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
-handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.mmhandle.SuperMDA.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
+handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1414,4 +1413,4 @@ function pushbutton_beginMDA_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_beginMDA (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-super_mda_acquisition_start(handles.mmhandle);
+super_mda_acquisition_start(handles.mm);

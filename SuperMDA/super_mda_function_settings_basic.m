@@ -11,7 +11,7 @@ mmhandle.core.setConfig('Channel',SuperMDA.channel_names{SuperMDA.group(i).posit
 mmhandle.core.setExposure(mmhandle.CameraDevice,SuperMDA.group(i).position(j).settings(k).exposure(t));
 %% Check to make sure the directory tree exists to store image files
 %
-pngpath = fullfile(SuperMDA.output_directory,SuperMDA.group(i).label);
+pngpath = fullfile(SuperMDA.output_directory,'smda_images');
 if ~isdir(pngpath)
     mkdir(pngpath);
 end
@@ -32,5 +32,5 @@ for h = 1:length(SuperMDA.group(i).position(j).settings(k).z_stack)
 	%% Update the database
     %
     image_description = '';
-    SuperMDA.update_database(filenamePNG,image_description,mmhandle);
+    SuperMDA.update_database(filenamePNG,image_description);
 end

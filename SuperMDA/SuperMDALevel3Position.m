@@ -8,6 +8,7 @@ classdef SuperMDALevel3Position < handle
         continuous_focus_offset; %always a positive number
         continuous_focus_bool = true;
         label = '';
+        mm
         Parent_MDAGroup;
         position_function_after_name = 'super_mda_function_position_after_basic';
         position_function_after_handle;
@@ -29,16 +30,17 @@ classdef SuperMDALevel3Position < handle
         % sacraficing to much customization. After the creation of the
         % SuperMDA tiered-object use the new_position method to add another
         % position object.
-        function obj = SuperMDALevel3Position(mmhandle, my_Parent)
+        function obj = SuperMDALevel3Position(my_Parent)
             if nargin == 0
                 return
             elseif nargin == 2
                 addlistener(obj,'xyz','PostSet',@SuperMDALevel3Position.updateCustomizables);
                 obj.Parent_MDAGroup = my_Parent;
-                mmhandle = Core_general_getXYZ(mmhandle);
-                obj.xyz = mmhandle.pos;
-                obj.continuous_focus_offset = str2double(mmhandle.core.getProperty(mmhandle.AutoFocusDevice,'Position'));
-                obj.settings = SuperMDALevel4Settings(mmhandle, obj);
+                obj.mm = my_Parent.mm;
+                obj.mm.getXYZ
+                obj.xyz = obj.mm.pos;
+                obj.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+                obj.settings = SuperMDALevel4Settings(obj);
                 return
             end
         end

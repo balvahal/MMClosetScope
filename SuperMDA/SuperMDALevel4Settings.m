@@ -20,6 +20,7 @@ classdef SuperMDALevel4Settings < handle
         % Variables that define the relationship of this object to other
         % objects in the SuperMDA hierarchy
         Parent_MDAPosition;
+        mm
     end
     properties (SetObservable)
         % Variables that can be adjusted on the fly for feedback
@@ -40,7 +41,7 @@ classdef SuperMDALevel4Settings < handle
         % sacraficing to much customization. After the creation of the
         % SuperMDA tiered-object use the newSettings method to add another
         % settings object.
-        function obj = SuperMDALevel4Settings(~,my_Parent)
+        function obj = SuperMDALevel4Settings(my_Parent)
             if nargin == 0
                 return
             elseif nargin == 2
@@ -55,6 +56,7 @@ classdef SuperMDALevel4Settings < handle
                 obj.exposure = 0;
                 obj.timepoints = 1;
                 obj.period_multiplier = 1;
+                obj.mm = my_Parent.mm;
                 return
             end
         end
