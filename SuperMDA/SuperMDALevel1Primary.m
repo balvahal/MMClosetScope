@@ -55,8 +55,7 @@ classdef SuperMDALevel1Primary < handle
                 obj.group = SuperMDALevel2Group(obj);
                 addlistener(obj,'duration','PostSet',@SuperMDALevel1Primary.updateCustomizables);
                 addlistener(obj,'fundamental_period','PostSet',@SuperMDALevel1Primary.updateCustomizables);
-                obj.runtime_timer = timer;
-                obj.runtime_timer.TimerFcn = {@super_mda_method_execute,obj};
+                obj.runtime_timer = timer('TimerFcn',@(~,~) obj.execute);
                 return
             end
         end
