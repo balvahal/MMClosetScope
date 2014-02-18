@@ -41,7 +41,7 @@ classdef SuperMDALevel2Group < handle
         function obj = SuperMDALevel2Group(my_Parent)
             if nargin == 0
                 return
-            elseif nargin == 2
+            elseif nargin == 1
                 obj.Parent_MDAPrimary = my_Parent;
                 obj.mm = my_Parent.mm;
                 obj.position = SuperMDALevel3Position(obj);

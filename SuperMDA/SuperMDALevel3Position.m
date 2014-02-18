@@ -33,7 +33,7 @@ classdef SuperMDALevel3Position < handle
         function obj = SuperMDALevel3Position(my_Parent)
             if nargin == 0
                 return
-            elseif nargin == 2
+            elseif nargin == 1
                 addlistener(obj,'xyz','PostSet',@SuperMDALevel3Position.updateCustomizables);
                 obj.Parent_MDAGroup = my_Parent;
                 obj.mm = my_Parent.mm;

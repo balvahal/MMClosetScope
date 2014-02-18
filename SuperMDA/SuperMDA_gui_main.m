@@ -86,6 +86,7 @@ set(handles.uitable_settings,'ColumnFormat',myColumnFormat);
 % ----- Variables
 %
 %
+handles.quick_snap_count = 0;
 handles.SuperMDA_index = [1,1,1]; %[group, position, setting]
 handles.primary_timepoints_UoT = get(handles.popupmenu_primary_time_points_units_of_time,'Value'); %this variable must be set, so the prior value is known when a conversion is requested.
 % ----- Function Handles
@@ -691,7 +692,7 @@ function pushbutton_position_Add_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_Add (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-handles.smda.group(handles.SuperMDA_index(1)).new_position(handles.mm);
+handles.smda.group(handles.SuperMDA_index(1)).new_position;
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -1413,4 +1414,4 @@ function pushbutton_beginMDA_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_beginMDA (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-super_mda_acquisition_start(handles.mm);
+handles.smda.start_acquisition;

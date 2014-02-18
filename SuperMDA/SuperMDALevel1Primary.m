@@ -55,7 +55,8 @@ classdef SuperMDALevel1Primary < handle
                 obj.group = SuperMDALevel2Group(obj);
                 addlistener(obj,'duration','PostSet',@SuperMDALevel1Primary.updateCustomizables);
                 addlistener(obj,'fundamental_period','PostSet',@SuperMDALevel1Primary.updateCustomizables);
-                runtime_timer = timer('TimerFcn',@(~,~) obj.execute);
+                obj.runtime_timer = timer;
+                obj.runtime_timer.TimerFcn = {@super_mda_method_execute,obj};
                 return
             end
         end
@@ -223,9 +224,10 @@ classdef SuperMDALevel1Primary < handle
         %
         function obj = start_acquisition(obj)
             obj.finalize_MDA;
+            obj.runtime_index = [1,1,1,1,1];
             obj.configure_clock_absolute;
-            obj.runtime_timer.StopFcn = @(~,~,obj) super_mda_function_runtime_timer_stopfcn(obj);
-            startat(obj.runtime_timer,obj.mda_clock_absolute(obj.mda_clock_pointer));
+            obj.runtime_timer.StopFcn = {@super_mda_function_runtime_timer_stopfcn,obj};
+            start(obj.runtime_timer);
         end
         %% stop acquisition
         %
@@ -255,7 +257,7 @@ classdef SuperMDALevel1Primary < handle
         %% update array length of customizables
         % The customizables are xyz, exposure, and timepoints
         function updateCustomizables(~,evtdata)
-            evtdata.AffectedObject.update_children_to_reflect_number_of_timepoints;
+            evtdata.AffectedObject.reflect_number_of_timepoints;
             switch evtdata.Source.Name
                 case 'duration'
                     evtdata.AffectedObject.duration = evtdata.AffectedObject.mda_clock_relative(end);

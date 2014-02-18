@@ -44,7 +44,7 @@ classdef SuperMDALevel4Settings < handle
         function obj = SuperMDALevel4Settings(my_Parent)
             if nargin == 0
                 return
-            elseif nargin == 2
+            elseif nargin == 1
                 addlistener(obj,'exposure','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 addlistener(obj,'timepoints','PostSet',@SuperMDALevel4Settings.updateCustomizables);
                 addlistener(obj,'period_multiplier','PostSet',@SuperMDALevel4Settings.updateCustomizables);

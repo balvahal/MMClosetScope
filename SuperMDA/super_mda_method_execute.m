@@ -1,10 +1,10 @@
 %%
 %
-function [SuperMDA] = super_mda_method_execute(SuperMDA)
+function [] = super_mda_method_execute(~,~,SuperMDA)
 SuperMDA.runtime_index(1) = SuperMDA.mda_clock_pointer;
 for i2 = SuperMDA.group_order
     SuperMDA.runtime_index(2) = i2;
-    SuperMDA.group(i2).group_function_before_handle(SuperMDA);
+%    SuperMDA.group(i2).group_function_before_handle(SuperMDA);
     for j2 = SuperMDA.group(i2).position_order
         SuperMDA.runtime_index(3) = j2;
         SuperMDA.group(i2).position(j2).position_function_before_handle(SuperMDA);

@@ -68,7 +68,7 @@ else
 end
 % remember the handles to itself
 handles.StageMap_gui_main = hObject;
-
+handles.mm.gui_StageMap = handles.StageMap_gui_main;
 % add function handles
 handles.update = @StageMap_gui_main_update_infig;
 

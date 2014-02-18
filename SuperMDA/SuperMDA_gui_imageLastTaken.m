@@ -62,7 +62,7 @@ if isempty(mmhandleInputIndex)
     disp('*****');
     %delete(hObject);
 else
-    handles.mmhandle = varargin{mmhandleInputIndex+1};
+    handles.mm = varargin{mmhandleInputIndex+1};
 end
 % fix the aspect ratio of the axes to reflect the image size
 myunits = get(0,'units');
@@ -74,8 +74,8 @@ ppChar = Pix_SS./Char_SS;
 handles.ppChar = ppChar(3:4);
 set(0,'units',myunits);
 
-pixWidth = handles.mmhandle.core.getImageWidth;
-pixHeight = handles.mmhandle.core.getImageHeight;
+pixWidth = handles.mm.core.getImageWidth;
+pixHeight = handles.mm.core.getImageHeight;
 
 myPosition = get(handles.axes_imageLastTaken,'Position');
 y_pixels = myPosition(4)*handles.ppChar(2);
