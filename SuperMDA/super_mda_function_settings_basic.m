@@ -11,7 +11,7 @@ smda.mm.core.setConfig('Channel',smda.channel_names{smda.group(i).position(j).se
 smda.mm.core.setExposure(smda.mm.CameraDevice,smda.group(i).position(j).settings(k).exposure(t));
 %% Check to make sure the directory tree exists to store image files
 %
-pngpath = fullfile(smda.output_directory,'acquired_images');
+pngpath = fullfile(smda.output_directory,'RAW_DATA');
 if ~isdir(pngpath)
     mkdir(pngpath);
 end
@@ -59,3 +59,4 @@ else
         smda.update_database(filenamePNG,image_description);
     end
 end
+writetable(smda.database,fullfile(smda.output_directory,'SuperMDA_database.txt'),'Delimiter','\t');
