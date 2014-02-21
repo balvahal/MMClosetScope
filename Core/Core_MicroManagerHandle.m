@@ -43,6 +43,13 @@ classdef Core_MicroManagerHandle < handle
                 obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
                 obj.AutoFocusDevice = obj.core.getFocusDevice;
                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
+            elseif strcmp(my_comp_name,'LB89-68-A06F')
+                obj.xyStageDevice = obj.core.getXYStageDevice;
+                obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
+                obj.FocusDevice = obj.core.getFocusDevice;
+                obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
+                obj.AutoFocusDevice = obj.core.getFocusDevice;
+                obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
             else
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.FocusDevice = obj.core.getFocusDevice;
@@ -68,6 +75,12 @@ classdef Core_MicroManagerHandle < handle
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-6A-45FA.txt'));
+                obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
+            elseif strcmp(my_comp_name,'LB89-68-A06F')
+                obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
+                obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
+                [mfilepath,~,~] = fileparts(mfilename('fullpath'));
+                mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
             end
             
@@ -125,7 +138,7 @@ classdef Core_MicroManagerHandle < handle
             if isempty(varargin)
                 Core_general_setXYZ(obj,pos);
             else
-                Core_general_setXYZ(obj,pos,celldisp(varargin));
+                Core_general_setXYZ(obj,pos,varargin{:});
             end
         end
         %% Get x, y, and z position of microscope
@@ -140,7 +153,7 @@ classdef Core_MicroManagerHandle < handle
             if isempty(varargin)
                 Core_general_snapImage(obj);
             else
-                Core_general_snapImage(obj,celldisp(varargin));
+                Core_general_snapImage(obj,varargin{:});
             end
         end
         %%

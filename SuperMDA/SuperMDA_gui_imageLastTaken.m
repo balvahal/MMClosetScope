@@ -55,14 +55,15 @@ function SuperMDA_gui_imageLastTaken_OpeningFcn(hObject, eventdata, handles, var
 % Choose default command line output for SuperMDA_gui_imageLastTaken
 handles.output = hObject;
 % add mmhandle to the figure handles
-mmhandleInputIndex = find(strcmp(varargin, 'mmhandle'));
+mmhandleInputIndex = find(strcmp(varargin, 'SuperMDA'));
 if isempty(mmhandleInputIndex)
     disp('*****');
-    disp('Missing input argument. Pass in mmhandle');
+    disp('Missing input argument. Pass in SuperMDA');
     disp('*****');
     %delete(hObject);
 else
-    handles.mm = varargin{mmhandleInputIndex+1};
+    handles.smda = varargin{mmhandleInputIndex+1};
+    handles.mm = handles.smda.mm;
 end
 % fix the aspect ratio of the axes to reflect the image size
 myunits = get(0,'units');

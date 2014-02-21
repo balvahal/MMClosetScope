@@ -17,9 +17,7 @@ if ~isdir(pngpath)
 end
 %% Set PFS
 %
-if smda.group(i).position(j).continuous_focus_bool
-    smda.mm.core.setProperty(smda.mm.AutoFocusDevice,'Position',smda.group(i).position(j).continuous_focus_offset);
-    smda.mm.core.setProperty(smda.mm.AutoFocusStatusDevice,'State','On')
+if strcmp(smda.mm.core.getProperty(smda.mm.AutoFocusStatusDevice,'State'),'On')
     %% For each z-position
     %
     for h = 1:length(smda.group(i).position(j).settings(k).z_stack)
@@ -39,7 +37,6 @@ if smda.group(i).position(j).continuous_focus_bool
         smda.update_database(filenamePNG,image_description);
     end
 else
-    smda.mm.core.setProperty(smda.mm.AutoFocusStatusDevice,'State','Off')
     %% For each z-position
     %
     for h = 1:length(smda.group(i).position(j).settings(k).z_stack)

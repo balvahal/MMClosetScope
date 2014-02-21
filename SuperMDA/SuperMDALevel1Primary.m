@@ -224,6 +224,7 @@ classdef SuperMDALevel1Primary < handle
         function obj = start_acquisition(obj)
             obj.finalize_MDA;
             obj.runtime_index = [1,1,1,1,1];
+            obj.mda_clock_pointer = 1;
             obj.configure_clock_absolute;
             obj.runtime_timer.StopFcn = {@super_mda_function_runtime_timer_stopfcn,obj};
             start(obj.runtime_timer);

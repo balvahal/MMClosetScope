@@ -35,7 +35,7 @@
 % mmhandle
 %% Outputs
 % mmhandle
-function [mmhandle] = Core_special_findThenSetAbsoluteOrigin(mmhandle)
+function [mmhandle] = Core_special_findThenSetAbsoluteOriginXY(mmhandle)
 % Construct a questdlg with three options
 str = sprintf('Remove anything that could obstruct the objective, including any stage plates, to ensure safe exploration of the microscope movement limitations.\n\nDo you wish to proceed?');
 choice = questdlg(str, ...
@@ -58,39 +58,20 @@ end
 my_comp_name = mmhandle.core.getHostName.toCharArray';
 mystr = sprintf('settings_%s.txt',my_comp_name);
 mytable = readtable(fullfile(mfilepath,mystr));
-%% Z: Move the objective to its upper and lower limit
-% the FocusDevice that controls the Z movement does not update its position
-% until after the objective reaches its final position. Therefore, the
-% trick is to wait until it the value changes and then we'll know the
-% objective has reached its limit.
-mmhandle.setXYZ(mmhandle.pos + [0,0,100000]);
-myflag = true;
-while myflag
-    mypos2 = mmhandle.getXYZ;
-    pause(0.5);
-    mypos = mmhandle.getXYZ;
-    if mypos2(3) ~= mypos(3)
-        myflag = false;
-    end
-end
+%% Z: Move the objective to its lowest level to avoid obstructions
+% 
 mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
-mytable.zmax = mypos(3);
-
 mmhandle.setXYZ(mypos + [0,0,-100000]);
 myflag = true;
 while myflag
     mypos2 = mmhandle.getXYZ;
-    pause(0.5);
+    pause(0.1);
     mypos = mmhandle.getXYZ;
     if mypos2(3) ~= mypos(3)
         myflag = false;
     end
 end
 mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
-mytable.zmin = mypos(3);
-
 %% XY: Move the stage to its upper-left most corner
 %
 mmhandle.setXYZ(mypos + [-1000000,-1000000,0]);
@@ -122,4 +103,3 @@ mytable.ylim2 = mypos(2);
 %
 writetable(mytable,fullfile(mfilepath,mystr));
 mmhandle.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
-mmhandle.zLimits = [mytable.zmin,mytable.zmax];

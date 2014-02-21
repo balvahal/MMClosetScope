@@ -106,7 +106,7 @@ handles.gui_grid = SuperMDA_gui_grid('gui_main',handles.gui_main);
 set(handles.gui_grid,'visible','off'); % initially hide this gui from the user
 % Create update window
 % Create a figure that will show the latest image acquired by the SuperMDA.
-handles.gui_update = SuperMDA_gui_imageLastTaken('mmhandle',handles.mm);
+handles.gui_update = SuperMDA_gui_imageLastTaken('SuperMDA',handles.smda);
 handles.mylistener1 = addlistener(handles.smda,'database_updated',@(src,evnt)super_mda_function_database_updated(handles.gui_update,src,evnt));
 %handles.gui_stageMap = SCAN6gui_stageMap('gui_main',handles.gui_main);
 %handles.gui_stage_list; handles.gui_custom_timepoints;
