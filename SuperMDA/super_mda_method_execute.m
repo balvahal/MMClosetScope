@@ -6,7 +6,7 @@ disp(smda.mda_clock_pointer);
 smda.runtime_index(1) = smda.mda_clock_pointer;
 for i2 = smda.group_order
     smda.runtime_index(2) = i2;
-%    smda.group(i2).group_function_before_handle(smda);
+    smda.group(i2).group_function_before_handle(smda);
     for j2 = smda.group(i2).position_order
         smda.runtime_index(3) = j2;
         smda.group(i2).position(j2).position_function_before_handle(smda);

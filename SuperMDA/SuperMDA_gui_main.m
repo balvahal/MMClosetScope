@@ -436,6 +436,7 @@ cd(handles.smda.output_directory);
 if exist(fullfile(pathname,filename),'file')
     load(fullfile(pathname,filename),'SuperMDA');
     handles.smda = SuperMDA;
+    handles.smda.mm = handles.mm;
 else
     disp('The SuperMDA file selected was invalid.');
 end
