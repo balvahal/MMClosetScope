@@ -17,7 +17,7 @@ function [gamepad] = Gamepad_function_joystk_left(gamepad)
     
     my_dir = gamepad.joystk_left_dir + 180; %the default of the joystick has 0 degrees pointing East and degrees increase clockwise. For the scope we want 0 degrees pointing West increasing clockwise.
     my_pos = gamepad.microscope.pos + 1e6*[cosd(my_dir),sind(my_dir),0];
-    gamepad.microscope.core.stop(gamepad.microscope.xyStageDevice);
+    %gamepad.microscope.core.stop(gamepad.microscope.xyStageDevice);
     gamepad.microscope.core.setProperty(gamepad.microscope.xyStageDevice,'MaxSpeed',my_speed);
     gamepad.microscope.setXYZ(my_pos);
 end

@@ -33,19 +33,7 @@ if SuperMDA.group(i).position(j).continuous_focus_bool
         SuperMDA.mm.core.setProperty(SuperMDA.mm.AutoFocusStatusDevice,'State','Off');
         SuperMDA.mm.setXYZ(xyz(3),'direction','z');
     end
-    myflag = true;
-    while myflag
-        mypos2 = SuperMDA.mm.getXYZ;
-        mystr = sprintf('1st : %d',mypos2(3));
-        disp(mystr);
-        pause(0.1);
-        mypos = SuperMDA.mm.getXYZ;
-        mystr = sprintf('2nd : %d',mypos(3));
-        disp(mystr);
-        if mypos2(3) ~= mypos(3)
-            myflag = false;
-        end
-    end
+    SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
 else
     SuperMDA.mm.setXYZ(xyz);
     myflag = true;
@@ -54,13 +42,5 @@ else
             myflag = false;
         end
     end
-    myflag = true;
-    while myflag
-        mypos2 = SuperMDA.mm.getXYZ;
-        pause(0.1);
-        mypos = SuperMDA.mm.getXYZ;
-        if mypos2(3) ~= mypos(3)
-            myflag = false;
-        end
-    end
+    SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
 end
