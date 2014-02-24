@@ -945,7 +945,8 @@ mypwd = pwd;
 cd(handles.smda.output_directory);
 [filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
 if exist(fullfile(pathname,filename),'file')
-    handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).change_all_settings('settings_function_name',regexp(filename,'.*(?=\.m)','match'));
+    my_var = regexp(filename,'.*(?=\.m)','match');
+    handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).change_all_settings('settings_function_name',my_var{1});
 else
     disp('The settings-function selection was invalid.');
 end

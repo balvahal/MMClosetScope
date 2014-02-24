@@ -120,10 +120,10 @@ classdef SuperMDALevel3Position < handle
                             obj.settings(i).binning = my_var;
                         end
                     end
-                case 'snap_function_name'
+                case 'settings_function_name'
                     if ischar(my_var)
                         for i=1:obj.my_length
-                            obj.settings(i).snap_function_name = my_var;
+                            obj.settings(i).settings_function_name = my_var;
                         end
                     end
                 case 'channel'

@@ -13,15 +13,7 @@ if SuperMDA.group(i).travel_offset_bool
     mmhandle.getXYZ;
     pos_next = mmhandle.pos + [0,0,SuperMDA.group(i).travel_offset];
     mmhandle.setXYZ(pos_next(3),'direction','z');
-    myflag = true;
-    while myflag
-        mypos2 = mmhandle.getXYZ;
-        pause(0.5);
-        mypos = mmhandle.getXYZ;
-        if mypos2(3) ~= mypos(3)
-            myflag = false;
-        end
-    end
+    SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
     %% find and travel to next position
     pos_next = SuperMDA.group(i).position(1).xyz(t,:);
     mmhandle.setXYZ(pos_next(1:2));
@@ -32,4 +24,5 @@ if SuperMDA.group(i).travel_offset_bool
         end
     end
     mmhandle.setXYZ(pos_next(3),'direction','z');
+    SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
 end

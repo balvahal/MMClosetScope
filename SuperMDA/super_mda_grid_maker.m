@@ -3,7 +3,7 @@
 % y increases due south when the stage is viewed from above.
 function [mmhandle,grid] = super_mda_grid_maker(mmhandle,varargin)
 p = inputParser;
-addRequired(p, 'mmhandle', @isstruct);
+addRequired(p, 'mmhandle', @(x) isa(x,'Core_MicroManagerHandle'));
 addParameter(p, 'number_of_images', 'undefined', @(x) mod(x,1)==0);
 addParameter(p, 'number_of_columns', 'undefined', @(x) mod(x,1)==0);
 addParameter(p, 'number_of_rows', 'undefined', @(x) mod(x,1)==0);
