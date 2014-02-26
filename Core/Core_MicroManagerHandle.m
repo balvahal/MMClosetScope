@@ -103,7 +103,7 @@ classdef Core_MicroManagerHandle < handle
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
-                mm.core.setProperty(mm.xyStageDevice,'MaxSpeed',70);
+                obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70);
             end
             obj.Timer_pos_counter = 0;
             obj.getXYZ;

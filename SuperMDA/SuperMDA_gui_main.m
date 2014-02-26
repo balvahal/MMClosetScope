@@ -568,7 +568,12 @@ for i = 1:length(my_group_order_number)
     my_adjustment = my_adjustment+ones(size(handles.smda.group_order))*-1.*my_logic;
 end
 handles.smda.group_order = handles.smda.group_order + my_adjustment;
-set(handles.uitable_group,'UserData',handles.smda.my_length);
+if handles.SuperMDA_index(1) > handles.smda.my_length
+    handles.SuperMDA_index(1) = handles.smda.my_length;
+    set(handles.uitable_group,'UserData',handles.smda.my_length);
+else
+    set(handles.uitable_group,'UserData',handles.SuperMDA_index(1));
+end
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -721,7 +726,12 @@ for i = 1:length(my_position_order_number)
     my_adjustment = my_adjustment+ones(size(handles.smda.group(handles.SuperMDA_index(1)).position_order))*-1.*my_logic;
 end
 handles.smda.group(handles.SuperMDA_index(1)).position_order = handles.smda.group(handles.SuperMDA_index(1)).position_order + my_adjustment;
-set(handles.uitable_position,'UserData',handles.smda.group(handles.SuperMDA_index(1)).my_length);
+if handles.SuperMDA_index(2) > handles.smda.group(handles.SuperMDA_index(1)).my_length
+    handles.SuperMDA_index(2) = handles.smda.group(handles.SuperMDA_index(1)).my_length;
+    set(handles.uitable_position,'UserData',handles.smda.group(handles.SuperMDA_index(1)).my_length);
+else
+    set(handles.uitable_position,'UserData',handles.SuperMDA_index(2));
+end
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);
@@ -993,7 +1003,12 @@ end
 handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order + my_adjustment;
 handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings);
 handles.smda.group(handles.SuperMDA_index(1)).change_all_position('settings_order',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).settings_order);
-set(handles.uitable_settings,'UserData',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length);
+if handles.SuperMDA_index(3) > handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length
+    handles.SuperMDA_index(3) = handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length;
+    set(handles.uitable_settings,'UserData',handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).my_length);
+else
+    set(handles.uitable_settings,'UserData',handles.SuperMDA_index(3));
+end
 % Update handles structure
 guidata(hObject, handles);
 handles.updateInfo(handles.gui_main);

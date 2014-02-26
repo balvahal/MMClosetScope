@@ -25,18 +25,18 @@ switch numPos
         switch p.Results.direction
             case 'x'
                 if pos < mmhandle.xyStageLimits(1)
-                    pos = mmhandle.xyStageLimits(1) + 50; % a 50um buffer seemed reasonable, so that no chance of an error can occur
+                    pos = mmhandle.xyStageLimits(1);
                 elseif pos > mmhandle.xyStageLimits(2)
-                    pos = mmhandle.xyStageLimits(2) - 50;
+                    pos = mmhandle.xyStageLimits(2);
                 end
                 x = pos;
                 % move to the xy position
                 mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
             case 'y'
                 if pos < mmhandle.xyStageLimits(3)
-                    pos = mmhandle.xyStageLimits(3) + 50; % a 50um buffer seemed reasonable, so that no chance of an error can occur
+                    pos = mmhandle.xyStageLimits(3);
                 elseif pos > mmhandle.xyStageLimits(4)
-                    pos = mmhandle.xyStageLimits(4) - 50;
+                    pos = mmhandle.xyStageLimits(4);
                 end
                 y = pos;
                 % move to the xy position
@@ -54,30 +54,30 @@ switch numPos
     case 2
         x = pos(1);
         if x < mmhandle.xyStageLimits(1)
-            x = mmhandle.xyStageLimits(1) + 50; % a 50um buffer seemed reasonable, so that no chance of an error can occur
+            x = mmhandle.xyStageLimits(1); 
         elseif x > mmhandle.xyStageLimits(2)
-            x = mmhandle.xyStageLimits(2) - 50;
+            x = mmhandle.xyStageLimits(2);
         end
         y = pos(2);
         if y < mmhandle.xyStageLimits(3)
-            y = mmhandle.xyStageLimits(3) + 50; % a 50um buffer seemed reasonable, so that no chance of an error can occur
+            y = mmhandle.xyStageLimits(3);
         elseif y > mmhandle.xyStageLimits(4)
-            y = mmhandle.xyStageLimits(4) - 50;
+            y = mmhandle.xyStageLimits(4);
         end
         % move to the xy position
         mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
     case 3
         x = pos(1);
         if x < mmhandle.xyStageLimits(1)
-            x = mmhandle.xyStageLimits(1) + 50; % a 50um buffer seemed reasonable, so that no chance of an error can occur
+            x = mmhandle.xyStageLimits(1);
         elseif x > mmhandle.xyStageLimits(2)
-            x = mmhandle.xyStageLimits(2) - 50;
+            x = mmhandle.xyStageLimits(2);
         end
         y = pos(2);
         if y < mmhandle.xyStageLimits(3)
-            y = mmhandle.xyStageLimits(3) + 50; % a 50um buffer seemed reasonable, so that no chance of an error can occur
+            y = mmhandle.xyStageLimits(3);
         elseif y > mmhandle.xyStageLimits(4)
-            y = mmhandle.xyStageLimits(4) - 50;
+            y = mmhandle.xyStageLimits(4);
         end
         z = pos(3);
         if z < mmhandle.zLimits(1)
