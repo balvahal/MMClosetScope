@@ -67,6 +67,11 @@ end
 % until after the objective reaches its final position. Therefore, the
 % trick is to wait until it the value changes and then we'll know the
 % objective has reached its limit.
+%
+% There is something broken about sending the TIZDrive to positions it
+% cannot reach, which makes the waitForDevice() command not function
+% properly. This will have to be addressed later, but I would not use this
+% command in the meantime.
 mmhandle.setXYZ(mmhandle.pos + [0,0,100000]);
 tic
 mmhandle.core.waitForDevice(mmhandle.FocusDevice);
