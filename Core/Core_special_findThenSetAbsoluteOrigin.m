@@ -63,40 +63,38 @@ else
     mytable = table;
 end
 %% Z: Move the objective to its upper and lower limit
-% the FocusDevice that controls the Z movement does not update its position
-% until after the objective reaches its final position. Therefore, the
-% trick is to wait until it the value changes and then we'll know the
-% objective has reached its limit.
+% The FocusDevice that controls the Z movement does not update its position
+% until after the objective reaches its final position.
 %
 % There is something broken about sending the TIZDrive to positions it
 % cannot reach, which makes the waitForDevice() command not function
-% properly. This will have to be addressed later, but I would not use this
-% command in the meantime.
-mmhandle.setXYZ(mmhandle.pos + [0,0,100000]);
-tic
-mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-toc
-mypos = mmhandle.getXYZ;
-mytable.zmax = mypos(3);
+% properly. Therefore, the code that employs this strategy has been
+% removed. An alternative is to have a dialog with the user to manually set
+% the objective to highest and lowest position and then poll the microscope
+% for its position value at each point.
 
-mmhandle.setXYZ(mypos + [0,0,-100000]);
-tic
-mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-toc
-mypos = mmhandle.getXYZ;
-mytable.zmin = mypos(3);
+% mmhandle.setXYZ(mmhandle.pos + [0,0,100000]);
+% mmhandle.core.waitForDevice(mmhandle.FocusDevice);
+% mypos = mmhandle.getXYZ;
+mytable.zmax = 9500;
+
+% mmhandle.setXYZ(mypos + [0,0,-100000]);
+% mmhandle.core.waitForDevice(mmhandle.FocusDevice);
+% mypos = mmhandle.getXYZ;
+mytable.zmin = 0;
 
 %% XY: Move the stage to its upper-left most corner
 % mmhandle.core.waitForDevice(mmhandle.xyStageDevice); cannot be used here
 % because it times out after 5 seconds and the stage takes longer than 5
 % seconds to traverse its full range across the diagonal or X-axis.
-mmhandle.setXYZ(mypos + [-1000000,-1000000,0]);
-myflag = true;
-while myflag
-if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-    myflag = false;
-end
-end
+mmhandle.setXYZ([-1000000,-1000000]);
+mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
+% myflag = true;
+% while myflag
+%     if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
+%         myflag = false;
+%     end
+% end
 mmhandle.core.setOriginXY(mmhandle.xyStageDevice);
 mypos = mmhandle.getXYZ;
 %pause(1); %A delay of this length ensures the position is updated.
@@ -104,13 +102,14 @@ mytable.xlim1 = mypos(1);
 mytable.ylim1 = mypos(2);
 %% XY: Move the stage to the lower-right corner
 %
-mmhandle.setXYZ(mmhandle.pos + [1000000,1000000,0]);
-myflag = true;
-while myflag
-if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-    myflag = false;
-end
-end
+mmhandle.setXYZ([1000000,1000000]);
+mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
+% myflag = true;
+% while myflag
+%     if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
+%         myflag = false;
+%     end
+% end
 mypos = mmhandle.getXYZ;
 %pause(1); %A delay of this length ensures the position is updated.
 mytable.xlim2 = mypos(1);

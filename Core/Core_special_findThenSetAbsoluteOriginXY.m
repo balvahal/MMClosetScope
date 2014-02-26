@@ -65,12 +65,11 @@ end
 %% Z: Move the objective to its lowest level to avoid obstructions
 % 
 mypos = mmhandle.getXYZ;
-mmhandle.setXYZ(mypos + [0,0,-100000]);
+mmhandle.setXYZ([mypos(1:2),1000]);
 mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-mypos = mmhandle.getXYZ;
 %% XY: Move the stage to its upper-left most corner
 %
-mmhandle.setXYZ(mypos + [-1000000,-1000000,0]);
+mmhandle.setXYZ([-1000000,-1000000]);
 mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
 mmhandle.core.setOriginXY(mmhandle.xyStageDevice);
 mypos = mmhandle.getXYZ;
@@ -79,7 +78,7 @@ mytable.xlim1 = mypos(1);
 mytable.ylim1 = mypos(2);
 %% XY: Move the stage to the lower-right corner
 %
-mmhandle.setXYZ(mmhandle.pos + [1000000,1000000,0]);
+mmhandle.setXYZ([1000000,1000000]);
 mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
 mypos = mmhandle.getXYZ;
 %pause(1); %A delay of this length ensures the position is updated.

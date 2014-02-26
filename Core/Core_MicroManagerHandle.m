@@ -35,8 +35,9 @@ classdef Core_MicroManagerHandle < handle
             obj.core = obj.gui.getMMCore;
             obj.mda = obj.gui.getAcquisitionEngine();
             
-            obj.core.enableStderrLog(0);
-            obj.core.enableDebugLog(0);
+            obj.core.enableStderrLog(0); %Log info sent to MATLAB command window is suppressed
+            obj.core.enableDebugLog(0); %Debug info will not be saved to the log file
+            obj.core.setProperty('Core', 'TimeoutMs', 19999); %The Nikon TI-e supposedly has an internal timeout of 20000ms.
             my_comp_name = obj.core.getHostName.toCharArray';
             if strcmp(my_comp_name,'LB89-6A-45FA')
                 obj.xyStageDevice = obj.core.getXYStageDevice;
@@ -93,12 +94,16 @@ classdef Core_MicroManagerHandle < handle
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
             elseif strcmp(my_comp_name,'KISHONYWAB111A')
+                %%
+                % The Kishony scope has a ProScan III, which has a
+                % 'MaxSpeed' range of [0,100].
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
+                mm.core.setProperty(mm.xyStageDevice,'MaxSpeed',70);
             end
             obj.Timer_pos_counter = 0;
             obj.getXYZ;
