@@ -867,7 +867,7 @@ function pushbutton_position_goto_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_position_goto (see GCBO) eventdata
 % reserved - to be defined in a future version of MATLAB handles structure
 % with handles and user data (see GUIDATA)
-handles.mm = Core_general_setXYZ(handles.mm, handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz);
+handles.mm = Core_general_setXYZ(handles.mm, handles.smda.group(handles.SuperMDA_index(1)).position(handles.SuperMDA_index(2)).xyz(1,:));
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_position_moveUp.
@@ -1374,11 +1374,11 @@ switch myCol
             handles.smda.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_bool=false;
         end
     case 4
-        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(1) = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(:,1) = eventdata.NewData;
     case 5
-        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(2) = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(:,2) = eventdata.NewData;
     case 6
-        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(3) = eventdata.NewData;
+        handles.smda.group(handles.SuperMDA_index(1)).position(position_number).xyz(:,3) = eventdata.NewData;
     case 7
         handles.smda.group(handles.SuperMDA_index(1)).position(position_number).continuous_focus_offset = eventdata.NewData;
 end

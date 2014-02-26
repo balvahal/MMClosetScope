@@ -25,7 +25,7 @@ classdef SuperMDALevel2Group < handle
         group_function_before_handle;
         mm
         position_order = 1;
-        travel_offset = -1000; %-1000 micrometers in the z direction to avoid scraping the objective on the bottom of a plate holder.
+        travel_offset = -2000; %-2000 micrometers in the z direction to avoid scraping the objective on the bottom of a plate holder.
         travel_offset_bool = true;
     end
     %%

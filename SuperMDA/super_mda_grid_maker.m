@@ -1,7 +1,7 @@
 %%
 % It is assumed that the origin is in the ULC and x increases due east and
 % y increases due south when the stage is viewed from above.
-function [mmhandle,grid] = super_mda_grid_maker(mmhandle,varargin)
+function [grid] = super_mda_grid_maker(mmhandle,varargin)
 p = inputParser;
 addRequired(p, 'mmhandle', @(x) isa(x,'Core_MicroManagerHandle'));
 addParameter(p, 'number_of_images', 'undefined', @(x) mod(x,1)==0);
@@ -204,7 +204,7 @@ switch decision_number
             [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             LRC(3)];
-    case 4 %upper-left and lower-right
+    case 3 %upper-left and lower-right
         im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x))+1;
         im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y))+1;
         NOI = im_num_col*im_num_row;
