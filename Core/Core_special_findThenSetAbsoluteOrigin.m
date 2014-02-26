@@ -57,42 +57,34 @@ end
 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
 my_comp_name = mmhandle.core.getHostName.toCharArray';
 mystr = sprintf('settings_%s.txt',my_comp_name);
-mytable = readtable(fullfile(mfilepath,mystr));
+if exist(fullfile(mfilepath,mystr),'file')
+    mytable = readtable(fullfile(mfilepath,mystr));
+else
+    mytable = table;
+end
 %% Z: Move the objective to its upper and lower limit
 % the FocusDevice that controls the Z movement does not update its position
 % until after the objective reaches its final position. Therefore, the
 % trick is to wait until it the value changes and then we'll know the
 % objective has reached its limit.
 mmhandle.setXYZ(mmhandle.pos + [0,0,100000]);
-myflag = true;
-while myflag
-    mypos2 = mmhandle.getXYZ;
-    pause(0.5);
-    mypos = mmhandle.getXYZ;
-    if mypos2(3) ~= mypos(3)
-        myflag = false;
-    end
-end
+tic
+mmhandle.core.waitForDevice(mmhandle.FocusDevice);
+toc
 mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
 mytable.zmax = mypos(3);
 
 mmhandle.setXYZ(mypos + [0,0,-100000]);
-myflag = true;
-while myflag
-    mypos2 = mmhandle.getXYZ;
-    pause(0.5);
-    mypos = mmhandle.getXYZ;
-    if mypos2(3) ~= mypos(3)
-        myflag = false;
-    end
-end
+tic
+mmhandle.core.waitForDevice(mmhandle.FocusDevice);
+toc
 mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
 mytable.zmin = mypos(3);
 
 %% XY: Move the stage to its upper-left most corner
-%
+% mmhandle.core.waitForDevice(mmhandle.xyStageDevice); cannot be used here
+% because it times out after 5 seconds and the stage takes longer than 5
+% seconds to traverse its full range across the diagonal or X-axis.
 mmhandle.setXYZ(mypos + [-1000000,-1000000,0]);
 myflag = true;
 while myflag

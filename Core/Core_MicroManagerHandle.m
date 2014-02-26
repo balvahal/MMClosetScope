@@ -35,6 +35,8 @@ classdef Core_MicroManagerHandle < handle
             obj.core = obj.gui.getMMCore;
             obj.mda = obj.gui.getAcquisitionEngine();
             
+            obj.core.enableStderrLog(0);
+            obj.core.enableDebugLog(1);
             my_comp_name = obj.core.getHostName.toCharArray';
             if strcmp(my_comp_name,'LB89-6A-45FA')
                 obj.xyStageDevice = obj.core.getXYStageDevice;
@@ -44,6 +46,13 @@ classdef Core_MicroManagerHandle < handle
                 obj.AutoFocusDevice = obj.core.getFocusDevice;
                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
             elseif strcmp(my_comp_name,'LB89-68-A06F')
+                obj.xyStageDevice = obj.core.getXYStageDevice;
+                obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
+                obj.FocusDevice = obj.core.getFocusDevice;
+                obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
+                obj.AutoFocusDevice = obj.core.getFocusDevice;
+                obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
+            elseif strcmp(my_comp_name,'KISHONYWAB111A')
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
                 obj.FocusDevice = obj.core.getFocusDevice;
@@ -82,8 +91,13 @@ classdef Core_MicroManagerHandle < handle
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
+            elseif strcmp(my_comp_name,'KISHONYWAB111A')
+                obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
+                obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
+                [mfilepath,~,~] = fileparts(mfilename('fullpath'));
+                mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
+                obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
             end
-            
             obj.Timer_pos_counter = 0;
             obj.Timer_pos_previous_pos = obj.pos;
             obj.Timer_pos = timer('ExecutionMode','fixedRate','Period',1,'TimerFcn',@(~,~) obj.Timer_pos_fun); %it seems to take approx. 0.2 seconds to read the position from the microscope. If a timer's callback takes longer to execute than the period MATLAB it will seem as if MATLAB is unresponsive from the command line.

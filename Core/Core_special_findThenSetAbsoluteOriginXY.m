@@ -57,30 +57,21 @@ end
 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
 my_comp_name = mmhandle.core.getHostName.toCharArray';
 mystr = sprintf('settings_%s.txt',my_comp_name);
-mytable = readtable(fullfile(mfilepath,mystr));
+if exist(fullfile(mfilepath,mystr),'file')
+    mytable = readtable(fullfile(mfilepath,mystr));
+else
+    mytable = table;
+end
 %% Z: Move the objective to its lowest level to avoid obstructions
 % 
 mypos = mmhandle.getXYZ;
 mmhandle.setXYZ(mypos + [0,0,-100000]);
-myflag = true;
-while myflag
-    mypos2 = mmhandle.getXYZ;
-    pause(0.1);
-    mypos = mmhandle.getXYZ;
-    if mypos2(3) ~= mypos(3)
-        myflag = false;
-    end
-end
+mmhandle.core.waitForDevice(mmhandle.FocusDevice);
 mypos = mmhandle.getXYZ;
 %% XY: Move the stage to its upper-left most corner
 %
 mmhandle.setXYZ(mypos + [-1000000,-1000000,0]);
-myflag = true;
-while myflag
-if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-    myflag = false;
-end
-end
+mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
 mmhandle.core.setOriginXY(mmhandle.xyStageDevice);
 mypos = mmhandle.getXYZ;
 %pause(1); %A delay of this length ensures the position is updated.
@@ -89,12 +80,7 @@ mytable.ylim1 = mypos(2);
 %% XY: Move the stage to the lower-right corner
 %
 mmhandle.setXYZ(mmhandle.pos + [1000000,1000000,0]);
-myflag = true;
-while myflag
-if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-    myflag = false;
-end
-end
+mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
 mypos = mmhandle.getXYZ;
 %pause(1); %A delay of this length ensures the position is updated.
 mytable.xlim2 = mypos(1);

@@ -50,6 +50,3 @@ switch numPos
         % move to the xy position
         mmhandle.core.setXYPosition(mmhandle.xyStageDevice, x, y);
 end
-%%
-% save the new position
-mmhandle = Core_general_getXYZ(mmhandle);
