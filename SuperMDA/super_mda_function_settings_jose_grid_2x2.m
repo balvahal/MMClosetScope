@@ -17,7 +17,7 @@ if ~isdir(pngpath)
 end
 %% Jose's loop for a 2x2 grid
 %
-[~,grid] = super_mda_grid_maker(smda.mm,'upper_left_corner',smda.group(i).position(j).xyz(t,:),'number_of_columns',2,'number_of_rows',2,'overlap',40);
+[grid] = super_mda_grid_maker(smda.mm,'upper_left_corner',smda.group(i).position(j).xyz(t,:),'number_of_columns',2,'number_of_rows',2,'overlap',40);
 %% Set PFS
 %
 for m=1:length(grid.positions)

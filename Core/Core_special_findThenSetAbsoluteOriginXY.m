@@ -73,7 +73,6 @@ mmhandle.setXYZ([-1000000,-1000000]);
 mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
 mmhandle.core.setOriginXY(mmhandle.xyStageDevice);
 mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
 mytable.xlim1 = mypos(1);
 mytable.ylim1 = mypos(2);
 %% XY: Move the stage to the lower-right corner
@@ -81,7 +80,6 @@ mytable.ylim1 = mypos(2);
 mmhandle.setXYZ([1000000,1000000]);
 mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
 mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
 mytable.xlim2 = mypos(1);
 mytable.ylim2 = mypos(2);
 %% update the settings file with the new information

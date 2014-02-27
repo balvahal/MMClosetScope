@@ -28,7 +28,7 @@ classdef SuperMDALevel1Primary < handle
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         runtime_timer;
-        mm
+        mm;
     end
     properties (SetObservable)
         duration = 0;
@@ -112,6 +112,7 @@ classdef SuperMDALevel1Primary < handle
             %starting point and make sure the parent object is consistent
             obj.group(end+1) = obj.group(end).copy;
             obj.group_order(end+1) = obj.my_length;
+            obj.group(end).label = '';
         end
         %% Find the number of group objects.
         %

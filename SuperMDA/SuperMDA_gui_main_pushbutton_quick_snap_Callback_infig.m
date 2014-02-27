@@ -10,6 +10,7 @@ j = handles.SuperMDA_index(2); %position
 k = handles.SuperMDA_index(3); %settings
 handles.mm.core.setConfig('Channel',handles.smda.channel_names{handles.smda.group(i).position(j).settings(k).channel});
 handles.mm.core.setExposure(handles.mm.CameraDevice,handles.smda.group(i).position(j).settings(k).exposure(1));
+handles.mm.core.waitForSystem();
 %% Check to make sure the directory tree exists to store image files
 %
 pngpath = fullfile(handles.smda.output_directory,'quick_snap');

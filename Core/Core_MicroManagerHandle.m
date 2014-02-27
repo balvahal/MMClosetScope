@@ -40,6 +40,8 @@ classdef Core_MicroManagerHandle < handle
             obj.core.setProperty('Core', 'TimeoutMs', 19999); %The Nikon TI-e supposedly has an internal timeout of 20000ms.
             my_comp_name = obj.core.getHostName.toCharArray';
             if strcmp(my_comp_name,'LB89-6A-45FA')
+                %% Closet Scope
+                %
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
                 obj.FocusDevice = obj.core.getFocusDevice;
@@ -47,6 +49,8 @@ classdef Core_MicroManagerHandle < handle
                 obj.AutoFocusDevice = obj.core.getFocusDevice;
                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
             elseif strcmp(my_comp_name,'LB89-68-A06F')
+                %% Curtain Scope
+                %
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
                 obj.FocusDevice = obj.core.getFocusDevice;
@@ -54,6 +58,8 @@ classdef Core_MicroManagerHandle < handle
                 obj.AutoFocusDevice = obj.core.getFocusDevice;
                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
             elseif strcmp(my_comp_name,'KISHONYWAB111A')
+                %% Kishony Scope
+                %
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
                 obj.FocusDevice = obj.core.getFocusDevice;
@@ -80,6 +86,8 @@ classdef Core_MicroManagerHandle < handle
             obj.ShutterDevice = obj.core.getShutterDevice;
             
             if strcmp(my_comp_name,'LB89-6A-45FA')
+                %% Closet Scope
+                %
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
@@ -87,14 +95,19 @@ classdef Core_MicroManagerHandle < handle
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
             elseif strcmp(my_comp_name,'LB89-68-A06F')
+                %% Curtain Scope
+                % The curtain scope has a ProScan II with a 'MaxSpeed'
+                % range of [1,100];
+                %
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
+                obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',50);
             elseif strcmp(my_comp_name,'KISHONYWAB111A')
-                %%
+                %% Kishony Scope
                 % The Kishony scope has a ProScan III, which has a
                 % 'MaxSpeed' range of [0,100].
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);

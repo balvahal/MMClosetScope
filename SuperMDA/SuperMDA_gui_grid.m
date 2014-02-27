@@ -364,9 +364,9 @@ function pushbutton_setCEN_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.centroid = handles.mm.getXYZ;
-set(handles.edit_ulcX,'String',num2str(handles.centroid(1)));
-set(handles.edit_ulcY,'String',num2str(handles.centroid(2)));
-set(handles.edit_ulcZ,'String',num2str(handles.centroid(3)));
+set(handles.edit_cenX,'String',num2str(handles.centroid(1)));
+set(handles.edit_cenY,'String',num2str(handles.centroid(2)));
+set(handles.edit_cenZ,'String',num2str(handles.centroid(3)));
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_gotoCEN.
@@ -575,7 +575,7 @@ function pushbutton_makegrid_Callback(hObject, eventdata, handles)
 methodname = get(get(handles.uipanel_methods,'SelectedObject'),'Tag');
 mypositions = [];
 switch methodname
-    case 'radiobutton_case4'
+    case 'radiobutton_case3'
         mypositions = super_mda_grid_maker(handles.mm,'upper_left_corner',handles.upper_left_corner,...
             'lower_right_corner',handles.lower_right_corner,...
             'overlap_x',handles.overlap_x,'overlap_y',handles.overlap_y,'path_strategy',handles.path_strategy,'overlap_units',handles.overlap_units);
@@ -613,6 +613,13 @@ switch methodname
             'overlap_x',handles.overlap_x,'overlap_y',handles.overlap_y,'path_strategy',handles.path_strategy,'overlap_units',handles.overlap_units);
 end
 mainHandles = guidata(handles.gui_main);
+
+for i = 1:length(mypositions.position_labels);
+    mainHandles.smda.group(mainHandles.SuperMDA_index(1)).new_position;
+    mainHandles.smda.group(mainHandles.SuperMDA_index(1)).position(end).xyz = mypositions.positions(i,:);
+    mainHandles.smda.group(mainHandles.SuperMDA_index(1)).position(end).label = mypositions.position_labels{i};
+end
+guidata(handles.gui_main, mainHandles);
 guidata(hObject, handles)
 
 
@@ -669,7 +676,7 @@ function uipanel_methods_SelectionChangeFcn(hObject, eventdata, handles)
 %	NewValue: handle of the currently selected object
 % handles    structure with handles and user data (see GUIDATA)
 switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
-    case 'radiobutton_case4'
+    case 'radiobutton_case3'
         
     case 'radiobutton_case25'
         

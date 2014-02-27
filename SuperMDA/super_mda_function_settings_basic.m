@@ -9,6 +9,7 @@ j = smda.runtime_index(3); %position
 k = smda.runtime_index(4); %settings
 smda.mm.core.setConfig('Channel',smda.channel_names{smda.group(i).position(j).settings(k).channel});
 smda.mm.core.setExposure(smda.mm.CameraDevice,smda.group(i).position(j).settings(k).exposure(t));
+smda.mm.core.waitForSystem();
 %% Check to make sure the directory tree exists to store image files
 %
 pngpath = fullfile(smda.output_directory,'RAW_DATA');
@@ -45,6 +46,7 @@ else
         %
         pos_z = smda.group(i).position(j).settings(k).z_origin_offset + smda.group(i).position(j).settings(k).z_stack(h)+smda.group(i).position(j).xyz(t,3);
         smda.mm = Core_general_setXYZ(smda.mm,pos_z,'direction','z');
+        SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
         %% Snap and Image
         %
         smda.mm = Core_general_snapImage(smda.mm);
@@ -56,4 +58,3 @@ else
         smda.update_database(filenamePNG,image_description);
     end
 end
-writetable(smda.database,fullfile(smda.output_directory,'SuperMDA_database.txt'),'Delimiter','\t');
