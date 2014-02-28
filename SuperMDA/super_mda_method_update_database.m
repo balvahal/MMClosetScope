@@ -30,4 +30,4 @@ my_dataset = table(...
     cellstr(image_description),... %image_description
     'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description'});
 obj.database = [obj.database;my_dataset]; %add a new row to the dataset
-notify(obj,'database_updated',SuperMDA_event_database_updated(obj.mm));
+%notify(obj,'database_updated',SuperMDA_event_database_updated(obj.mm));

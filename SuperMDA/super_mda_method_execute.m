@@ -1,8 +1,6 @@
 %%
 %
 function [smda] = super_mda_method_execute(smda)
-disp('hello');
-disp(smda.mda_clock_pointer);
 smda.runtime_index(1) = smda.mda_clock_pointer;
 for i2 = smda.group_order
     smda.runtime_index(2) = i2;

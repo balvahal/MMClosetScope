@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 16-Feb-2014 23:04:14
+% Last Modified by GUIDE v2.5 27-Feb-2014 20:17:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1075,7 +1075,7 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 
 % Hint: delete(hObject) closes the figure\
 handles = guidata(hObject);
-delete(handles.mylistener1);
+delete(handles.gui_grid);
 delete(hObject);
 
 
@@ -1426,5 +1426,11 @@ function pushbutton_beginMDA_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_beginMDA (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.mm.core.enableDebugLog(1);
-handles.smda.start_acquisition;
+SuperMDA_gui_main_pushbutton_begin_smda_Callback_infig(handles);
+
+
+% --- Executes during object deletion, before destroying properties.
+function figure1_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
