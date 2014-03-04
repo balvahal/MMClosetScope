@@ -29,13 +29,12 @@ if strcmp(smda.mm.core.getProperty(smda.mm.AutoFocusStatusDevice,'State'),'On')
         smda.mm.core.setProperty(smda.mm.AutoFocusDevice,'Position',pos_z);
         %% Snap and Image
         %
-        smda.mm = Core_general_snapImage(smda.mm);
-        filenamePNG = sprintf('%s_s%d_w%d%s_t%d_z%d.png',smda.group(i).label,j,smda.group(i).position(j).settings(k).channel,smda.channel_names{smda.group(i).position(j).settings(k).channel},smda.runtime_index(1),smda.runtime_index(5));
-        imwrite(smda.mm.I,fullfile(pngpath,filenamePNG),'png','bitdepth',16);
+        smda.snap;
+        smda.database_filenamePNG = sprintf('%s_s%d_w%d%s_t%d_z%d.png',smda.group(i).label,j,smda.group(i).position(j).settings(k).channel,smda.channel_names{smda.group(i).position(j).settings(k).channel},smda.runtime_index(1),smda.runtime_index(5));
+        imwrite(smda.mm.I,fullfile(pngpath,smda.database_filenamePNG),'png','bitdepth',16);
         %% Update the database
         %
-        image_description = '';
-        smda.update_database(filenamePNG,image_description);
+        smda.update_database;
     end
 else
     %% For each z-position
@@ -49,12 +48,11 @@ else
         SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
         %% Snap and Image
         %
-        smda.mm = Core_general_snapImage(smda.mm);
-        filenamePNG = sprintf('%s_s%d_w%d%s_t%d_z%d.png',smda.group(i).label,j,smda.group(i).position(j).settings(k).channel,smda.channel_names{smda.group(i).position(j).settings(k).channel},smda.runtime_index(1),smda.runtime_index(5));
-        imwrite(smda.mm.I,fullfile(pngpath,filenamePNG),'png','bitdepth',16);
+        smda.snap;
+        smda.database_filenamePNG = sprintf('%s_s%d_w%d%s_t%d_z%d.png',smda.group(i).label,j,smda.group(i).position(j).settings(k).channel,smda.channel_names{smda.group(i).position(j).settings(k).channel},smda.runtime_index(1),smda.runtime_index(5));
+        imwrite(smda.mm.I,fullfile(pngpath,smda.database_filenamePNG),'png','bitdepth',16);
         %% Update the database
         %
-        image_description = '';
-        smda.update_database(filenamePNG,image_description);
+        smda.update_database;
     end
 end

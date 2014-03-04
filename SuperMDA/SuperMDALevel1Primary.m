@@ -18,6 +18,8 @@ classdef SuperMDALevel1Primary < handle
     properties
         channel_names;
         database;
+        database_filenamePNG = '';
+        database_imagedescription = '';
         group;
         group_order = 1;
         mda_clock_absolute;
@@ -250,6 +252,12 @@ classdef SuperMDALevel1Primary < handle
         %
         function obj = execute(obj)
             super_mda_method_execute(obj);
+        end
+        %%
+        %
+        function obj = snap(obj)
+            Core_general_snapImage(obj.mm);
+            obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
     end
     %%

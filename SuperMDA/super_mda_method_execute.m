@@ -14,7 +14,6 @@ for i2 = smda.group_order
                 %% Execute the function that will snap and save an image
                 %
                 smda.group(i2).position(j2).settings(k2).settings_function_handle(smda);
-                writetable(smda.database,fullfile(smda.output_directory,'smda.txt'),'Delimiter','\t');
             end
         end
         smda.group(i2).position(j2).position_function_after_handle(smda);
@@ -23,5 +22,6 @@ for i2 = smda.group_order
 end
 smda.mda_clock_pointer = smda.mda_clock_pointer + 1;
 if smda.mda_clock_pointer > smda.number_of_timepoints
+    writetable(smda.database,fullfile(smda.output_directory,'smda_database_redundant.txt'),'Delimiter','\t');
     smda.stop_acquisition;
 end
