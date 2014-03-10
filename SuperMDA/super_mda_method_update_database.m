@@ -30,7 +30,14 @@ myNewDatabaseRow = {...
     obj.group(g).position(p).xyz(t,3),... %z
     z,... %the order of zstack from bottom to top
     obj.database_imagedescription}; %image_description
-obj.database(obj.runtime_imagecounter,:) = myNewDatabaseRow;
+for i=1:size(obj.database,2)
+    replacementVar = myNewDatabaseRow{i};
+    if(ischar(replacementVar))
+        obj.database.(i){obj.runtime_imagecounter} = replacementVar;
+    else
+        obj.database.(i)(obj.runtime_imagecounter) = replacementVar;
+    end
+end
 %% Write this row to a text file
 %
 database_filename = fullfile(obj.output_directory,'smda_database.txt');

@@ -214,8 +214,8 @@ classdef SuperMDALevel1Primary < handle
         end
         %% update_database
         %
-        function obj = update_database(obj,filename,image_description)
-            super_mda_method_update_database(obj,filename,image_description);
+        function obj = update_database(obj)
+            super_mda_method_update_database(obj);
         end
         %% database to CellProfiler CSV
         %
