@@ -170,3 +170,8 @@ pip-log.txt
 *.png
 *.pdf
 *.eps
+
+#############
+## Node.js and Bower
+#############
+bower_components/
