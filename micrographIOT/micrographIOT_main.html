@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="A one-page app to interact with microscopes :)">
+		<meta name="author" content="Kyle Karhohs">
+		<title>micrographIOT</title>
+
+		<!-- Bootstrap -->
+		<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+		<!-- Custom CSS -->
+		<link href="micrographIOT_main.css" rel="stylesheet">
+	</head>
+	<body>
+		<!-- A navbar -->
+		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">micrographIOT</a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="#snapshot">Snapshot</a>
+						</li>
+						<li>
+							<a href="#SuperMDA">SuperMDA</a>
+						</li>
+					</ul>
+				</div>
+				<!-- /.navbar-collapse -->
+			</div>
+			<!-- /container -->
+		</nav>
+		<div class="container">
+			<!-- Snapshot is an area that shows the last image taken by the microscope -->
+			<h1 id="snapshot">Snapshot</h1>
+			<img src="Penguins.jpg" alt="Penguins"	class="img-rounded img-responsive">
+			<!-- SuperMDA is an are that includes forms to configure a SuperMDA -->
+			<h1 id="SuperMDA">SuperMDA</h1>
+			<p>
+				Lorem ipsum dolor sit amet, graeci doctus expetenda id sed. Ne omnis iudicabit pri, diam autem fabulas cum ne, nec ea sonet nusquam eligendi. Pri oblique vivendum reprehendunt ad. Id mei habeo erant, dictas democritum an vis.
+
+				Quem veritus conceptam ius cu, nec cu graece nostro. An facer nobis blandit eam, ut ius recusabo maluisset, case ludus deleniti duo ne. Quo mollis vocent ei, sit in dicam consetetur, pri in aperiam euripidis. Dolores apeirian ius at, mei te audiam intellegebat, cu vel debitis argumentum. Et sea iisque nostrud sententiae, usu possim facilis repudiandae at, ex mei platonem constituam sadipscing.
+
+				An quo semper civibus consectetuer, pro ea fabulas corrumpit euripidis, cu insolens accusamus reprimique ius. An vero graecis deleniti nam. Ad odio mucius luptatum sit. Summo debitis te sea, eu tota putent delicatissimi eos, vim vide scripserit inciderint eu. Et iudico evertitur disputationi eam, sit nulla adipiscing suscipiantur no. Vidit noster impetus est an, id vim mutat nonumes.
+
+				Eam eu soleat singulis. Duo no stet graeci facilisi, pri fabulas molestiae dissentiet at, quot latine ut pri. Idque ponderum eam ut, mei ad summo perfecto. Pri eros ridens scribentur ne, id cum quando offendit, alii recusabo pericula te vix. Est mazim viderer officiis at, maiorum aliquando no vix. Has case timeam eloquentiam ei.
+
+				An purto vidit cum. Integre bonorum eu est. Has ad harum appareat efficiantur. Ut blandit rationibus duo, tantas aeterno euripidis ad quo. An vix dicit labores incorrupte.
+			</p>
+		</div>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="bower_components/d3/d3.min.js"></script>
+		<script src="micrographIOT_main_view.js"></script>
+	</body>
+</html>

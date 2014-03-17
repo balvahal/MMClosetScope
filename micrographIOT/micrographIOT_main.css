@@ -1,0 +1,12 @@
+@media {
+    body {
+        padding-top: 40px;
+    }
+}
+
+@media (max-width: 222px){
+    body {
+        padding-top: 90px;
+    }
+}
+
