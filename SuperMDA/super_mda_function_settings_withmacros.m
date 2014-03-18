@@ -1,6 +1,6 @@
 %%
 %
-function [smda] = super_mda_function_settings_basic(smda)
+function [smda] = super_mda_function_settings_withmacros(smda)
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position
 t = smda.runtime_index(1); %time
@@ -10,6 +10,9 @@ k = smda.runtime_index(4); %settings
 smda.mm.core.setConfig('Channel',smda.channel_names{smda.group(i).position(j).settings(k).channel});
 smda.mm.core.setExposure(smda.mm.CameraDevice,smda.group(i).position(j).settings(k).exposure(t));
 smda.mm.core.waitForSystem();
+%% Macro Before
+%
+SuperMDA_macro_settings_before(smda);
 %% Check to make sure the directory tree exists to store image files
 %
 pngpath = fullfile(smda.output_directory,'RAW_DATA');
@@ -56,3 +59,6 @@ else
         smda.update_database;
     end
 end
+%% Macro After
+%
+SuperMDA_macro_settings_after(smda);
