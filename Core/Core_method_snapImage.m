@@ -6,7 +6,7 @@
 % this snap image; an optional parameter
 %% Outputs
 % * mmhandle.I, the image snapped
-function mmhandle = Core_general_snapImage(mmhandle, varargin)
+function mmhandle = Core_method_snapImage(mmhandle, varargin)
 %% Snap the image
 %
 p = inputParser;

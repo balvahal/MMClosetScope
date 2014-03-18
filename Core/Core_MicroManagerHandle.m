@@ -132,6 +132,9 @@ classdef Core_MicroManagerHandle < handle
                 obj.AutoFocusDevice = obj.core.getFocusDevice;
                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
             end
+            
+            obj.pos = obj.getXYZ;
+            obj.I = zeros(obj.core.getImageHeight,obj.core.getImageWidth);
         end
 %% Methods
 % These methods are meant to make life a little easier by having quick

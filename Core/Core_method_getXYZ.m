@@ -4,7 +4,7 @@
 % * mmhandle, the struct that contains micro-manager objects
 %% Outputs
 % * mmhandle, the struct that contains micro-manager objects
-function [mmhandle] = Core_general_getXYZ(mmhandle)
+function [mmhandle] = Core_method_getXYZ(mmhandle)
 %% retrieve x, y, and z
 %
 x = mmhandle.core.getXPosition(mmhandle.xyStageDevice);

@@ -5,7 +5,7 @@
 % * x, y, z target positions
 %% Outputs
 % * mmhandle, the struct that contains micro-manager objects
-function mmhandle = Core_general_setXYZ(mmhandle, pos, varargin)
+function mmhandle = Core_method_setXYZ(mmhandle, pos, varargin)
 p = inputParser;
 addRequired(p, 'mmhandle', @(x) isa(x,'Core_MicroManagerHandle'));
 addRequired(p, 'pos', @(x) numel(x) >=1 && numel(x) <=3);
