@@ -18,20 +18,22 @@ classdef SuperMDA < handle
         database;
         database_filenamePNG = '';
         database_imagedescription = '';
-        group;
+        group = cell(6,1);
         group_order = 1;
         mda_clock_absolute;
         mda_clock_pointer = 1;
         mda_clock_relative = 0;
-        number_of_timepoints = 1;
-        output_directory;
+        mm;
+        number_of_timepoints = 1e4; %accounts for approx 1GB of data per channel per single image per position. 
+        output_directory = pwd;
+        position = cell(6,2000); %2000 images at 20x approximates full coverage of a typical glass slide used for immunocytochemistry.
         prototype_group; %The prototype_group serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_position; %The prototype_position serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_settings; %The prototype_settings serves as a template for the creation or additon of new groups to the SuperMDA object.
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         runtime_timer;
-        mm;
+        settings = cell(6,2000,6); % A typical scope has 6 filters.
     end
     properties (SetObservable)
         duration = 0;
@@ -46,20 +48,65 @@ classdef SuperMDA < handle
     %
     methods
         %% The constructor method
-        % The first argument is always mmhandle
-        function obj = SuperMDA(mmhandle,filename)
+        % The first argument is always mm
+        function obj = SuperMDA(mm)
             %%
             %
             if nargin == 0
                 return
             elseif nargin == 1
-                obj.mm = mmhandle;
-                obj.channel_names = mmhandle.Channel;
-                obj.group = SuperMDALevel2Group(obj);
-                addlistener(obj,'duration','PostSet',@SuperMDALevel1Primary.updateCustomizables);
-                addlistener(obj,'fundamental_period','PostSet',@SuperMDALevel1Primary.updateCustomizables);
-                obj.runtime_timer = timer('TimerFcn',@(~,~) obj.execute);
-                return
+                %% Initialzing the SuperMDA object
+                % When creating this object it is helpful to create
+                % prototypes of each group, position, and settings. These
+                % MATLAB structs provide a template for the creation and
+                % pre-allocation of a SuperMDA. Pre-allocation can be
+                % important for performance, so a SuperMDA object of
+                % (putatively) enormous size is created in this regard. The
+                % user defined size of the SuperMDA is known by the length
+                % of the _order_ properties.
+                obj.mm = mm;
+                obj.channel_names = mm.Channel;
+                %% initialize the prototype_settings
+                %
+                obj.prototype_settings.binning = 1;
+                obj.prototype_settings.channel = 1;
+                obj.prototype_settings.settings_function_name = 'SuperMDA_function_settings_basic';
+                obj.prototype_settings.settings_function_handle = str2func(obj.prototype_settings.settings_function_name);
+                obj.prototype_settings.exposure = zeros(1,obj.number_of_timepoints);
+                obj.prototype_settings.period_multiplier = 1;
+                obj.prototype_settings.timepoints = ones(1,obj.number_of_timepoints);
+                obj.prototype_settings.user_data = [];
+                obj.prototype_settings.z_origin_offset = 0;
+                obj.prototype_settings.z_stack = 0;
+                obj.prototype_settings.z_stack_upper_offset = 0;
+                obj.prototype_settings.z_stack_lower_offset = 0;
+                obj.prototype_settings.z_step_size = 0.3;
+                %% initialize the prototype_position
+                %
+                obj.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+                obj.prototype_position.continuous_focus_bool = true;
+                obj.prototype_position.label = '';
+                obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
+                %obj.prototype_position.position_function_after_handle = str2func(obj.prototype_settings.position_function_after_name);
+                obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
+                %obj.prototype_position.position_function_before_handle = str2func(obj.prototype_settings.position_function_before_name);
+                obj.prototype_position.settings_order = 1;
+                obj.prototype_position.user_data = [];
+                obj.prototype_position.xyz = zeros(3,obj.number_of_timepoints);
+                %% initialize the prototype_group
+                %
+                obj.prototype_group.label = '';
+                obj.prototype_position.group_function_after_name = 'SuperMDA_function_group_after_basic';
+                %obj.prototype_position.group_function_after_handle = str2func(obj.prototype_settings.group_function_after_name);
+                obj.prototype_position.group_function_before_name = 'SuperMDA_function_group_before_basic';
+                %obj.prototype_position.group_function_before_handle = str2func(obj.prototype_settings.group_function_before_name);
+                obj.prototype_group.position_order = 1; 
+                obj.prototype_group.user_data = [];
+                %% Pre-allocate the prototypes into their cells
+                %
+                [obj.settings{:}] = deal(obj.prototype_settings);
+                [obj.position{:}] = deal(obj.prototype_position);
+                [obj.group{:}] = deal(obj.prototype_group);
             elseif nargin == 2
                 %%
                 % The _filename_ means that a SuperMDA will be loaded.
