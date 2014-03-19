@@ -14,7 +14,7 @@ addParameter(p, 'overlap', 0, @isnumeric);
 addParameter(p, 'overlap_x', 'undefined', @isnumeric);
 addParameter(p, 'overlap_y', 'undefined', @isnumeric);
 addParameter(p, 'overlap_units','px',@(x) any(strcmp(x,{'px', 'um'})));
-addParameter(p, 'path_strategy','snake',@(x) any(strcmp(x,{'snake','CRLF'})));
+addParameter(p, 'path_strategy','snake',@(x) any(strcmp(x,{'snake','CRLF','Jacob Pyramid'})));
 
 parse(p,mmhandle,varargin{:});
 %% the units of overlap must be pixels for the ensuing calculations
@@ -247,23 +247,76 @@ elseif strcmp(p.Results.path_strategy,'snake')
     ind = 0;
     for i=1:im_num_row
         if mod(i,2)==1
-        for j=1:im_num_col
-            ind = ind+1;
-            positions(ind,:) = [...
-                ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
-                ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
-                ULC(3)];
-            position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
-        end
+            for j=1:im_num_col
+                ind = ind+1;
+                positions(ind,:) = [...
+                    ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                    ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                    ULC(3)];
+                position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            end
         else
-        for j=im_num_col:-1:1
-            ind = ind+1;
-            positions(ind,:) = [...
-                ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
-                ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
-                ULC(3)];
-            position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            for j=im_num_col:-1:1
+                ind = ind+1;
+                positions(ind,:) = [...
+                    ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                    ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                    ULC(3)];
+                position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            end
         end
+    end
+elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
+    my_cols = 1:im_num_col/im_num_row:im_num_col;
+    my_cols = round(my_cols)-1;
+    my_cols2 = im_num_col - my_cols;
+    ind = 0;
+    for i=1:im_num_row
+        if my_cols(i) == 0
+            continue;
+        end
+        if mod(i,2)==1
+            for j=1:my_cols(i)
+                ind = ind+1;
+                positions(ind,:) = [...
+                    ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                    ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                    ULC(3)];
+                position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            end
+        else
+            for j=my_cols(i):-1:1
+                ind = ind+1;
+                positions(ind,:) = [...
+                    ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                    ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                    ULC(3)];
+                position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            end
+        end
+    end
+    for i=im_num_row:-1:1
+        if my_cols(i) == 0
+            continue;
+        end
+        if mod(i,2)==1
+            for j=1:my_cols2(i)
+                ind = ind+1;
+                positions(ind,:) = [...
+                    ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                    ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                    ULC(3)];
+                position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            end
+        else
+            for j=my_cols2(i):-1:1
+                ind = ind+1;
+                positions(ind,:) = [...
+                    ULC(1)+(j-1)*mmhandle.core.getPixelSizeUm*(pixWidth-overlap_x),...
+                    ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
+                    ULC(3)];
+                position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            end
         end
     end
 end
