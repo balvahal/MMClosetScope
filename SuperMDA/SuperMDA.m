@@ -72,7 +72,7 @@ classdef SuperMDA < handle
                 obj.prototype_settings.channel = 1;
                 obj.prototype_settings.settings_function_name = 'SuperMDA_function_settings_basic';
                 obj.prototype_settings.settings_function_handle = str2func(obj.prototype_settings.settings_function_name);
-                obj.prototype_settings.exposure = zeros(1,obj.number_of_timepoints);
+                obj.prototype_settings.exposure = zeros(1,obj.number_of_timepoints); %try sparse matrices
                 obj.prototype_settings.period_multiplier = 1;
                 obj.prototype_settings.timepoints = ones(1,obj.number_of_timepoints);
                 obj.prototype_settings.user_data = [];
