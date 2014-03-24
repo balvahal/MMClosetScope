@@ -78,31 +78,32 @@ classdef SuperMDA < handle
         database;
         database_filenamePNG = '';
         database_imagedescription = '';
-        group = cell(6,1);
+        duration;
+        fundamental_period; %The units are seconds.
+        group;
         group_order = 1;
         mda_clock_absolute;
         mda_clock_pointer = 1;
         mda_clock_relative = 0;
         mm;
-        number_of_timepoints = 1e4; %accounts for approx 1GB of data per channel per single image per position. 
+        number_of_timepoints;
         output_directory = pwd;
-        position = cell(6,2000); %2000 images at 20x approximates full coverage of a typical glass slide used for immunocytochemistry.
+        position;
         prototype_group; %The prototype_group serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_position; %The prototype_position serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_settings; %The prototype_settings serves as a template for the creation or additon of new groups to the SuperMDA object.
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         runtime_timer;
-        settings = cell(6,2000,6); % A typical scope has 6 filters.
+        settings;
     end
     properties (SetObservable)
-        duration = 0;
-        fundamental_period = 300; %5 minutes is the default. The units are seconds.
+
     end
     %%
     %
     events
-        database_updated;
+        
     end
     %%
     %
@@ -130,11 +131,12 @@ classdef SuperMDA < handle
                 %
                 obj.prototype_settings.binning = 1;
                 obj.prototype_settings.channel = 1;
+                obj.prototype_settings.gain = 1;
                 obj.prototype_settings.settings_function_name = 'SuperMDA_function_settings_basic';
                 obj.prototype_settings.settings_function_handle = str2func(obj.prototype_settings.settings_function_name);
-                obj.prototype_settings.exposure = zeros(1,obj.number_of_timepoints); %try sparse matrices
+                obj.prototype_settings.exposure = 0;
                 obj.prototype_settings.period_multiplier = 1;
-                obj.prototype_settings.timepoints = ones(1,obj.number_of_timepoints);
+                obj.prototype_settings.timepoints = 1;
                 obj.prototype_settings.user_data = [];
                 obj.prototype_settings.z_origin_offset = 0;
                 obj.prototype_settings.z_stack = 0;
@@ -147,26 +149,22 @@ classdef SuperMDA < handle
                 obj.prototype_position.continuous_focus_bool = true;
                 obj.prototype_position.label = '';
                 obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
-                %obj.prototype_position.position_function_after_handle = str2func(obj.prototype_settings.position_function_after_name);
+                obj.prototype_position.position_function_after_handle = str2func(obj.prototype_settings.position_function_after_name);
                 obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
-                %obj.prototype_position.position_function_before_handle = str2func(obj.prototype_settings.position_function_before_name);
+                obj.prototype_position.position_function_before_handle = str2func(obj.prototype_settings.position_function_before_name);
                 obj.prototype_position.settings_order = 1;
                 obj.prototype_position.user_data = [];
-                obj.prototype_position.xyz = zeros(3,obj.number_of_timepoints);
+                obj.prototype_position.xyz = obj.mm.getXYZ;
                 %% initialize the prototype_group
                 %
                 obj.prototype_group.label = '';
                 obj.prototype_position.group_function_after_name = 'SuperMDA_function_group_after_basic';
-                %obj.prototype_position.group_function_after_handle = str2func(obj.prototype_settings.group_function_after_name);
+                obj.prototype_position.group_function_after_handle = str2func(obj.prototype_settings.group_function_after_name);
                 obj.prototype_position.group_function_before_name = 'SuperMDA_function_group_before_basic';
-                %obj.prototype_position.group_function_before_handle = str2func(obj.prototype_settings.group_function_before_name);
+                obj.prototype_position.group_function_before_handle = str2func(obj.prototype_settings.group_function_before_name);
                 obj.prototype_group.position_order = 1; 
                 obj.prototype_group.user_data = [];
-                %% Pre-allocate the prototypes into their cells
-                %
-                [obj.settings{:}] = deal(obj.prototype_settings);
-                [obj.position{:}] = deal(obj.prototype_position);
-                [obj.group{:}] = deal(obj.prototype_group);
+
             elseif nargin == 2
                 %%
                 % The _filename_ means that a SuperMDA will be loaded.
@@ -194,6 +192,27 @@ classdef SuperMDA < handle
                     new.(p{i}) = obj.(p{i});
                 end
             end
+        end
+        %% preallocate memory to hold the SuperMDA information
+        % This should always be done before 
+        function obj = preAllocateMemory(obj, myDuration, myFundamental_period, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings)
+            p = inputParser;
+            addRequired(p, 'obj', @(x) isa(x,'SuperMDA'));
+            addRequired(p, 'myDuration', isnumeric(x));
+            addRequired(p, 'myFundamental_period', isnumeric(x));
+            addRequired(p, 'myNumberOfGroups', isinteger(x));
+            addRequired(p, 'myNumberOfPositions', isinteger(x));
+            addRequired(p, 'myNumberOfSettings', isinteger(x));
+            parse(p, myDuration, myFundamental_period, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings);
+            %% Calculate the number of timepoints
+            %
+            obj.number_of_timepoints = floor(p.myDuration/p.myFundamental_period);
+            %% Update prototypes
+            %
+
+                [obj.settings{:}] = deal(obj.prototype_settings);
+                [obj.position{:}] = deal(obj.prototype_position);
+                [obj.group{:}] = deal(obj.prototype_group);
         end
         %% clone
         %
