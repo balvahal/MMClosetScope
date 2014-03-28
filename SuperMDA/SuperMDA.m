@@ -79,27 +79,24 @@ classdef SuperMDA < handle
         database;
         database_filenamePNG = '';
         database_imagedescription = '';
-        duration;
-        fundamental_period; %The units are seconds.
         group;
-        group_order;
+        group_order = 1;
         mda_clock_absolute;
         mda_clock_pointer = 1;
         mda_clock_relative = 0;
         mm;
-        number_of_timepoints;
         output_directory = pwd;
-        position;
         prototype_group; %The prototype_group serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_position; %The prototype_position serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_settings; %The prototype_settings serves as a template for the creation or additon of new groups to the SuperMDA object.
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         runtime_timer;
-        settings;
     end
-    properties (SetObservable)
-        
+    properties (SetAccess = private)
+        duration = 0;
+        fundamental_period = 600; %The units are seconds. 600 is 10 minutes.
+        number_of_timepoints = 1;
     end
     %%
     %
@@ -128,6 +125,29 @@ classdef SuperMDA < handle
                 % of the _order_ properties.
                 obj.mm = mm;
                 obj.channel_names = mm.Channel;
+                %% initialize the prototype_group
+                %
+                obj.prototype_group.label = '';
+                obj.prototype_position.group_function_after_name = 'SuperMDA_function_group_after_basic';
+                obj.prototype_position.group_function_after_handle = str2func(obj.prototype_settings.group_function_after_name);
+                obj.prototype_position.group_function_before_name = 'SuperMDA_function_group_before_basic';
+                obj.prototype_position.group_function_before_handle = str2func(obj.prototype_settings.group_function_before_name);
+                obj.prototype_group.position_order = 1;
+                obj.prototype_group.user_data = [];
+                obj.prototype_group.position = [];
+                %% initialize the prototype_position
+                %
+                obj.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+                obj.prototype_position.continuous_focus_bool = true;
+                obj.prototype_position.label = '';
+                obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
+                obj.prototype_position.position_function_after_handle = str2func(obj.prototype_settings.position_function_after_name);
+                obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
+                obj.prototype_position.position_function_before_handle = str2func(obj.prototype_settings.position_function_before_name);
+                obj.prototype_position.settings_order = 1;
+                obj.prototype_position.user_data = [];
+                obj.prototype_position.xyz = obj.mm.getXYZ; %This is a customizable array
+                obj.prototype_position.settings = [];
                 %% initialize the prototype_settings
                 %
                 obj.prototype_settings.binning = 1;
@@ -144,32 +164,63 @@ classdef SuperMDA < handle
                 obj.prototype_settings.z_stack_upper_offset = 0;
                 obj.prototype_settings.z_stack_lower_offset = 0;
                 obj.prototype_settings.z_step_size = 0.3;
-                %% initialize the prototype_position
-                %
-                obj.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
-                obj.prototype_position.continuous_focus_bool = true;
-                obj.prototype_position.label = '';
-                obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
-                obj.prototype_position.position_function_after_handle = str2func(obj.prototype_settings.position_function_after_name);
-                obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
-                obj.prototype_position.position_function_before_handle = str2func(obj.prototype_settings.position_function_before_name);
-                obj.prototype_position.settings_order = 1;
-                obj.prototype_position.user_data = [];
-                obj.prototype_position.xyz = obj.mm.getXYZ; %This is a customizable array
-                %% initialize the prototype_group
-                %
-                obj.prototype_group.label = '';
-                obj.prototype_position.group_function_after_name = 'SuperMDA_function_group_after_basic';
-                obj.prototype_position.group_function_after_handle = str2func(obj.prototype_settings.group_function_after_name);
-                obj.prototype_position.group_function_before_name = 'SuperMDA_function_group_before_basic';
-                obj.prototype_position.group_function_before_handle = str2func(obj.prototype_settings.group_function_before_name);
-                obj.prototype_group.position_order = 1;
-                obj.prototype_group.user_data = [];
+            end
+        end
+        %% Method to change the duration
+        %
+        function obj = newDuration(mynum)
+            if mynum < 0
+                return
+            end
+            obj.duration = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            if isempty(obj.group)
+                return
+            else
+                super_mda_method_reflect_number_of_timepoints(obj);
+            end
+        end
+        %% Method to change the fundamental period (units in seconds)
+        %
+        function obj = newFundamentalPeriod(mynum)
+            if mynum <= 0
+                return
+            end
+            obj.fundamental_period = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            if isempty(obj.group)
+                return
+            else
+                super_mda_method_reflect_number_of_timepoints(obj);
+            end
+        end
+                %% Method to change the number of timepoints
+        %
+        function obj = newNumberOfTimepoints(mynum)
+            if mynum < 1
+                return
+            end
+            obj.number_of_timepoints = round(mynum);
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            if isempty(obj.group)
+                return
+            else
+                super_mda_method_reflect_number_of_timepoints(obj);
             end
         end
         %% preallocate memory to hold the SuperMDA information
         % This should always be done before and the largest number should
         % be used for the number of groups, positions, and settings
+        %
+        % Note that the |order| properties of group, position, and settings
+        % remain initialized at 1. The |order| represents which groups,
+        % positions, or settings from the preallocated data should be part
+        % of the SuperMDA when acquisition begins. By manipulating the
+        % |order| groups, positions, or settings can be skipped on the fly,
+        % but remember this information will have to be added back to
+        % revisit them.
         function obj = preAllocateMemoryAndInitialize(obj, myDuration, myFundamental_period, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings)
             p = inputParser;
             addRequired(p, 'obj', @(x) isa(x,'SuperMDA'));
@@ -196,16 +247,12 @@ classdef SuperMDA < handle
             obj.prototype_position.xyz(:,1) = obj.mm.pos(1);
             obj.prototype_position.xyz(:,2) = obj.mm.pos(2);
             obj.prototype_position.xyz(:,3) = obj.mm.pos(3);
-            %%
-            % set the order variables
-            obj.prototype_position.settings_order = 1:myNumberOfSettings;
-            obj.prototype_group.position_order = 1:myNumberOfPositions;
-            obj.group_order = 1:myNumberOfGroups;
             %% Fill the SuperMDA with this preallocated information
             %
-            [obj.settings{:}] = deal(obj.prototype_settings);
-            [obj.position{:}] = deal(obj.prototype_position);
-            [obj.group{:}] = deal(obj.prototype_group);
+            obj.prototype_position.settings = repmat(obj.prototype_settings,myNumberOfSettings,1);
+            obj.prototype_group.position = repmat(obj.prototype_position,myNumberOfPositions,1);
+            obj.group = repmat(obj.prototype_group,myNumberOfGroups,1);
+            obj.group = obj.prototype_group;
         end
         %% Configure the absolute clock
         % Convert the MDA object unit of time (seconds) to the MATLAB unit
