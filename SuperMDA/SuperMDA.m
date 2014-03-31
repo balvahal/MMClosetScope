@@ -128,10 +128,10 @@ classdef SuperMDA < handle
                 %% initialize the prototype_group
                 %
                 obj.prototype_group.label = '';
-                obj.prototype_position.group_function_after_name = 'SuperMDA_function_group_after_basic';
-                obj.prototype_position.group_function_after_handle = str2func(obj.prototype_settings.group_function_after_name);
-                obj.prototype_position.group_function_before_name = 'SuperMDA_function_group_before_basic';
-                obj.prototype_position.group_function_before_handle = str2func(obj.prototype_settings.group_function_before_name);
+                obj.prototype_group.group_function_after_name = 'SuperMDA_function_group_after_basic';
+                obj.prototype_group.group_function_after_handle = str2func(obj.prototype_group.group_function_after_name);
+                obj.prototype_group.group_function_before_name = 'SuperMDA_function_group_before_basic';
+                obj.prototype_group.group_function_before_handle = str2func(obj.prototype_group.group_function_before_name);
                 obj.prototype_group.position_order = 1;
                 obj.prototype_group.user_data = [];
                 obj.prototype_group.position = [];
@@ -141,9 +141,9 @@ classdef SuperMDA < handle
                 obj.prototype_position.continuous_focus_bool = true;
                 obj.prototype_position.label = '';
                 obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
-                obj.prototype_position.position_function_after_handle = str2func(obj.prototype_settings.position_function_after_name);
+                obj.prototype_position.position_function_after_handle = str2func(obj.prototype_position.position_function_after_name);
                 obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
-                obj.prototype_position.position_function_before_handle = str2func(obj.prototype_settings.position_function_before_name);
+                obj.prototype_position.position_function_before_handle = str2func(obj.prototype_position.position_function_before_name);
                 obj.prototype_position.settings_order = 1;
                 obj.prototype_position.user_data = [];
                 obj.prototype_position.xyz = obj.mm.getXYZ; %This is a customizable array
@@ -168,46 +168,82 @@ classdef SuperMDA < handle
         end
         %% Method to change the duration
         %
-        function obj = newDuration(mynum)
+        function obj = newDuration(obj,mynum)
+            %%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must zero of greater
             if mynum < 0
                 return
             end
+            %%
+            % update other dependent parameters
             obj.duration = mynum;
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+            %%
+            % This if-statement exists so the duration, fundamental
+            % period, or duration can be set before a group has been
+            % pre-allocated/initialized. Or so the customizable variables
+            % within the MDA will have the same number of entries as the
+            % number of timepoints
             if isempty(obj.group)
                 return
             else
-                super_mda_method_reflect_number_of_timepoints(obj);
+                super_mda_method_update_number_of_timepoints(obj);
             end
         end
         %% Method to change the fundamental period (units in seconds)
         %
-        function obj = newFundamentalPeriod(mynum)
+        function obj = newFundamentalPeriod(obj,mynum)
+            %%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be greater than zero
             if mynum <= 0
                 return
             end
+            %%
+            % update other dependent parameters
             obj.fundamental_period = mynum;
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+            %%
+            % This if-statement exists so the duration, fundamental
+            % period, or duration can be set before a group has been
+            % pre-allocated/initialized. Or so the customizable variables
+            % within the MDA will have the same number of entries as the
+            % number of timepoints
             if isempty(obj.group)
                 return
             else
-                super_mda_method_reflect_number_of_timepoints(obj);
+                super_mda_method_update_number_of_timepoints(obj);
             end
         end
-                %% Method to change the number of timepoints
+        %% Method to change the number of timepoints
         %
-        function obj = newNumberOfTimepoints(mynum)
+        function obj = newNumberOfTimepoints(obj,mynum)
+            %%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be a positive integer
             if mynum < 1
                 return
             end
+            %%
+            % update other dependent parameters
             obj.number_of_timepoints = round(mynum);
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+            %%
+            % This if-statement exists so the duration, fundamental
+            % period, or duration can be set before a group has been
+            % pre-allocated/initialized. Or so the customizable variables
+            % within the MDA will have the same number of entries as the
+            % number of timepoints
             if isempty(obj.group)
                 return
             else
-                super_mda_method_reflect_number_of_timepoints(obj);
+                super_mda_method_update_number_of_timepoints(obj);
             end
         end
         %% preallocate memory to hold the SuperMDA information
@@ -221,22 +257,13 @@ classdef SuperMDA < handle
         % |order| groups, positions, or settings can be skipped on the fly,
         % but remember this information will have to be added back to
         % revisit them.
-        function obj = preAllocateMemoryAndInitialize(obj, myDuration, myFundamental_period, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings)
+        function obj = preAllocateMemoryAndInitialize(obj, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings)
             p = inputParser;
             addRequired(p, 'obj', @(x) isa(x,'SuperMDA'));
-            addRequired(p, 'myDuration', @(x) isnumeric(x) && (x>0)); %in seconds
-            addRequired(p, 'myFundamental_period', @(x) isnumeric(x) && (x>0)); %in seconds
             addRequired(p, 'myNumberOfGroups', @(x) isinteger(x) && (x>0));
             addRequired(p, 'myNumberOfPositions', @(x) isinteger(x) && (x>0));
             addRequired(p, 'myNumberOfSettings', @(x) isinteger(x) && (x>0));
-            parse(p, myDuration, myFundamental_period, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings);
-            %% Calculate the number of timepoints
-            % and check that duration and the fundamental period are
-            % consistent.
-            obj.fundamental_period = p.myFundamental_period;
-            obj.number_of_timepoints = floor(p.myDuration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+            parse(p, obj, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings);
             %% Update prototypes
             % * settings: exposure and timepoints
             % * position: xyz
@@ -265,8 +292,8 @@ classdef SuperMDA < handle
         % The highly customizable features of the mda include exposure,
         % xyz, and timepoints. These properties must have the same length.
         % This function will ensure they all have the same length.
-        function obj = reflect_number_of_timepoints(obj)
-            super_mda_method_reflect_number_of_timepoints(obj);
+        function obj = update_number_of_timepoints(obj)
+            super_mda_method_update_number_of_timepoints(obj);
         end
         %% finalize_MDA
         %

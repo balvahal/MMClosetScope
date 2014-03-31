@@ -1,7 +1,6 @@
 %%
 %
-function [obj] = super_mda_method_reflect_number_of_timepoints(obj)
-obj.configure_clock_relative;
+function [obj] = super_mda_method_update_number_of_timepoints(obj)
 for i = 1:obj.my_length
     for j = 1:obj.group(i).my_length
         % xyz
