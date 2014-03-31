@@ -1,4 +1,4 @@
-%% The SuperMDA
+%% The SuperMDAItinerary
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
 % position consists of 1 or more settings.
@@ -63,7 +63,7 @@
 % plates can be imaged every 10 minutes for 4 days.
 %
 % Better yet, just have the user specify this information ahead of time.
-classdef SuperMDA < handle
+classdef SuperMDAItinerary < handle
     %%
     % * duration: the length of a time lapse experiment in seconds. A
     % duration of zero means only a single set of images are captured, e.g.
@@ -124,7 +124,7 @@ classdef SuperMDA < handle
                 % user defined size of the SuperMDA is known by the length
                 % of the _order_ properties.
                 obj.mm = mm;
-                obj.channel_names = mm.Channel;
+                obj.channel_names = obj.mm.Channel;
                 %% initialize the prototype_group
                 %
                 obj.prototype_group.label = '';
@@ -182,8 +182,8 @@ classdef SuperMDA < handle
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
             %%
-            % This if-statement exists so the duration, fundamental
-            % period, or duration can be set before a group has been
+            % This if-statement exists so the duration, fundamental period,
+            % or duration can be set before a group has been
             % pre-allocated/initialized. Or so the customizable variables
             % within the MDA will have the same number of entries as the
             % number of timepoints
@@ -209,8 +209,8 @@ classdef SuperMDA < handle
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
             %%
-            % This if-statement exists so the duration, fundamental
-            % period, or duration can be set before a group has been
+            % This if-statement exists so the duration, fundamental period,
+            % or duration can be set before a group has been
             % pre-allocated/initialized. Or so the customizable variables
             % within the MDA will have the same number of entries as the
             % number of timepoints
@@ -235,8 +235,8 @@ classdef SuperMDA < handle
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
             %%
-            % This if-statement exists so the duration, fundamental
-            % period, or duration can be set before a group has been
+            % This if-statement exists so the duration, fundamental period,
+            % or duration can be set before a group has been
             % pre-allocated/initialized. Or so the customizable variables
             % within the MDA will have the same number of entries as the
             % number of timepoints
@@ -260,9 +260,9 @@ classdef SuperMDA < handle
         function obj = preAllocateMemoryAndInitialize(obj, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings)
             p = inputParser;
             addRequired(p, 'obj', @(x) isa(x,'SuperMDA'));
-            addRequired(p, 'myNumberOfGroups', @(x) isinteger(x) && (x>0));
-            addRequired(p, 'myNumberOfPositions', @(x) isinteger(x) && (x>0));
-            addRequired(p, 'myNumberOfSettings', @(x) isinteger(x) && (x>0));
+            addRequired(p, 'myNumberOfGroups', @(x) (mod(x,1)==0) && (x>0));
+            addRequired(p, 'myNumberOfPositions', @(x) (mod(x,1)==0) && (x>0));
+            addRequired(p, 'myNumberOfSettings', @(x) (mod(x,1)==0) && (x>0));
             parse(p, obj, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings);
             %% Update prototypes
             % * settings: exposure and timepoints
@@ -279,14 +279,47 @@ classdef SuperMDA < handle
             obj.prototype_position.settings = repmat(obj.prototype_settings,myNumberOfSettings,1);
             obj.prototype_group.position = repmat(obj.prototype_position,myNumberOfPositions,1);
             obj.group = repmat(obj.prototype_group,myNumberOfGroups,1);
-            obj.group = obj.prototype_group;
+            %% Create labels
+            %
+            for i = 1:length(obj.group)
+                mystr = sprintf('group%d',i);
+                obj.group(i).label = mystr;
+                for j = 1:length(obj.group(i).position)
+                    mystr = sprintf('position%d',j);
+                    obj.group(i).position(j).label = mystr;
+                end
+            end
         end
-        %% Configure the absolute clock
-        % Convert the MDA object unit of time (seconds) to the MATLAB unit
-        % of time (days) for the serial date numbers, i.e. the number of
-        % days that have passed since January 1, 0000.
-        function obj = configure_clock_absolute(obj)
-            obj.mda_clock_absolute = now + obj.mda_clock_relative/86400;
+        %% preAllocateDatabase
+        %
+        function obj = preAllocateDatabaseAndInitialize(obj)
+            %% Calculate the number of images
+            % The number of images will be used to pre-allocate memory for
+            % the database. Without memory pre-allocation the SuperMDA will
+            % grind to a halt.
+            image_counter = 0;
+            for i = obj.group_order
+                for j = obj.group(i).position_order
+                    for k = obj.group(i).position(j).settings_order
+                        image_counter = image_counter + sum(obj.group(i).position(j).settings(k).timepoints);
+                    end
+                end
+            end
+            %% Pre-allocate the database
+            %
+            pre_allocation_cell = {'channel name','filename','group label','position label',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'image description'};
+            obj.database = repmat(pre_allocation_cell,image_counter,1);
+            database_filename = fullfile(obj.output_directory,'smda_database.txt');
+            myfid = fopen(database_filename,'w');
+            fprintf(myfid,'%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n','channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description');
+            fclose(myfid);
+            %%
+            % Save the SuperMDA in a text or xml format, so that it can be
+            % reloaded later on. SuperMDA is an object and objects don't
+            % necessarily load properly, especially if listeners are
+            % involved.
+            SuperMDAtable = cell2table(pre_allocation_cell,'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description'});
+            writetable(SuperMDAtable,fullfile(obj.output_directory,'smda_database_copy.txt'),'Delimiter','\t');
         end
         %% Update child objects to reflect number of timepoints
         % The highly customizable features of the mda include exposure,
@@ -305,47 +338,44 @@ classdef SuperMDA < handle
         function obj = update_database(obj)
             super_mda_method_update_database(obj);
         end
+        %% update_zstack
+        %
+        function obj = update_zstack(obj)
+            for i = 1:length(obj.group)
+                for j = 1:length(obj.group(i).position)
+                    for k = 1:length(obj.group(i).position(j).settings)
+                        range = obj.group(i).position(j).settings(k).z_stack_upper_offset - obj.group(i).position(j).settings(k).z_stack_lower_offset;
+                        if range<=0
+                            obj.group(i).position(j).settings(k).z_stack_upper_offset = 0;
+                            obj.group(i).position(j).settings(k).z_stack_lower_offset = 0;
+                            obj.group(i).position(j).settings(k).z_stack = 0;
+                        else
+                            obj.group(i).position(j).settings(k).z_stack = obj.group(i).position(j).settings(k).z_stack_lower_offset:obj.group(i).position(j).settings(k).z_step_size:obj.group(i).position(j).settings(k).z_stack_upper_offset;
+                            obj.group(i).position(j).settings(k).z_stack_upper_offset = obj.group(i).position(j).settings(k).z_stack(end);
+                        end
+                    end
+                end
+            end
+        end
+        %% update_smdaFunctions
+        %
+        function obj = update_smdaFunctions(obj)
+            for i = 1:length(obj.group)
+                obj.group(i).group_function_before_handle = str2func(obj.group(i).group_function_before_name);
+                for j = 1:length(obj.group(i).position)
+                    obj.group(i).position(j).position_function_before_handle = str2func(obj.group(i).position(j).position_function_before_name);
+                    for k = 1:length(obj.group(i).position(j).settings)
+                        obj.group(i).position(j).settings(k).settings_function_handle = str2func(obj.group(i).position(j).settings(k).settings_function_name);
+                    end
+                    obj.group(i).position(j).position_function_after_handle = str2func(obj.group(i).position(j).position_function_after_name);
+                end
+                obj.group(i).group_function_after_handle = str2func(obj.group(i).group_function_after_name);
+            end
+        end
         %% database to CellProfiler CSV
         %
         function obj = database2CellProfilerCSV(obj)
             super_mda_method_database2CellProfilerCSV(obj);
-        end
-        %% start acquisition
-        %
-        function obj = start_acquisition(obj)
-            obj.finalize_MDA;
-            obj.runtime_index = [1,1,1,1,1];
-            obj.mda_clock_pointer = 1;
-            obj.configure_clock_absolute;
-            obj.runtime_timer.StopFcn = {@super_mda_function_runtime_timer_stopfcn,obj};
-            start(obj.runtime_timer);
-        end
-        %% stop acquisition
-        %
-        function obj = stop_acquisition(obj)
-            obj.runtime_timer.StopFcn = '';
-            stop(obj.runtime_timer);
-        end
-        %% pause acquisition
-        %
-        function obj = pause_acquisition(obj)
-            
-        end
-        %% resume acquisition
-        %
-        function obj = resume_acquisition(obj)
-            
-        end
-        %% execute 1 round of acquisition
-        %
-        function obj = execute(obj)
-            super_mda_method_execute(obj);
-        end
-        %%
-        %
-        function obj = snap(obj)
-            Core_general_snapImage(obj.mm);
-            obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
     end
     %%
