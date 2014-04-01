@@ -89,9 +89,6 @@ classdef SuperMDAItinerary < handle
         prototype_group; %The prototype_group serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_position; %The prototype_position serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_settings; %The prototype_settings serves as a template for the creation or additon of new groups to the SuperMDA object.
-        runtime_imagecounter = 0;
-        runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
-        runtime_timer;
     end
     properties (SetAccess = private)
         duration = 0;
