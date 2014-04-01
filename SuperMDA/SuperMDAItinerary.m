@@ -94,13 +94,14 @@ classdef SuperMDAItinerary < handle
         duration = 0;
         fundamental_period = 600; %The units are seconds. 600 is 10 minutes.
         number_of_timepoints = 1;
+        total_number_images = 0;
     end
     %%
     %
     methods
         %% The constructor method
         % The first argument is always mm
-        function obj = SuperMDA(mm)
+        function obj = SuperMDAItinerary(mm)
             %%
             %
             if nargin == 0
@@ -182,7 +183,7 @@ classdef SuperMDAItinerary < handle
             if isempty(obj.group)
                 return
             else
-                super_mda_method_update_number_of_timepoints(obj);
+                SuperMDA_method_update_number_of_timepoints(obj);
             end
         end
         %% Method to change the fundamental period (units in seconds)
@@ -209,7 +210,7 @@ classdef SuperMDAItinerary < handle
             if isempty(obj.group)
                 return
             else
-                super_mda_method_update_number_of_timepoints(obj);
+                SuperMDA_method_update_number_of_timepoints(obj);
             end
         end
         %% Method to change the number of timepoints
@@ -235,7 +236,7 @@ classdef SuperMDAItinerary < handle
             if isempty(obj.group)
                 return
             else
-                super_mda_method_update_number_of_timepoints(obj);
+                SuperMDA_method_update_number_of_timepoints(obj);
             end
         end
         %% preallocate memory to hold the SuperMDA information
@@ -289,18 +290,18 @@ classdef SuperMDAItinerary < handle
             % The number of images will be used to pre-allocate memory for
             % the database. Without memory pre-allocation the SuperMDA will
             % grind to a halt.
-            image_counter = 0;
+            obj.total_number_images = 0;
             for i = obj.group_order
                 for j = obj.group(i).position_order
                     for k = obj.group(i).position(j).settings_order
-                        image_counter = image_counter + sum(obj.group(i).position(j).settings(k).timepoints);
+                        obj.total_number_images = obj.total_number_images + sum(obj.group(i).position(j).settings(k).timepoints)*length(obj.group(i).position(j).settings(k).z_stack);
                     end
                 end
             end
             %% Pre-allocate the database
             %
             pre_allocation_cell = {'channel name','filename','group label','position label',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'image description'};
-            obj.database = repmat(pre_allocation_cell,image_counter,1);
+            obj.database = repmat(pre_allocation_cell,obj.total_number_images,1);
             database_filename = fullfile(obj.output_directory,'smda_database.txt');
             myfid = fopen(database_filename,'w');
             fprintf(myfid,'%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n','channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description');
@@ -318,13 +319,13 @@ classdef SuperMDAItinerary < handle
         % xyz, and timepoints. These properties must have the same length.
         % This function will ensure they all have the same length.
         function obj = update_number_of_timepoints(obj)
-            super_mda_method_update_number_of_timepoints(obj);
+            SuperMDA_method_update_number_of_timepoints(obj);
         end
         %% finalize_MDA
         % A method to be run just prior to take off. Think of it as a
         % pre-flight checklist.
         function obj = finalize_MDA(obj)
-            super_mda_method_finalize_MDA(obj);
+            SuperMDA_method_finalize_MDA(obj);
         end
         %% update_zstack
         %
@@ -377,7 +378,7 @@ classdef SuperMDAItinerary < handle
         %% database to CellProfiler CSV
         %
         function obj = database2CellProfilerCSV(obj)
-            super_mda_method_database2CellProfilerCSV(obj);
+            SuperMDA_method_database2CellProfilerCSV(obj);
         end
     end
     %%

@@ -20,7 +20,7 @@
 %
 %%% Other Notes
 %
-function [smda] = super_mda_method_database2CellProfilerCSV(smda)
+function [smda] = SuperMDA_method_database2CellProfilerCSV(smda)
 %% Create the header to the CSV file
 %
 header = cell(1,2*imageMetadata.numbers.howManyW);

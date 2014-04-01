@@ -1,6 +1,6 @@
 %%
 %
-function [obj] = super_mda_method_update_database(obj)
+function [obj] = SuperMDA_method_update_database(obj)
 %% update the internal object database
 %
 runtime_index2 = num2cell(obj.runtime_index); % a quirk about assigning the contents or a vector to multiple variables means the vector must first be made into a cell.

@@ -1,6 +1,6 @@
 %%
 %
-function [obj] = super_mda_method_finalize_MDA(obj)
+function [obj] = SuperMDA_method_finalize_MDA(obj)
 %% Update the dependent parameters in the MDA object
 % Some parameters in the MDA object are dependent on others.
 % This dependency came about from combining parameters that are

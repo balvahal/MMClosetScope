@@ -1,8 +1,8 @@
 %%
 %
-function [smda] = super_mda_function_runtime_timer_stopfcn(~,~,smda)
-if now < smda.mda_clock_absolute(smda.mda_clock_pointer)
-    startat(smda.runtime_timer,smda.mda_clock_absolute(smda.mda_clock_pointer));
+function [smdaPilot] = super_mda_function_runtime_timer_stopfcn(~,~,smdaPilot)
+if now < smdaPilot.itinerary.mda_clock_absolute(smdaPilot.mda_clock_pointer)
+    startat(smdaPilot.runtime_timer,smdaPilot.itinerary.mda_clock_absolute(smdaPilot.mda_clock_pointer));
 else
-    start(smda.runtime_timer)
+    start(smdaPilot.runtime_timer)
 end

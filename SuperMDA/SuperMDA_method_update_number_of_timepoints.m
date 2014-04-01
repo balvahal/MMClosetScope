@@ -12,7 +12,7 @@
 % number of timepoints is reduced, the excess in each array is deleted. The
 % hope is that by making the SuperMDA behavior predictable a user will be
 % able to program around any idiosyncrasies this creates.
-function [obj] = super_mda_method_update_number_of_timepoints(obj)
+function [obj] = SuperMDA_method_update_number_of_timepoints(obj)
 for i = 1:length(obj.group)
     for j = 1:length(obj.group(i).position)
         % xyz

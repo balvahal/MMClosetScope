@@ -78,9 +78,12 @@ classdef SuperMDAPilot < handle
         itinerary;
         mda_clock_pointer = 1;
         mm;
+        pause_bool = false;
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         runtime_timer;
+        gui_pause_stop_resume;
+        gui_lastImage;
     end
     %%
     %
@@ -102,34 +105,27 @@ classdef SuperMDAPilot < handle
                 %
                 obj.itinerary = smdai;
                 obj.mm = smdai.mm;
+                obj.runtime_timer = timer('TimerFcn',@(~,~) obj.execute);
+                %% Create a simple gui to enable pausing and stopping
+                %
+                obj.gui_pause_stop_resume = SuperMDA_gui_pause_stop_resume(obj);
             end
         end
         %% start acquisition
         %
         function obj = start_acquisition(obj)
-            obj.finalize_MDA;
-            obj.runtime_index = [1,1,1,1,1];
-            obj.mda_clock_pointer = 1;
-            %% Configure the absolute clock
-            % Convert the MDA object unit of time (seconds) to the MATLAB
-            % unit of time (days) for the serial date numbers, i.e. the
-            % number of days that have passed since January 1, 0000.
-            obj.mda_clock_absolute = now + obj.mda_clock_relative/86400;
-            obj.runtime_timer = timer('TimerFcn',@(~,~) obj.execute);
-            obj.runtime_timer.StopFcn = {@super_mda_function_runtime_timer_stopfcn,obj};
-            start(obj.runtime_timer);
+            SuperMDA_method_start_acquisition(obj);
         end
         %% stop acquisition
         %
         function obj = stop_acquisition(obj)
             obj.runtime_timer.StopFcn = '';
             stop(obj.runtime_timer);
-            delete(obj.runtime_timer);
         end
         %% pause acquisition
         %
         function obj = pause_acquisition(obj)
-            
+            SuperMDA_method_pause_acquisition(obj);
         end
         %% resume acquisition
         %
@@ -150,7 +146,14 @@ classdef SuperMDAPilot < handle
         %% update_database
         %
         function obj = update_database(obj)
-            super_mda_method_update_database(obj);
+            SuperMDA_method_update_database(obj);
+        end
+        %% delete (make sure its child objects are also deleted)
+        % for a clean delete
+        function delete(obj)
+            delete(obj.runtime_timer);
+            delete(obj.gui_pause_stop_resume);
+            delete(obj.gui_lastImage);
         end
     end
     %%
