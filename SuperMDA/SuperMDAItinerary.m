@@ -97,11 +97,6 @@ classdef SuperMDAItinerary < handle
     end
     %%
     %
-    events
-        
-    end
-    %%
-    %
     methods
         %% The constructor method
         % The first argument is always mm
@@ -326,14 +321,10 @@ classdef SuperMDAItinerary < handle
             super_mda_method_update_number_of_timepoints(obj);
         end
         %% finalize_MDA
-        %
+        % A method to be run just prior to take off. Think of it as a
+        % pre-flight checklist.
         function obj = finalize_MDA(obj)
             super_mda_method_finalize_MDA(obj);
-        end
-        %% update_database
-        %
-        function obj = update_database(obj)
-            super_mda_method_update_database(obj);
         end
         %% update_zstack
         %
@@ -367,6 +358,20 @@ classdef SuperMDAItinerary < handle
                     obj.group(i).position(j).position_function_after_handle = str2func(obj.group(i).position(j).position_function_after_name);
                 end
                 obj.group(i).group_function_after_handle = str2func(obj.group(i).group_function_after_name);
+            end
+        end
+        %% update_timepoints_with_period_multiplier
+        % Note that this will overwrite all information currently in the
+        % timepoint arrays.
+        function obj = update_timepoints_with_period_multiplier(obj)
+            for i = 1:length(obj.group)
+                for j = 1:length(obj.group(i).position)
+                    for k = 1:length(obj.group(i).position(j).settings)
+                        myNumbers = 1:obj.group(i).position(j).settings(k).period_multiplier:obj.number_of_timepoints;
+                        obj.group(i).position(j).settings(k).timepoints = zeroes(obj.number_of_timepoints,1);
+                        obj.group(i).position(j).settings(k).timepoints(myNumbers) = 1;
+                    end
+                end
             end
         end
         %% database to CellProfiler CSV

@@ -147,6 +147,11 @@ classdef SuperMDAPilot < handle
             Core_general_snapImage(obj.mm);
             obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
+        %% update_database
+        %
+        function obj = update_database(obj)
+            super_mda_method_update_database(obj);
+        end
     end
     %%
     %
