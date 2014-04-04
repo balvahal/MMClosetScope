@@ -77,6 +77,7 @@ classdef SuperMDAPilot < handle
     properties
         itinerary;
         mda_clock_pointer = 1;
+        mda_clock_absolute;
         mm;
         pause_bool = false;
         runtime_imagecounter = 0;
@@ -150,17 +151,22 @@ classdef SuperMDAPilot < handle
             Core_general_snapImage(obj.mm);
             obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
-        %% update_database
-        %
-        function obj = update_database(obj)
-            SuperMDA_method_update_database(obj);
-        end
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
         function delete(obj)
             delete(obj.runtime_timer);
             delete(obj.gui_pause_stop_resume);
             delete(obj.gui_lastImage);
+        end
+        %% database to CellProfiler CSV
+        %
+        function obj = database2CellProfilerCSV(obj)
+            SuperMDA_method_database2CellProfilerCSV(obj);
+        end
+        %% update_database
+        %
+        function obj = update_database(obj)
+            SuperMDA_method_update_database(obj);
         end
     end
     %%

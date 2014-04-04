@@ -81,8 +81,6 @@ classdef SuperMDAItinerary < handle
         database_imagedescription = '';
         group;
         group_order = 1;
-        mda_clock_absolute;
-        mda_clock_pointer = 1;
         mda_clock_relative = 0;
         mm;
         output_directory = pwd;
@@ -374,11 +372,6 @@ classdef SuperMDAItinerary < handle
                     end
                 end
             end
-        end
-        %% database to CellProfiler CSV
-        %
-        function obj = database2CellProfilerCSV(obj)
-            SuperMDA_method_database2CellProfilerCSV(obj);
         end
     end
     %%
