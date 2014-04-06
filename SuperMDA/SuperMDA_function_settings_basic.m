@@ -1,6 +1,6 @@
 %%
 %
-function [smda] = super_mda_function_settings_basic(smda)
+function [smda] = SuperMDA_function_settings_basic(smda)
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position
 t = smda.runtime_index(1); %time

@@ -1,6 +1,6 @@
 %%
 %
-function [SuperMDA] = super_mda_function_position_before_basic(SuperMDA)
+function [SuperMDA] = SuperMDA_function_position_before_basic(SuperMDA)
 %% Tell the scope to move to the position
 %
 t = SuperMDA.runtime_index(1);

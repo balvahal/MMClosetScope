@@ -1,6 +1,6 @@
 %%
 %
-function [SuperMDA] = super_mda_function_group_before_basic(SuperMDA)
+function [SuperMDA] = SuperMDA_function_group_before_basic(SuperMDA)
 %%
 %
 mmhandle = SuperMDA.mm;

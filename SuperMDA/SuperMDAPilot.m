@@ -107,8 +107,9 @@ classdef SuperMDAPilot < handle
                 %
                 obj.itinerary = smdai;
                 obj.mm = smdai.mm;
-                obj.runtime_timer = timer('TimerFcn',@(~,~) obj.execute);
-                obj.wait_timer = timer('TimerFcn',@(~,~) obj.wait);
+                obj.runtime_timer = timer('TimerFcn',@(~,~) obj.execute,'BusyMode','queue','Name','runtime_timer');
+                obj.wait_timer = timer('TimerFcn',@(~,~) obj.wait,'ExecutionMode','fixedSpacing',...
+                    'Period',1,'Name','wait_timer');
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_pause_stop_resume = SuperMDA_gui_pause_stop_resume(obj);
@@ -133,12 +134,12 @@ classdef SuperMDAPilot < handle
         %% resume acquisition
         %
         function obj = resume_acquisition(obj)
-            
+            SuperMDA_method_resume_acquisition(obj);
         end
         %% execute 1 round of acquisition
         %
         function obj = execute(obj)
-            super_mda_method_execute(obj);
+            SuperMDA_method_execute(obj);
         end
         %%
         %
@@ -155,6 +156,7 @@ classdef SuperMDAPilot < handle
         % for a clean delete
         function delete(obj)
             delete(obj.runtime_timer);
+            delete(obj.wait_timer);
             delete(obj.gui_pause_stop_resume);
             delete(obj.gui_lastImage);
         end

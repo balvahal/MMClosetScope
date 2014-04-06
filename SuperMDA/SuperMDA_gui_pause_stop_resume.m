@@ -52,6 +52,10 @@ htextTime = uicontrol('Style','text','String','No Acquisition',...
     'FontName','Verdana',...
     'Position',[hx hy hwidth hheight]);
 %%
+% store the uicontrol handles in the figure handles via guidata()
+handles.textTime = htextTime;
+guidata(f,handles);
+%%
 % make the gui visible
 set(f,'Visible','on');
 
@@ -59,17 +63,17 @@ set(f,'Visible','on');
 %
 %%
 %
-    function pushbuttonPause_Callback(source,eventdata)
-        disp('pause');
+    function pushbuttonPause_Callback(~,~)
+        smdaPilot.pause_acquisition;
     end
 %%
 %
-    function pushbuttonResume_Callback(source,eventdata)
-        disp('resume');
+    function pushbuttonResume_Callback(~,~)
+        smdaPilot.resume_acquisition;
     end
 %%
 %
-    function pushbuttonStop_Callback(source,eventdata)
-        disp('stop');
+    function pushbuttonStop_Callback(~,~)
+        smdaPilot.stop_acquisition;
     end
 end

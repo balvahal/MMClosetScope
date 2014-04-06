@@ -11,6 +11,5 @@ obj.mda_clock_pointer = 1;
 % (days) for the serial date numbers, i.e. the number of days that have
 % passed since January 1, 0000.
 obj.mda_clock_absolute = now + obj.itinerary.mda_clock_relative/86400;
-obj.runtime_timer.StopFcn = {@super_mda_function_runtime_timer_stopfcn,obj};
-start(obj.wait_timer);
+obj.runtime_timer.StopFcn = {@SuperMDA_function_runtime_timer_stopfcn,obj};
 start(obj.runtime_timer);

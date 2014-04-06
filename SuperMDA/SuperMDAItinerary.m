@@ -250,7 +250,7 @@ classdef SuperMDAItinerary < handle
         % revisit them.
         function obj = preAllocateMemoryAndInitialize(obj, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings)
             p = inputParser;
-            addRequired(p, 'obj', @(x) isa(x,'SuperMDA'));
+            addRequired(p, 'obj', @(x) isa(x,'SuperMDAItinerary'));
             addRequired(p, 'myNumberOfGroups', @(x) (mod(x,1)==0) && (x>0));
             addRequired(p, 'myNumberOfPositions', @(x) (mod(x,1)==0) && (x>0));
             addRequired(p, 'myNumberOfSettings', @(x) (mod(x,1)==0) && (x>0));
