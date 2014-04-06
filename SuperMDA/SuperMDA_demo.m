@@ -22,7 +22,7 @@ smdaI.group.position(2).continuous_focus_bool = 0;
 for i = smdaI.group.position_order
     smdaI.group.position(i).settings(1).channel = 2;
     smdaI.group.position(i).settings(1).exposure = 200;
-    smdaI.group.position(i).settings(2).channel = 3;
+    smdaI.group.position(i).settings(2).channel = 4;
     smdaI.group.position(i).settings(2).exposure = 100;
     smdaI.group.position(i).settings(2).binning = 2;
 end

@@ -1,6 +1,6 @@
 %%
 %
-function [obj] = SuperMDA_method_pause_acquisition(obj)
+function [smdaPilot] = SuperMDA_method_pause_acquisition(smdaPilot)
 %%
 % The operation of pause is different depending on whether or not the
 % runtime_timer is executing or not. If it is not, then the future
@@ -8,9 +8,14 @@ function [obj] = SuperMDA_method_pause_acquisition(obj)
 % the timer function should be paused. The execution can be paused because
 % it consists of exploring a large tree structure and code has been added
 % at each branch node to pause there if need be.
-obj.pause_bool = true;
-if strcmp(obj.runtime_timer.Running,'off')
-    obj.runtime_timer.StopFcn = '';
-    stop(obj.runtime_timer);
+smdaPilot.pause_bool = true;
+if strcmp(smdaPilot.runtime_timer.Running,'off')
+    smdaPilot.runtime_timer.StopFcn = '';
+    stop(smdaPilot.runtime_timer);
+else
+    %%
+    % update the gui_pause_stop_resume
+    handles_gui_pause_stop_resume = guidata(smdaPilot.gui_pause_stop_resume);
+    set(handles_gui_pause_stop_resume.textTime,'String','PAUSED');
 end
 

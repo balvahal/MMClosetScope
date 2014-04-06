@@ -1,25 +1,25 @@
 %%
 %
-function [SuperMDA] = SuperMDA_function_position_before_basic(SuperMDA)
+function [smdaPilot] = SuperMDA_function_position_before_basic(smdaPilot)
 %% Tell the scope to move to the position
 %
-t = SuperMDA.runtime_index(1);
-i = SuperMDA.runtime_index(2);
-j = SuperMDA.runtime_index(3);
-xyz = SuperMDA.group(i).position(j).xyz(t,:);
-if SuperMDA.group(i).position(j).continuous_focus_bool
-    SuperMDA.mm.setXYZ(xyz(1:2));
-    SuperMDA.mm.core.waitForDevice(SuperMDA.mm.xyStageDevice);
-    if strcmp(SuperMDA.mm.core.getProperty(SuperMDA.mm.AutoFocusStatusDevice,'State'),'Off')
-        SuperMDA.mm.setXYZ(xyz(3),'direction','z');
-        SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
-        SuperMDA.mm.core.setProperty(SuperMDA.mm.AutoFocusDevice,'Position',SuperMDA.group(i).position(j).continuous_focus_offset);
-        SuperMDA.mm.core.fullFocus();
+t = smdaPilot.runtime_index(1);
+i = smdaPilot.runtime_index(2);
+j = smdaPilot.runtime_index(3);
+xyz = smdaPilot.itinerary.group(i).position(j).xyz(t,:);
+if smdaPilot.itinerary.group(i).position(j).continuous_focus_bool
+    smdaPilot.mm.setXYZ(xyz(1:2));
+    smdaPilot.mm.core.waitForDevice(smdaPilot.mm.xyStageDevice);
+    if strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusStatusDevice,'State'),'Off')
+        smdaPilot.mm.setXYZ(xyz(3),'direction','z');
+        smdaPilot.mm.core.waitForDevice(smdaPilot.mm.FocusDevice);
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.AutoFocusDevice,'Position',smdaPilot.itinerary.group(i).position(j).continuous_focus_offset);
+        smdaPilot.mm.core.fullFocus();
     else
-        SuperMDA.mm.core.setProperty(SuperMDA.mm.AutoFocusDevice,'Position',SuperMDA.group(i).position(j).continuous_focus_offset);
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.AutoFocusDevice,'Position',smdaPilot.itinerary.group(i).position(j).continuous_focus_offset);
     end
 else
-    SuperMDA.mm.setXYZ(xyz);
-    SuperMDA.mm.core.waitForDevice(SuperMDA.mm.FocusDevice);
-    SuperMDA.mm.core.waitForDevice(SuperMDA.mm.xyStageDevice);
+    smdaPilot.mm.setXYZ(xyz);
+    smdaPilot.mm.core.waitForDevice(smdaPilot.mm.FocusDevice);
+    smdaPilot.mm.core.waitForDevice(smdaPilot.mm.xyStageDevice);
 end

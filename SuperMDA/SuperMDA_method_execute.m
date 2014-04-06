@@ -1,6 +1,12 @@
 %%
 % The MDA tree is explored and executed a single time
 function [smdaPilot] = SuperMDA_method_execute(smdaPilot)
+%%
+% update the gui_pause_stop_resume
+handles_gui_pause_stop_resume = guidata(smdaPilot.gui_pause_stop_resume);
+set(handles_gui_pause_stop_resume.textTime,'String','RUNNING');
+%%
+%
 smdaPilot.runtime_index(1) = smdaPilot.mda_clock_pointer;
 for i2 = smdaPilot.itinerary.group_order
     %%

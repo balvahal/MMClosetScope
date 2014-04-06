@@ -21,7 +21,7 @@ for i = 1:length(obj.group)
             mydiff2 = obj.number_of_timepoints+1;
             obj.group(i).position(j).xyz(mydiff2:end,:) = [];
         elseif mydiff > 0
-            obj.group(i).position(j).xyz(end+1:obj.number_of_timepoints,:) = bsxfun(@times,ones(mydiff,3),obj.group(i).position(j).xyz(end,:));
+            obj.group(i).position(j).xyz = vertcat(obj.group(i).position(j).xyz,bsxfun(@times,ones(mydiff,3),obj.group(i).position(j).xyz(end,:)));
         end
         for k = 1:length(obj.group(i).position(j).settings)
             % timepoints

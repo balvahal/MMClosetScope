@@ -30,7 +30,7 @@ myNewDatabaseRow = {...
     obj.itinerary.group(g).position(p).xyz(t,3),... %z
     z,... %the order of zstack from bottom to top
     obj.itinerary.database_imagedescription}; %image_description
-obj.itinerary.database(obj.runtime_imagecounter,:) = myNewDatatbaseRow;
+obj.itinerary.database(obj.runtime_imagecounter,:) = myNewDatabaseRow;
 %% Write this row to a text file
 %
 database_filename = fullfile(obj.itinerary.output_directory,'smda_database.txt');

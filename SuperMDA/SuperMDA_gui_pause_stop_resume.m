@@ -43,13 +43,13 @@ align([hpushbuttonPause,hpushbuttonResume,hpushbuttonStop],'Center','None');
 %%
 % A text box showing the time until the next acquisition
 hwidth = 250/ppChar(3);
-hheight = 50/ppChar(4);
+hheight = 100/ppChar(4);
 hx = (fwidth - (20/ppChar(3) + 100/ppChar(3) + hwidth))/2 + 20/ppChar(3) + 100/ppChar(3);
 hygap = (fheight - hheight)/2;
 hy = fheight - (hygap + hheight);
 htextTime = uicontrol('Style','text','String','No Acquisition',...
     'Units','characters','FontSize',20,'FontWeight','bold',...
-    'FontName','Verdana',...
+    'FontName','Courier New',...
     'Position',[hx hy hwidth hheight]);
 %%
 % store the uicontrol handles in the figure handles via guidata()

@@ -19,6 +19,7 @@ function [obj] = SuperMDA_method_finalize_MDA(obj)
 %         length(obj.group_order)~=obj.my_length
 %     obj.group_order = (1:obj.my_length);
 % end
+SuperMDA_method_update_number_of_timepoints(obj);
 %% Convert function names into function handles and add labels
 % For flexibiility purposes, special functions have two properties: a name
 % and a function handle. The name makes it easier to interact with from a

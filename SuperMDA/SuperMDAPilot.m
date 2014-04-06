@@ -149,7 +149,7 @@ classdef SuperMDAPilot < handle
         %%
         %
         function obj = snap(obj)
-            Core_general_snapImage(obj.mm);
+            obj.mm.snapImage;
             obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
         %% delete (make sure its child objects are also deleted)
