@@ -14,7 +14,8 @@ fwidth = 450/ppChar(3);
 fheight = 300/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
-f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight]);
+f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
+    'DeleteFcn',{@fDeleteFcn});
 %% Construct the components
 % The pause, stop, and resume buttons
 hwidth = 100/ppChar(3);
@@ -61,6 +62,12 @@ set(f,'Visible','on');
 
 %% Callbacks
 %
+%%
+%
+    function fDeleteFcn(~,~)
+        %do nothing. This means only the master object can close this
+        %window.
+    end
 %%
 %
     function pushbuttonPause_Callback(~,~)
