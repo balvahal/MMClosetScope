@@ -8,10 +8,10 @@ set(handles_gui_pause_stop_resume.textTime,'String','RUNNING');
 %%
 %
 smdaPilot.runtime_index(1) = smdaPilot.mda_clock_pointer;
-for i2 = smdaPilot.itinerary.group_order
+for i = smdaPilot.itinerary.group_order
     %%
     % detect pause event and refresh guis
-    smdaPilot.runtime_index(2) = i2;
+    smdaPilot.runtime_index(2) = i;
     drawnow;
     while smdaPilot.pause_bool
         pause(1);
@@ -19,11 +19,11 @@ for i2 = smdaPilot.itinerary.group_order
     end
     %%
     % execute group_function_before
-    smdaPilot.itinerary.group(i2).group_function_before_handle(smdaPilot);
-    for j2 = smdaPilot.itinerary.group(i2).position_order
+    smdaPilot.itinerary.group(i).group_function_before_handle(smdaPilot);
+    for j = smdaPilot.itinerary.group(i).position_order
         %%
         % detect pause event and refresh guis
-        smdaPilot.runtime_index(3) = j2;
+        smdaPilot.runtime_index(3) = j;
         drawnow;
         while smdaPilot.pause_bool
             pause(1);
@@ -31,29 +31,33 @@ for i2 = smdaPilot.itinerary.group_order
         end
         %%
         % execute position_function_before
-        smdaPilot.itinerary.group(i2).position(j2).position_function_before_handle(smdaPilot);
-        for k2 = smdaPilot.itinerary.group(i2).position(j2).settings_order
+        smdaPilot.itinerary.group(i).position(j).position_function_before_handle(smdaPilot);
+        for k = smdaPilot.itinerary.group(i).position(j).settings_order
             %%
             % detect pause event and refresh guis
-            smdaPilot.runtime_index(4) = k2;
+            smdaPilot.runtime_index(4) = k;
             drawnow;
             while smdaPilot.pause_bool
                 pause(1);
                 disp('i am paused');
             end
-            if smdaPilot.itinerary.group(i2).position(j2).settings(k2).timepoints(smdaPilot.mda_clock_pointer) == true
-                %% Execute the function that will snap and save an image
-                %
-                smdaPilot.itinerary.group(i2).position(j2).settings(k2).settings_function_handle(smdaPilot);
-            end
+            %%
+            % execute settings_function_before
+            smdaPilot.itinerary.group(i).position(j).settings(k).settings_function_before_handle(smdaPilot);
+            %% 
+            % Execute the function that will snap and save an image
+            smdaPilot.itinerary.group(i).position(j).settings(k).settings_function_handle(smdaPilot);
+            %%
+            % execute settings_function_after
+            smdaPilot.itinerary.group(i).position(j).settings(k).settings_function_after_handle(smdaPilot);
         end
         %%
         % execute position_function_after
-        smdaPilot.itinerary.group(i2).position(j2).position_function_after_handle(smdaPilot);
+        smdaPilot.itinerary.group(i).position(j).position_function_after_handle(smdaPilot);
     end
     %%
     % execute group_function_after
-    smdaPilot.itinerary.group(i2).group_function_after_handle(smdaPilot);
+    smdaPilot.itinerary.group(i).group_function_after_handle(smdaPilot);
 end
 smdaPilot.mda_clock_pointer = smdaPilot.mda_clock_pointer + 1;
 %% Determine if this loop through the MDA is the last

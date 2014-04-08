@@ -146,6 +146,10 @@ classdef SuperMDAItinerary < handle
                 obj.prototype_settings.gain = 1;
                 obj.prototype_settings.settings_function_name = 'SuperMDA_function_settings_basic';
                 obj.prototype_settings.settings_function_handle = str2func(obj.prototype_settings.settings_function_name);
+                obj.prototype_position.settings_function_after_name = 'SuperMDA_function_settings_after_basic';
+                obj.prototype_position.settings_function_after_handle = str2func(obj.prototype_position.position_function_after_name);
+                obj.prototype_position.settings_function_before_name = 'SuperMDA_function_settings_before_basic';
+                obj.prototype_position.settings_function_before_handle = str2func(obj.prototype_position.position_function_before_name);
                 obj.prototype_settings.exposure = 1; %This is a customizable arrray
                 obj.prototype_settings.period_multiplier = 1;
                 obj.prototype_settings.timepoints = 1; %This is a customizable array

@@ -1,12 +1,22 @@
 %%
 %
 function [smdaPilot] = SuperMDA_function_settings_basic(smdaPilot)
+
+
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position
 t = smdaPilot.runtime_index(1); %time
 i = smdaPilot.runtime_index(2); %group
 j = smdaPilot.runtime_index(3); %position
 k = smdaPilot.runtime_index(4); %settings
+%%
+% if the timepoints array states that no action should be taken then do
+% nothing and return to the execution loop
+if smdaPilot.itinerary.group(i).position(j).settings(k).timepoints(smdaPilot.mda_clock_pointer) == false
+    return
+end
+%%
+% else continue with capturing of the image
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel});
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.group(i).position(j).settings(k).exposure(t));
 smdaPilot.mm.core.waitForSystem();
