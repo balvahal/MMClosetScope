@@ -33,3 +33,12 @@ obj.update_zstack;
 %% Pre-allocate the database
 %
 obj.preAllocateDatabaseAndInitialize
+%% Establish folder tree that will store images
+%
+if ~isdir(obj.output_directory)
+    mkdir(obj.output_directory);
+end
+obj.png_path = fullfile(obj.output_directory,'RAW_DATA');
+if ~isdir(obj.png_path)
+    mkdir(obj.png_path);
+end

@@ -84,6 +84,7 @@ classdef SuperMDAItinerary < handle
         mda_clock_relative = 0;
         mm;
         output_directory = pwd;
+        png_path;
         prototype_group; %The prototype_group serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_position; %The prototype_position serves as a template for the creation or additon of new groups to the SuperMDA object.
         prototype_settings; %The prototype_settings serves as a template for the creation or additon of new groups to the SuperMDA object.
