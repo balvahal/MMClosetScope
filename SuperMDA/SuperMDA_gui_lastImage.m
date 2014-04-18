@@ -1,6 +1,12 @@
 %% SuperMDA_gui_pause_stop_resume
 % a simple gui to pause, stop, and resume a running MDA
-function [f] = SuperMDA_gui_pause_stop_resume(smdaPilot)
+function [f] = SuperMDA_gui_lastImage(smdaPilot)
+%%
+% determine the size of the thumbnail. I want these images to be
+% informative, but not take up a lot of screen real estate. The window will
+% be 480x480, because it is square and 6 windows can fit nicely in a
+% 1920x1080 monitor.
+
 %% Create the figure
 %
 myunits = get(0,'units');
@@ -10,8 +16,8 @@ set(0,'units','characters');
 Char_SS = get(0,'screensize');
 ppChar = Pix_SS./Char_SS;
 set(0,'units',myunits);
-fwidth = 450/ppChar(3);
-fheight = 300/ppChar(4);
+fwidth = 480/ppChar(3);
+fheight = 480/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...

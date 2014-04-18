@@ -80,6 +80,7 @@ classdef SuperMDAPilot < handle
         mda_clock_absolute;
         mm;
         pause_bool = false;
+        running_bool = false;
         runtime_imagecounter = 0;
         runtime_index = [1,1,1,1,1]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         runtime_timer;
@@ -113,6 +114,7 @@ classdef SuperMDAPilot < handle
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_pause_stop_resume = SuperMDA_gui_pause_stop_resume(obj);
+                obj.gui_lastImage = SuperMDA_gui_lastImage(obj);
             end
         end
         %% start acquisition
@@ -123,8 +125,7 @@ classdef SuperMDAPilot < handle
         %% stop acquisition
         %
         function obj = stop_acquisition(obj)
-            obj.runtime_timer.StopFcn = '';
-            stop(obj.runtime_timer);
+            SuperMDA_method_stop_acquisition(obj);
         end
         %% pause acquisition
         %
