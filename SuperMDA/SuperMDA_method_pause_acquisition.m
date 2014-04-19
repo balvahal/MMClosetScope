@@ -1,7 +1,7 @@
 %%
 %
 function [smdaPilot] = SuperMDA_method_pause_acquisition(smdaPilot)
-if obj.running_bool
+if smdaPilot.running_bool
     %%
     % The operation of pause is different depending on whether or not the
     % runtime_timer is executing or not. If it is not, then the future

@@ -357,9 +357,9 @@ classdef SuperMDAItinerary < handle
                 for j = 1:length(obj.group(i).position)
                     obj.group(i).position(j).position_function_before_handle = str2func(obj.group(i).position(j).position_function_before_name);
                     for k = 1:length(obj.group(i).position(j).settings)
-                        obj.group(i).position(j).settings(k).settings_function_handle = str2func(obj.group(i).position(j).settings(k).settings_function_after_name);
+                        obj.group(i).position(j).settings(k).settings_function_after_handle = str2func(obj.group(i).position(j).settings(k).settings_function_after_name);
                         obj.group(i).position(j).settings(k).settings_function_handle = str2func(obj.group(i).position(j).settings(k).settings_function_name);
-                        obj.group(i).position(j).settings(k).settings_function_handle = str2func(obj.group(i).position(j).settings(k).settings_function_before_name);
+                        obj.group(i).position(j).settings(k).settings_function_before_handle = str2func(obj.group(i).position(j).settings(k).settings_function_before_name);
                     end
                     obj.group(i).position(j).position_function_after_handle = str2func(obj.group(i).position(j).position_function_after_name);
                 end

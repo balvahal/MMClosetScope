@@ -151,6 +151,7 @@ classdef SuperMDAPilot < handle
         %
         function obj = snap(obj)
             obj.mm.snapImage;
+            SuperMDA_method_updateLastImage(obj);
             obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
         %% delete (make sure its child objects are also deleted)

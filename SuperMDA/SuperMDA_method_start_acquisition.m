@@ -13,7 +13,8 @@ if ~obj.running_bool
     % passed since January 1, 0000.
     obj.mda_clock_absolute = now + obj.itinerary.mda_clock_relative/86400;
     obj.runtime_timer.StopFcn = {@SuperMDA_function_runtime_timer_stopfcn,obj};
-    start(obj.wait_timer);
-    start(obj.runtime_timer);
     obj.running_bool = true;
+    start(obj.wait_timer);
+    obj.runtime_timer.StartDelay = 0; %for some reason this value was changing after stopping it.
+    start(obj.runtime_timer);
 end

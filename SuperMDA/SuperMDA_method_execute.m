@@ -16,11 +16,15 @@ for i = smdaPilot.itinerary.group_order
     while smdaPilot.pause_bool
         pause(1);
         disp('i am paused');
+        if smdaPilot.running_bool == false
+            return;
+        end
     end
     %%
     % execute group_function_before
     smdaPilot.itinerary.group(i).group_function_before_handle(smdaPilot);
     for j = smdaPilot.itinerary.group(i).position_order
+        tic
         %%
         % detect pause event and refresh guis
         smdaPilot.runtime_index(3) = j;
@@ -28,6 +32,9 @@ for i = smdaPilot.itinerary.group_order
         while smdaPilot.pause_bool
             pause(1);
             disp('i am paused');
+            if smdaPilot.running_bool == false
+                return;
+            end
         end
         %%
         % execute position_function_before
@@ -40,11 +47,14 @@ for i = smdaPilot.itinerary.group_order
             while smdaPilot.pause_bool
                 pause(1);
                 disp('i am paused');
+                if smdaPilot.running_bool == false
+                    return;
+                end
             end
             %%
             % execute settings_function_before
             smdaPilot.itinerary.group(i).position(j).settings(k).settings_function_before_handle(smdaPilot);
-            %% 
+            %%
             % Execute the function that will snap and save an image
             smdaPilot.itinerary.group(i).position(j).settings(k).settings_function_handle(smdaPilot);
             %%
@@ -54,6 +64,7 @@ for i = smdaPilot.itinerary.group_order
         %%
         % execute position_function_after
         smdaPilot.itinerary.group(i).position(j).position_function_after_handle(smdaPilot);
+        toc
     end
     %%
     % execute group_function_after

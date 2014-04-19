@@ -1,12 +1,16 @@
 %% SuperMDA_gui_pause_stop_resume
 % a simple gui to pause, stop, and resume a running MDA
 function [f] = SuperMDA_gui_lastImage(smdaPilot)
-%%
-% determine the size of the thumbnail. I want these images to be
-% informative, but not take up a lot of screen real estate. The window will
-% be 480x480, because it is square and 6 windows can fit nicely in a
-% 1920x1080 monitor.
-
+Isize = size(smdaPilot.mm.I);
+Iheight = Isize(1);
+Iwidth = Isize(2);
+if Iwidth > Iheight
+    hwidth = 768;
+    hheight = 768*Iheight/Iwidth;
+else
+    hheight = 768;
+    hwidth = 768*Iwidth/Iheight;
+end
 %% Create the figure
 %
 myunits = get(0,'units');
@@ -16,51 +20,31 @@ set(0,'units','characters');
 Char_SS = get(0,'screensize');
 ppChar = Pix_SS./Char_SS;
 set(0,'units',myunits);
-fwidth = 480/ppChar(3);
-fheight = 480/ppChar(4);
+fwidth = 768/ppChar(3);
+fheight = 768/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
+%% Create the figure
+%
+mycolormap = colormap(jet(255));
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
-    'CloseRequestFcn',{@fDeleteFcn});
-%% Construct the components
-% The pause, stop, and resume buttons
-hwidth = 100/ppChar(3);
-hheight = 70/ppChar(4);
-hx = 20/ppChar(3);
-hygap = (fheight - 3*hheight)/4;
-hy = fheight - (hygap + hheight);
-hpushbuttonPause = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',14,'FontName','Verdana','BackgroundColor',[255 215 0]/255,...
-    'String','Pause','Position',[hx hy hwidth hheight],...
-    'Callback',{@pushbuttonPause_Callback});
-
-hy = hy - (hygap + hheight);
-hpushbuttonResume = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',14,'FontName','Verdana','BackgroundColor',[60 179 113]/255,...
-    'String','Resume','Position',[hx hy hwidth hheight],...
-    'Callback',{@pushbuttonResume_Callback});
-
-hy = hy - (hygap + hheight);
-hpushbuttonStop = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',14,'FontName','Verdana','BackgroundColor',[205 92 92]/255,...
-    'String','Stop','Position',[hx hy hwidth hheight],...
-    'Callback',{@pushbuttonStop_Callback});
-
-align([hpushbuttonPause,hpushbuttonResume,hpushbuttonStop],'Center','None');
-%%
-% A text box showing the time until the next acquisition
-hwidth = 250/ppChar(3);
-hheight = 100/ppChar(4);
-hx = (fwidth - (20/ppChar(3) + 100/ppChar(3) + hwidth))/2 + 20/ppChar(3) + 100/ppChar(3);
-hygap = (fheight - hheight)/2;
-hy = fheight - (hygap + hheight);
-htextTime = uicontrol('Style','text','String','No Acquisition',...
-    'Units','characters','FontSize',20,'FontWeight','bold',...
-    'FontName','Courier New',...
-    'Position',[hx hy hwidth hheight]);
+    'Colormap',mycolormap,'CloseRequestFcn',{@fDeleteFcn});
+%% Add an axes for the image
+%
+hwidth = hwidth/ppChar(3);
+hheight = hheight/ppChar(4);
+hx = (fwidth - hwidth)/2;
+hy = (fheight - hheight)/2;
+haxesLastImage = axes('Units','characters','DrawMode','fast',...
+    'Position',[hx hy hwidth  hheight],'YDir','reverse','Visible','off',...
+    'XLim',[1,Iwidth],'YLim',[1,Iheight]);
+%% add the image object
+%
+sourceImage = image('Parent',haxesLastImage,'CData',smdaPilot.mm.I);
 %%
 % store the uicontrol handles in the figure handles via guidata()
-handles.textTime = htextTime;
+handles.axesLastImage = haxesLastImage;
+handles.I = sourceImage;
 guidata(f,handles);
 %%
 % make the gui visible
@@ -73,20 +57,5 @@ set(f,'Visible','on');
     function fDeleteFcn(~,~)
         %do nothing. This means only the master object can close this
         %window.
-    end
-%%
-%
-    function pushbuttonPause_Callback(~,~)
-        smdaPilot.pause_acquisition;
-    end
-%%
-%
-    function pushbuttonResume_Callback(~,~)
-        smdaPilot.resume_acquisition;
-    end
-%%
-%
-    function pushbuttonStop_Callback(~,~)
-        smdaPilot.stop_acquisition;
     end
 end
