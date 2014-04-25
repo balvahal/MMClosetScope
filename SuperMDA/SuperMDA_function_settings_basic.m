@@ -26,7 +26,10 @@ if length(smdaPilot.itinerary.group(i).position(j).settings(k).z_stack) == 1
     %
     smdaPilot.snap;
     smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.png',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-    imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'png','bitdepth',16);
+    fid = fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
+    fwrite(fid,smdaPilot.mm.I,'uint16');
+    fclose(fid);
+    %imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'png','bitdepth',16);
     %% Update the database
     %
     smdaPilot.update_database;

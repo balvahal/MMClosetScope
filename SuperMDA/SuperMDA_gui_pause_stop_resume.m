@@ -15,7 +15,7 @@ fheight = 300/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
-    'CloseRequestFcn',{@fDeleteFcn});
+    'CloseRequestFcn',{@fDeleteFcn},'Name','Pause Stop Resume');
 %% Construct the components
 % The pause, stop, and resume buttons
 hwidth = 100/ppChar(3);

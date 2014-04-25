@@ -15,8 +15,8 @@ smdaI.preAllocateDatabaseAndInitialize;
 
 %% Configure the supermda
 %
-smdaI.group.position(1).xyz = [-11091.9000000000,-5561.60000000000,5732.52508542128];
-smdaI.group.position(2).xyz = [-10474,-5786.50000000000,5767.97508594953];
+smdaI.group.position(1).xyz = [-14455.1000000000,-1859.60000000000,5347.07507967763];
+smdaI.group.position(2).xyz = [-14527.6000000000,-2225.90000000000,5334.60007949173];
 for i = smdaI.group.position_order
     smdaI.group.position(i).settings(1).channel = 1;
     smdaI.group.position(i).settings(1).exposure = 200;
@@ -26,4 +26,5 @@ for i = smdaI.group.position_order
 end
 
 %% Beging the SuperMDA
+profile on
 smdaP.start_acquisition;

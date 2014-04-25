@@ -20,15 +20,15 @@ set(0,'units','characters');
 Char_SS = get(0,'screensize');
 ppChar = Pix_SS./Char_SS;
 set(0,'units',myunits);
-fwidth = 768/ppChar(3);
-fheight = 768/ppChar(4);
+fwidth = hwidth/ppChar(3);
+fheight = hheight/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
 %% Create the figure
 %
 mycolormap = colormap(jet(255));
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
-    'Colormap',mycolormap,'CloseRequestFcn',{@fDeleteFcn});
+    'Colormap',mycolormap,'Name','Last Image Taken','CloseRequestFcn',{@fDeleteFcn});
 %% Add an axes for the image
 %
 hwidth = hwidth/ppChar(3);
