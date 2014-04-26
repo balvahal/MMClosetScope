@@ -9,4 +9,7 @@ handles = guidata(smdaTA.gui_main);
 set(handles.editFundamentalPeriod,'String',num2str(smdaTA.itinerary.fundamental_period/smdaTA.uot_conversion));
 set(handles.editDuration,'String',num2str(smdaTA.itinerary.duration/smdaTA.uot_conversion));
 set(handles.editNumberOfTimepoints,'String',num2str(smdaTA.itinerary.number_of_timepoints));
+%% Output Directory
+%
+set(handles.editOutputDirectory,'String',smdaTA.itinerary.output_directory);
 end

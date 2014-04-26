@@ -18,6 +18,18 @@ end
 % else continue with capturing of the image
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel});
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.group(i).position(j).settings(k).exposure(t));
+switch smdaPilot.itinerary.group(i).position(j).settings(k).binning
+    case 1
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
+    case 2
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','2x2');
+    case 3
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','3x3');
+    case 4
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','4x4');
+    otherwise
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
+end
 smdaPilot.mm.core.waitForSystem();
 %% If there is no z-stack then just snap an image
 %
