@@ -28,4 +28,35 @@ for i = smdaTA.itinerary.group_order
         n = n + 1;
 end
 set(handles.tableGroup,'Data',tableGroupData);
+%% Region 3
+%
+%% Position Table
+% Show the data in the itinerary |position_order| property for a given
+% group
+gInd = smdaTA.pointerGroup(1);
+tablePositionData = cell(length(smdaTA.itinerary.group(gInd).position_order),...
+    length(get(handles.tablePosition,'ColumnName')));
+n=1;
+for i = smdaTA.itinerary.group(gInd).position_order
+    tablePositionData{n,1} = smdaTA.itinerary.group(gInd).position(i).label;
+    tablePositionData{n,2} = i;
+    tablePositionData{n,3} = smdaTA.itinerary.group(gInd).position(i).xyz(1,1);
+    tablePositionData{n,4} = smdaTA.itinerary.group(gInd).position(i).xyz(1,2);
+    tablePositionData{n,5} = smdaTA.itinerary.group(gInd).position(i).xyz(1,3);
+    if smdaTA.itinerary.group(gInd).position(i).continuous_focus_bool
+        tablePositionData{n,6} = 'yes';
+    else
+        tablePositionData{n,6} = 'no';
+    end
+    tablePositionData{n,7} = smdaTA.itinerary.group(gInd).position(i).continuous_focus_offset;
+    tablePositionData{n,8} = smdaTA.itinerary.group(gInd).position(i).position_function_before_name;
+    tablePositionData{n,9} = smdaTA.itinerary.group(gInd).position(i).position_function_after_name;
+    tablePositionData{n,10} = length(smdaTA.itinerary.group(gInd).position(i).settings);
+    n = n + 1;
+end
+set(handles.tablePosition,'Data',tablePositionData);
+%% Region 4
+%
+%% Settings Table
+%
 end
