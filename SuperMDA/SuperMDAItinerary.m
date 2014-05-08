@@ -73,7 +73,11 @@ classdef SuperMDAItinerary < handle
     % * fundamental_period: the shortest period that images are taken in
     % seconds.
     % * output_directory: The directory where the output images are stored.
-    %
+    % * group_order: The group_order exists to deal with the issue of
+    % pre-allocation. Performance suffers without pre-allocation. Groups
+    % are only active if their index exists in the group_order. The
+    % |TravelAgent| enforces the numbers within the group_order vector to
+    % be sequential (though not necessarily in order).
     properties
         channel_names;
         database;

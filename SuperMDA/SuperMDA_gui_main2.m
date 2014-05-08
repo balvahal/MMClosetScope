@@ -19,7 +19,7 @@ f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx 
 
 textBackgroundColorRegion1 = [176 224 230]/255; %PowderBlue
 buttonBackgroundColorRegion1 = [216 191 216]/255; %Thistle
-textBackgroundColorRegion2 = [102 205 170]/255; %MediumAquaMarine
+textBackgroundColorRegion2 = [102 205 170]/255; %MediumAquamarine
 buttonBackgroundColorRegion2 = [173 255 47]/255; %GreenYellow
 textBackgroundColorRegion3 = [238 232 170]/255; %PaleGoldenrod
 buttonBackgroundColorRegion3 = [255 160 122]/255; %LightSalmon
@@ -121,36 +121,76 @@ htableGroup = uitable('Units','characters',...
     'ColumnName',{'label','group #','# of positions','function before','function after'},...
     'ColumnEditable',logical([1,0,0,0,0]),...
     'ColumnFormat',{'char','numeric','numeric','char','char'},...
-    'ColumnWidth',{35*ppChar(3) 'auto' 'auto' 35*ppChar(3) 35*ppChar(3)},...
+    'ColumnWidth',{30*ppChar(3) 'auto' 'auto' 30*ppChar(3) 30*ppChar(3)},...
     'FontSize',8,'FontName','Verdana',...
     'CellEditCallback',@tableGroup_CellEditCallback,...
     'CellSelectionCallback',@tableGroup_CellSelectionCallback,...
-    'Position',[region2(1)+2, region2(2)+0.7692, 100, 12.3078]);
+    'Position',[region2(1)+2, region2(2)+0.7692, 91.6, 13.0769]);
 %% add or drop a group
 %
     hpushbuttonAddGroup = uicontrol('Style','pushbutton','Units','characters',...
     'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
     'String','Add',...
-    'Position',[region2(1)+104, region2(2)+0.7692*2+buttonSize(2), buttonSize(1)*.75,buttonSize(2)],...
+    'Position',[fwidth - 4 - buttonSize(1)*1.25, region2(2)+7.6923, buttonSize(1)*.75,buttonSize(2)],...
     'Callback',{@pushbuttonAddGroup_Callback});
+
+    uicontrol('Style','text','Units','characters','String','Add a group',...
+    'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
+    'Position',[fwidth - 4 - buttonSize(1)*1.25, region2(2)+11.1538, buttonSize(1)*.75,2.6923]);
 
     hpushbuttonDropGroup = uicontrol('Style','pushbutton','Units','characters',...
     'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
     'String','Drop',...
-    'Position',[region2(1)+104, region2(2)+0.7692, buttonSize(1)*.75,buttonSize(2)],...
+    'Position',[fwidth - 4 - buttonSize(1)*1.25, region2(2)+0.7692, buttonSize(1)*.75,buttonSize(2)],...
     'Callback',{@pushbuttonDropGroup_Callback});
+
+    uicontrol('Style','text','Units','characters','String','Drop a group',...
+    'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
+    'Position',[fwidth - 4 - buttonSize(1)*1.25, region2(2)+4.2308, buttonSize(1)*.75,2.6923]);
 %% change group functions
 %
-uicontrol('Style','text','Units','characters','String','Change Group Function Before',...
-    'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
-    'Position',[region2(1)+104+buttonSize(1)*.75, region2(2)+4.2308, buttonSize(1)*3.5,1.5385]);
+uicontrol('Style','text','Units','characters','String',sprintf('Group\nFunction\nBefore'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
+    'Position',[fwidth - 2 - buttonSize(1)*0.5, region2(2)+4.2308, buttonSize(1)*0.5,2.6923]);
 
 hpushbuttonGroupFunctionBefore = uicontrol('Style','pushbutton','Units','characters',...
     'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
     'String','...',...
-    'Position',[region2(1)+104+buttonSize(1)*.75, region2(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
+    'Position',[fwidth - 2 - buttonSize(1)*0.5, region2(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
     'Callback',{@pushbuttonGroupFunctionBefore_Callback});
 
+uicontrol('Style','text','Units','characters','String',sprintf('Group\nFunction\nAfter'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
+    'Position',[fwidth - 2 - buttonSize(1)*0.5, region2(2)+11.1538, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonGroupFunctionAfter = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
+    'String','...',...
+    'Position',[fwidth - 2 - buttonSize(1)*0.5, region2(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonGroupFunctionAfter_Callback});
+%% Change group order
+%
+uicontrol('Style','text','Units','characters','String',sprintf('Move\nGroup\nDown'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region2(2)+4.2308, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonGroupDown = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
+    'String','Dn',...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region2(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonGroupDown_Callback});
+
+uicontrol('Style','text','Units','characters','String',sprintf('Move\nGroup\nUp'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region2(2)+11.1538, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonGroupUp = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
+    'String','Up',...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region2(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonGroupUp_Callback});
+%% Assemble Region 3
+%
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.popupmenuUnitsOfTime = hpopupmenuUnitsOfTime;
@@ -164,6 +204,9 @@ handles.pushbuttonLoad = hpushbuttonLoad;
 handles.pushbuttonAddGroup = hpushbuttonAddGroup;
 handles.pushbuttonDropGroup = hpushbuttonDropGroup;
 handles.pushbuttonGroupFunctionBefore = hpushbuttonGroupFunctionBefore;
+handles.pushbuttonGroupFunctionAfter = hpushbuttonGroupFunctionAfter;
+handles.pushbuttonGroupDown = hpushbuttonGroupDown;
+handles.pushbuttonGroupUp = hpushbuttonGroupUp;
 handles.tableGroup = htableGroup;
 guidata(f,handles);
 %%
@@ -222,19 +265,65 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonAddGroup_Callback(~,~)
-        
+        smdaTA.addGroup;
+        smdaTA.pointerGroup = length(smdaTA.itinerary.group_order);
         smdaTA.refresh_gui_main;
     end
 %%
 %
     function pushbuttonDropGroup_Callback(~,~)
-        
+        if length(smdaTA.itinerary.group_order)==1
+            return
+        elseif length(smdaTA.pointerGroup) == length(smdaTA.itinerary.group_order)
+            smdaTA.pointerGroup(1) = [];
+        end
+        smdaTA.dropGroup(smdaTA.pointerGroup);
+        smdaTA.pointerGroup = length(smdaTA.itinerary.group_order);
         smdaTA.refresh_gui_main;
     end
 %%
 %
     function pushbuttonGroupFunctionBefore_Callback(~,~)
         
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonGroupDown_Callback(~,~)
+        %%
+        % What follows below might have a more elegant solution.
+        % essentially all selected rows are moved down 1.
+        if min(smdaTA.pointerGroup) == length(smdaTA.itinerary.group_order)
+            return
+        end
+        currentOrder = 1:length(smdaTA.itinerary.group_order); % what the table looks like now
+        movingGroup = smdaTA.pointerGroup+1; % where the selected rows want to go
+        reactingGroup = setdiff(currentOrder,smdaTA.pointerGroup); % the rows that are not moving
+        fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+        fillmeinArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
+        fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
+        smdaTA.itinerary.group_order = smdaTA.itinerary.group_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.pointerGroup = movingGroup;
+        smdaTA.refresh_gui_main;
+    end
+
+%%
+%
+    function pushbuttonGroupUp_Callback(~,~)
+        %%
+        % What follows below might have a more elegant solution.
+        % essentially all selected rows are moved up 1.
+        if min(smdaTA.pointerGroup) == 1
+            return
+        end
+        currentOrder = 1:length(smdaTA.itinerary.group_order); % what the table looks like now
+        movingGroup = smdaTA.pointerGroup-1; % where the selected rows want to go
+        reactingGroup = setdiff(currentOrder,smdaTA.pointerGroup); % the rows that are not moving
+        fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+        fillmeinArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
+        fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
+        smdaTA.itinerary.group_order = smdaTA.itinerary.group_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.pointerGroup = movingGroup;
         smdaTA.refresh_gui_main;
     end
 %%
@@ -321,7 +410,7 @@ set(f,'Visible','on');
             end
             return
         else
-        smdaTA.pointerGroup = unique(eventdata.Indices(:,1));
+        smdaTA.pointerGroup = sort(unique(eventdata.Indices(:,1)));
         end
     end
 end
