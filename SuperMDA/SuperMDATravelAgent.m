@@ -5,14 +5,17 @@ classdef SuperMDATravelAgent < handle
         itinerary;
         gui_main;
         mm;
-        itin_pointer;
+        pointerGroup = 1;
+        pointerPosition = 1;
+        pointerSettings = 1;
         uot_conversion = 1;
     end
     %%
     %
     methods
         %% The constructor method
-        % The first argument is always mm
+        % |smdai| is the itinerary that has been initalized with the
+        % micromanager core handler object
         function obj = SuperMDATravelAgent(smdai)
             %%
             %
@@ -26,6 +29,7 @@ classdef SuperMDATravelAgent < handle
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_main = SuperMDA_gui_main2(obj);
+                obj.refresh_gui_main;
             end           
         end
         %%

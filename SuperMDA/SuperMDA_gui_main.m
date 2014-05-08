@@ -24,7 +24,7 @@ function varargout = SuperMDA_gui_main(varargin)
 
 % Edit the above text to modify the response to help SuperMDA_figure_main
 
-% Last Modified by GUIDE v2.5 27-Feb-2014 20:17:10
+% Last Modified by GUIDE v2.5 06-May-2014 16:46:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1432,5 +1432,12 @@ SuperMDA_gui_main_pushbutton_begin_smda_Callback_infig(handles);
 % --- Executes during object deletion, before destroying properties.
 function figure1_DeleteFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function uitable_group_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to uitable_group (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)

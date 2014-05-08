@@ -19,8 +19,8 @@ f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx 
 
 textBackgroundColorRegion1 = [176 224 230]/255; %PowderBlue
 buttonBackgroundColorRegion1 = [216 191 216]/255; %Thistle
-textBackgroundColorRegion2 = [152 251 152]/255; %PaleGreen
-buttonBackgroundColorRegion2 = [154 205 50]/255; %YellowGreen
+textBackgroundColorRegion2 = [102 205 170]/255; %MediumAquaMarine
+buttonBackgroundColorRegion2 = [173 255 47]/255; %GreenYellow
 textBackgroundColorRegion3 = [238 232 170]/255; %PaleGoldenrod
 buttonBackgroundColorRegion3 = [255 160 122]/255; %LightSalmon
 textBackgroundColorRegion4 = [240 128 128]/255; %LightCoral
@@ -87,7 +87,7 @@ uicontrol('Style','text','Units','characters','String','Output Directory',...
     'Position',[region1(1)+46, region1(2)+4.2308, buttonSize(1)*3.5,1.5385]);
 
 hpushbuttonOutputDirectory = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',20,'FontName','Verdana',...
+    'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion1,...
     'String','...',...
     'Position',[region1(1)+48+buttonSize(1)*3.5, region1(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
     'Callback',{@pushbuttonOutputDirectory_Callback});
@@ -117,7 +117,40 @@ uicontrol('Style','text','Units','characters','String','Load an Itinerary',...
 %% The group table
 %
 htableGroup = uitable('Units','characters',...
+    'BackgroundColor',[textBackgroundColorRegion2;buttonBackgroundColorRegion2],...
+    'ColumnName',{'label','group #','# of positions','function before','function after'},...
+    'ColumnEditable',logical([1,0,0,0,0]),...
+    'ColumnFormat',{'char','numeric','numeric','char','char'},...
+    'ColumnWidth',{35*ppChar(3) 'auto' 'auto' 35*ppChar(3) 35*ppChar(3)},...
+    'FontSize',8,'FontName','Verdana',...
+    'CellEditCallback',@tableGroup_CellEditCallback,...
+    'CellSelectionCallback',@tableGroup_CellSelectionCallback,...
     'Position',[region2(1)+2, region2(2)+0.7692, 100, 12.3078]);
+%% add or drop a group
+%
+    hpushbuttonAddGroup = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
+    'String','Add',...
+    'Position',[region2(1)+104, region2(2)+0.7692*2+buttonSize(2), buttonSize(1)*.75,buttonSize(2)],...
+    'Callback',{@pushbuttonAddGroup_Callback});
+
+    hpushbuttonDropGroup = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
+    'String','Drop',...
+    'Position',[region2(1)+104, region2(2)+0.7692, buttonSize(1)*.75,buttonSize(2)],...
+    'Callback',{@pushbuttonDropGroup_Callback});
+%% change group functions
+%
+uicontrol('Style','text','Units','characters','String','Change Group Function Before',...
+    'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
+    'Position',[region2(1)+104+buttonSize(1)*.75, region2(2)+4.2308, buttonSize(1)*3.5,1.5385]);
+
+hpushbuttonGroupFunctionBefore = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
+    'String','...',...
+    'Position',[region2(1)+104+buttonSize(1)*.75, region2(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonGroupFunctionBefore_Callback});
+
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.popupmenuUnitsOfTime = hpopupmenuUnitsOfTime;
@@ -128,6 +161,9 @@ handles.editOutputDirectory = heditOutputDirectory;
 handles.pushbuttonOutputDirectory = hpushbuttonOutputDirectory;
 handles.pushbuttonSave = hpushbuttonSave;
 handles.pushbuttonLoad = hpushbuttonLoad;
+handles.pushbuttonAddGroup = hpushbuttonAddGroup;
+handles.pushbuttonDropGroup = hpushbuttonDropGroup;
+handles.pushbuttonGroupFunctionBefore = hpushbuttonGroupFunctionBefore;
 handles.tableGroup = htableGroup;
 guidata(f,handles);
 %%
@@ -185,6 +221,24 @@ set(f,'Visible','on');
     end
 %%
 %
+    function pushbuttonAddGroup_Callback(~,~)
+        
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonDropGroup_Callback(~,~)
+        
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonGroupFunctionBefore_Callback(~,~)
+        
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
     function pushbuttonOutputDirectory_Callback(~,~)
         folder_name = uigetdir;
         if folder_name==0
@@ -227,5 +281,47 @@ set(f,'Visible','on');
             disp('The SuperMDAItinerary file selected was invalid.');
         end
         smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function tableGroup_CellEditCallback(~, eventdata)
+        %%
+        % |smdaTA.pointerGroup| should always be a singleton
+        myCol = eventdata.Indices(2);
+        myRow = smdaTA.itinerary.group_order(eventdata.Indices(1));        
+        switch myCol
+            case 1 %label change
+                if isempty(eventdata.NewData) || any(regexp(eventdata.NewData,'\W'))
+                    return
+                else
+                    smdaTA.itinerary.group(myRow).label = eventdata.NewData;
+                end
+        end
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function tableGroup_CellSelectionCallback(~, eventdata)
+        %%
+        % The main purpose of this function is to keep the information
+        % displayed in the table consistent with the Itinerary object.
+        % Changes to the object either through the command line or the gui
+        % can affect the information that is displayed in the gui and this
+        % function will keep the gui information consistent with the
+        % Itinerary information.
+        %
+        % The pointer of the TravelAgent should always point to a valid
+        % group from the the group_order.
+        if isempty(eventdata.Indices)
+            % if nothing is selected, which triggers after deleting data,
+            % make sure the pointer is still valid
+            if any(smdaTA.pointerGroup > length(smdaTA.itinerary.group_order))
+                % move pointer to last entry
+                smdaTA.pointerGroup = length(smdaTA.itinerary.group_order);
+            end
+            return
+        else
+        smdaTA.pointerGroup = unique(eventdata.Indices(:,1));
+        end
     end
 end

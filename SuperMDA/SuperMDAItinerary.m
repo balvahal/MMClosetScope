@@ -160,6 +160,10 @@ classdef SuperMDAItinerary < handle
                 obj.prototype_settings.z_stack_upper_offset = 0;
                 obj.prototype_settings.z_stack_lower_offset = 0;
                 obj.prototype_settings.z_step_size = 0.3;
+                %%
+                % by default the Itinerary should always have at least 1
+                % group with 1 position and 1 settings.
+                obj.preAllocateMemoryAndInitialize(1,1,1);
             end
         end
         %% Method to change the duration
