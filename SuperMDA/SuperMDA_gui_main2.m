@@ -410,6 +410,11 @@ handles.pushbuttonPositionDrop = hpushbuttonPositionDrop;
 handles.pushbuttonPositionMove = hpushbuttonPositionMove;
 handles.pushbuttonPositionSet = hpushbuttonPositionSet;
 handles.pushbuttonPositionUp = hpushbuttonPositionUp;
+handles.hpushbuttonSettingsDown = hpushbuttonSettingsDown;
+handles.pushbuttonSettingsFunction = hpushbuttonSettingsFunction;
+handles.pushbuttonSettingsUp = hpushbuttonSettingsUp;
+handles.pushbuttonSettingsZUpper = hpushbuttonSettingsZUpper;
+handles.pushbuttonSettingsZLower = hpushbuttonSettingsZLower;
 handles.tableGroup = htableGroup;
 handles.tablePosition = htablePosition;
 handles.tableSettings = htableSettings;
@@ -582,6 +587,38 @@ set(f,'Visible','on');
     end
 %%
 %
+    function pushbuttonPositionFunctionAfter_Callback(~,~)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        mypwd = pwd;
+        cd(smdaTA.itinerary.output_directory);
+        [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-after');
+        if exist(fullfile(pathname,filename),'file')
+            smdaTA.itinerary.prototype_position.position_function_after_name = char(regexp(filename,'.*(?=\.m)','match'));
+            smdaTA.changeAllPosition(gInd,'position_function_after_name');
+        else
+            disp('The position-function-after selection was invalid.');
+        end
+        cd(mypwd);
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonPositionFunctionBefore_Callback(~,~)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        mypwd = pwd;
+        cd(smdaTA.itinerary.output_directory);
+        [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-before');
+        if exist(fullfile(pathname,filename),'file')
+            smdaTA.itinerary.prototype_position.position_function_before_name = char(regexp(filename,'.*(?=\.m)','match'));
+            smdaTA.changeAllPosition(gInd,'position_function_before_name');
+        else
+            disp('The position-function-before selection was invalid.');
+        end
+        cd(mypwd);
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
     function pushbuttonPositionMove_Callback(~,~)
         gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.group(gInd).position_order(smdaTA.pointerPosition(1));
@@ -744,6 +781,20 @@ set(f,'Visible','on');
     end
 %%
 %
+    function pushbuttonSettingsFunction_Callback(~,~)
+        mypwd = pwd;
+        cd(smdaTA.itinerary.output_directory);
+        [filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
+        if exist(fullfile(pathname,filename),'file')
+            smdaTA.itinerary.prototype_settings.settings_function_name = char(regexp(filename,'.*(?=\.m)','match'));
+        else
+            disp('The settings-function selection was invalid.');
+        end
+        cd(mypwd);
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
     function pushbuttonSettingsUp_Callback(~,~)
         %%
         % What follows below might have a more elegant solution.
@@ -759,6 +810,36 @@ set(f,'Visible','on');
         fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
         smdaTA.itinerary.prototype_position.settings_order = smdaTA.itinerary.prototype_position.settings_order(fillmeinArray); % this rearrangement is performed on the group_order
         smdaTA.pointerGroup = movingSettings;
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonSettingsZLower_Callback(~,~)
+        gInd = smdaTA.pointerGroup(1);
+        pInd = smdaTA.pointerPosition(1);
+        smdaTA.mm.getXYZ;
+        xyz = smdaTA.mm.pos;
+        offset = smdaTA.itinerary.group(gInd).position(pInd).xyz(1,3)-xyz(3);
+        if offset <0
+            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_lower_offset = 0;
+        else
+            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_lower_offset = -offset;
+        end
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonSettingsZUpper_Callback(~,~)
+        gInd = smdaTA.pointerGroup(1);
+        pInd = smdaTA.pointerPosition(1);
+        smdaTA.mm.getXYZ;
+        xyz = smdaTA.mm.pos;
+        offset = xyz(3)-smdaTA.itinerary.group(gInd).position(pInd).xyz(1,3);
+        if offset <0
+            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_upper_offset = 0;
+        else
+            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_upper_offset = offset;
+        end
         smdaTA.refresh_gui_main;
     end
 %%

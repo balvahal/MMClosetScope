@@ -125,6 +125,14 @@ classdef SuperMDATravelAgent < handle
                     for i=obj.itinerary.group(gInd).position_order
                         obj.itinerary.group(gInd).position(i).settings_order = obj.itinerary.prototype_position.settings_order;
                     end
+                case 'position_function_after_name'
+                    for i=obj.itinerary.group(gInd).position_order
+                        obj.itinerary.group(gInd).position(i).position_function_after_name = obj.itinerary.prototype_position.position_function_after_name;
+                    end
+                case 'position_function_before_name'
+                    for i=obj.itinerary.group(gInd).position_order
+                        obj.itinerary.group(gInd).position(i).position_function_before_name = obj.itinerary.prototype_position.position_function_before_name;
+                    end
             end
         end
         %%
