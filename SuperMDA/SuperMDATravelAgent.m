@@ -192,6 +192,11 @@ classdef SuperMDATravelAgent < handle
         %%
         function obj = pushSettings(obj,gInd)
             %%
+            % Find the most efficient order of image acquisition, which
+            % means the least movement of the filter turret. This can be
+            % accomplished by moving the turret in sequential order.
+                        
+            %%
             % Push the prototype settings to all positions in a group
             % determined by gInd
             for i = obj.itinerary.group(gInd).position_order

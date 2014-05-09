@@ -18,13 +18,13 @@ f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx 
     'CloseRequestFcn',{@fDeleteFcn},'Name','Main');
 
 textBackgroundColorRegion1 = [176 224 230]/255; %PowderBlue
-buttonBackgroundColorRegion1 = [216 191 216]/255; %Thistle
-textBackgroundColorRegion2 = [102 205 170]/255; %MediumAquamarine
-buttonBackgroundColorRegion2 = [173 255 47]/255; %GreenYellow
-textBackgroundColorRegion3 = [240 230 140]/255; %Khaki
-buttonBackgroundColorRegion3 = [255 160 122]/255; %LightSalmon
-textBackgroundColorRegion4 = [240 128 128]/255; %LightCoral
-buttonBackgroundColorRegion4 = [220 20 60]/255; %Crimson
+buttonBackgroundColorRegion1 = [135 206 235]/255; %SkyBlue
+textBackgroundColorRegion2 = [144 238 144]/255; %LightGreen
+buttonBackgroundColorRegion2 = [50 205  50]/255; %LimeGreen
+textBackgroundColorRegion3 = [255 250 205]/255; %LemonChiffon
+buttonBackgroundColorRegion3 = [255 215 0]/255; %Gold
+textBackgroundColorRegion4 = [255 192 203]/255; %Pink
+buttonBackgroundColorRegion4 = [255 160 122]/255; %Salmon
 buttonSize = [20 3.0769]; %[100/ppChar(3) 40/ppChar(4)];
 region1 = [0 56.1538]; %[0 730/ppChar(4)]; %180 pixels
 region2 = [0 42.3077]; %[0 550/ppChar(4)]; %180 pixels
@@ -303,16 +303,91 @@ hpushbuttonPositionFunctionAfter = uicontrol('Style','pushbutton','Units','chara
 %
 %% The settings table
 %
-htableGroup = uitable('Units','characters',...
+
+htableSettings = uitable('Units','characters',...
     'BackgroundColor',[textBackgroundColorRegion4;buttonBackgroundColorRegion4],...
-    'ColumnName',{'channel','exposure','binning','Z step','function after'},...
-    'ColumnEditable',logical([1,0,0,0,0]),...
-    'ColumnFormat',{'char','numeric','numeric','char','char'},...
-    'ColumnWidth',{30*ppChar(3) 'auto' 'auto' 30*ppChar(3) 30*ppChar(3)},...
+    'ColumnName',{'channel','exposure','binning','gain','Z step size','Z upper','Z lower','# of Z steps','Z offset','period mult.','function','settings #'},...
+    'ColumnEditable',logical([1,1,1,1,1,1,1,0,1,1,0,0]),...
+    'ColumnFormat',{transpose(smdaTA.mm.Channel),'numeric','numeric','numeric','numeric','numeric','numeric','numeric','numeric','numeric','char','numeric'},...
+    'ColumnWidth',{'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto'},...
     'FontSize',8,'FontName','Verdana',...
-    'CellEditCallback',@tableGroup_CellEditCallback,...
-    'CellSelectionCallback',@tableGroup_CellSelectionCallback,...
-    'Position',[region4(1)+2, region4(2)+0.7692, 91.6, 13.0769]);
+    'CellEditCallback',@tableSettings_CellEditCallback,...
+    'CellSelectionCallback',@tableSettings_CellSelectionCallback,...
+    'Position',[region4(1)+2, region4(2)+0.7692, 79.6, 13.0769]);
+%% add or drop a group
+%
+hpushbuttonSettingsAdd = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion4,...
+    'String','Add',...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region4(2)+7.6923, buttonSize(1)*.75,buttonSize(2)],...
+    'Callback',{@pushbuttonSettingsAdd_Callback});
+
+uicontrol('Style','text','Units','characters','String','Add a settings',...
+    'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion4,...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region4(2)+11.1538, buttonSize(1)*.75,2.6923]);
+
+hpushbuttonSettingsDrop = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion4,...
+    'String','Drop',...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region4(2)+0.7692, buttonSize(1)*.75,buttonSize(2)],...
+    'Callback',{@pushbuttonSettingsDrop_Callback});
+
+uicontrol('Style','text','Units','characters','String','Drop a settings',...
+    'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion4,...
+    'Position',[fwidth - 6 - buttonSize(1)*1.75, region4(2)+4.2308, buttonSize(1)*.75,2.6923]);
+%% change Settings functions
+%
+uicontrol('Style','text','Units','characters','String',sprintf('Settings\nFunction'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion4,...
+    'Position',[fwidth - 2 - buttonSize(1)*0.5, region4(2)+11.1538, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonSettingsFunction = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion4,...
+    'String','...',...
+    'Position',[fwidth - 2 - buttonSize(1)*0.5, region4(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonSettingsFunction_Callback});
+%% Change Settings order
+%
+uicontrol('Style','text','Units','characters','String',sprintf('Move\nSettings\nDown'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion4,...
+    'Position',[fwidth - 8 - buttonSize(1)*2.25, region4(2)+4.2308, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonSettingsDown = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion4,...
+    'String','Dn',...
+    'Position',[fwidth - 8 - buttonSize(1)*2.25, region4(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonSettingsDown_Callback});
+
+uicontrol('Style','text','Units','characters','String',sprintf('Move\nSettings\nUp'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion4,...
+    'Position',[fwidth - 8 - buttonSize(1)*2.25, region4(2)+11.1538, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonSettingsUp = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion4,...
+    'String','Up',...
+    'Position',[fwidth - 8 - buttonSize(1)*2.25, region4(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonSettingsUp_Callback});
+%% Set Z upper or Z lower boundaries
+%
+uicontrol('Style','text','Units','characters','String',sprintf('Set Z\nLower'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion4,...
+    'Position',[fwidth - 4 - buttonSize(1), region4(2)+4.2308, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonSettingsZLower = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion4,...
+    'String','Z-',...
+    'Position',[fwidth - 4 - buttonSize(1), region4(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonSettingsZLower_Callback});
+
+uicontrol('Style','text','Units','characters','String',sprintf('Set Z\nUpper'),...
+    'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion4,...
+    'Position',[fwidth - 4 - buttonSize(1), region4(2)+11.1538, buttonSize(1)*0.5,2.6923]);
+
+hpushbuttonSettingsZUpper = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion4,...
+    'String','Z+',...
+    'Position',[fwidth - 4 - buttonSize(1), region4(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
+    'Callback',{@pushbuttonSettingsZUpper_Callback});
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.popupmenuUnitsOfTime = hpopupmenuUnitsOfTime;
@@ -337,6 +412,7 @@ handles.pushbuttonPositionSet = hpushbuttonPositionSet;
 handles.pushbuttonPositionUp = hpushbuttonPositionUp;
 handles.tableGroup = htableGroup;
 handles.tablePosition = htablePosition;
+handles.tableSettings = htableSettings;
 guidata(f,handles);
 %%
 % make the gui visible
@@ -618,7 +694,73 @@ set(f,'Visible','on');
         save(fullfile(myitinerary.output_directory,'mySuperMDAItinerary.mat'),'myitinerary');
         warning('on','all');
     end
-
+%%
+%
+    function pushbuttonSettingsAdd_Callback(~,~)
+        smdaTA.itinerary.prototype_settings(end+1) = smdaTA.itinerary.prototype_settings(end);
+        smdaTA.itinerary.prototype_position.settings_order(end+1) =  length(smdaTA.itinerary.prototype_settings);
+        smdaTA.pointerSettings= length(smdaTA.itinerary.prototype_settings);
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonSettingsDown_Callback(~,~)
+        %%
+        % What follows below might have a more elegant solution.
+        % essentially all selected rows are moved down 1.
+        if max(smdaTA.pointerSettings) == length(smdaTA.itinerary.prototype_position.settings_order)
+            return
+        end
+        currentOrder = 1:length(smdaTA.itinerary.prototype_position.settings_order); % what the table looks like now
+        movingSettings = smdaTA.pointerSettings+1; % where the selected rows want to go
+        reactingSettings = setdiff(currentOrder,smdaTA.pointerSettings); % the rows that are not moving
+        fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+        fillmeinArray(movingSettings) = smdaTA.pointerSettings; % the selected rows are moved
+        fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
+        smdaTA.itinerary.prototype_position.settings_order = smdaTA.itinerary.prototype_position.settings_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.pointerSettings = movingSettings;
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonSettingsDrop_Callback(~,~)
+        if length(smdaTA.itinerary.prototype_settings)==1
+            return
+        elseif length(smdaTA.pointerSettings) == length(smdaTA.itinerary.prototype_settings)
+            smdaTA.pointerSettings(1) = [];
+        end
+        smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings) = [];
+        smdaTA.itinerary.prototype_position.settings_order(smdaTA.pointerSettings) = [];
+        smdaTA.pointerSettings = length(smdaTA.itinerary.prototype_settings);
+        %%
+        % Next, edit the group_order so that the numbers within are
+        % sequential (although not necessarily in order).
+        newNum = transpose(1:length(smdaTA.itinerary.prototype_position.settings_order));
+        oldNum = transpose(smdaTA.itinerary.prototype_position.settings_order);
+        funArray = [oldNum,newNum];
+        funArray = sortrows(funArray,1);
+        smdaTA.itinerary.prototype_position.settings_order = transpose(funArray(:,2)); % the group_order must remain a row so that it can be properly looped over.
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonSettingsUp_Callback(~,~)
+        %%
+        % What follows below might have a more elegant solution.
+        % essentially all selected rows are moved up 1.
+        if min(smdaTA.pointerSettings) == 1
+            return
+        end
+        currentOrder = 1:length(smdaTA.itinerary.prototype_position.settings_order); % what the table looks like now
+        movingSettings = smdaTA.pointerSettings-1; % where the selected rows want to go
+        reactingSettings = setdiff(currentOrder,smdaTA.pointerSettings); % the rows that are not moving
+        fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+        fillmeinArray(movingSettings) = smdaTA.pointerSettings; % the selected rows are moved
+        fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
+        smdaTA.itinerary.prototype_position.settings_order = smdaTA.itinerary.prototype_position.settings_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.pointerGroup = movingSettings;
+        smdaTA.refresh_gui_main;
+    end
 %%
 %
     function tableGroup_CellEditCallback(~, eventdata)
@@ -723,6 +865,61 @@ set(f,'Visible','on');
             return
         else
             smdaTA.pointerPosition = sort(unique(eventdata.Indices(:,1)));
+        end
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function tableSettings_CellEditCallback(~, eventdata)
+        %%
+        % |smdaTA.pointerSettings| should always be a singleton in this
+        % case
+        myCol = eventdata.Indices(2);
+        myRow = smdaTA.itinerary.prototype_position.settings_order(eventdata.Indices(1));
+        switch myCol
+            case 1 %channel
+                smdaTA.itinerary.prototype_settings(myRow).channel = find(strcmp(eventdata.NewData,smdaTA.mm.Channel));
+            case 2 %exposure
+                smdaTA.itinerary.prototype_settings(myRow).exposure = eventdata.NewData;
+            case 3 %binning
+                smdaTA.itinerary.prototype_settings(myRow).binning = eventdata.NewData;
+            case 4 %gain
+                smdaTA.itinerary.prototype_settings(myRow).gain = eventdata.NewData;
+            case 5 %Z step size
+                smdaTA.itinerary.prototype_settings(myRow).z_step_size = eventdata.NewData;
+            case 6 %Z upper
+                smdaTA.itinerary.prototype_settings(myRow).z_stack_upper_offset = eventdata.NewData;
+            case 7 %Z lower
+                smdaTA.itinerary.prototype_settings(myRow).z_stack_lower_offset = eventdata.NewData;
+            case 9 %Z offset
+                smdaTA.itinerary.prototype_settings(myRow).z_origin_offset = eventdata.NewData;
+            case 10 %period multiplier
+                smdaTA.itinerary.prototype_settings(myRow).period_multiplier = eventdata.NewData;
+        end
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function tableSettings_CellSelectionCallback(~, eventdata)
+        %%
+        % The |Travel Agent| aims to recreate the experience that
+        % microscope users expect from a multi-dimensional acquistion tool.
+        % Therefore, most of the customizability is masked by the
+        % |TravelAgent| to provide a streamlined presentation and simple
+        % manipulation of the |Itinerary|. Unlike the group and position
+        % tables, which edit the itinerary directly, the settings table
+        % will modify the the prototype, which will then be pushed to all
+        % positions in a group.
+        if isempty(eventdata.Indices)
+            % if nothing is selected, which triggers after deleting data,
+            % make sure the pointer is still valid
+            if any(smdaTA.pointerSettings > length(smdaTA.itinerary.prototype_settings))
+                % move pointer to last entry
+                smdaTA.pointerSettings = length(smdaTA.itinerary.prototype_settings);
+            end
+            return
+        else
+            smdaTA.pointerSettings = sort(unique(eventdata.Indices(:,1)));
         end
         smdaTA.refresh_gui_main;
     end
