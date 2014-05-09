@@ -56,6 +56,7 @@ classdef SuperMDATravelAgent < handle
                 obj.itinerary.prototype_position.xyz(:,2) = obj.mm.pos(2);
                 obj.itinerary.prototype_position.xyz(:,3) = obj.mm.pos(3);
                 obj.itinerary.prototype_position.settings = obj.itinerary.prototype_settings;
+                obj.itinerary.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
                 obj.itinerary.prototype_group.position = obj.itinerary.prototype_position;
                 %%
                 % create a new group
@@ -72,11 +73,91 @@ classdef SuperMDATravelAgent < handle
         end
         %%
         %
+        function obj = addPosition(obj,gInd)
+            %%
+            % Create a position by augmenting the position_order vector and
+            % taking advantage of the the pre-allocation, or create a new
+            % position built on the |Itinerary| prototypes.
+            obj.itinerary.group(gInd).position_order(end+1) = length(obj.itinerary.group(gInd).position_order)+1;
+            if length(obj.itinerary.group(gInd).position_order) < length(obj.itinerary.group(gInd).position)
+                % First check to see if a position has been preallocated,
+                % which means a new position does not need to be created,
+                % only added to the position_order vector.
+                return
+            else
+                %% Create a new position using the prototypes
+                % update prototypes
+                obj.itinerary.prototype_settings.exposure = ones(obj.itinerary.number_of_timepoints,1);
+                obj.itinerary.prototype_settings.timepoints = ones(obj.itinerary.number_of_timepoints,1);
+                obj.mm.getXYZ;
+                obj.itinerary.prototype_position.xyz = ones(obj.itinerary.number_of_timepoints,3);
+                obj.itinerary.prototype_position.xyz(:,1) = obj.mm.pos(1);
+                obj.itinerary.prototype_position.xyz(:,2) = obj.mm.pos(2);
+                obj.itinerary.prototype_position.xyz(:,3) = obj.mm.pos(3);
+                obj.itinerary.prototype_position.settings = obj.itinerary.prototype_settings;
+                obj.itinerary.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+                %%
+                % create a new position
+                obj.itinerary.group(gInd).position(end+1) = obj.itinerary.prototype_position;
+                %%
+                % update the labels in this postion
+                mystr = sprintf('position%d',length(obj.itinerary.group(gInd).position));
+                obj.itinerary.group(gInd).position(end).label = mystr;
+            end
+        end
+        %%
+        %
+        function obj = changeAllPosition(obj,gInd,positionProperty)
+            %%
+            % The change all method will change all the position properties
+            % in a given group, determined by gInd, to the value in the
+            % position prototype.
+            switch positionProperty
+                case 'continuous_focus_bool'
+                    for i=obj.itinerary.group(gInd).position_order
+                        obj.itinerary.group(gInd).position(i).continuous_focus_bool = obj.itinerary.prototype_position.continuous_focus_bool;
+                    end
+                case 'continuous_focus_offset'
+                    for i=obj.itinerary.group(gInd).position_order
+                        obj.itinerary.group(gInd).position(i).continuous_focus_offset = obj.itinerary.prototype_position.continuous_focus_offset;
+                    end
+                case 'settings_order'
+                    for i=obj.itinerary.group(gInd).position_order
+                        obj.itinerary.group(gInd).position(i).settings_order = obj.itinerary.prototype_position.settings_order;
+                    end
+            end
+        end
+        %%
+        %
+        function obj = changeAllSettings(obj,gInd,settingsProperty)
+            %%
+            % The change all method will change all the settings properties
+            % for all positions in a given group, determined by gInd, to
+            % the value in the settings prototype. If the settings
+            % prototype is an array of structs then the property value in
+            % the first struct is used.
+            switch settingsProperty
+                case 'binning'
+                    for i = obj.itinerary.group(gInd).position_order
+                        for j = obj.itinerary.group(gInd).position(i).settings_order
+                            obj.itinerary.group(gInd).position(i).settings(j).binning = obj.itinerary.prototype_settings(1).binning;
+                        end
+                    end
+                case 'z_stack'
+                    for i = obj.itinerary.group(gInd).position_order
+                        for j = obj.itinerary.group(gInd).position(i).settings_order
+                            obj.itinerary.group(gInd).position(i).settings(j).z_stack = obj.itinerary.prototype_settings(1).z_stack;
+                        end
+                    end
+            end
+        end
+        %%
+        %
         function obj = dropGroup(obj,dropInd)
             %%
             % dropInd can be a vector of indices...
             %
-            % First, remove the groups and the corresponding indices in the
+            % First, remove the group(s) and the corresponding indices in the
             % group_order.
             obj.itinerary.group(dropInd) = [];
             obj.itinerary.group_order(dropInd) = [];
@@ -88,6 +169,34 @@ classdef SuperMDATravelAgent < handle
             funArray = [oldNum,newNum];
             funArray = sortrows(funArray,1);
             obj.itinerary.group_order = transpose(funArray(:,2)); % the group_order must remain a row so that it can be properly looped over.
+        end
+        %%
+        %
+        function obj = dropPosition(obj,gInd,dropInd)
+            %%
+            % dropInd can be a vector of indices...
+            %
+            % First, remove the position(s) and the corresponding indices in the
+            % position_order.
+            obj.itinerary.group(gInd).position(dropInd) = [];
+            obj.itinerary.group(gInd).position_order(dropInd) = [];
+            %%
+            % Next, edit the group_order so that the numbers within are
+            % sequential (although not necessarily in order).
+            newNum = transpose(1:length(obj.itinerary.group(gInd).position_order));
+            oldNum = transpose(obj.itinerary.group(gInd).position_order);
+            funArray = [oldNum,newNum];
+            funArray = sortrows(funArray,1);
+            obj.itinerary.group(gInd).position_order = transpose(funArray(:,2)); % the group_order must remain a row so that it can be properly looped over.
+        end
+        %%
+        function obj = pushSettings(obj,gInd)
+            %%
+            % Push the prototype settings to all positions in a group
+            % determined by gInd
+            for i = obj.itinerary.group(gInd).position_order
+                obj.itinerary.group(gInd).position(i).settings = obj.itinerary.prototype_settings;
+            end
         end
         %%
         %

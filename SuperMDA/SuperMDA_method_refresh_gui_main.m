@@ -33,7 +33,7 @@ set(handles.tableGroup,'Data',tableGroupData);
 %% Position Table
 % Show the data in the itinerary |position_order| property for a given
 % group
-gInd = smdaTA.pointerGroup(1);
+gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
 tablePositionData = cell(length(smdaTA.itinerary.group(gInd).position_order),...
     length(get(handles.tablePosition,'ColumnName')));
 n=1;

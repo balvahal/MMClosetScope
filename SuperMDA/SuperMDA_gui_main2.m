@@ -301,8 +301,18 @@ hpushbuttonPositionFunctionAfter = uicontrol('Style','pushbutton','Units','chara
     'Callback',{@pushbuttonPositionFunctionAfter_Callback});
 %% Assemble Region 4
 %
-%%
+%% The settings table
 %
+htableGroup = uitable('Units','characters',...
+    'BackgroundColor',[textBackgroundColorRegion4;buttonBackgroundColorRegion4],...
+    'ColumnName',{'channel','exposure','binning','Z step','function after'},...
+    'ColumnEditable',logical([1,0,0,0,0]),...
+    'ColumnFormat',{'char','numeric','numeric','char','char'},...
+    'ColumnWidth',{30*ppChar(3) 'auto' 'auto' 30*ppChar(3) 30*ppChar(3)},...
+    'FontSize',8,'FontName','Verdana',...
+    'CellEditCallback',@tableGroup_CellEditCallback,...
+    'CellSelectionCallback',@tableGroup_CellSelectionCallback,...
+    'Position',[region4(1)+2, region4(2)+0.7692, 91.6, 13.0769]);
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.popupmenuUnitsOfTime = hpopupmenuUnitsOfTime;
@@ -319,6 +329,12 @@ handles.pushbuttonGroupFunctionBefore = hpushbuttonGroupFunctionBefore;
 handles.pushbuttonGroupFunctionAfter = hpushbuttonGroupFunctionAfter;
 handles.pushbuttonGroupDown = hpushbuttonGroupDown;
 handles.pushbuttonGroupUp = hpushbuttonGroupUp;
+handles.pushbuttonPositionAdd = hpushbuttonPositionAdd;
+handles.pushbuttonPositionDown = hpushbuttonPositionDown;
+handles.pushbuttonPositionDrop = hpushbuttonPositionDrop;
+handles.pushbuttonPositionMove = hpushbuttonPositionMove;
+handles.pushbuttonPositionSet = hpushbuttonPositionSet;
+handles.pushbuttonPositionUp = hpushbuttonPositionUp;
 handles.tableGroup = htableGroup;
 handles.tablePosition = htablePosition;
 guidata(f,handles);
@@ -390,7 +406,7 @@ set(f,'Visible','on');
         %%
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved down 1.
-        if min(smdaTA.pointerGroup) == length(smdaTA.itinerary.group_order)
+        if max(smdaTA.pointerGroup) == length(smdaTA.itinerary.group_order)
             return
         end
         currentOrder = 1:length(smdaTA.itinerary.group_order); % what the table looks like now
@@ -445,6 +461,116 @@ set(f,'Visible','on');
         fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
         smdaTA.itinerary.group_order = smdaTA.itinerary.group_order(fillmeinArray); % this rearrangement is performed on the group_order
         smdaTA.pointerGroup = movingGroup;
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonPositionAdd_Callback(~,~)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        smdaTA.addPosition(gInd);
+        smdaTA.pointerPosition = length(smdaTA.itinerary.group(gInd).position_order);
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonPositionDown_Callback(~,~)
+        %%
+        % What follows below might have a more elegant solution.
+        % essentially all selected rows are moved down 1.
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        if max(smdaTA.pointerPosition) == length(smdaTA.itinerary.group(gInd).position_order)
+            return
+        end
+        currentOrder = 1:length(smdaTA.itinerary.group(gInd).position_order); % what the table looks like now
+        movingPosition = smdaTA.pointerPosition+1; % where the selected rows want to go
+        reactingPosition = setdiff(currentOrder,smdaTA.pointerPosition); % the rows that are not moving
+        fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+        fillmeinArray(movingPosition) = smdaTA.pointerPosition; % the selected rows are moved
+        fillmeinArray(fillmeinArray==0) = reactingPosition; % the remaining rows are moved
+        smdaTA.itinerary.group(gInd).position_order = smdaTA.itinerary.group(gInd).position_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.pointerPosition = movingPosition;
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonPositionDrop_Callback(~,~)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        if length(smdaTA.itinerary.group(gInd).position_order)==1
+            return
+        elseif length(smdaTA.pointerPosition) == length(smdaTA.itinerary.group(gInd).position_order)
+            smdaTA.pointerPosition(1) = [];
+        end
+        smdaTA.dropPosition(gInd,smdaTA.pointerPosition);
+        smdaTA.pointerPosition = length(smdaTA.itinerary.group(gInd).position_order);
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonPositionMove_Callback(~,~)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        pInd = smdaTA.itinerary.group(gInd).position_order(smdaTA.pointerPosition(1));
+        xyz = smdaTA.itinerary.group(gInd).position(pInd).xyz(1,:);
+        if smdaTA.itinerary.group(gInd).position(pInd).continuous_focus_bool
+            %% PFS lock-on will be attempted
+            %
+            smdaTA.mm.setXYZ(xyz(1:2)); % setting the z through the focus device will disable the PFS. Therefore, the stage is moved in the XY direction before assessing the status of the PFS system.
+            smdaTA.mm.core.waitForDevice(smdaTA.mm.xyStageDevice);
+            if strcmp(smdaTA.mm.core.getProperty(smdaTA.mm.AutoFocusStatusDevice,'State'),'Off')
+                %%
+                % If the PFS is |OFF|, then the scope is moved to an
+                % absolute z that will give the system the best chance of
+                % locking onto the correct z.
+                smdaTA.mm.setXYZ(xyz(3),'direction','z');
+                smdaTA.mm.core.waitForDevice(smdaTA.mm.FocusDevice);
+                smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.group(gInd).position(pInd).continuous_focus_offset);
+                smdaTA.mm.core.fullFocus(); % PFS will return to |OFF|
+            else
+                %%
+                % If the PFS system is already on, then changing the offset
+                % will adjust the z-position. fullFocus() will have the
+                % system wait until the new z-position has been reached.
+                smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.group(gInd).position(pInd).continuous_focus_offset);
+                smdaTA.mm.core.fullFocus(); % PFS will remain |ON|
+            end
+        else
+            %% PFS will not be utilized
+            %
+            smdaTA.mm.setXYZ(xyz);
+            smdaTA.mm.core.waitForDevice(smdaTA.mm.FocusDevice);
+            smdaTA.mm.core.waitForDevice(smdaTA.mm.xyStageDevice);
+        end
+    end
+%%
+%
+    function pushbuttonPositionSet_Callback(~,~)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        pInd = smdaTA.itinerary.group(gInd).position_order(smdaTA.pointerPosition(1));
+        smdaTA.mm.getXYZ;
+        smdaTA.itinerary.group(gInd).position(pInd).xyz = ones(smdaTA.itinerary.number_of_timepoints,3);
+        smdaTA.itinerary.group(gInd).position(pInd).xyz(:,1) = smdaTA.mm.pos(1);
+        smdaTA.itinerary.group(gInd).position(pInd).xyz(:,2) = smdaTA.mm.pos(2);
+        smdaTA.itinerary.group(gInd).position(pInd).xyz(:,3) = smdaTA.mm.pos(3);
+        smdaTA.itinerary.group(gInd).position(pInd).continuous_focus_offset = str2double(smdaTA.mm.core.getProperty(smdaTA.mm.AutoFocusDevice,'Position'));
+        smdaTA.refresh_gui_main;
+    end
+%%
+%
+    function pushbuttonPositionUp_Callback(~,~)
+        %%
+        % What follows below might have a more elegant solution.
+        % essentially all selected rows are moved up 1.
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        if min(smdaTA.pointerPosition) == 1
+            return
+        end
+        currentOrder = 1:length(smdaTA.itinerary.group(gInd).position_order); % what the table looks like now
+        movingPosition = smdaTA.pointerPosition-1; % where the selected rows want to go
+        reactingPosition = setdiff(currentOrder,smdaTA.pointerPosition); % the rows that are not moving
+        fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+        fillmeinArray(movingPosition) = smdaTA.pointerPosition; % the selected rows are moved
+        fillmeinArray(fillmeinArray==0) = reactingPosition; % the remaining rows are moved
+        smdaTA.itinerary.group(gInd).position_order = smdaTA.itinerary.group(gInd).position_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.pointerPosition = movingPosition;
         smdaTA.refresh_gui_main;
     end
 %%
@@ -542,7 +668,7 @@ set(f,'Visible','on');
         %%
         % |smdaTA.pointerPosition| should always be a singleton in this
         % case
-        gInd = smdaTA.pointerGroup(1);
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         myCol = eventdata.Indices(2);
         myRow = smdaTA.itinerary.group(gInd).position_order(eventdata.Indices(1));
         switch myCol
@@ -561,11 +687,15 @@ set(f,'Visible','on');
             case 6 %PFS
                 if strcmp(eventdata.NewData,'yes')
                     smdaTA.itinerary.group(gInd).position(myRow).continuous_focus_bool = true;
+                    smdaTA.itinerary.prototype_position.continuous_focus_bool = true;
                 else
                     smdaTA.itinerary.group(gInd).position(myRow).continuous_focus_bool = false;
+                    smdaTA.itinerary.prototype_position.continuous_focus_bool = false;
                 end
+                smdaTA.changeAllPosition(gInd,'continuous_focus_bool');
             case 7 %PFS offset
                 smdaTA.itinerary.group(gInd).position(myRow).continuous_focus_offset = eventdata.NewData;
+                smdaTA.itinerary.prototype_position.continuous_focus_offset = eventdata.NewData;
         end
         smdaTA.refresh_gui_main;
     end
@@ -582,7 +712,7 @@ set(f,'Visible','on');
         %
         % The pointer of the TravelAgent should always point to a valid
         % position from the the position_order in a given group.
-        gInd = smdaTA.pointerGroup(1);
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         if isempty(eventdata.Indices)
             % if nothing is selected, which triggers after deleting data,
             % make sure the pointer is still valid
