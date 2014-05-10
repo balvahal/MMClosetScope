@@ -407,10 +407,14 @@ handles.pushbuttonGroupUp = hpushbuttonGroupUp;
 handles.pushbuttonPositionAdd = hpushbuttonPositionAdd;
 handles.pushbuttonPositionDown = hpushbuttonPositionDown;
 handles.pushbuttonPositionDrop = hpushbuttonPositionDrop;
+handles.pushbuttonPositionFunctionAfter = hpushbuttonPositionFunctionAfter;
+handles.pushbuttonPositionFunctionBefore = hpushbuttonPositionFunctionBefore;
 handles.pushbuttonPositionMove = hpushbuttonPositionMove;
 handles.pushbuttonPositionSet = hpushbuttonPositionSet;
 handles.pushbuttonPositionUp = hpushbuttonPositionUp;
-handles.hpushbuttonSettingsDown = hpushbuttonSettingsDown;
+handles.pushbuttonSettingsAdd = hpushbuttonSettingsAdd;
+handles.pushbuttonSettingsDown = hpushbuttonSettingsDown;
+handles.pushbuttonSettingsDrop = hpushbuttonSettingsDrop;
 handles.pushbuttonSettingsFunction = hpushbuttonSettingsFunction;
 handles.pushbuttonSettingsUp = hpushbuttonSettingsUp;
 handles.pushbuttonSettingsZUpper = hpushbuttonSettingsZUpper;
@@ -516,13 +520,29 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonGroupFunctionAfter_Callback(~,~)
-        
+        mypwd = pwd;
+        cd(smdaTA.itinerary.output_directory);
+        [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-after');
+        if exist(fullfile(pathname,filename),'file')
+            smdaTA.itinerary.group(smdaTA.pointerGroup(1)).group_function_after_name = char(regexp(filename,'.*(?=\.m)','match'));
+        else
+            disp('The position-function-after selection was invalid.');
+        end
+        cd(mypwd);
         smdaTA.refresh_gui_main;
     end
 %%
 %
     function pushbuttonGroupFunctionBefore_Callback(~,~)
-        
+        mypwd = pwd;
+        cd(smdaTA.itinerary.output_directory);
+        [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-before');
+        if exist(fullfile(pathname,filename),'file')
+            smdaTA.itinerary.group(smdaTA.pointerGroup(1)).group_function_before_name = char(regexp(filename,'.*(?=\.m)','match'));
+        else
+            disp('The group-function-before selection was invalid.');
+        end
+        cd(mypwd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -786,7 +806,7 @@ set(f,'Visible','on');
         cd(smdaTA.itinerary.output_directory);
         [filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
         if exist(fullfile(pathname,filename),'file')
-            smdaTA.itinerary.prototype_settings.settings_function_name = char(regexp(filename,'.*(?=\.m)','match'));
+            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings(1)).settings_function_name = char(regexp(filename,'.*(?=\.m)','match'));
         else
             disp('The settings-function selection was invalid.');
         end

@@ -148,7 +148,7 @@ classdef SuperMDAItinerary < handle
                 %
                 obj.prototype_settings.binning = 1;
                 obj.prototype_settings.channel = 1;
-                obj.prototype_settings.gain = 1;
+                obj.prototype_settings.gain = 0; % [0-255] for ORCA R2
                 obj.prototype_settings.settings_function_name = 'SuperMDA_function_settings_basic';
                 obj.prototype_settings.settings_function_handle = str2func(obj.prototype_settings.settings_function_name);
                 obj.prototype_settings.settings_function_after_name = 'SuperMDA_function_settings_after_basic';
