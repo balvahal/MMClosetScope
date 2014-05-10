@@ -30,6 +30,7 @@ switch smdaPilot.itinerary.group(i).position(j).settings(k).binning
     otherwise
         smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
 end
+smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.group(i).position(j).settings(k).gain)
 smdaPilot.mm.core.waitForSystem();
 %% If there is no z-stack then just snap an image
 %
