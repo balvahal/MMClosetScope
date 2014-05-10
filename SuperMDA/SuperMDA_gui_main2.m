@@ -757,6 +757,9 @@ set(f,'Visible','on');
         smdaTA.itinerary.prototype_settings(end+1) = smdaTA.itinerary.prototype_settings(end);
         smdaTA.itinerary.prototype_position.settings_order(end+1) =  length(smdaTA.itinerary.prototype_settings);
         smdaTA.pointerSettings= length(smdaTA.itinerary.prototype_settings);
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        smdaTA.pushSettings(gInd);
+        smdaTA.changeAllPosition(gInd,'settings_order');
         smdaTA.refresh_gui_main;
     end
 %%
@@ -903,6 +906,9 @@ set(f,'Visible','on');
         else
             smdaTA.pointerGroup = sort(unique(eventdata.Indices(:,1)));
         end
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        smdaTA.itinerary.prototype_settings = smdaTA.itinerary.group(gInd).position(1).settings;
+        smdaTA.itinerary.prototype_position.settings_order = smdaTA.itinerary.group(gInd).position(1).settings_order;
         smdaTA.refresh_gui_main;
     end
 %%
@@ -997,6 +1003,9 @@ set(f,'Visible','on');
             case 10 %period multiplier
                 smdaTA.itinerary.prototype_settings(myRow).period_multiplier = eventdata.NewData;
         end
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        smdaTA.pushSettings(gInd);
+        smdaTA.changeAllPosition(gInd,'settings_order');
         smdaTA.refresh_gui_main;
     end
 %%

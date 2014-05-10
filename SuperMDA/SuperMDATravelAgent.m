@@ -48,8 +48,6 @@ classdef SuperMDATravelAgent < handle
             else
                 %% Create a new group using the prototypes
                 % update prototypes
-                obj.itinerary.prototype_settings.exposure = ones(obj.itinerary.number_of_timepoints,1);
-                obj.itinerary.prototype_settings.timepoints = ones(obj.itinerary.number_of_timepoints,1);
                 obj.mm.getXYZ;
                 obj.itinerary.prototype_position.xyz = ones(obj.itinerary.number_of_timepoints,3);
                 obj.itinerary.prototype_position.xyz(:,1) = obj.mm.pos(1);
@@ -87,8 +85,6 @@ classdef SuperMDATravelAgent < handle
             else
                 %% Create a new position using the prototypes
                 % update prototypes
-                obj.itinerary.prototype_settings.exposure = ones(obj.itinerary.number_of_timepoints,1);
-                obj.itinerary.prototype_settings.timepoints = ones(obj.itinerary.number_of_timepoints,1);
                 obj.mm.getXYZ;
                 obj.itinerary.prototype_position.xyz = ones(obj.itinerary.number_of_timepoints,3);
                 obj.itinerary.prototype_position.xyz(:,1) = obj.mm.pos(1);
