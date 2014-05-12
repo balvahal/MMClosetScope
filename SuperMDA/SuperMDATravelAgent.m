@@ -81,6 +81,13 @@ classdef SuperMDATravelAgent < handle
                 % First check to see if a position has been preallocated,
                 % which means a new position does not need to be created,
                 % only added to the position_order vector.
+                pInd = obj.itinerary.group(gInd).position_order(end);
+                obj.mm.getXYZ;
+                obj.itinerary.group(gInd).position(pInd).xyz = ones(obj.itinerary.number_of_timepoints,3);
+                obj.itinerary.group(gInd).position(pInd).xyz(:,1) = obj.mm.pos(1);
+                obj.itinerary.group(gInd).position(pInd).xyz(:,2) = obj.mm.pos(2);
+                obj.itinerary.group(gInd).position(pInd).xyz(:,3) = obj.mm.pos(3);
+                obj.itinerary.group(gInd).position(pInd).continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
                 return
             else
                 %% Create a new position using the prototypes
