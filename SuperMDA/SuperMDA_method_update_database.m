@@ -23,11 +23,9 @@ myNewDatabaseRow = {...
     s,... %settings_number
     obj.itinerary.group(g).position(p).settings_order(s),... %settings_order
     t,... %timepoint
-    obj.itinerary.group(g).position(p).xyz(t,1),... %x
-    obj.itinerary.group(g).position(p).xyz(t,2),... %y
-    obj.itinerary.group(g).position(p).settings(s).z_origin_offset + ...
-    obj.itinerary.group(g).position(p).settings(s).z_stack(z) + ...
-    obj.itinerary.group(g).position(p).xyz(t,3),... %z
+    obj.mm.pos(1),...%obj.itinerary.group(g).position(p).xyz(t,1),... %x
+    obj.mm.pos(2),...%obj.itinerary.group(g).position(p).xyz(t,2),... %y
+    obj.mm.pos(3),...%     obj.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     obj.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     obj.itinerary.group(g).position(p).xyz(t,3),... %z
     z,... %the order of zstack from bottom to top
     obj.itinerary.database_imagedescription}; %image_description
 obj.itinerary.database(obj.runtime_imagecounter,:) = myNewDatabaseRow;

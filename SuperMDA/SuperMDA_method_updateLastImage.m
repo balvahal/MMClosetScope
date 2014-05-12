@@ -1,5 +1,5 @@
 function [obj] = SuperMDA_method_updateLastImage(obj)
-I = uint8(bitshift(obj.mm.I, -4)); %assumes 12-bit depth
+I = uint8(bitshift(obj.mm.I, -8)); %assumes 16-bit depth
 Isize = size(I);
 Iheight = Isize(1);
 Iwidth = Isize(2);

@@ -144,8 +144,8 @@ classdef Core_MicroManagerHandle < handle
 % * snapImage() = take a picture
         %% Get x, y, and z position of microscope
         %
-        function [obj] = getXYZ(obj)
-            Core_method_getXYZ(obj);
+        function [pos] = getXYZ(obj)
+            pos = Core_method_getXYZ(obj);
         end
         %% Get x, y, and z position of microscope
         %

@@ -13,7 +13,7 @@ addOptional(p, 'direction', 'x', @(x) any(strcmp(x,{'x', 'y', 'z'})));
 parse(p,mmhandle,pos,varargin{:});
 %%
 % Define default positions as the current ones
-mmhandle = Core_method_getXYZ(mmhandle);
+mmhandle.getXYZ;
 x = mmhandle.pos(1);
 y = mmhandle.pos(2);
 z = mmhandle.pos(3); %#ok<NASGU>
