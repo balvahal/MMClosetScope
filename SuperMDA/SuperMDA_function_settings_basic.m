@@ -18,17 +18,32 @@ end
 % else continue with capturing of the image
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel});
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.group(i).position(j).settings(k).exposure(t));
-switch smdaPilot.itinerary.group(i).position(j).settings(k).binning
-    case 1
-        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
-    case 2
-        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','2x2');
-    case 3
-        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','3x3');
-    case 4
-        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','4x4');
-    otherwise
-        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
+if strcmp(smdaPilot.mm.computerName,'LB89-6A-45FA') %Closet Scope
+    switch smdaPilot.itinerary.group(i).position(j).settings(k).binning
+        case 1
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1');
+        case 2
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','2');
+        case 3
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','3');
+        case 4
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','4');
+        otherwise
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1');
+    end
+elseif strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')
+    switch smdaPilot.itinerary.group(i).position(j).settings(k).binning
+        case 1
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
+        case 2
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','2x2');
+        case 3
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','3x3');
+        case 4
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','4x4');
+        otherwise
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
+    end
 end
 smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.group(i).position(j).settings(k).gain)
 smdaPilot.mm.core.waitForSystem();
@@ -38,11 +53,11 @@ if length(smdaPilot.itinerary.group(i).position(j).settings(k).z_stack) == 1
     %% Snap and Image
     %
     smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.png',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-    fid = fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
-    fwrite(fid,smdaPilot.mm.I,'uint16');
-    fclose(fid);
-    %imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'png','bitdepth',16);
+    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
+    %         fid =
+    %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
+    %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
+    imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
     %% Update the database
     %
     smdaPilot.update_database;
@@ -67,8 +82,11 @@ if strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusStatusDevice,'Stat
         %% Snap and Image
         %
         smdaPilot.snap;
-        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.png',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'png','bitdepth',16);
+        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
+        %         fid =
+        %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
+        %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
+        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
         %% Update the database
         %
         smdaPilot.update_database;
@@ -89,8 +107,11 @@ elseif strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusStatusDevice,'
         %% Snap and Image
         %
         smdaPilot.snap;
-        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.png',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'png','bitdepth',16);
+        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
+        %         fid =
+        %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
+        %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
+        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
         %% Update the database
         %
         smdaPilot.update_database;
@@ -110,8 +131,11 @@ else
         %% Snap and Image
         %
         smdaPilot.snap;
-        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.png',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'png','bitdepth',16);
+        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
+        %         fid =
+        %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
+        %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
+        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
         %% Update the database
         %
         smdaPilot.update_database;

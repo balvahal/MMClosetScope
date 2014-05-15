@@ -5,6 +5,7 @@ classdef Core_MicroManagerHandle < handle
         gui
         core
         mda
+        computerName
         xyStageDevice
         FocusDevice
         AutoFocusDevice
@@ -77,8 +78,8 @@ classdef Core_MicroManagerHandle < handle
             % We found some settings are specific to a device and these
             % settings are assigned below to a given microscope using the
             % computer hostname as a unique identifier. 
-            my_comp_name = obj.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-            if strcmp(my_comp_name,'LB89-6A-45FA')
+            obj.computerName = obj.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
+            if strcmp(obj.computerName,'LB89-6A-45FA')
                 %% 
                 % Closet Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;
@@ -94,7 +95,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
-            elseif strcmp(my_comp_name,'LB89-68-A06F')
+            elseif strcmp(obj.computerName,'LB89-68-A06F')
                 %% 
                 % Curtain Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;
@@ -110,7 +111,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',50); %There was concern of slippage and slowing the scope down was thought to be a solution to prevent this. 'MaxSpeed' range of [0,100].
-            elseif strcmp(my_comp_name,'KISHONYWAB111A')
+            elseif strcmp(obj.computerName,'KISHONYWAB111A')
                 %% 
                 % Kishony Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;

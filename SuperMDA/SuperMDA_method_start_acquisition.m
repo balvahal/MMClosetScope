@@ -8,7 +8,11 @@ if ~smdaPilot.running_bool
     %% Estimate the total memory requirement
     % and verify enough room is on the hard drive (assuming the largest
     % images will be taken)
-    smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
+    if strcmp(smdaPilot.mm.computerName,'LB89-6A-45FA') %Close Scope
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1');
+    elseif strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')
+        smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
+    end
     sizeOfBinaryImage = smdaPilot.mm.core.getImageWidth*smdaPilot.mm.core.getImageHeight*16/8; %16 for 16 bit image and 8 for 8 bits in a byte
     sizeOfAllImages = sizeOfBinaryImage*smdaPilot.itinerary.total_number_images/1024/1024; %in megabytes
     str = sprintf('Images may take up to %0.6g MB of disk spaces.\nDo you want to proceed?',sizeOfAllImages);
