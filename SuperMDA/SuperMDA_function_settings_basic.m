@@ -53,7 +53,7 @@ if length(smdaPilot.itinerary.group(i).position(j).settings(k).z_stack) == 1
     %% Snap and Image
     %
     smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
+    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,smdaPilot.itinerary.group(i).position(j).label,j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
     %         fid =
     %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
     %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
@@ -82,8 +82,7 @@ if strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusStatusDevice,'Stat
         %% Snap and Image
         %
         smdaPilot.snap;
-        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-        %         fid =
+        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,smdaPilot.itinerary.group(i).position(j).label,j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));        %         fid =
         %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
         %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
         imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
@@ -107,8 +106,7 @@ elseif strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusStatusDevice,'
         %% Snap and Image
         %
         smdaPilot.snap;
-        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-        %         fid =
+        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,smdaPilot.itinerary.group(i).position(j).label,j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));        %         fid =
         %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
         %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
         imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
@@ -131,8 +129,7 @@ else
         %% Snap and Image
         %
         smdaPilot.snap;
-        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,strcat('_',smdaPilot.itinerary.group(i).position(j).label,sprintf('tile%d',m)),j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));
-        %         fid =
+        smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group(i).label,smdaPilot.itinerary.group(i).position(j).label,j,smdaPilot.itinerary.group(i).position(j).settings(k).channel,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.group(i).position(j).settings(k).channel},smdaPilot.runtime_index(1),smdaPilot.runtime_index(5));        %         fid =
         %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
         %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
         imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
