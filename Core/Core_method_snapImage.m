@@ -6,7 +6,7 @@
 % this snap image; an optional parameter
 %% Outputs
 % * mmhandle.I, the image snapped
-function mm = Core_method_snapImage(mm, varargin)
+function I = Core_method_snapImage(mm, varargin)
 %% Snap the image
 %
 p = inputParser;
@@ -46,9 +46,10 @@ elseif mm.core.getBytesPerPixel == 2 %this indicates a 16bit image
     %% Check the bit-depth of the camera
     % If the bit-depth is less than 16-bits, then shift the raw image data
     % to fill the 16-bits.
-    bitdepth = str2double(mm.core.getProperty(mm.CameraDevice,'Bits per Channel').toCharArray');
-    if bitdepth < 16
-        I = bitshift(I,16-bitdepth);
-    end
+%     bitdepth = str2double(mm.core.getProperty(mm.CameraDevice,'Bits per Channel').toCharArray');
+%     if bitdepth < 16
+%         I = bitshift(I,16-bitdepth);
+%     end
 end
 mm.I = transpose(reshape(I,[width,height]));
+I = mm.I;

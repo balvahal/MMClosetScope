@@ -21,13 +21,13 @@ classdef Core_MicroManagerHandle < handle
         pos
     end
     methods
-%% The constructor
-% This function will fire when the object is created
+        %% The constructor
+        % This function will fire when the object is created
         function obj = Core_MicroManagerHandle()
             %%
             % Load uM and assign general uM objects to obj properties
             hmsg = msgbox('Click ''OK'' after the micromanager configuration file has been loaded.','Wait For Configuration');
-            import org.micromanager.MMStudioMainFrame; 
+            import org.micromanager.MMStudioMainFrame;
             obj.gui = MMStudioMainFrame(false);
             obj.gui.show; %this opens the uM gui that can be used at the same time MATLAB is open. Closing this gui closes MATLAB and vice versa.
             uiwait(hmsg); %the uM gui must load the correct configuration and relys upon user input. MATLAB will wait until the user confirms that uM loaded properly.
@@ -43,7 +43,7 @@ classdef Core_MicroManagerHandle < handle
             % * Nikon Ti-e with PFS
             %%
             % The following devices are stored as object properties (tested
-            % device): 
+            % device):
             %
             % * xyStageDevice (Prior ProScan)
             % * FocusDevice (Nikon TI Z-Drive)
@@ -77,10 +77,10 @@ classdef Core_MicroManagerHandle < handle
             %%
             % We found some settings are specific to a device and these
             % settings are assigned below to a given microscope using the
-            % computer hostname as a unique identifier. 
+            % computer hostname as a unique identifier.
             obj.computerName = obj.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
             if strcmp(obj.computerName,'LB89-6A-45FA')
-                %% 
+                %%
                 % Closet Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
@@ -96,7 +96,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
             elseif strcmp(obj.computerName,'LB89-68-A06F')
-                %% 
+                %%
                 % Curtain Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
@@ -112,7 +112,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',50); %There was concern of slippage and slowing the scope down was thought to be a solution to prevent this. 'MaxSpeed' range of [0,100].
             elseif strcmp(obj.computerName,'KISHONYWAB111A')
-                %% 
+                %%
                 % Kishony Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
@@ -137,12 +137,12 @@ classdef Core_MicroManagerHandle < handle
             obj.pos = obj.getXYZ;
             obj.I = zeros(obj.core.getImageHeight,obj.core.getImageWidth);
         end
-%% Methods
-% These methods are meant to make life a little easier by having quick
-% calls to common activities
-% * getXYZ() = get the XYZ coordinates of the stage
-% * setXYZ() = move the stage to a desired position
-% * snapImage() = take a picture
+        %% Methods
+        % These methods are meant to make life a little easier by having
+        % quick calls to common activities
+        % * getXYZ() = get the XYZ coordinates of the stage
+        % * setXYZ() = move the stage to a desired position
+        % * snapImage() = take a picture
         %% Get x, y, and z position of microscope
         %
         function [pos] = getXYZ(obj)
@@ -167,7 +167,7 @@ classdef Core_MicroManagerHandle < handle
         end
         %% Get x, y, and z position of microscope
         %
-        function [obj] = snapImage(obj,varargin)
+        function [I] = snapImage(obj,varargin)
             %%
             % I've gotten in the habit of creating separate m-files for
             % longer methods. When the methods use a varargin input the
@@ -175,12 +175,23 @@ classdef Core_MicroManagerHandle < handle
             % m-file sees the data as if this "middle-method" did not
             % exist.
             if isempty(varargin)
-                Core_method_snapImage(obj);
+                I = Core_method_snapImage(obj);
             else
-                Core_method_snapImage(obj,varargin{:});
+                I = Core_method_snapImage(obj,varargin{:});
             end
         end
+        %% Calibrate Sensor Alignment
+        % The XY axis of the stage is typically rotated relative to the XY
+        % axis of the camera's image sensor. This becomes clear when the an
+        % uncalibrated scopes collects tiled images. The borders of the
+        % image will not align and consecutive images will appear to be
+        % shifted in both the X and Y direction instead of just one or the
+        % other. This relative rotation can be measured directly and used
+        % to plan out stage movement in a way that takes this information
+        % into account.
+        function [obj] = calibrateSensorAlignment(obj)
+            Core_method_calibrateSensorAlignment(obj);
+        end
     end
-%     methods (Static)
-%     end
+    %     methods (Static) end
 end
