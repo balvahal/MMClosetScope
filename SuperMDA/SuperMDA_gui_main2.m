@@ -607,6 +607,11 @@ set(f,'Visible','on');
     end
 %%
 %
+    function pushbuttonPositionGrid_Callback(~,~)
+        disp('no working grid function available');
+    end
+%%
+%
     function pushbuttonPositionFunctionAfter_Callback(~,~)
         gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         mypwd = pwd;

@@ -136,6 +136,7 @@ classdef SuperMDAItinerary < handle
                 obj.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
                 obj.prototype_position.continuous_focus_bool = true;
                 obj.prototype_position.label = '';
+                obj.prototype_position.tileNumber = 1;
                 obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
                 obj.prototype_position.position_function_after_handle = str2func(obj.prototype_position.position_function_after_name);
                 obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
@@ -305,7 +306,7 @@ classdef SuperMDAItinerary < handle
             for i = obj.group_order
                 for j = obj.group(i).position_order
                     for k = obj.group(i).position(j).settings_order
-                        obj.total_number_images = obj.total_number_images + sum(obj.group(i).position(j).settings(k).timepoints)*length(obj.group(i).position(j).settings(k).z_stack);
+                        obj.total_number_images = obj.total_number_images + obj.group(i).position(j).tileNumber*sum(obj.group(i).position(j).settings(k).timepoints)*length(obj.group(i).position(j).settings(k).z_stack);
                     end
                 end
             end

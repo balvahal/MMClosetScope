@@ -22,6 +22,10 @@ classdef SuperMDATravelAgent < handle
             if nargin == 0
                 return
             elseif nargin == 1
+                %% Update the prototypes to reflect the first group and first position
+                %
+                smdai.prototype_position = smdai.group(1).position(1);
+                smdai.prototype_settings = smdai.group(1).position(1).settings; 
                 %% Initialzing the SuperMDA object
                 %
                 obj.itinerary = smdai;
