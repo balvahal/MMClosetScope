@@ -327,7 +327,7 @@ end
 % * add the ULC back to every position
 rotatedPositions = positions;
 rotatedPositions(:,1:2) = rotatedPositions(:,1:2) - repmat(positions(1,1:2),size(positions,1),1);
-rotationMatrix = [cos(mmhandle.calibrationAngle) -sin(mmhandle.calibrationAngle); sin(mmhandle.calibrationAngle), cos(mmhandle.calibrationAngle)];
+rotationMatrix = [cosd(mmhandle.calibrationAngle) -sind(mmhandle.calibrationAngle); sind(mmhandle.calibrationAngle), cosd(mmhandle.calibrationAngle)];
 rotatedPositions(:,1:2) = (rotationMatrix * rotatedPositions(:,1:2)')';
 rotatedPositions(:,1:2) = rotatedPositions(:,1:2) + repmat(positions(1,1:2),size(positions,1),1);
 oldPositions = positions;
