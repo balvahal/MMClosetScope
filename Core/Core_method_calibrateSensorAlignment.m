@@ -41,31 +41,31 @@ mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.7)),'x');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset = cc2translation(fixed,moving,pattern);
+myOffset = cc2translation(moving,pattern);
 
 mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.03)),'x');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = cc2translation(fixed,moving,pattern);
+myOffset(end+1,:) = cc2translation(moving,pattern);
 
 mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.035)),'x');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = cc2translation(fixed,moving,pattern);
+myOffset(end+1,:) = cc2translation(moving,pattern);
 
 mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.04)),'x');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = cc2translation(fixed,moving,pattern);
+myOffset(end+1,:) = cc2translation(moving,pattern);
 
 mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.045)),'x');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = cc2translation(fixed,moving,pattern);
+myOffset(end+1,:) = cc2translation(moving,pattern);
 
 mm.setXYZ(oldPos(1),'x');
 mm.core.waitForDevice(mm.xyStageDevice);
@@ -89,31 +89,31 @@ mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.7)),'y');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = fliplr(cc2translation(fixed,moving,pattern));
+myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
 mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.03)),'y');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = fliplr(cc2translation(fixed,moving,pattern));
+myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
 mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.035)),'y');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = fliplr(cc2translation(fixed,moving,pattern));
+myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
 mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.04)),'y');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = fliplr(cc2translation(fixed,moving,pattern));
+myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
 mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.045)),'y');
 mm.core.waitForDevice(mm.xyStageDevice);
 moving = mm.snapImage;
 mm.getXYZ;
-myOffset(end+1,:) = fliplr(cc2translation(fixed,moving,pattern));
+myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
 mm.setXYZ(oldPos(2),'y');
 mm.core.waitForDevice(mm.xyStageDevice);
