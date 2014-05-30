@@ -320,6 +320,10 @@ elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
         end
     end
 end
+
+%% Update positions with calibration angle
+%
+
 %% package the output in a struct
 %
 grid.positions = positions;

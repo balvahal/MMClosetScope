@@ -1,2 +1,2 @@
-zmax,zmin,xlim1,ylim1,xlim2,ylim2
-9646.825,0,-1,0,116535,75400
+zmax,zmin,xlim1,ylim1,xlim2,ylim2,calibrationAngle
+9646.825,0,-1,0,116535,75400,0

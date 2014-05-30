@@ -11,6 +11,7 @@ classdef Core_MicroManagerHandle < handle
         AutoFocusDevice
         AutoFocusStatusDevice
         CameraDevice
+        calibrationAngle
         Channel
         ShutterDevice
         xyStageLimits
@@ -94,6 +95,7 @@ classdef Core_MicroManagerHandle < handle
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-6A-45FA.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
+                obj.calibrationAngle = mytable.calibrationAngle;
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
             elseif strcmp(obj.computerName,'LB89-68-A06F')
                 %%
@@ -110,10 +112,12 @@ classdef Core_MicroManagerHandle < handle
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
+                obj.calibrationAngle = mytable.calibrationAngle;
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',50); %There was concern of slippage and slowing the scope down was thought to be a solution to prevent this. 'MaxSpeed' range of [0,100].
             elseif strcmp(obj.computerName,'KISHONYWAB111A')
                 %%
                 % Kishony Scope
+                
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
                 obj.FocusDevice = obj.core.getFocusDevice;
@@ -126,6 +130,7 @@ classdef Core_MicroManagerHandle < handle
                 mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
+                obj.calibrationAngle = mytable.calibrationAngle;
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
             else
                 obj.xyStageDevice = obj.core.getXYStageDevice;
