@@ -59,23 +59,23 @@ set(handles.tablePosition,'Data',tablePositionData);
 %
 %% Settings Table
 % Show the prototype_settings
-tableSettingsData = cell(length(smdaTA.itinerary.prototype_settings),...
+tableSettingsData = cell(length(smdaTA.itinerary.group(gInd).position(1).settings_order),...
     length(get(handles.tableSettings,'ColumnName')));
 n=1;
-for i = smdaTA.itinerary.prototype_position.settings_order
-    tableSettingsData{n,1} = smdaTA.mm.Channel{smdaTA.itinerary.prototype_settings(i).channel};
-    tableSettingsData{n,2} = smdaTA.itinerary.prototype_settings(i).exposure(1);
-    tableSettingsData{n,3} = smdaTA.itinerary.prototype_settings(i).binning;
-    tableSettingsData{n,4} = smdaTA.itinerary.prototype_settings(i).gain;
-    tableSettingsData{n,5} = smdaTA.itinerary.prototype_settings(i).z_step_size;
-    tableSettingsData{n,6} = smdaTA.itinerary.prototype_settings(i).z_stack_upper_offset;
-    tableSettingsData{n,7} = smdaTA.itinerary.prototype_settings(i).z_stack_lower_offset;
-    tableSettingsData{n,8} = length(smdaTA.itinerary.prototype_settings(i).z_stack_lower_offset...
-        :smdaTA.itinerary.prototype_settings(i).z_step_size...
-        :smdaTA.itinerary.prototype_settings(i).z_stack_upper_offset);
-    tableSettingsData{n,9} = smdaTA.itinerary.prototype_settings(i).z_origin_offset;
-    tableSettingsData{n,10} = smdaTA.itinerary.prototype_settings(i).period_multiplier;
-    tableSettingsData{n,11} = smdaTA.itinerary.prototype_settings(i).settings_function_name;
+for i = smdaTA.itinerary.group(gInd).position(1).settings_order
+    tableSettingsData{n,1} = smdaTA.mm.Channel{smdaTA.itinerary.group(gInd).position(1).settings(i).channel};
+    tableSettingsData{n,2} = smdaTA.itinerary.group(gInd).position(1).settings(i).exposure(1);
+    tableSettingsData{n,3} = smdaTA.itinerary.group(gInd).position(1).settings(i).binning;
+    tableSettingsData{n,4} = smdaTA.itinerary.group(gInd).position(1).settings(i).gain;
+    tableSettingsData{n,5} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_step_size;
+    tableSettingsData{n,6} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_upper_offset;
+    tableSettingsData{n,7} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_lower_offset;
+    tableSettingsData{n,8} = length(smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_lower_offset...
+        :smdaTA.itinerary.group(gInd).position(1).settings(i).z_step_size...
+        :smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_upper_offset);
+    tableSettingsData{n,9} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_origin_offset;
+    tableSettingsData{n,10} = smdaTA.itinerary.group(gInd).position(1).settings(i).period_multiplier;
+    tableSettingsData{n,11} = smdaTA.itinerary.group(gInd).position(1).settings(i).settings_function_name;
     tableSettingsData{n,12} = i;
     n = n + 1;
 end

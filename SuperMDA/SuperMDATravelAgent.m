@@ -22,10 +22,6 @@ classdef SuperMDATravelAgent < handle
             if nargin == 0
                 return
             elseif nargin == 1
-                %% Update the prototypes to reflect the first group and first position
-                %
-                smdai.prototype_position = smdai.group(1).position(1);
-                smdai.prototype_settings = smdai.group(1).position(1).settings; 
                 %% Initialzing the SuperMDA object
                 %
                 obj.itinerary = smdai;
@@ -53,16 +49,15 @@ classdef SuperMDATravelAgent < handle
                 %% Create a new group using the prototypes
                 % update prototypes
                 obj.mm.getXYZ;
-                obj.itinerary.prototype_position.xyz = ones(obj.itinerary.number_of_timepoints,3);
-                obj.itinerary.prototype_position.xyz(:,1) = obj.mm.pos(1);
-                obj.itinerary.prototype_position.xyz(:,2) = obj.mm.pos(2);
-                obj.itinerary.prototype_position.xyz(:,3) = obj.mm.pos(3);
-                obj.itinerary.prototype_position.settings = obj.itinerary.prototype_settings;
-                obj.itinerary.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
-                obj.itinerary.prototype_group.position = obj.itinerary.prototype_position;
                 %%
                 % create a new group
-                obj.itinerary.group(end+1) = obj.itinerary.prototype_group;
+                obj.itinerary.group(end+1) = obj.itinerary.group(1);
+                obj.itinerary.group(end).position_order = 1;
+                obj.itinerary.group(end).position(1).xyz = ones(obj.itinerary.number_of_timepoints,3);
+                obj.itinerary.group(end).position(1).xyz(:,1) = obj.mm.pos(1);
+                obj.itinerary.group(end).position(1).xyz(:,2) = obj.mm.pos(2);
+                obj.itinerary.group(end).position(1).xyz(:,3) = obj.mm.pos(3);
+                obj.itinerary.group(end).position(1).continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
                 %%
                 % update the labels in this group
                 mystr = sprintf('group%d',length(obj.itinerary.group));
@@ -81,11 +76,11 @@ classdef SuperMDATravelAgent < handle
             % taking advantage of the the pre-allocation, or create a new
             % position built on the |Itinerary| prototypes.
             obj.itinerary.group(gInd).position_order(end+1) = length(obj.itinerary.group(gInd).position_order)+1;
+            pInd = obj.itinerary.group(gInd).position_order(end);
             if length(obj.itinerary.group(gInd).position_order) < length(obj.itinerary.group(gInd).position)
                 % First check to see if a position has been preallocated,
                 % which means a new position does not need to be created,
                 % only added to the position_order vector.
-                pInd = obj.itinerary.group(gInd).position_order(end);
                 obj.mm.getXYZ;
                 obj.itinerary.group(gInd).position(pInd).xyz = ones(obj.itinerary.number_of_timepoints,3);
                 obj.itinerary.group(gInd).position(pInd).xyz(:,1) = obj.mm.pos(1);
@@ -96,16 +91,13 @@ classdef SuperMDATravelAgent < handle
             else
                 %% Create a new position using the prototypes
                 % update prototypes
+                obj.itinerary.group(gInd).position(pInd) = obj.itinerary.group(gInd).position(1);
                 obj.mm.getXYZ;
-                obj.itinerary.prototype_position.xyz = ones(obj.itinerary.number_of_timepoints,3);
-                obj.itinerary.prototype_position.xyz(:,1) = obj.mm.pos(1);
-                obj.itinerary.prototype_position.xyz(:,2) = obj.mm.pos(2);
-                obj.itinerary.prototype_position.xyz(:,3) = obj.mm.pos(3);
-                obj.itinerary.prototype_position.settings = obj.itinerary.prototype_settings;
-                obj.itinerary.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
-                %%
-                % create a new position
-                obj.itinerary.group(gInd).position(end+1) = obj.itinerary.prototype_position;
+                obj.itinerary.group(gInd).position(pInd).xyz = ones(obj.itinerary.number_of_timepoints,3);
+                obj.itinerary.group(gInd).position(pInd).xyz(:,1) = obj.mm.pos(1);
+                obj.itinerary.group(gInd).position(pInd).xyz(:,2) = obj.mm.pos(2);
+                obj.itinerary.group(gInd).position(pInd).xyz(:,3) = obj.mm.pos(3);
+                obj.itinerary.group(gInd).position(pInd).continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
                 %%
                 % update the labels in this postion
                 mystr = sprintf('position%d',length(obj.itinerary.group(gInd).position));
@@ -114,7 +106,7 @@ classdef SuperMDATravelAgent < handle
         end
         %%
         %
-        function obj = changeAllPosition(obj,gInd,positionProperty)
+        function obj = changeAllPosition(obj,gInd,positionProperty,positionValue)
             %%
             % The change all method will change all the position properties
             % in a given group, determined by gInd, to the value in the
@@ -122,29 +114,29 @@ classdef SuperMDATravelAgent < handle
             switch positionProperty
                 case 'continuous_focus_bool'
                     for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).continuous_focus_bool = obj.itinerary.prototype_position.continuous_focus_bool;
+                        obj.itinerary.group(gInd).position(i).continuous_focus_bool = positionValue;
                     end
                 case 'continuous_focus_offset'
                     for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).continuous_focus_offset = obj.itinerary.prototype_position.continuous_focus_offset;
+                        obj.itinerary.group(gInd).position(i).continuous_focus_offset = positionValue;
                     end
                 case 'settings_order'
                     for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).settings_order = obj.itinerary.prototype_position.settings_order;
+                        obj.itinerary.group(gInd).position(i).settings_order = positionValue;
                     end
                 case 'position_function_after_name'
                     for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).position_function_after_name = obj.itinerary.prototype_position.position_function_after_name;
+                        obj.itinerary.group(gInd).position(i).position_function_after_name = positionValue;
                     end
                 case 'position_function_before_name'
                     for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).position_function_before_name = obj.itinerary.prototype_position.position_function_before_name;
+                        obj.itinerary.group(gInd).position(i).position_function_before_name = positionValue;
                     end
             end
         end
         %%
         %
-        function obj = changeAllSettings(obj,gInd,settingsProperty)
+        function obj = changeAllSettings(obj,gInd,settingsProperty,settingsValue)
             %%
             % The change all method will change all the settings properties
             % for all positions in a given group, determined by gInd, to
@@ -155,13 +147,13 @@ classdef SuperMDATravelAgent < handle
                 case 'binning'
                     for i = obj.itinerary.group(gInd).position_order
                         for j = obj.itinerary.group(gInd).position(i).settings_order
-                            obj.itinerary.group(gInd).position(i).settings(j).binning = obj.itinerary.prototype_settings(1).binning;
+                            obj.itinerary.group(gInd).position(i).settings(j).binning = settingsValue;
                         end
                     end
                 case 'z_stack'
                     for i = obj.itinerary.group(gInd).position_order
                         for j = obj.itinerary.group(gInd).position(i).settings_order
-                            obj.itinerary.group(gInd).position(i).settings(j).z_stack = obj.itinerary.prototype_settings(1).z_stack;
+                            obj.itinerary.group(gInd).position(i).settings(j).z_stack = settingsValue;
                         end
                     end
             end
@@ -174,7 +166,8 @@ classdef SuperMDATravelAgent < handle
             %
             % First, remove the group(s) and the corresponding indices in the
             % group_order.
-            obj.itinerary.group(dropInd) = [];
+            dropInd2 = obj.itinerary.group_order(dropInd);
+            obj.itinerary.group(dropInd2) = [];
             obj.itinerary.group_order(dropInd) = [];
             %%
             % Next, edit the group_order so that the numbers within are
@@ -193,7 +186,8 @@ classdef SuperMDATravelAgent < handle
             %
             % First, remove the position(s) and the corresponding indices in the
             % position_order.
-            obj.itinerary.group(gInd).position(dropInd) = [];
+            dropInd2 = obj.itinerary.group(gInd).position_order(dropInd);
+            obj.itinerary.group(gInd).position(dropInd2) = [];
             obj.itinerary.group(gInd).position_order(dropInd) = [];
             %%
             % Next, edit the group_order so that the numbers within are
@@ -215,7 +209,7 @@ classdef SuperMDATravelAgent < handle
             % Push the prototype settings to all positions in a group
             % determined by gInd
             for i = obj.itinerary.group(gInd).position_order
-                obj.itinerary.group(gInd).position(i).settings = obj.itinerary.prototype_settings;
+                obj.itinerary.group(gInd).position(i).settings = obj.itinerary.group(gInd).position(1).settings;
             end
         end
         %%

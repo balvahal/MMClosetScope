@@ -618,8 +618,7 @@ set(f,'Visible','on');
         cd(smdaTA.itinerary.output_directory);
         [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-after');
         if exist(fullfile(pathname,filename),'file')
-            smdaTA.itinerary.prototype_position.position_function_after_name = char(regexp(filename,'.*(?=\.m)','match'));
-            smdaTA.changeAllPosition(gInd,'position_function_after_name');
+            smdaTA.changeAllPosition(gInd,'position_function_after_name',char(regexp(filename,'.*(?=\.m)','match')));
         else
             disp('The position-function-after selection was invalid.');
         end
@@ -634,8 +633,7 @@ set(f,'Visible','on');
         cd(smdaTA.itinerary.output_directory);
         [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-before');
         if exist(fullfile(pathname,filename),'file')
-            smdaTA.itinerary.prototype_position.position_function_before_name = char(regexp(filename,'.*(?=\.m)','match'));
-            smdaTA.changeAllPosition(gInd,'position_function_before_name');
+            smdaTA.changeAllPosition(gInd,'position_function_before_name',char(regexp(filename,'.*(?=\.m)','match')));
         else
             disp('The position-function-before selection was invalid.');
         end
@@ -759,12 +757,12 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSettingsAdd_Callback(~,~)
-        smdaTA.itinerary.prototype_settings(end+1) = smdaTA.itinerary.prototype_settings(end);
-        smdaTA.itinerary.prototype_position.settings_order(end+1) =  length(smdaTA.itinerary.prototype_settings);
-        smdaTA.pointerSettings= length(smdaTA.itinerary.prototype_settings);
         gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        smdaTA.itinerary.group(gInd).position(1).settings(end+1) = smdaTA.itinerary.group(gInd).position(1).settings(end);
+        smdaTA.itinerary.group(gInd).position(1).settings_order(end+1) =  length(smdaTA.itinerary.group(gInd).position(1).settings);
+        smdaTA.pointerSettings= length(smdaTA.itinerary.group(gInd).position(1).settings);
         smdaTA.pushSettings(gInd);
-        smdaTA.changeAllPosition(gInd,'settings_order');
+        smdaTA.changeAllPosition(gInd,'settings_order',smdaTA.itinerary.group(gInd).position(1).settings_order);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -773,38 +771,41 @@ set(f,'Visible','on');
         %%
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved down 1.
-        if max(smdaTA.pointerSettings) == length(smdaTA.itinerary.prototype_position.settings_order)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        if max(smdaTA.pointerSettings) == length(smdaTA.itinerary.group(gInd).position(1).settings_order)
             return
         end
-        currentOrder = 1:length(smdaTA.itinerary.prototype_position.settings_order); % what the table looks like now
+        currentOrder = 1:length(smdaTA.itinerary.group(gInd).position(1).settings_order); % what the table looks like now
         movingSettings = smdaTA.pointerSettings+1; % where the selected rows want to go
         reactingSettings = setdiff(currentOrder,smdaTA.pointerSettings); % the rows that are not moving
         fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
         fillmeinArray(movingSettings) = smdaTA.pointerSettings; % the selected rows are moved
         fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
-        smdaTA.itinerary.prototype_position.settings_order = smdaTA.itinerary.prototype_position.settings_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.itinerary.group(gInd).position(1).settings_order = smdaTA.itinerary.group(gInd).position(1).settings_order(fillmeinArray); % this rearrangement is performed on the group_order
         smdaTA.pointerSettings = movingSettings;
         smdaTA.refresh_gui_main;
     end
 %%
 %
     function pushbuttonSettingsDrop_Callback(~,~)
-        if length(smdaTA.itinerary.prototype_settings)==1
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        if length(smdaTA.itinerary.group(gInd).position(1).settings)==1
             return
-        elseif length(smdaTA.pointerSettings) == length(smdaTA.itinerary.prototype_settings)
+        elseif length(smdaTA.pointerSettings) == length(smdaTA.itinerary.group(gInd).position(1).settings)
             smdaTA.pointerSettings(1) = [];
         end
-        smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings) = [];
-        smdaTA.itinerary.prototype_position.settings_order(smdaTA.pointerSettings) = [];
-        smdaTA.pointerSettings = length(smdaTA.itinerary.prototype_settings);
+        dropInd = smdaTA.itinerary.group(gInd).position(1).settings_order(smdaTA.pointerSettings);
+        smdaTA.itinerary.group(gInd).position(1).settings(dropInd) = [];
+        smdaTA.itinerary.group(gInd).position(1).settings_order(smdaTA.pointerSettings) = [];
+        smdaTA.pointerSettings = length(smdaTA.itinerary.group(gInd).position(1).settings);
         %%
         % Next, edit the group_order so that the numbers within are
         % sequential (although not necessarily in order).
-        newNum = transpose(1:length(smdaTA.itinerary.prototype_position.settings_order));
-        oldNum = transpose(smdaTA.itinerary.prototype_position.settings_order);
+        newNum = transpose(1:length(smdaTA.itinerary.group(gInd).position(1).settings_order));
+        oldNum = transpose(smdaTA.itinerary.group(gInd).position(1).settings_order);
         funArray = [oldNum,newNum];
         funArray = sortrows(funArray,1);
-        smdaTA.itinerary.prototype_position.settings_order = transpose(funArray(:,2)); % the group_order must remain a row so that it can be properly looped over.
+        smdaTA.itinerary.group(gInd).position(1).settings_order = transpose(funArray(:,2)); % the group_order must remain a row so that it can be properly looped over.
         smdaTA.refresh_gui_main;
     end
 %%
@@ -814,7 +815,7 @@ set(f,'Visible','on');
         cd(smdaTA.itinerary.output_directory);
         [filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
         if exist(fullfile(pathname,filename),'file')
-            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings(1)).settings_function_name = char(regexp(filename,'.*(?=\.m)','match'));
+            smdaTA.itinerary.group(gInd).position(1).settings(smdaTA.pointerSettings(1)).settings_function_name = char(regexp(filename,'.*(?=\.m)','match'));
         else
             disp('The settings-function selection was invalid.');
         end
@@ -830,13 +831,13 @@ set(f,'Visible','on');
         if min(smdaTA.pointerSettings) == 1
             return
         end
-        currentOrder = 1:length(smdaTA.itinerary.prototype_position.settings_order); % what the table looks like now
+        currentOrder = 1:length(smdaTA.itinerary.group(gInd).position(1).settings_order); % what the table looks like now
         movingSettings = smdaTA.pointerSettings-1; % where the selected rows want to go
         reactingSettings = setdiff(currentOrder,smdaTA.pointerSettings); % the rows that are not moving
         fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
         fillmeinArray(movingSettings) = smdaTA.pointerSettings; % the selected rows are moved
         fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
-        smdaTA.itinerary.prototype_position.settings_order = smdaTA.itinerary.prototype_position.settings_order(fillmeinArray); % this rearrangement is performed on the group_order
+        smdaTA.itinerary.group(gInd).position(1).settings_order = smdaTA.itinerary.group(gInd).position(1).settings_order(fillmeinArray); % this rearrangement is performed on the group_order
         smdaTA.pointerGroup = movingSettings;
         smdaTA.refresh_gui_main;
     end
@@ -849,9 +850,9 @@ set(f,'Visible','on');
         xyz = smdaTA.mm.pos;
         offset = smdaTA.itinerary.group(gInd).position(pInd).xyz(1,3)-xyz(3);
         if offset <0
-            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_lower_offset = 0;
+            smdaTA.itinerary.group(gInd).position(1).settings(smdaTA.pointerSettings).z_stack_lower_offset = 0;
         else
-            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_lower_offset = -offset;
+            smdaTA.itinerary.group(gInd).position(1).settings(smdaTA.pointerSettings).z_stack_lower_offset = -offset;
         end
         smdaTA.refresh_gui_main;
     end
@@ -864,9 +865,9 @@ set(f,'Visible','on');
         xyz = smdaTA.mm.pos;
         offset = xyz(3)-smdaTA.itinerary.group(gInd).position(pInd).xyz(1,3);
         if offset <0
-            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_upper_offset = 0;
+            smdaTA.itinerary.group(gInd).position(1).settings(smdaTA.pointerSettings).z_stack_upper_offset = 0;
         else
-            smdaTA.itinerary.prototype_settings(smdaTA.pointerSettings).z_stack_upper_offset = offset;
+            smdaTA.itinerary.group(gInd).position(1).settings(smdaTA.pointerSettings).z_stack_upper_offset = offset;
         end
         smdaTA.refresh_gui_main;
     end
@@ -911,9 +912,6 @@ set(f,'Visible','on');
         else
             smdaTA.pointerGroup = sort(unique(eventdata.Indices(:,1)));
         end
-        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
-        smdaTA.itinerary.prototype_settings = smdaTA.itinerary.group(gInd).position(1).settings;
-        smdaTA.itinerary.prototype_position.settings_order = smdaTA.itinerary.group(gInd).position(1).settings_order;
         smdaTA.refresh_gui_main;
     end
 %%
@@ -941,15 +939,12 @@ set(f,'Visible','on');
             case 6 %PFS
                 if strcmp(eventdata.NewData,'yes')
                     smdaTA.itinerary.group(gInd).position(myRow).continuous_focus_bool = true;
-                    smdaTA.itinerary.prototype_position.continuous_focus_bool = true;
                 else
                     smdaTA.itinerary.group(gInd).position(myRow).continuous_focus_bool = false;
-                    smdaTA.itinerary.prototype_position.continuous_focus_bool = false;
                 end
-                smdaTA.changeAllPosition(gInd,'continuous_focus_bool');
+                smdaTA.changeAllPosition(gInd,'continuous_focus_bool',smdaTA.itinerary.group(gInd).position(myRow).continuous_focus_bool);
             case 7 %PFS offset
                 smdaTA.itinerary.group(gInd).position(myRow).continuous_focus_offset = eventdata.NewData;
-                smdaTA.itinerary.prototype_position.continuous_focus_offset = eventdata.NewData;
         end
         smdaTA.refresh_gui_main;
     end
@@ -986,31 +981,31 @@ set(f,'Visible','on');
         %%
         % |smdaTA.pointerSettings| should always be a singleton in this
         % case
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         myCol = eventdata.Indices(2);
-        myRow = smdaTA.itinerary.prototype_position.settings_order(eventdata.Indices(1));
+        myRow = smdaTA.itinerary.group(gInd).position(1).settings_order(eventdata.Indices(1));
         switch myCol
             case 1 %channel
-                smdaTA.itinerary.prototype_settings(myRow).channel = find(strcmp(eventdata.NewData,smdaTA.mm.Channel));
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).channel = find(strcmp(eventdata.NewData,smdaTA.mm.Channel));
             case 2 %exposure
-                smdaTA.itinerary.prototype_settings(myRow).exposure = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).exposure = eventdata.NewData;
             case 3 %binning
-                smdaTA.itinerary.prototype_settings(myRow).binning = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).binning = eventdata.NewData;
             case 4 %gain
-                smdaTA.itinerary.prototype_settings(myRow).gain = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).gain = eventdata.NewData;
             case 5 %Z step size
-                smdaTA.itinerary.prototype_settings(myRow).z_step_size = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).z_step_size = eventdata.NewData;
             case 6 %Z upper
-                smdaTA.itinerary.prototype_settings(myRow).z_stack_upper_offset = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).z_stack_upper_offset = eventdata.NewData;
             case 7 %Z lower
-                smdaTA.itinerary.prototype_settings(myRow).z_stack_lower_offset = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).z_stack_lower_offset = eventdata.NewData;
             case 9 %Z offset
-                smdaTA.itinerary.prototype_settings(myRow).z_origin_offset = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).z_origin_offset = eventdata.NewData;
             case 10 %period multiplier
-                smdaTA.itinerary.prototype_settings(myRow).period_multiplier = eventdata.NewData;
+                smdaTA.itinerary.group(gInd).position(1).settings(myRow).period_multiplier = eventdata.NewData;
         end
-        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         smdaTA.pushSettings(gInd);
-        smdaTA.changeAllPosition(gInd,'settings_order');
+        smdaTA.changeAllPosition(gInd,'settings_order',smdaTA.itinerary.group(gInd).position(1).settings_order);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -1025,12 +1020,13 @@ set(f,'Visible','on');
         % tables, which edit the itinerary directly, the settings table
         % will modify the the prototype, which will then be pushed to all
         % positions in a group.
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         if isempty(eventdata.Indices)
             % if nothing is selected, which triggers after deleting data,
             % make sure the pointer is still valid
-            if any(smdaTA.pointerSettings > length(smdaTA.itinerary.prototype_settings))
+            if any(smdaTA.pointerSettings > length(smdaTA.itinerary.group(gInd).position(1).settings))
                 % move pointer to last entry
-                smdaTA.pointerSettings = length(smdaTA.itinerary.prototype_settings);
+                smdaTA.pointerSettings = length(smdaTA.itinerary.group(gInd).position(1).settings);
             end
             return
         else

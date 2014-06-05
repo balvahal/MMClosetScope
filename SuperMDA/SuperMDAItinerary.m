@@ -123,52 +123,90 @@ classdef SuperMDAItinerary < handle
                 obj.channel_names = obj.mm.Channel;
                 %% initialize the prototype_group
                 %
-                obj.prototype_group.label = '';
-                obj.prototype_group.group_function_after_name = 'SuperMDA_function_group_after_basic';
-                obj.prototype_group.group_function_after_handle = str2func(obj.prototype_group.group_function_after_name);
-                obj.prototype_group.group_function_before_name = 'SuperMDA_function_group_before_basic';
-                obj.prototype_group.group_function_before_handle = str2func(obj.prototype_group.group_function_before_name);
-                obj.prototype_group.position_order = 1;
-                obj.prototype_group.user_data = [];
-                obj.prototype_group.position = [];
+%                 obj.prototype_group.label = '';
+%                 obj.prototype_group.group_function_after_name = 'SuperMDA_function_group_after_basic';
+%                 obj.prototype_group.group_function_after_handle = str2func(obj.prototype_group.group_function_after_name);
+%                 obj.prototype_group.group_function_before_name = 'SuperMDA_function_group_before_basic';
+%                 obj.prototype_group.group_function_before_handle = str2func(obj.prototype_group.group_function_before_name);
+%                 obj.prototype_group.position_order = 1;
+%                 obj.prototype_group.user_data = [];
+%                 obj.prototype_group.position = [];
+                obj.group.label = '';
+                obj.group.group_function_after_name = 'SuperMDA_function_group_after_basic';
+                obj.group.group_function_after_handle = str2func(obj.group.group_function_after_name);
+                obj.group.group_function_before_name = 'SuperMDA_function_group_before_basic';
+                obj.group.group_function_before_handle = str2func(obj.group.group_function_before_name);
+                obj.group.position_order = 1;
+                obj.group.user_data = [];
+                obj.group.position = [];
                 %% initialize the prototype_position
                 %
-                obj.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
-                obj.prototype_position.continuous_focus_bool = true;
-                obj.prototype_position.label = '';
-                obj.prototype_position.tileNumber = 1;
-                obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
-                obj.prototype_position.position_function_after_handle = str2func(obj.prototype_position.position_function_after_name);
-                obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
-                obj.prototype_position.position_function_before_handle = str2func(obj.prototype_position.position_function_before_name);
-                obj.prototype_position.settings_order = 1;
-                obj.prototype_position.user_data = [];
-                obj.prototype_position.xyz = obj.mm.getXYZ; %This is a customizable array
-                obj.prototype_position.settings = [];
+%                 obj.prototype_position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+%                 obj.prototype_position.continuous_focus_bool = true;
+%                 obj.prototype_position.label = '';
+%                 obj.prototype_position.tileNumber = 1;
+%                 obj.prototype_position.position_function_after_name = 'SuperMDA_function_position_after_basic';
+%                 obj.prototype_position.position_function_after_handle = str2func(obj.prototype_position.position_function_after_name);
+%                 obj.prototype_position.position_function_before_name = 'SuperMDA_function_position_before_basic';
+%                 obj.prototype_position.position_function_before_handle = str2func(obj.prototype_position.position_function_before_name);
+%                 obj.prototype_position.settings_order = 1;
+%                 obj.prototype_position.user_data = [];
+%                 obj.prototype_position.xyz = obj.mm.getXYZ; %This is a customizable array
+%                 obj.prototype_position.settings = [];
+                obj.group.position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+                obj.group.position.continuous_focus_bool = true;
+                obj.group.position.label = '';
+                obj.group.position.tileNumber = 1;
+                obj.group.position.position_function_after_name = 'SuperMDA_function_position_after_basic';
+                obj.group.position.position_function_after_handle = str2func(obj.group.position.position_function_after_name);
+                obj.group.position.position_function_before_name = 'SuperMDA_function_position_before_basic';
+                obj.group.position.position_function_before_handle = str2func(obj.group.position.position_function_before_name);
+                obj.group.position.settings_order = 1;
+                obj.group.position.user_data = [];
+                obj.group.position.xyz = obj.mm.getXYZ; %This is a customizable array
+                obj.group.position.settings = [];
                 %% initialize the prototype_settings
                 %
-                obj.prototype_settings.binning = 1;
-                obj.prototype_settings.channel = 1;
-                obj.prototype_settings.gain = 0; % [0-255] for ORCA R2
-                obj.prototype_settings.settings_function_name = 'SuperMDA_function_settings_basic';
-                obj.prototype_settings.settings_function_handle = str2func(obj.prototype_settings.settings_function_name);
-                obj.prototype_settings.settings_function_after_name = 'SuperMDA_function_settings_after_basic';
-                obj.prototype_settings.settings_function_after_handle = str2func(obj.prototype_position.position_function_after_name);
-                obj.prototype_settings.settings_function_before_name = 'SuperMDA_function_settings_before_basic';
-                obj.prototype_settings.settings_function_before_handle = str2func(obj.prototype_position.position_function_before_name);
-                obj.prototype_settings.exposure = 1; %This is a customizable arrray
-                obj.prototype_settings.period_multiplier = 1;
-                obj.prototype_settings.timepoints = 1; %This is a customizable array
-                obj.prototype_settings.user_data = [];
-                obj.prototype_settings.z_origin_offset = 0;
-                obj.prototype_settings.z_stack = 0;
-                obj.prototype_settings.z_stack_upper_offset = 0;
-                obj.prototype_settings.z_stack_lower_offset = 0;
-                obj.prototype_settings.z_step_size = 0.3;
+%                 obj.prototype_settings.binning = 1;
+%                 obj.prototype_settings.channel = 1;
+%                 obj.prototype_settings.gain = 0; % [0-255] for ORCA R2
+%                 obj.prototype_settings.settings_function_name = 'SuperMDA_function_settings_basic';
+%                 obj.prototype_settings.settings_function_handle = str2func(obj.prototype_settings.settings_function_name);
+%                 obj.prototype_settings.settings_function_after_name = 'SuperMDA_function_settings_after_basic';
+%                 obj.prototype_settings.settings_function_after_handle = str2func(obj.prototype_position.position_function_after_name);
+%                 obj.prototype_settings.settings_function_before_name = 'SuperMDA_function_settings_before_basic';
+%                 obj.prototype_settings.settings_function_before_handle = str2func(obj.prototype_position.position_function_before_name);
+%                 obj.prototype_settings.exposure = 1; %This is a customizable arrray
+%                 obj.prototype_settings.period_multiplier = 1;
+%                 obj.prototype_settings.timepoints = 1; %This is a customizable array
+%                 obj.prototype_settings.user_data = [];
+%                 obj.prototype_settings.z_origin_offset = 0;
+%                 obj.prototype_settings.z_stack = 0;
+%                 obj.prototype_settings.z_stack_upper_offset = 0;
+%                 obj.prototype_settings.z_stack_lower_offset = 0;
+%                 obj.prototype_settings.z_step_size = 0.3;
+                obj.group.position.settings.binning = 1;
+                obj.group.position.settings.channel = 1;
+                obj.group.position.settings.gain = 0; % [0-255] for ORCA R2
+                obj.group.position.settings.settings_function_name = 'SuperMDA_function_settings_basic';
+                obj.group.position.settings.settings_function_handle = str2func(obj.group.position.settings.settings_function_name);
+                obj.group.position.settings.settings_function_after_name = 'SuperMDA_function_settings_after_basic';
+                obj.group.position.settings.settings_function_after_handle = str2func(obj.group.position.settings.settings_function_after_name);
+                obj.group.position.settings.settings_function_before_name = 'SuperMDA_function_settings_before_basic';
+                obj.group.position.settings.settings_function_before_handle = str2func(obj.group.position.settings.settings_function_before_name);
+                obj.group.position.settings.exposure = 1; %This is a customizable arrray
+                obj.group.position.settings.period_multiplier = 1;
+                obj.group.position.settings.timepoints = 1; %This is a customizable array
+                obj.group.position.settings.user_data = [];
+                obj.group.position.settings.z_origin_offset = 0;
+                obj.group.position.settings.z_stack = 0;
+                obj.group.position.settings.z_stack_upper_offset = 0;
+                obj.group.position.settings.z_stack_lower_offset = 0;
+                obj.group.position.settings.z_step_size = 0.3;
                 %%
                 % by default the Itinerary should always have at least 1
                 % group with 1 position and 1 settings.
-                obj.preAllocateMemoryAndInitialize(1,1,1);
+                %obj.preAllocateMemoryAndInitialize(1,1,1);
             end
         end
         %% Method to change the duration
@@ -272,18 +310,18 @@ classdef SuperMDAItinerary < handle
             %% Update prototypes
             % * settings: exposure and timepoints
             % * position: xyz
-            obj.prototype_settings.exposure = ones(obj.number_of_timepoints,1);
-            obj.prototype_settings.timepoints = ones(obj.number_of_timepoints,1);
+            obj.group(1).position(1).settings(1).exposure = ones(obj.number_of_timepoints,1);
+            obj.group(1).position(1).settings(1).timepoints = ones(obj.number_of_timepoints,1);
             obj.mm.getXYZ;
-            obj.prototype_position.xyz = ones(obj.number_of_timepoints,3);
-            obj.prototype_position.xyz(:,1) = obj.mm.pos(1);
-            obj.prototype_position.xyz(:,2) = obj.mm.pos(2);
-            obj.prototype_position.xyz(:,3) = obj.mm.pos(3);
+            obj.group(1).position(1).xyz = ones(obj.number_of_timepoints,3);
+            obj.group(1).position(1).xyz(:,1) = obj.mm.pos(1);
+            obj.group(1).position(1).xyz(:,2) = obj.mm.pos(2);
+            obj.group(1).position(1).xyz(:,3) = obj.mm.pos(3);
             %% Fill the SuperMDA with this preallocated information
             %
-            obj.prototype_position.settings = repmat(obj.prototype_settings,myNumberOfSettings,1);
-            obj.prototype_group.position = repmat(obj.prototype_position,myNumberOfPositions,1);
-            obj.group = repmat(obj.prototype_group,myNumberOfGroups,1);
+            obj.group.position.settings = repmat(obj.group(1).position(1).settings(1),myNumberOfSettings,1);
+            obj.group.position = repmat(obj.group(1).position(1),myNumberOfPositions,1);
+            obj.group = repmat(obj.group(1),myNumberOfGroups,1);
             %% Create labels
             %
             for i = 1:length(obj.group)
