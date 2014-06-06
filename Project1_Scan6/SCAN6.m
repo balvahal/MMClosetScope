@@ -5,8 +5,14 @@ classdef SCAN6 < handle
         smdaI;
         smdaTA;
         mm;
-        rowcol;
+        sampleList = zeros(1,6);
         gui_main;
+        numberOfPositions = zeros(1,6);
+        ind=[]; %listboxInd
+        ind2=1;
+        perimeterPoints = cell(1,6);
+        center = zeros(2,6);
+        radius = zeros(1,6);
     end
     %%
     %
@@ -19,7 +25,7 @@ classdef SCAN6 < handle
             %
             if nargin == 0
                 return
-            elseif nargin == 1
+            elseif nargin == 3
                 %% Initialzing the SuperMDA object
                 %
                 obj.smdaI = smdaI;
@@ -28,8 +34,13 @@ classdef SCAN6 < handle
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_main = SCAN6_gui_main(obj);
-                obj.refresh_gui_main;
+                %obj.refresh_gui_main;
             end
+        end
+                %% delete (make sure its child objects are also deleted)
+        % for a clean delete
+        function delete(obj)
+            delete(obj.gui_main);
         end
     end
 end

@@ -22,7 +22,7 @@ function varargout = SCAN6gui_main(varargin)
 
 % Edit the above text to modify the response to help SCAN6gui_main
 
-% Last Modified by GUIDE v2.5 03-Sep-2013 11:00:44
+% Last Modified by GUIDE v2.5 06-Jun-2014 00:15:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;

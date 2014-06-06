@@ -11,3 +11,5 @@ function [mm,smdaI] = SCAN6startup_main
 %
 mm = Core_MicroManagerHandle;
 smdaI = SuperMDAItinerary(mm);
+smdaTA = SuperMDATravelAgent(smdaI);
+scan6 = SCAN6(mm,smdaI,smdaTA);
