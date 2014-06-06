@@ -6,7 +6,8 @@
 % NONE
 %% Outputs
 % NONE
-function mmhandle = SCAN6startup_main
+function [mm,smdaI] = SCAN6startup_main
 %% Initialize
 %
-[mmhandle] = SCAN6startup_initialize;
+mm = Core_MicroManagerHandle;
+smdaI = SuperMDAItinerary(mm);

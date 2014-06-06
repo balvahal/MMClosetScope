@@ -753,6 +753,7 @@ set(f,'Visible','on');
         warning('off','all');
         save(fullfile(myitinerary.output_directory,'mySuperMDAItinerary.mat'),'myitinerary');
         warning('on','all');
+        myitinerary.mm = smdaTA.mm;
     end
 %%
 %
