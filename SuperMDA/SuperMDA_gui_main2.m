@@ -759,12 +759,10 @@ set(f,'Visible','on');
 %
     function pushbuttonSettingsAdd_Callback(~,~)
         gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
-        smdaTA.itinerary.group(gInd).position(1).settings(end+1) = smdaTA.itinerary.group(gInd).position(1).settings(end);
-        smdaTA.itinerary.group(gInd).position(1).settings_order(end+1) =  length(smdaTA.itinerary.group(gInd).position(1).settings);
-        smdaTA.pointerSettings= length(smdaTA.itinerary.group(gInd).position(1).settings);
-        smdaTA.pushSettings(gInd);
-        smdaTA.changeAllPosition(gInd,'settings_order',smdaTA.itinerary.group(gInd).position(1).settings_order);
+        smdaTA.addSettings(gInd,1);
+        smdaTA.pointerSettings = length(smdaTA.itinerary.group(gInd).position(1).settings_order);
         smdaTA.refresh_gui_main;
+        smdaTA.pushSettings(gInd);
     end
 %%
 %

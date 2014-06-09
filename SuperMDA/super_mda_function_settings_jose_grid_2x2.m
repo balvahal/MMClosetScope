@@ -48,7 +48,7 @@ smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinera
 smdaPilot.mm.core.waitForSystem();
 %% Jose's loop for a 2x2 grid
 %
-[grid] = super_mda_grid_maker(smdaPilot.mm,'upper_left_corner',smdaPilot.itinerary.group(i).position(j).xyz(t,:),'number_of_columns',2,'number_of_rows',2,'overlap',0);
+[grid] = super_mda_grid_maker(smdaPilot.mm,'upper_left_corner',smdaPilot.itinerary.group(i).position(j).xyz(t,:),'number_of_columns',2,'number_of_rows',2,'overlap',25);
 %% Set PFS
 %
 for m=1:length(grid.positions)

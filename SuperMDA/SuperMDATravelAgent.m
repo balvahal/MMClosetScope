@@ -106,6 +106,20 @@ classdef SuperMDATravelAgent < handle
         end
         %%
         %
+        function obj = addSettings(obj,gInd,pInd)
+            %%
+            % Create a position by augmenting the position_order vector and
+            % taking advantage of the the pre-allocation, or create a new
+            % position built on the |Itinerary| prototypes.
+            obj.itinerary.group(gInd).position(pInd).settings_order(end+1) = length(obj.itinerary.group(gInd).position(pInd).settings_order)+1;
+            if length(obj.itinerary.group(gInd).position(pInd).settings_order) < length(obj.itinerary.group(gInd).position(pInd).settings)
+                return
+            else
+                obj.itinerary.group(gInd).position(pInd).settings(end+1) = obj.itinerary.group(gInd).position(pInd).settings(end);
+            end
+        end
+        %%
+        %
         function obj = changeAllPosition(obj,gInd,positionProperty,positionValue)
             %%
             % The change all method will change all the position properties
@@ -132,6 +146,10 @@ classdef SuperMDATravelAgent < handle
                     for i=obj.itinerary.group(gInd).position_order
                         obj.itinerary.group(gInd).position(i).position_function_before_name = positionValue;
                     end
+                case 'tileNumber'
+                    for i=obj.itinerary.group(gInd).position_order
+                        obj.itinerary.group(gInd).position(i).tileNumber = positionValue;
+                    end
             end
         end
         %%
@@ -156,6 +174,12 @@ classdef SuperMDATravelAgent < handle
                             obj.itinerary.group(gInd).position(i).settings(j).z_stack = settingsValue;
                         end
                     end
+                case 'settings_function_name'
+                    for i=obj.itinerary.group(gInd).position_order
+                        for j = obj.itinerary.group(gInd).position(i).settings_order
+                            obj.itinerary.group(gInd).position(i).settings(j).settings_function_name = settingsValue;
+                        end
+                    end
             end
         end
         %%
@@ -164,8 +188,8 @@ classdef SuperMDATravelAgent < handle
             %%
             % dropInd can be a vector of indices...
             %
-            % First, remove the group(s) and the corresponding indices in the
-            % group_order.
+            % First, remove the group(s) and the corresponding indices in
+            % the group_order.
             dropInd2 = obj.itinerary.group_order(dropInd);
             obj.itinerary.group(dropInd2) = [];
             obj.itinerary.group_order(dropInd) = [];
@@ -184,8 +208,8 @@ classdef SuperMDATravelAgent < handle
             %%
             % dropInd can be a vector of indices...
             %
-            % First, remove the position(s) and the corresponding indices in the
-            % position_order.
+            % First, remove the position(s) and the corresponding indices
+            % in the position_order.
             dropInd2 = obj.itinerary.group(gInd).position_order(dropInd);
             obj.itinerary.group(gInd).position(dropInd2) = [];
             obj.itinerary.group(gInd).position_order(dropInd) = [];
@@ -204,12 +228,13 @@ classdef SuperMDATravelAgent < handle
             % Find the most efficient order of image acquisition, which
             % means the least movement of the filter turret. This can be
             % accomplished by moving the turret in sequential order.
-                        
+            
             %%
             % Push the prototype settings to all positions in a group
             % determined by gInd
             for i = obj.itinerary.group(gInd).position_order
                 obj.itinerary.group(gInd).position(i).settings = obj.itinerary.group(gInd).position(1).settings;
+                obj.itinerary.group(gInd).position(i).settings_order = obj.itinerary.group(gInd).position(1).settings_order;
             end
         end
         %%
