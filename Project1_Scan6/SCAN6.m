@@ -9,7 +9,7 @@ classdef SCAN6 < handle
         gui_main;
         numberOfPositions = zeros(1,6);
         ind=[]; %listboxInd
-        ind2=1;
+        ind2=[]; %pointsInd
         perimeterPoints = cell(1,6);
         center = zeros(2,6);
         radius = zeros(1,6);
@@ -37,7 +37,12 @@ classdef SCAN6 < handle
                 %obj.refresh_gui_main;
             end
         end
-                %% delete (make sure its child objects are also deleted)
+        %% delete (make sure its child objects are also deleted)
+        % for a clean delete
+        function obj = refresh_gui_main(obj)
+            obj = SCAN6_method_refresh_gui_main(obj);
+        end
+        %% delete (make sure its child objects are also deleted)
         % for a clean delete
         function delete(obj)
             delete(obj.gui_main);

@@ -28,7 +28,7 @@ buttonBackgroundColorRegion4 = [255 160 122]/255; %Salmon
 buttonSize = [20 3.0769]; %[100/ppChar(3) 40/ppChar(4)];
 region1 = [0 52]; %[0 676/ppChar(4)]; %180 pixels
 region2 = [0 34]; %[0 442/ppChar(4)]; %180 pixels
-region3 = [0 13.8462]; %[0 180/ppChar(4)]; %370 pixels
+region3 = [0 0]; %[0 182/ppChar(4)]; %370 pixels
 region4 = [0 0]; %180 pixels
 
 %% Assemble Region 1
@@ -69,7 +69,8 @@ heditNumS = uicontrol('Style','edit','Units','characters','String','0',...
 hlistboxXY = uicontrol('Style','Listbox','Units','characters',...
     'FontSize',14,'FontName','Verdana',...
     'String',{},...
-    'Position',[region2(1)+2, region2(2)+2, 60,11]);
+    'Position',[region2(1)+2, region2(2)+2, 60,11],...
+    'Callback',{@listboxXY_Callback});
 
 hpushbuttonXYAdd= uicontrol('Style','pushbutton','Units','characters',...
     'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion1,...
@@ -87,6 +88,36 @@ htextUserFeedback = uicontrol('Style','text','Units','characters','String','',..
     'FontSize',16,'FontName','Verdana',...
     'Position',[region2(1)+78, region2(2)+2, 50,14],...
     'Callback',{@editNumS_Callback});
+
+%% Assemble Region 3
+%
+%%
+%
+% Resize axes so that the width and height are the same ratio as the
+% physical xy stage
+xyLim = scan6.mm.xyStageLimits;
+axesRatio = (0.9*fwidth*ppChar(3))/(32*ppChar(4)); % based on space set aside for the map on the gui
+if (xyLim(2)- xyLim(1)) > (xyLim(4) - xyLim(3)) && (xyLim(2)- xyLim(1))/(xyLim(4) - xyLim(3)) >= axesRatio
+    smapWidth = 0.9*fwidth*ppChar(3);
+    smapHeight = smapWidth*(xyLim(4) - xyLim(3))/(xyLim(2)- xyLim(1));
+else
+    smapHeight = 32*ppChar(4);
+    smapWidth = smapHeight*(xyLim(2) - xyLim(1))/(xyLim(4)- xyLim(3));
+end
+%convert from pixels to characters
+smapWidth = round(smapWidth)/ppChar(3);
+smapHeight = round(smapHeight)/ppChar(4);
+
+haxesStageMap = axes(...    % Axes for plotting location of dishes/groups and positions
+                 'Parent', f, ...
+                 'Units', 'characters', ...
+                 'HandleVisibility','callback', ...
+                 'XLim',[xyLim(1) xyLim(2)],...
+                 'YLim',[xyLim(3) xyLim(4)],...
+                 'YDir','reverse',...
+                 'TickDir','out',...
+                 'Position',[region3(1)+(fwidth-smapWidth)/2, region3(2) + (region2(2)-region3(2)-smapHeight)/2+1, smapWidth,smapHeight]);
+
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.listboxFalse = hlistboxFalse;
@@ -94,6 +125,7 @@ handles.listboxTrue = hlistboxTrue;
 handles.listboxXY = hlistboxXY;
 handles.editNumS = heditNumS;
 handles.textUserFeedback = htextUserFeedback;
+handles.axesStageMap = haxesStageMap;
 guidata(f,handles);
 %%
 % make the gui visible
@@ -219,6 +251,32 @@ set(f,'Visible','on');
         scan6.ind = str2double(regexp(listboxTrueContents{myValue(1)},'(?<=s)\d+','match','once'));
         set(handles.editNumS,'String',num2str(scan6.numberOfPositions(scan6.ind)));
         scan6.numberOfPositions(scan6.ind) = str2double(get(handles.editNumS,'String'));
+        % now update listboxXY
+        myPPts = scan6.perimeterPoints{scan6.ind};
+        if isempty(myPPts)
+            scan6.ind2 = [];
+            set(handles.listboxXY,'String',{});
+        else
+            scan6.ind2 = 1;
+            listboxPtsContents = cell(size(myPPts,1),1);
+            for i = 1:size(myPPts,1)
+                listboxPtsContents{i} = sprintf('%7.0f || %7.0f',myPPts(i,1),myPPts(i,2));
+            end
+            set(handles.listboxXY,'Value',scan6.ind2);
+            set(handles.listboxXY,'String',listboxPtsContents);
+        end
+    end
+%%
+%
+    function listboxXY_Callback(~,~)
+        myValue = get(handles.listboxTrue,'Value');
+        if isempty(myValue)
+            return
+        end
+        listboxTrueContents = get(handles.listboxTrue,'String');
+        scan6.ind = str2double(regexp(listboxTrueContents{myValue(1)},'(?<=s)\d+','match','once'));
+        set(handles.editNumS,'String',num2str(scan6.numberOfPositions(scan6.ind)));
+        scan6.numberOfPositions(scan6.ind) = str2double(get(handles.editNumS,'String'));
     end
 %%
 %
@@ -263,19 +321,32 @@ set(f,'Visible','on');
         listboxPtsContents = get(handles.listboxXY,'String');
         listboxPtsContents{end+1} = sprintf('%7.0f || %7.0f',scan6.mm.pos(1),scan6.mm.pos(2));
         set(handles.listboxXY,'Value',length(listboxPtsContents));
+        scan6.ind2 = length(listboxPtsContents);
         set(handles.listboxXY,'String',listboxPtsContents);
     end
 %%
 %
     function pushbuttonXYDrop_Callback(~,~)
-        myValue = get(handles.listboxTrue,'Value');
-        if isempty(myValue)
-            return
+        set(handles.textUserFeedback,'String',[]);
+        if isempty(scan6.ind) || isempty (scan6.ind2) || scan6.ind2 == 0
+            return;
         end
-        listboxTrueContents = get(handles.listboxTrue,'String');
-        scan6.ind = str2double(regexp(listboxTrueContents{myValue(1)},'(?<=s)\d+','match','once'));
-        set(handles.editNumS,'String',num2str(scan6.numberOfPositions(scan6.ind)));
-        scan6.numberOfPositions(scan6.ind) = str2double(get(handles.editNumS,'String'));
+        myPPts = scan6.perimeterPoints{scan6.ind};
+        myPPts(scan6.ind2,:) = [];
+        scan6.perimeterPoints{scan6.ind} = myPPts;
+        % estimate the size of the coverslip area using this new
+        % information
+        if size(myPPts,1)>2
+            [xc,yc,r] = SCAN6config_estimateCircle(myPPts);
+            scan6.center(1:2,scan6.ind) = [xc,yc];
+            scan6.radius(scan6.ind) = r;
+        end
+        % remove this position data to the listboxPts
+        listboxPtsContents = get(handles.listboxXY,'String');
+        listboxPtsContents(scan6.ind2) = [];
+        scan6.ind2 = length(listboxPtsContents);
+        set(handles.listboxXY,'Value',scan6.ind2);
+        set(handles.listboxXY,'String',listboxPtsContents);
     end
 
 end
