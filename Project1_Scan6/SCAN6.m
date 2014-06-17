@@ -7,6 +7,7 @@ classdef SCAN6 < handle
         mm;
         sampleList = zeros(1,6);
         gui_main;
+        gui_axes;
         numberOfPositions = zeros(1,6);
         ind=[]; %listboxInd
         ind2=[]; %pointsInd
@@ -34,7 +35,8 @@ classdef SCAN6 < handle
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_main = SCAN6_gui_main(obj);
-                %obj.refresh_gui_main;
+                obj.gui_axes = SCAN6_gui_axes(obj);
+                obj.refresh_gui_main;
             end
         end
         %% delete (make sure its child objects are also deleted)
