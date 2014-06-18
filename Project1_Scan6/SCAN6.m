@@ -14,6 +14,7 @@ classdef SCAN6 < handle
         perimeterPoints = cell(1,6);
         center = zeros(2,6);
         radius = zeros(1,6);
+        timerStageRefresh;
     end
     %%
     %
@@ -37,6 +38,8 @@ classdef SCAN6 < handle
                 obj.gui_main = SCAN6_gui_main(obj);
                 obj.gui_axes = SCAN6_gui_axes(obj);
                 obj.refresh_gui_main;
+                obj.timerStageRefresh = timer('ExecutionMode','fixedRate','Period',0.1,'TimerFcn',@(~,~) obj.timerStageRefreshFcn);
+                start(obj.timerStageRefresh);
             end
         end
         %% delete (make sure its child objects are also deleted)
@@ -44,10 +47,17 @@ classdef SCAN6 < handle
         function obj = refresh_gui_main(obj)
             obj = SCAN6_method_refresh_gui_main(obj);
         end
+        %%
+        %
+        function obj = timerStageRefreshFcn(obj)
+            SCAN6_method_timerStageRefreshFcn(obj);
+        end
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
         function delete(obj)
             delete(obj.gui_main);
+            delete(obj.gui_axes);
+            delete(obj.timerStageRefresh);
         end
     end
 end

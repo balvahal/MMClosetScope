@@ -17,21 +17,7 @@ fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
     'CloseRequestFcn',{@fDeleteFcn},'Name','Main');
 
-textBackgroundColorRegion1 = [176 224 230]/255; %PowderBlue
-buttonBackgroundColorRegion1 = [135 206 235]/255; %SkyBlue
-textBackgroundColorRegion2 = [144 238 144]/255; %LightGreen
-buttonBackgroundColorRegion2 = [50 205  50]/255; %LimeGreen
-textBackgroundColorRegion3 = [255 250 205]/255; %LemonChiffon
-buttonBackgroundColorRegion3 = [255 215 0]/255; %Gold
-textBackgroundColorRegion4 = [255 192 203]/255; %Pink
-buttonBackgroundColorRegion4 = [255 160 122]/255; %Salmon
-buttonSize = [20 3.0769]; %[100/ppChar(3) 40/ppChar(4)];
-region1 = [0 52]; %[0 676/ppChar(4)]; %180 pixels
-region2 = [0 34]; %[0 442/ppChar(4)]; %180 pixels
-region3 = [0 0]; %[0 182/ppChar(4)]; %370 pixels
-region4 = [0 0]; %180 pixels
-
-%% Assemble Region 4
+%% Assemble the Map
 %
 %%
 %
@@ -60,10 +46,31 @@ haxesStageMap = axes(...    % Axes for plotting location of dishes/groups and po
                  'TickDir','out',...
                  'Position',[(fwidth-smapWidth)/2, (fheight-smapHeight)/2, smapWidth,smapHeight],...
                  'ButtonDownFcn',{@axesStageMap_ButtonDownFcn});
+%% Patches
+% # current objective position
+% # the perimeter of up to 6 dishes
+% # the positions chosen for mda
+mm = scan6.mm;
+imageHeight = mm.core.getPixelSizeUm*mm.core.getImageHeight;
+imageWidth = mm.core.getPixelSizeUm*mm.core.getImageWidth;
 
+mm.getXYZ;
+x1 = mm.pos(1);
+x2 = mm.pos(1)+imageWidth;
+y1 = mm.pos(2);
+y2 = mm.pos(2)+imageHeight;
+hpatchCurrentPosition = patch('Parent',haxesStageMap,...
+    'XData',[x1;x2;x2;x1],...
+    'YData',[y1;y1;y2;y2],...
+    'ZData',ones(4,1),...
+    'EdgeColor',[255 215 0]/255,...
+    'LineWidth',2);
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.axesStageMap = haxesStageMap;
+handles.patchCurrentPosition = hpatchCurrentPosition;
+%handles.patchDishPerimeter = hpatchDishPerimeter;
+%handles.patchSmdaPositions = hpatchSmdaPositions;
 guidata(f,handles);
 %%
 % make the gui visible
@@ -80,7 +87,7 @@ set(f,'Visible','on');
 %%
 %
     function axesStageMap_ButtonDownFcn(a,b)
-        disp('hello');
+        disp('hello button push');
         
     end
 end
