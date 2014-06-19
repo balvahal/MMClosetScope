@@ -810,6 +810,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSettingsFunction_Callback(~,~)
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         mypwd = pwd;
         cd(smdaTA.itinerary.output_directory);
         [filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
