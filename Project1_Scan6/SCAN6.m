@@ -57,6 +57,7 @@ classdef SCAN6 < handle
         function delete(obj)
             delete(obj.gui_main);
             delete(obj.gui_axes);
+            stop(obj.timerStageRefresh);
             delete(obj.timerStageRefresh);
         end
     end

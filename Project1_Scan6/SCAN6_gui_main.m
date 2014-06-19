@@ -109,14 +109,14 @@ smapWidth = round(smapWidth)/ppChar(3);
 smapHeight = round(smapHeight)/ppChar(4);
 
 haxesStageMap = axes(...    % Axes for plotting location of dishes/groups and positions
-                 'Parent', f, ...
-                 'Units', 'characters', ...
-                 'HandleVisibility','callback', ...
-                 'XLim',[xyLim(1) xyLim(2)],...
-                 'YLim',[xyLim(3) xyLim(4)],...
-                 'YDir','reverse',...
-                 'TickDir','out',...
-                 'Position',[region3(1)+(fwidth-smapWidth)/2, region3(2) + (region2(2)-region3(2)-smapHeight)/2+1, smapWidth,smapHeight]);
+    'Parent', f, ...
+    'Units', 'characters', ...
+    'HandleVisibility','callback', ...
+    'XLim',[xyLim(1) xyLim(2)],...
+    'YLim',[xyLim(3) xyLim(4)],...
+    'YDir','reverse',...
+    'TickDir','out',...
+    'Position',[region3(1)+(fwidth-smapWidth)/2, region3(2) + (region2(2)-region3(2)-smapHeight)/2+1, smapWidth,smapHeight]);
 
 %%
 % store the uicontrol handles in the figure handles via guidata()
@@ -183,6 +183,21 @@ set(f,'Visible','on');
             set(handles.listboxFalse,'Value',1);
         end
         scan6.sampleList = scan6.sampleList + myBool;
+        % update the visuals
+        for i = 1:length(scan6.sampleList)
+            if scan6.sampleList(i) == true
+                handlesStageMap = guidata(scan6.gui_axes);
+                myPerimeter = handlesStageMap.patchPerimeterPositions{i};
+                set(myPerimeter,'Visible','on');
+                myDish = handlesStageMap.rectangleDishPerimeter{i};
+                myPPts = get(myPerimeter,'XData');
+                if length(myPPts) > 2
+                    set(myDish,'Visible','on');
+                else
+                    set(myDish,'Visible','off');
+                end
+            end
+        end
     end
 %%
 %
@@ -247,6 +262,15 @@ set(f,'Visible','on');
         if isempty(myValue)
             return
         end
+        % update the visuals
+        if ~isempty(scan6.ind)
+            handlesStageMap = guidata(scan6.gui_axes);
+            myPerimeter = handlesStageMap.patchPerimeterPositions{scan6.ind};
+            set(myPerimeter,'MarkerEdgeColor',handlesStageMap.colorPerimeter);
+            myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
+            set(myDish,'EdgeColor',handlesStageMap.colorDish);
+        end
+        %
         listboxTrueContents = get(handles.listboxTrue,'String');
         scan6.ind = str2double(regexp(listboxTrueContents{myValue(1)},'(?<=s)\d+','match','once'));
         set(handles.editNumS,'String',num2str(scan6.numberOfPositions(scan6.ind)));
@@ -265,6 +289,12 @@ set(f,'Visible','on');
             set(handles.listboxXY,'Value',scan6.ind2);
             set(handles.listboxXY,'String',listboxPtsContents);
         end
+        % update the visuals
+        handlesStageMap = guidata(scan6.gui_axes);
+        myPerimeter = handlesStageMap.patchPerimeterPositions{scan6.ind};
+        set(myPerimeter,'MarkerEdgeColor',handlesStageMap.colorActivePerimeter);
+        myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
+        set(myDish,'EdgeColor',handlesStageMap.colorActiveDish);
     end
 %%
 %
@@ -310,12 +340,23 @@ set(f,'Visible','on');
             end
         end
         scan6.perimeterPoints{scan6.ind} = myPPts;
+        % update the visuals
+        handlesStageMap = guidata(scan6.gui_axes);
+        myPerimeter = handlesStageMap.patchPerimeterPositions{scan6.ind};
+        set(myPerimeter,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
         % estimate the size of the coverslip area using this new
         % information
         if size(myPPts,1)>2
             [xc,yc,r] = SCAN6config_estimateCircle(myPPts);
             scan6.center(1:2,scan6.ind) = [xc,yc];
             scan6.radius(scan6.ind) = r;
+            % update the visuals
+            myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
+            set(myDish,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
+        else
+            handlesStageMap = guidata(scan6.gui_axes);
+            myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
+            set(myDish,'Visible','off');
         end
         % add this position data to the listboxPts
         listboxPtsContents = get(handles.listboxXY,'String');
@@ -334,12 +375,23 @@ set(f,'Visible','on');
         myPPts = scan6.perimeterPoints{scan6.ind};
         myPPts(scan6.ind2,:) = [];
         scan6.perimeterPoints{scan6.ind} = myPPts;
+        % update the visuals
+        handlesStageMap = guidata(scan6.gui_axes);
+        myPerimeter = handlesStageMap.patchPerimeterPositions{scan6.ind};
+        set(myPerimeter,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
         % estimate the size of the coverslip area using this new
         % information
         if size(myPPts,1)>2
             [xc,yc,r] = SCAN6config_estimateCircle(myPPts);
             scan6.center(1:2,scan6.ind) = [xc,yc];
             scan6.radius(scan6.ind) = r;
+            % update the visuals
+            myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
+            set(myDish,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
+        else
+            handlesStageMap = guidata(scan6.gui_axes);
+            myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
+            set(myDish,'Visible','off');
         end
         % remove this position data to the listboxPts
         listboxPtsContents = get(handles.listboxXY,'String');
@@ -348,5 +400,4 @@ set(f,'Visible','on');
         set(handles.listboxXY,'Value',scan6.ind2);
         set(handles.listboxXY,'String',listboxPtsContents);
     end
-
 end
