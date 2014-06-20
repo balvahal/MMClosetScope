@@ -412,7 +412,8 @@ set(f,'Visible','on');
         center = scan6.center(:,find(logicalList));
         radius = scan6.radius(logicalList);
         z = scan6.z(logicalList);
-        for i = 1:length(numberOfPostions)
+        scan6.smdaI.group_order = 1:length(numberOfPositions);
+        for i = 1:length(numberOfPositions)
             if numberOfPositions(i) == Inf
                 imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
                 imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
@@ -431,14 +432,17 @@ set(f,'Visible','on');
                     (center(2,i) + (cos(pi/4)*radius(i) - tol)),...
                     z(i)];
                 grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
+                numberOfPositions(i) = size(grid.positions,1);
             else
-                grid = super_mda_grid_maker(scan6.mm,'centriod',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
+                grid = super_mda_grid_maker(scan6.mm,'centroid',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
             end
-            for j = 1:size(grid,1)
-                scan6.smdaI.group(i) = 1;
+            scan6.smdaI.group(i).position(numberOfPositions(i)).user_data = []; % initialize positions in each group
+            scan6.smdaI.group(i).position_order = 1:numberOfPositions(i);
+            for j = 1:numberOfPositions(i)
+                scan6.smdaI.group(i).position(j).xyz = grid.positions(j,:);
+                scan6.smdaI.group(i).position(j).label = grid.position_labels{j};
             end
-        end
-        
+        end 
     end
 %%
 %
