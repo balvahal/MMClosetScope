@@ -62,6 +62,12 @@ heditNumS = uicontrol('Style','edit','Units','characters','String','0',...
     'FontSize',16,'FontName','Verdana',...
     'Position',[region1(1)+66, region1(2)+4, 10,4],...
     'Callback',{@editNumS_Callback});
+
+hpushbuttonMakeGrids = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
+    'String','MAKE GRIDS',...
+    'Position',[region1(1)+78, region1(2)+4, 30,4],...
+    'Callback',{@pushbuttonMakeGrids_Callback});
 %% Assemble Region 2
 %
 %%
@@ -117,7 +123,80 @@ haxesStageMap = axes(...    % Axes for plotting location of dishes/groups and po
     'YDir','reverse',...
     'TickDir','out',...
     'Position',[region3(1)+(fwidth-smapWidth)/2, region3(2) + (region2(2)-region3(2)-smapHeight)/2+1, smapWidth,smapHeight]);
+%% Patches and Rectangles
+% # current objective position is a rectangle
+% # the perimeter of up to 6 dishes are rectangles made to be circles
+% # the positions chosen for mda
+mm = scan6.mm;
+imageHeight = mm.core.getPixelSizeUm*mm.core.getImageHeight;
+imageWidth = mm.core.getPixelSizeUm*mm.core.getImageWidth;
+handles.colorDish = [176 224 230]/255;
+handles.colorActiveDish = [135 206 235]/255;
+handles.colorPerimeter = [105 105 105]/255;
+handles.colorActivePerimeter = [0 0 0]/255;
 
+hrectangleDishPerimeter = cell(6,1);
+for ix = 1:length(hrectangleDishPerimeter)
+    hrectangleDishPerimeter{ix} = rectangle('Parent',haxesStageMap,...
+        'Position',[0,0,1,1],...
+        'EdgeColor',handles.colorDish,...
+        'FaceColor','none',...
+        'Curvature',[1,1],...
+        'LineWidth',3,...
+        'Visible','off');
+end
+
+mm.getXYZ;
+x = mm.pos(1);
+y = mm.pos(2);
+
+hpatchCurrentPosition1 = patch('Parent',haxesStageMap,...
+    'XData',x,'YData',y,...
+    'Marker','o',...
+    'MarkerFaceColor','none',...
+    'MarkerEdgeColor',[0 0 0]/255,...
+    'MarkerSize',8,...
+    'FaceColor','none',...
+    'EdgeColor','none',...
+    'LineWidth',1);
+
+hpatchCurrentPosition2 = patch('Parent',haxesStageMap,...
+    'XData',x,'YData',y,...
+    'Marker','+',...
+    'MarkerFaceColor','none',...
+    'MarkerEdgeColor',[0 0 0]/255,...
+    'MarkerSize',8,...
+    'FaceColor','none',...
+    'EdgeColor','none',...
+    'LineWidth',1);
+
+hrectangleCurrentPosition = rectangle('Parent',haxesStageMap,...
+    'Position',[x-imageWidth/2,y-imageHeight/2,imageWidth,imageHeight],...
+    'EdgeColor','none',...
+    'FaceColor',[255 0  0]/255);
+
+hpatchPerimeterPositions = cell(6,1);
+for ix = 1:length(hpatchPerimeterPositions)
+    hpatchPerimeterPositions{ix} = patch('Parent',haxesStageMap,...
+        'XData',[],'YData',[],...
+        'Marker','x',...
+        'MarkerFaceColor','none',...
+        'MarkerEdgeColor',handles.colorPerimeter,...
+        'MarkerSize',8,...
+        'FaceColor','none',...
+        'EdgeColor','none',...
+        'LineWidth',1.5,...
+        'Visible','off');
+end
+
+%%
+% store the uicontrol handles in the figure handles via guidata()
+handles.axesStageMap = haxesStageMap;
+handles.rectangleCurrentPosition = hrectangleCurrentPosition;
+handles.patchCurrentPosition1 = hpatchCurrentPosition1;
+handles.patchCurrentPosition2 = hpatchCurrentPosition2;
+handles.rectangleDishPerimeter = hrectangleDishPerimeter;
+handles.patchPerimeterPositions = hpatchPerimeterPositions;
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.listboxFalse = hlistboxFalse;
@@ -189,12 +268,18 @@ set(f,'Visible','on');
                 handlesStageMap = guidata(scan6.gui_axes);
                 myPerimeter = handlesStageMap.patchPerimeterPositions{i};
                 set(myPerimeter,'Visible','on');
+                myPerimeter2 = handles.patchPerimeterPositions{i};
+                set(myPerimeter2,'Visible','on');
+                
                 myDish = handlesStageMap.rectangleDishPerimeter{i};
+                myDish2 = handles.rectangleDishPerimeter{i};
                 myPPts = get(myPerimeter,'XData');
                 if length(myPPts) > 2
                     set(myDish,'Visible','on');
+                    set(myDish2,'Visible','on');
                 else
                     set(myDish,'Visible','off');
+                    set(myDish2,'Visible','off');
                 end
             end
         end
@@ -249,10 +334,10 @@ set(f,'Visible','on');
 %
     function editNumS_Callback(~,~)
         myNum = str2double(get(handles.editNumS,'String'));
-        if isnan(myNum)
-            scan6.numberOfPositions(scan6.ind) = 0;
+        if isnan(myNum) || myNum < 1
+            scan6.numberOfPositions(scan6.ind) = 1;
         else
-            scan6.numberOfPositions(scan6.ind) = myNum;
+            scan6.numberOfPositions(scan6.ind) = round(myNum);
         end
     end
 %%
@@ -269,6 +354,11 @@ set(f,'Visible','on');
             set(myPerimeter,'MarkerEdgeColor',handlesStageMap.colorPerimeter);
             myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
             set(myDish,'EdgeColor',handlesStageMap.colorDish);
+            
+            myPerimeter2 = handles.patchPerimeterPositions{scan6.ind};
+            set(myPerimeter2,'MarkerEdgeColor',handles.colorPerimeter);
+            myDish2 = handles.rectangleDishPerimeter{scan6.ind};
+            set(myDish2,'EdgeColor',handles.colorDish);
         end
         %
         listboxTrueContents = get(handles.listboxTrue,'String');
@@ -295,6 +385,11 @@ set(f,'Visible','on');
         set(myPerimeter,'MarkerEdgeColor',handlesStageMap.colorActivePerimeter);
         myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
         set(myDish,'EdgeColor',handlesStageMap.colorActiveDish);
+        
+        myPerimeter2 = handles.patchPerimeterPositions{scan6.ind};
+        set(myPerimeter2,'MarkerEdgeColor',handles.colorActivePerimeter);
+        myDish2 = handles.rectangleDishPerimeter{scan6.ind};
+        set(myDish2,'EdgeColor',handles.colorActiveDish);
     end
 %%
 %
@@ -310,6 +405,43 @@ set(f,'Visible','on');
     end
 %%
 %
+    function pushbuttonMakeGrids_Callback(~,~)
+        % initialize the SuperMDAItinerary
+        logicalList = logical(scan6.sampleList);
+        numberOfPositions = scan6.numberOfPositions(logicalList);
+        center = scan6.center(:,find(logicalList));
+        radius = scan6.radius(logicalList);
+        z = scan6.z(logicalList);
+        for i = 1:length(numberOfPostions)
+            if numberOfPositions(i) == Inf
+                imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
+                imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
+                %Use 2x image dimensions as a tolerance for the maximum
+                %area. In otherwords, the square will be slightly smaller
+                %than it could be.
+                tol = imageWidth+imageHeight;
+                %Find the corners of the square that maximizes the area
+                %within the circular coverslip.
+                ULC = ...
+                    [(center(1,i) - (cos(pi/4)*radius(i) - tol)),...
+                    (center(2,i) - (cos(pi/4)*radius(i) - tol)),...
+                    z(i)];
+                LRC = ...
+                    [(center(1,i) + (cos(pi/4)*radius(i) - tol)),...
+                    (center(2,i) + (cos(pi/4)*radius(i) - tol)),...
+                    z(i)];
+                grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
+            else
+                grid = super_mda_grid_maker(scan6.mm,'centriod',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
+            end
+            for j = 1:size(grid,1)
+                scan6.smdaI.group(i) = 1;
+            end
+        end
+        
+    end
+%%
+%
     function pushbuttonXYAdd_Callback(~,~)
         set(handles.textUserFeedback,'String',[]);
         if isempty(scan6.ind)
@@ -317,7 +449,7 @@ set(f,'Visible','on');
         end
         scan6.mm.getXYZ;
         myPPts = scan6.perimeterPoints{scan6.ind};
-        myPPts(end+1,1:2) = scan6.mm.pos(1:2);
+        myPPts(end+1,1:3) = scan6.mm.pos;
         % Proofread the data points
         % * data points should not be identical with the first value.
         % * there is a singularity if the y-value of the first point is the
@@ -344,19 +476,27 @@ set(f,'Visible','on');
         handlesStageMap = guidata(scan6.gui_axes);
         myPerimeter = handlesStageMap.patchPerimeterPositions{scan6.ind};
         set(myPerimeter,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
+        
+        myPerimeter2 = handles.patchPerimeterPositions{scan6.ind};
+        set(myPerimeter2,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
         % estimate the size of the coverslip area using this new
         % information
         if size(myPPts,1)>2
-            [xc,yc,r] = SCAN6config_estimateCircle(myPPts);
+            [xc,yc,r] = SCAN6config_estimateCircle(myPPts(:,1:2));
             scan6.center(1:2,scan6.ind) = [xc,yc];
             scan6.radius(scan6.ind) = r;
+            scan6.z(scan6.ind) = mean(myPPts(:,3));
             % update the visuals
             myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
             set(myDish,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
+            myDish2 = handles.rectangleDishPerimeter{scan6.ind};
+            set(myDish2,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
         else
             handlesStageMap = guidata(scan6.gui_axes);
             myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
             set(myDish,'Visible','off');
+            myDish2 = handles.rectangleDishPerimeter{scan6.ind};
+            set(myDish2,'Visible','off');
         end
         % add this position data to the listboxPts
         listboxPtsContents = get(handles.listboxXY,'String');
@@ -379,19 +519,26 @@ set(f,'Visible','on');
         handlesStageMap = guidata(scan6.gui_axes);
         myPerimeter = handlesStageMap.patchPerimeterPositions{scan6.ind};
         set(myPerimeter,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
+        myPerimeter2 = handles.patchPerimeterPositions{scan6.ind};
+        set(myPerimeter2,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
         % estimate the size of the coverslip area using this new
         % information
         if size(myPPts,1)>2
-            [xc,yc,r] = SCAN6config_estimateCircle(myPPts);
+            [xc,yc,r] = SCAN6config_estimateCircle(myPPts(:,1:2));
             scan6.center(1:2,scan6.ind) = [xc,yc];
             scan6.radius(scan6.ind) = r;
+            scan6.z(scan6.ind) = mean(myPPts(:,3));
             % update the visuals
             myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
             set(myDish,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
+            myDish2 = handles.rectangleDishPerimeter{scan6.ind};
+            set(myDish2,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
         else
             handlesStageMap = guidata(scan6.gui_axes);
             myDish = handlesStageMap.rectangleDishPerimeter{scan6.ind};
             set(myDish,'Visible','off');
+            myDish2 = handlesStageMap.rectangleDishPerimeter{scan6.ind};
+            set(myDish2,'Visible','off');
         end
         % remove this position data to the listboxPts
         listboxPtsContents = get(handles.listboxXY,'String');

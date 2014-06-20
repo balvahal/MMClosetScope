@@ -15,6 +15,7 @@ classdef SCAN6 < handle
         center = zeros(2,6);
         radius = zeros(1,6);
         timerStageRefresh;
+        z = zeros(1,6);
     end
     %%
     %

@@ -326,11 +326,12 @@ end
 % * rotate all points with the rotation matrix using the calibration angle
 % * add the ULC back to every position
 rotatedPositions = positions;
-rotatedPositions(:,1:2) = rotatedPositions(:,1:2) - repmat(positions(1,1:2),size(positions,1),1);
+centerOfMass = repmat(mean(positions),[size(positions,1),1]);
+centerOfMass(:,3) = [];
+rotatedPositions(:,1:2) = rotatedPositions(:,1:2) - centerOfMass;
 rotationMatrix = [cosd(mmhandle.calibrationAngle) -sind(mmhandle.calibrationAngle); sind(mmhandle.calibrationAngle), cosd(mmhandle.calibrationAngle)];
 rotatedPositions(:,1:2) = (rotationMatrix * rotatedPositions(:,1:2)')';
-rotatedPositions(:,1:2) = rotatedPositions(:,1:2) + repmat(positions(1,1:2),size(positions,1),1);
-oldPositions = positions;
+rotatedPositions(:,1:2) = rotatedPositions(:,1:2) + centerOfMass;
 positions = rotatedPositions;
 %% package the output in a struct
 %
