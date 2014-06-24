@@ -16,7 +16,7 @@ classdef SuperMDATravelAgent_object < handle
         %% The constructor method
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
-        function obj = SuperMDATravelAgent(smdai)
+        function obj = SuperMDATravelAgent_object(smdai)
             %%
             %
             if nargin == 0
@@ -83,33 +83,38 @@ classdef SuperMDATravelAgent_object < handle
         end
         %%
         %
-        function obj = changeAllSettings(obj,gInd,settingsProperty,settingsValue)
+        function obj = changeAllSettings(obj,varargin)
+            if isempty(varargin)
+                obj = SuperMDATravelAgent_method_changeAllSettings(obj);
+            else
+                obj = SuperMDATravelAgent_method_changeAllSettings(obj,varargin{:});
+            end
             %%
             % The change all method will change all the settings properties
             % for all positions in a given group, determined by gInd, to
             % the value in the settings prototype. If the settings
             % prototype is an array of structs then the property value in
             % the first struct is used.
-            switch settingsProperty
-                case 'binning'
-                    for i = obj.itinerary.group(gInd).position_order
-                        for j = obj.itinerary.group(gInd).position(i).settings_order
-                            obj.itinerary.group(gInd).position(i).settings(j).binning = settingsValue;
-                        end
-                    end
-                case 'z_stack'
-                    for i = obj.itinerary.group(gInd).position_order
-                        for j = obj.itinerary.group(gInd).position(i).settings_order
-                            obj.itinerary.group(gInd).position(i).settings(j).z_stack = settingsValue;
-                        end
-                    end
-                case 'settings_function_name'
-                    for i=obj.itinerary.group(gInd).position_order
-                        for j = obj.itinerary.group(gInd).position(i).settings_order
-                            obj.itinerary.group(gInd).position(i).settings(j).settings_function_name = settingsValue;
-                        end
-                    end
-            end
+%             switch settingsProperty
+%                 case 'binning'
+%                     for i = obj.itinerary.group(gInd).position_order
+%                         for j = obj.itinerary.group(gInd).position(i).settings_order
+%                             obj.itinerary.group(gInd).position(i).settings(j).binning = settingsValue;
+%                         end
+%                     end
+%                 case 'z_stack'
+%                     for i = obj.itinerary.group(gInd).position_order
+%                         for j = obj.itinerary.group(gInd).position(i).settings_order
+%                             obj.itinerary.group(gInd).position(i).settings(j).z_stack = settingsValue;
+%                         end
+%                     end
+%                 case 'settings_function_name'
+%                     for i=obj.itinerary.group(gInd).position_order
+%                         for j = obj.itinerary.group(gInd).position(i).settings_order
+%                             obj.itinerary.group(gInd).position(i).settings(j).settings_function_name = settingsValue;
+%                         end
+%                     end
+%             end
         end
         %%
         %
@@ -139,6 +144,16 @@ classdef SuperMDATravelAgent_object < handle
         %
         function obj = dropPositionOrder(obj,gInd,dropInd)
             obj = SuperMDATravelAgent_method_dropPositionOrder(obj,gInd,dropInd);
+        end
+                %%
+        %
+        function obj = dropSettings(obj,gInd,pInd,dropInd)
+            obj = SuperMDATravelAgent_method_dropSettings(obj,gInd,pInd,dropInd);
+        end
+        %%
+        %
+        function obj = dropSettingsOrder(obj,gInd,pInd,dropInd)
+            obj = SuperMDATravelAgent_method_dropSettingsOrder(obj,gInd,pInd,dropInd);
         end
         %%
         function obj = pushSettings(obj,gInd)
