@@ -49,72 +49,30 @@ classdef SuperMDATravelAgent_object < handle
         end
         %%
         %
-        function obj = changeAllPosition(obj,gInd,positionProperty,positionValue)
-            %%
-            % The change all method will change all the position properties
-            % in a given group, determined by gInd, to the value in the
-            % position prototype.
-            switch positionProperty
-                case 'continuous_focus_bool'
-                    for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).continuous_focus_bool = positionValue;
-                    end
-                case 'continuous_focus_offset'
-                    for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).continuous_focus_offset = positionValue;
-                    end
-                case 'settings_order'
-                    for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).settings_order = positionValue;
-                    end
-                case 'position_function_after_name'
-                    for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).position_function_after_name = positionValue;
-                    end
-                case 'position_function_before_name'
-                    for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).position_function_before_name = positionValue;
-                    end
-                case 'tileNumber'
-                    for i=obj.itinerary.group(gInd).position_order
-                        obj.itinerary.group(gInd).position(i).tileNumber = positionValue;
-                    end
+        function obj = changeAllGroup(obj,param,val,varargin)
+            if isempty(varargin)
+                obj = SuperMDATravelAgent_method_changeAllGroup(obj,param,val);
+            else
+                obj = SuperMDATravelAgent_method_changeAllGroup(obj,param,val,varargin{:});
             end
         end
         %%
         %
-        function obj = changeAllSettings(obj,varargin)
+        function obj = changeAllPosition(obj,param,val,varargin)
             if isempty(varargin)
-                obj = SuperMDATravelAgent_method_changeAllSettings(obj);
+                obj = SuperMDATravelAgent_method_changeAllPosition(obj,param,val);
             else
-                obj = SuperMDATravelAgent_method_changeAllSettings(obj,varargin{:});
+                obj = SuperMDATravelAgent_method_changeAllPosition(obj,param,val,varargin{:});
             end
-            %%
-            % The change all method will change all the settings properties
-            % for all positions in a given group, determined by gInd, to
-            % the value in the settings prototype. If the settings
-            % prototype is an array of structs then the property value in
-            % the first struct is used.
-%             switch settingsProperty
-%                 case 'binning'
-%                     for i = obj.itinerary.group(gInd).position_order
-%                         for j = obj.itinerary.group(gInd).position(i).settings_order
-%                             obj.itinerary.group(gInd).position(i).settings(j).binning = settingsValue;
-%                         end
-%                     end
-%                 case 'z_stack'
-%                     for i = obj.itinerary.group(gInd).position_order
-%                         for j = obj.itinerary.group(gInd).position(i).settings_order
-%                             obj.itinerary.group(gInd).position(i).settings(j).z_stack = settingsValue;
-%                         end
-%                     end
-%                 case 'settings_function_name'
-%                     for i=obj.itinerary.group(gInd).position_order
-%                         for j = obj.itinerary.group(gInd).position(i).settings_order
-%                             obj.itinerary.group(gInd).position(i).settings(j).settings_function_name = settingsValue;
-%                         end
-%                     end
-%             end
+        end
+        %%
+        %
+        function obj = changeAllSettings(obj,param,val,varargin)
+            if isempty(varargin)
+                obj = SuperMDATravelAgent_method_changeAllSettings(obj,param,val);
+            else
+                obj = SuperMDATravelAgent_method_changeAllSettings(obj,param,val,varargin{:});
+            end
         end
         %%
         %
