@@ -28,7 +28,7 @@ classdef SuperMDATravelAgent_object < handle
                 obj.mm = smdai.mm;
                 %% Create a simple gui to enable pausing and stopping
                 %
-                obj.gui_main = SuperMDA_gui_main2(obj);
+                obj.gui_main = SuperMDATravelAgent_gui_main(obj);
                 obj.refresh_gui_main;
             end
         end
@@ -41,6 +41,11 @@ classdef SuperMDATravelAgent_object < handle
         %
         function obj = addPosition(obj,gInd)
             obj = SuperMDATravelAgent_method_addPosition(obj,gInd);
+        end
+        %%
+        %
+        function obj = addPositionSet(obj,gInd,grid)
+            obj = SuperMDATravelAgent_method_addPositionSet(obj,gInd,grid);
         end
         %%
         %

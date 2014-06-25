@@ -409,7 +409,7 @@ set(f,'Visible','on');
         % initialize the SuperMDAItinerary
         logicalList = logical(scan6.sampleList);
         numberOfPositions = scan6.numberOfPositions(logicalList);
-        center = scan6.center(:,find(logicalList));
+        center = scan6.center(:,find(logicalList)); %#ok<FNDSB>
         radius = scan6.radius(logicalList);
         z = scan6.z(logicalList);
         scan6.smdaI.group_order = 1:length(numberOfPositions);
@@ -436,6 +436,7 @@ set(f,'Visible','on');
             else
                 grid = super_mda_grid_maker(scan6.mm,'centroid',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
             end
+            scan6.smdaTA.addPositionSet(i,grid);
             scan6.smdaI.group(i).position(numberOfPositions(i)).user_data = []; % initialize positions in each group
             scan6.smdaI.group(i).position_order = 1:numberOfPositions(i);
             for j = 1:numberOfPositions(i)

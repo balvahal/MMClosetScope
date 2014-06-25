@@ -1,0 +1,337 @@
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] -------->>
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] Core session started by kk128 on LB89-6A-45FA
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] Debug logging disabled
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] Debug logging disabled
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] > MM Studio version: 1.4.16
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] > MMCore version 2.3.2
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] > Device API version 57, Module API version 8
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] > Operating System: Windows XP (x86) 5.1
+2014-06-25T16:49:51.049515 p:2992 t:5460 [LOG] > JVM: Java HotSpot(TM) Client VM, version 1.7.0_11, 32-bit
+2014-06-25T16:49:51.065138 p:2992 t:5460 [dbg] Circular buffer set to 25 MB.
+2014-06-25T16:49:52.533700 p:2992 t:5460 [dbg] Will set property: "Core"-"Initialize" = "0"
+2014-06-25T16:49:52.533700 p:2992 t:5460 [LOG] All devices unloaded.
+2014-06-25T16:49:52.533700 p:2992 t:5460 [dbg] > Notification for Device: Core Property: Initialize changed to value: 0
+2014-06-25T16:49:52.533700 p:2992 t:5460 [dbg] Did set property: "Core"-"Initialize" = "0"
+2014-06-25T16:49:52.533700 p:2992 t:5460 [LOG] Device COM1 loaded from SerialManager and labeled as COM1
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TIScope loaded from NikonTI and labeled as TIScope
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TINosePiece loaded from NikonTI and labeled as TINosePiece
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TIFilterBlock1 loaded from NikonTI and labeled as TIFilterBlock1
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TIZDrive loaded from NikonTI and labeled as TIZDrive
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TIPFSOffset loaded from NikonTI and labeled as TIPFSOffset
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TIPFSStatus loaded from NikonTI and labeled as TIPFSStatus
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TIEpiShutter loaded from NikonTI and labeled as TIEpiShutter
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TIDiaShutter loaded from NikonTI and labeled as TIDiaShutter
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device TILightPath loaded from NikonTI and labeled as TILightPath
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM loaded from Hamamatsu and labeled as Hamamatsu_DCAM
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Device XYStage loaded from Prior and labeled as XYStage
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "COM1"-"AnswerTimeout" = "500.0000"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "COM1"-"AnswerTimeout" = "500.0000"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "COM1"-"BaudRate" = "9600"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "COM1"-"BaudRate" = "9600"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "COM1"-"DelayBetweenCharsMs" = "0.0000"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "COM1"-"DelayBetweenCharsMs" = "0.0000"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "COM1"-"Handshaking" = "Off"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "COM1"-"Handshaking" = "Off"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "COM1"-"Parity" = "None"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "COM1"-"Parity" = "None"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "COM1"-"StopBits" = "1"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "COM1"-"StopBits" = "1"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "COM1"-"Verbose" = "1"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "COM1"-"Verbose" = "1"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "Hamamatsu_DCAM"-"Slot" = "0"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "Hamamatsu_DCAM"-"Slot" = "0"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "XYStage"-"Port" = "COM1"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Did set property: "XYStage"-"Port" = "COM1"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [dbg] Will set property: "Core"-"Initialize" = "1"
+2014-06-25T16:49:52.549323 p:2992 t:5460 [LOG] Starting initialization sequence for 12 devices...
+2014-06-25T16:49:52.564946 p:2992 t:5460 [dbg] Device COM1 debug message: Attempting to set baud of COM1 to 9600
+2014-06-25T16:49:52.564946 p:2992 t:5460 [dbg] Device COM1 debug message: Attempting to set flow of COM1 to none
+2014-06-25T16:49:52.564946 p:2992 t:5460 [dbg] Device COM1 debug message: Attempting to set parity of COM1 to none
+2014-06-25T16:49:52.564946 p:2992 t:5460 [dbg] Device COM1 debug message: Attempting to set stopBits of COM1 to 1
+2014-06-25T16:49:52.564946 p:2992 t:5460 [LOG] Device COM1 initialized.
+2014-06-25T16:49:52.564946 p:2992 t:5460 [dbg] Device TIScope debug message: Did not find loaded driver with basename 'micusb.sys'
+2014-06-25T16:49:52.564946 p:2992 t:5460 [dbg] Device TIScope debug message: Reading version of C:\WINDOWS\System32\Drivers\Timicusb.sys
+2014-06-25T16:49:52.580569 p:2992 t:5460 [LOG] Device TIScope message: Driver version: timicusb.sys 2.0.2.0
+2014-06-25T16:49:52.580569 p:2992 t:5460 [dbg] Device TIScope debug message: Reading version of C:\Program Files\Nikon\Shared\Bin\NikonTi.dll
+2014-06-25T16:49:52.596192 p:2992 t:5460 [dbg] Device TIScope debug message: Reading version of "C:\Program Files\Nikon\Shared\Bin\NikonTiS.exe"
+2014-06-25T16:49:52.596192 p:2992 t:5460 [LOG] Device TIScope message: Software version: 4.4.1.672
+2014-06-25T16:49:52.596192 p:2992 t:2864 [dbg] Device TIScope debug message: Instantiating NikonTi COM object
+2014-06-25T16:49:53.080505 p:2992 t:2864 [dbg] Device TIScope debug message: Listing 2 microscope(s), including emulator
+2014-06-25T16:49:53.080505 p:2992 t:2864 [dbg] Device TIScope debug message: Microscope at index 0: available
+2014-06-25T16:49:53.080505 p:2992 t:2864 [dbg] Device TIScope debug message: Microscope at index 0: controller type = -1
+2014-06-25T16:49:53.080505 p:2992 t:2864 [dbg] Device TIScope debug message: Microscope at index 0: address = Ti DEMO
+2014-06-25T16:49:53.142997 p:2992 t:2864 [dbg] Device TIScope debug message: Microscope at index 1: available
+2014-06-25T16:49:54.299099 p:2992 t:2864 [dbg] Device TIScope debug message: Microscope at index 1: controller type = 1
+2014-06-25T16:49:54.299099 p:2992 t:2864 [dbg] Device TIScope debug message: Microscope at index 1: address = USB_DEVICE(1)
+2014-06-25T16:49:54.299099 p:2992 t:2864 [dbg] Device TIScope debug message: Using microscope at index 1
+2014-06-25T16:49:54.595936 p:2992 t:2864 [dbg] Device TIScope debug message: Reading firmware version from main controller (controller index 1)
+2014-06-25T16:49:54.611559 p:2992 t:2864 [dbg] Device TIScope debug message: Firmware program name: "Ti-E   "
+2014-06-25T16:49:54.611559 p:2992 t:2864 [dbg] Device TIScope debug message: Firmware version: "V1.21"
+2014-06-25T16:49:54.611559 p:2992 t:5460 [LOG] Device TIScope message: Firmware version: Ti-E V1.21
+2014-06-25T16:49:54.611559 p:2992 t:5460 [LOG] Device TIScope initialized.
+2014-06-25T16:49:54.767789 p:2992 t:5460 [LOG] Device TINosePiece initialized.
+2014-06-25T16:49:54.799035 p:2992 t:5460 [LOG] Device TIFilterBlock1 initialized.
+2014-06-25T16:49:54.814658 p:2992 t:5460 [LOG] Device TIZDrive initialized.
+2014-06-25T16:49:54.877150 p:2992 t:5460 [LOG] Device TIPFSOffset initialized.
+2014-06-25T16:49:54.892773 p:2992 t:5460 [LOG] Device TIPFSStatus set as default auto-focus.
+2014-06-25T16:49:54.892773 p:2992 t:5460 [LOG] Device TIPFSStatus initialized.
+2014-06-25T16:49:54.892773 p:2992 t:5460 [LOG] Device TIEpiShutter set as default shutter.
+2014-06-25T16:49:54.892773 p:2992 t:5460 [LOG] Device TIEpiShutter initialized.
+2014-06-25T16:49:54.892773 p:2992 t:5460 [LOG] Device TIDiaShutter set as default shutter.
+2014-06-25T16:49:54.892773 p:2992 t:5460 [LOG] Device TIDiaShutter initialized.
+2014-06-25T16:49:54.939642 p:2992 t:5460 [LOG] Device TILightPath initialized.
+2014-06-25T16:49:56.376958 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM message: DCAM Module Version: 3.0.302.3074
+2014-06-25T16:49:56.376958 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM message: DCAM API Version: 3.0.302.3074
+2014-06-25T16:49:57.189354 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM message: Camera Model: C10600-10B (ORCA-R2)
+2014-06-25T16:49:57.189354 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM message: CameraID: S/N: 240045
+2014-06-25T16:49:57.189354 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM message: Camera Version: 1.01.31.B
+2014-06-25T16:49:57.189354 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM message: Driver version: 9.14.7.3074
+2014-06-25T16:49:57.189354 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM message: ScanMode works
+2014-06-25T16:49:57.189354 p:2992 t:5460 [dbg] Device Hamamatsu_DCAM debug message: Triggermode found: 32
+2014-06-25T16:49:57.439322 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM set as default camera.
+2014-06-25T16:49:57.439322 p:2992 t:5460 [LOG] Device Hamamatsu_DCAM initialized.
+2014-06-25T16:49:57.454945 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> comp,0\r
+2014-06-25T16:49:57.486191 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.486191 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 0\r
+2014-06-25T16:49:57.486191 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SCS\r
+2014-06-25T16:49:57.517437 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 18
+2014-06-25T16:49:57.517437 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.517437 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SMS\r
+2014-06-25T16:49:57.548683 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.548683 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 70\r
+2014-06-25T16:49:57.548683 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SAS\r
+2014-06-25T16:49:57.579929 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.579929 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.579929 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SCS\r
+2014-06-25T16:49:57.611175 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 16
+2014-06-25T16:49:57.611175 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.611175 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> RES,s\r
+2014-06-25T16:49:57.642421 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.642421 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 1\r
+2014-06-25T16:49:57.642421 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SCS\r
+2014-06-25T16:49:57.673667 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 18
+2014-06-25T16:49:57.673667 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.673667 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SAS\r
+2014-06-25T16:49:57.704913 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.704913 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.704913 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SMS\r
+2014-06-25T16:49:57.736159 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 16
+2014-06-25T16:49:57.736159 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 70\r
+2014-06-25T16:49:57.736159 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SCS\r
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Device XYStage set as default xyStage.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Device XYStage initialized.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] > Notification for Device: Core Property: Initialize changed to value: 1
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Did set property: "Core"-"Initialize" = "1"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Will set property: "Core"-"Camera" = "Hamamatsu_DCAM"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Camera device set to Hamamatsu_DCAM
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] > Notification for Device: Core Property: Camera changed to value: Hamamatsu_DCAM
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Did set property: "Core"-"Camera" = "Hamamatsu_DCAM"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Will set property: "Core"-"Shutter" = "TIDiaShutter"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] > Notification for Device: Core Property: Shutter changed to value: TIDiaShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Did set property: "Core"-"Shutter" = "TIDiaShutter"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Will set property: "Core"-"Focus" = "TIZDrive"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Focus device set to TIZDrive
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] > Notification for Device: Core Property: Focus changed to value: TIZDrive
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Did set property: "Core"-"Focus" = "TIZDrive"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Will set property: "Core"-"AutoShutter" = "1"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Auto shutter ON.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] > Notification for Device: Core Property: AutoShutter changed to value: 1
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Did set property: "Core"-"AutoShutter" = "1"
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 5 for device TINosePiece defined as label 6-
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 4 for device TINosePiece defined as label 5-
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 3 for device TINosePiece defined as label 4-
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 2 for device TINosePiece defined as label 3-PlanApo  60x na 1.40
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 1 for device TINosePiece defined as label 2-PlanApo  40x na 0.95
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 0 for device TINosePiece defined as label 1-PlanApo  20x na 0.75
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 5 for device TIFilterBlock1 defined as label 6-DAPI
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 4 for device TIFilterBlock1 defined as label 5-Cy5
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 3 for device TIFilterBlock1 defined as label 4-TxRed
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 2 for device TIFilterBlock1 defined as label 3-YFPHQ
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 1 for device TIFilterBlock1 defined as label 2-CFPHQ
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 0 for device TIFilterBlock1 defined as label 1-GFP-B
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 3 for device TILightPath defined as label Left80
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 2 for device TILightPath defined as label Right100
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 1 for device TILightPath defined as label Left100
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] State 0 for device TILightPath defined as label Eye100
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Objective/60x: new setting for device TINosePiece defined as Label=3-PlanApo  60x na 1.40
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Objective/4-    : new setting for device TINosePiece defined as Label=4-
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Objective/5-     : new setting for device TINosePiece defined as Label=5-
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Objective/20x: new setting for device TINosePiece defined as Label=1-PlanApo  20x na 0.75
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Objective/6-      : new setting for device TINosePiece defined as Label=6-
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Objective/40x: new setting for device TINosePiece defined as Label=2-PlanApo  40x na 0.95
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zYFP-dark: new setting for device TIFilterBlock1 defined as Label=3-YFPHQ
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zYFP-dark: new setting for device TIFilterBlock1 defined as State=2
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zYFP-dark: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zYFP-dark: new setting for device Core defined as Shutter=
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zGFP-dark: new setting for device TIFilterBlock1 defined as Label=1-GFP-B
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zGFP-dark: new setting for device TIFilterBlock1 defined as State=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zGFP-dark: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zGFP-dark: new setting for device Core defined as Shutter=
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/Cy5: new setting for device TIFilterBlock1 defined as Label=5-Cy5
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/Cy5: new setting for device TIFilterBlock1 defined as State=4
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/Cy5: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/Cy5: new setting for device Core defined as Shutter=TIEpiShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zRFP-dark: new setting for device TIFilterBlock1 defined as Label=4-TxRed
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zRFP-dark: new setting for device TIFilterBlock1 defined as State=3
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zRFP-dark: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zRFP-dark: new setting for device Core defined as Shutter=
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCy5-dark: new setting for device TIFilterBlock1 defined as Label=5-Cy5
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCy5-dark: new setting for device TIFilterBlock1 defined as State=4
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCy5-dark: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCy5-dark: new setting for device Core defined as Shutter=
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/DAPI: new setting for device TIFilterBlock1 defined as Label=6-DAPI
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/DAPI: new setting for device TIFilterBlock1 defined as State=5
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/DAPI: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/DAPI: new setting for device Core defined as Shutter=TIEpiShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zDAPI-dark: new setting for device TIFilterBlock1 defined as Label=6-DAPI
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zDAPI-dark: new setting for device TIFilterBlock1 defined as State=5
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zDAPI-dark: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zDAPI-dark: new setting for device Core defined as Shutter=
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/YFP: new setting for device TIFilterBlock1 defined as Label=3-YFPHQ
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/YFP: new setting for device TIFilterBlock1 defined as State=2
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/YFP: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/YFP: new setting for device Core defined as Shutter=TIEpiShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/GFP: new setting for device TIFilterBlock1 defined as Label=1-GFP-B
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/GFP: new setting for device TIFilterBlock1 defined as State=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/GFP: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/GFP: new setting for device Core defined as Shutter=TIEpiShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/CFP: new setting for device TIFilterBlock1 defined as Label=2-CFPHQ
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/CFP: new setting for device TIFilterBlock1 defined as State=1
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/CFP: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/CFP: new setting for device Core defined as Shutter=TIEpiShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCFP-dark: new setting for device TIFilterBlock1 defined as Label=2-CFPHQ
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCFP-dark: new setting for device TIFilterBlock1 defined as State=1
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCFP-dark: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/zCFP-dark: new setting for device Core defined as Shutter=
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/BF: new setting for device TIFilterBlock1 defined as Label=1-GFP-B
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/BF: new setting for device TIFilterBlock1 defined as State=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/BF: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/BF: new setting for device Core defined as Shutter=TIDiaShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/RFP: new setting for device TIFilterBlock1 defined as Label=4-TxRed
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/RFP: new setting for device TIFilterBlock1 defined as State=3
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/RFP: new setting for device Hamamatsu_DCAM defined as Gain=0
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Channel/RFP: new setting for device Core defined as Shutter=TIEpiShutter
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Configuration Exposure/NewPreset: new setting for device Hamamatsu_DCAM defined as Exposure=10.0000
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Resolution ID Res20: for device TINosePiece defined as Label=1-PlanApo  20x na 0.75
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Pixel size 0.321200 um set for resolution ID: Res20
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Resolution ID Res40: for device TINosePiece defined as Label=2-PlanApo  40x na 0.95
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Pixel size 0.164200 um set for resolution ID: Res40
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Resolution ID Res60: for device TINosePiece defined as Label=3-PlanApo  60x na 1.40
+2014-06-25T16:49:57.767405 p:2992 t:5460 [LOG] Pixel size 0.106400 um set for resolution ID: Res60
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device COM1...
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TIScope...
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TINosePiece...
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TIFilterBlock1...
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TIZDrive...
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: Waiting for all peripherals with a timeout of 1 ms
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: 0 peripheral(s) are still busy
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TIPFSOffset...
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: Waiting for all peripherals with a timeout of 1 ms
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: 0 peripheral(s) are still busy
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TIPFSStatus...
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: Waiting for all peripherals with a timeout of 1 ms
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: 0 peripheral(s) are still busy
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TIEpiShutter...
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: Waiting for all peripherals with a timeout of 1 ms
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: 0 peripheral(s) are still busy
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TIDiaShutter...
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: Waiting for all peripherals with a timeout of 1 ms
+2014-06-25T16:49:57.767405 p:2992 t:2864 [dbg] Device TIScope debug message: 0 peripheral(s) are still busy
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device TILightPath...
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device Hamamatsu_DCAM...
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Waiting for device XYStage...
+2014-06-25T16:49:57.767405 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> $\r
+2014-06-25T16:49:57.798651 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 15
+2014-06-25T16:49:57.798651 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 0\r
+2014-06-25T16:49:57.798651 p:2992 t:5460 [dbg] Finished waiting.
+2014-06-25T16:49:57.798651 p:2992 t:5460 [dbg] Device Hamamatsu_DCAM debug message: Triggermode found: 32
+2014-06-25T16:49:57.798651 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SAS\r
+2014-06-25T16:49:57.829897 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 16
+2014-06-25T16:49:57.829897 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.829897 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SMS\r
+2014-06-25T16:49:57.861143 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.861143 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 70\r
+2014-06-25T16:49:57.861143 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SCS\r
+2014-06-25T16:49:57.892389 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.892389 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:57.892389 p:2992 t:5460 [LOG] System state cache updated.
+2014-06-25T16:49:57.892389 p:2992 t:5460 [LOG] Auto-focus device set to TIPFSStatus
+2014-06-25T16:49:57.908012 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> PX\r
+2014-06-25T16:49:57.939258 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 11
+2014-06-25T16:49:57.939258 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- -245047\r
+2014-06-25T16:49:57.939258 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> PY\r
+2014-06-25T16:49:57.970504 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:57.970504 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- -101774\r
+2014-06-25T16:49:57.970504 p:2992 t:5460 [dbg] Device Hamamatsu_DCAM debug message: Triggermode found: 32
+2014-06-25T16:49:57.970504 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SAS\r
+2014-06-25T16:49:58.001750 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 14
+2014-06-25T16:49:58.001750 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:58.001750 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SMS\r
+2014-06-25T16:49:58.032996 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:58.032996 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 70\r
+2014-06-25T16:49:58.032996 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> SCS\r
+2014-06-25T16:49:58.064242 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 18
+2014-06-25T16:49:58.064242 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- 100\r
+2014-06-25T16:49:58.064242 p:2992 t:5460 [LOG] System state cache updated.
+2014-06-25T16:49:58.064242 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> PX\r
+2014-06-25T16:49:58.095488 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 12
+2014-06-25T16:49:58.095488 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- -245047\r
+2014-06-25T16:49:58.095488 p:2992 t:5460 [dbg] Device COM1 debug message: SetCommand -> PY\r
+2014-06-25T16:49:58.126734 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:49:58.126734 p:2992 t:5460 [dbg] Device COM1 debug message: GetAnswer <- -101774\r
+2014-06-25T16:49:58.126734 p:2992 t:5460 [LOG] > Startup script file (C:\Documents and Settings\kk128\My Documents\GitHub\MMClosetScope\SuperMDA/MMStartup.bsh) not present.
+2014-06-25T16:49:58.407948 p:2992 t:5460 [LOG] Auto-focus device set to TIPFSStatus
+2014-06-25T16:49:58.736031 p:2992 t:5460 [LOG] Auto-focus device set to TIPFSStatus
+2014-06-25T16:50:02.188714 p:2992 t:4780 [LOG] Debug logging disabled
+2014-06-25T16:50:02.188714 p:2992 t:4780 [dbg] Will set property: "Core"-"TimeoutMs" = "19999"
+2014-06-25T16:50:02.188714 p:2992 t:4780 [dbg] > Notification for Device: Core Property: TimeoutMs changed to value: 19999
+2014-06-25T16:50:02.188714 p:2992 t:4780 [dbg] Did set property: "Core"-"TimeoutMs" = "19999"
+2014-06-25T16:50:02.188714 p:2992 t:4780 [LOG] Focus device set to TIZDrive
+2014-06-25T16:50:02.188714 p:2992 t:4780 [LOG] Focus device set to TIPFSOffset
+2014-06-25T16:50:02.188714 p:2992 t:4780 [dbg] Will set property: "XYStage"-"TransposeMirrorX" = "1"
+2014-06-25T16:50:02.188714 p:2992 t:4780 [dbg] Did set property: "XYStage"-"TransposeMirrorX" = "1"
+2014-06-25T16:50:02.188714 p:2992 t:4780 [dbg] Will set property: "XYStage"-"TransposeMirrorY" = "1"
+2014-06-25T16:50:02.188714 p:2992 t:4780 [dbg] Did set property: "XYStage"-"TransposeMirrorY" = "1"
+2014-06-25T16:50:02.563666 p:2992 t:4780 [dbg] Will set property: "XYStage"-"MaxSpeed" = "70"
+2014-06-25T16:50:02.563666 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> SMS,70\r
+2014-06-25T16:50:02.594912 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 11
+2014-06-25T16:50:02.594912 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- 0\r
+2014-06-25T16:50:02.594912 p:2992 t:4780 [dbg] Did set property: "XYStage"-"MaxSpeed" = "70"
+2014-06-25T16:50:02.594912 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PX\r
+2014-06-25T16:50:02.626158 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 16
+2014-06-25T16:50:02.626158 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -245047\r
+2014-06-25T16:50:02.626158 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PY\r
+2014-06-25T16:50:02.657404 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:50:02.657404 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -101774\r
+2014-06-25T16:50:02.657404 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PX\r
+2014-06-25T16:50:02.688650 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:50:02.688650 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -245047\r
+2014-06-25T16:50:02.688650 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PY\r
+2014-06-25T16:50:02.719896 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:50:02.719896 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -101774\r
+2014-06-25T16:50:13.796603 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PX\r
+2014-06-25T16:50:13.827849 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 15
+2014-06-25T16:50:13.827849 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -245047\r
+2014-06-25T16:50:13.827849 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PY\r
+2014-06-25T16:50:13.859095 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:50:13.859095 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -101774\r
+2014-06-25T16:50:13.859095 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PX\r
+2014-06-25T16:50:13.890341 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:50:13.890341 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -245047\r
+2014-06-25T16:50:13.890341 p:2992 t:4780 [dbg] Device COM1 debug message: SetCommand -> PY\r
+2014-06-25T16:50:13.921587 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer # retries = 17
+2014-06-25T16:50:13.921587 p:2992 t:4780 [dbg] Device COM1 debug message: GetAnswer <- -101774\r
+2014-06-25T16:51:21.256717 p:2992 t:5460 [dbg] Device COM1 debug message: adding reference to Port COM1

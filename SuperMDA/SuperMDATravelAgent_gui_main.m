@@ -1,6 +1,6 @@
 %% SuperMDA_gui_main2
 % a simple gui to pause, stop, and resume a running MDA
-function [f] = SuperMDA_gui_main2(smdaTA)
+function [f] = SuperMDATravelAgent_gui_main(smdaTA)
 %% Create the figure
 %
 myunits = get(0,'units');

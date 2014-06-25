@@ -1,6 +1,6 @@
 %%
 %
-classdef SCAN6 < handle
+classdef SCAN6_object < handle
     properties
         smdaI;
         smdaTA;
@@ -23,7 +23,7 @@ classdef SCAN6 < handle
         %% The constructor method
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
-        function obj = SCAN6(mm,smdaI,smdaTA)
+        function obj = SCAN6_object(mm,smdaI,smdaTA)
             %%
             %
             if nargin == 0
@@ -39,7 +39,7 @@ classdef SCAN6 < handle
                 obj.gui_main = SCAN6_gui_main(obj);
                 obj.gui_axes = SCAN6_gui_axes(obj);
                 obj.refresh_gui_main;
-                obj.timerStageRefresh = timer('ExecutionMode','fixedRate','Period',0.1,'TimerFcn',@(~,~) obj.timerStageRefreshFcn);
+                obj.timerStageRefresh = timer('ExecutionMode','fixedRate','Period',1,'TimerFcn',@(~,~) obj.timerStageRefreshFcn);
                 start(obj.timerStageRefresh);
             end
         end

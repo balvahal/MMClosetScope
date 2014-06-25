@@ -96,7 +96,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.calibrationAngle = mytable.calibrationAngle;
-                obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
+                obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',100); % 'MaxSpeed' range of [0,100].
             elseif strcmp(obj.computerName,'LB89-68-A06F')
                 %%
                 % Curtain Scope
