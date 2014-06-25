@@ -11,7 +11,7 @@ obj.itinerary.group(gInd).position_order(dropInd2) = [];
 %%
 % Next, edit the group_order so that the numbers within are sequential
 % (although not necessarily in order).
-subVector = zeros(size(obj.intinerary.group(gInd).position_order));
+subVector = zeros(size(obj.itinerary.group(gInd).position_order));
 for i=1:length(dropInd)
     subVector(obj.itinerary.group(gInd).position_order >= dropInd(i)) = subVector(obj.itinerary.group(gInd).position_order >= dropInd(i))-1;
 end

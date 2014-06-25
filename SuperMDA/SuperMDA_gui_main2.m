@@ -601,7 +601,7 @@ set(f,'Visible','on');
         elseif length(smdaTA.pointerPosition) == length(smdaTA.itinerary.group(gInd).position_order)
             smdaTA.pointerPosition(1) = [];
         end
-        smdaTA.dropPosition(gInd,smdaTA.pointerPosition);
+        smdaTA.dropPositionOrder(gInd,smdaTA.pointerPosition);
         smdaTA.pointerPosition = length(smdaTA.itinerary.group(gInd).position_order);
         smdaTA.refresh_gui_main;
     end
@@ -793,18 +793,9 @@ set(f,'Visible','on');
         elseif length(smdaTA.pointerSettings) == length(smdaTA.itinerary.group(gInd).position(1).settings)
             smdaTA.pointerSettings(1) = [];
         end
-        dropInd = smdaTA.itinerary.group(gInd).position(1).settings_order(smdaTA.pointerSettings);
-        smdaTA.itinerary.group(gInd).position(1).settings(dropInd) = [];
-        smdaTA.itinerary.group(gInd).position(1).settings_order(smdaTA.pointerSettings) = [];
-        smdaTA.pointerSettings = length(smdaTA.itinerary.group(gInd).position(1).settings);
-        %%
-        % Next, edit the group_order so that the numbers within are
-        % sequential (although not necessarily in order).
-        newNum = transpose(1:length(smdaTA.itinerary.group(gInd).position(1).settings_order));
-        oldNum = transpose(smdaTA.itinerary.group(gInd).position(1).settings_order);
-        funArray = [oldNum,newNum];
-        funArray = sortrows(funArray,1);
-        smdaTA.itinerary.group(gInd).position(1).settings_order = transpose(funArray(:,2)); % the group_order must remain a row so that it can be properly looped over.
+        smdaTA.dropSettingsOrder(gInd,1,smdaTA.pointerSettings);
+        smdaTA.pointerSettings = length(smdaTA.itinerary.group(gInd).position(1).settings_order);
+        smdaTA.changeAllPosition('settings','all',gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -831,6 +822,7 @@ set(f,'Visible','on');
         if min(smdaTA.pointerSettings) == 1
             return
         end
+        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
         currentOrder = 1:length(smdaTA.itinerary.group(gInd).position(1).settings_order); % what the table looks like now
         movingSettings = smdaTA.pointerSettings-1; % where the selected rows want to go
         reactingSettings = setdiff(currentOrder,smdaTA.pointerSettings); % the rows that are not moving
@@ -838,7 +830,7 @@ set(f,'Visible','on');
         fillmeinArray(movingSettings) = smdaTA.pointerSettings; % the selected rows are moved
         fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
         smdaTA.itinerary.group(gInd).position(1).settings_order = smdaTA.itinerary.group(gInd).position(1).settings_order(fillmeinArray); % this rearrangement is performed on the group_order
-        smdaTA.pointerGroup = movingSettings;
+        smdaTA.pointerSettings = movingSettings;
         smdaTA.refresh_gui_main;
     end
 %%
@@ -1005,7 +997,7 @@ set(f,'Visible','on');
                 smdaTA.itinerary.group(gInd).position(1).settings(myRow).period_multiplier = eventdata.NewData;
         end
         smdaTA.pushSettings(gInd);
-        smdaTA.changeAllPosition(gInd,'settings_order',smdaTA.itinerary.group(gInd).position(1).settings_order);
+        smdaTA.changeAllPosition('settings_order',smdaTA.itinerary.group(gInd).position(1).settings_order,gInd);
         smdaTA.refresh_gui_main;
     end
 %%

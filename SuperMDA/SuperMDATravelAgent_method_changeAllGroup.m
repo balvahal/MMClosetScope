@@ -37,7 +37,11 @@ switch p.Results.param
             obj.itinerary.group(i).user_data = p.Results.val;
         end
     case 'position'
-        for i=obj.itinerary.group_order
-            obj.itinerary.group(i).position = obj.itinerary.group(1).position;
+        if strcmp(p.Results.val,'all')
+            for i=obj.itinerary.group_order
+                obj.itinerary.group(i).position = obj.itinerary.group(1).position;
+            end
+        else
+            warning('smdaTA:chgAllGrp','The value was not recognized.');
         end
 end

@@ -70,11 +70,15 @@ switch p.Results.param
             end
         end
     case 'settings'
-        for i = 1:length(gInd)
-            for j = obj.itinerary.group(gInd).position_order
-                obj.itinerary.group(gInd(i)).position(j).settings = obj.itinerary.group(gInd).position(1).settings;
-                obj.itinerary.group(gInd(i)).position(j).settings_order = obj.itinerary.group(gInd).position(1).settings_order;
+        if strcmp(p.Results.val,'all')
+            for i = 1:length(gInd)
+                for j = obj.itinerary.group(gInd).position_order
+                    obj.itinerary.group(gInd(i)).position(j).settings = obj.itinerary.group(gInd).position(1).settings;
+                    obj.itinerary.group(gInd(i)).position(j).settings_order = obj.itinerary.group(gInd).position(1).settings_order;
+                end
             end
+                    else
+            warning('smdaTA:chgAllPos','The input value was not recognized.');
         end
 end
 end
