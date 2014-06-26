@@ -2,7 +2,14 @@
 % Create a position by augmenting the position_order vector and taking
 % advantage of the the pre-allocation, or create a new position built on
 % the |Itinerary| prototypes.
-function obj = SuperMDATravelAgent_method_addPosition(obj,gInd)
+function obj = SuperMDATravelAgent_method_addPosition(obj,gInd,varargin)
+p = inputParser;
+addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
+addRequired(p, 'gInd', @(x) ismember(x,1:length(obj.itinerary.group)));
+addOptional(p, 'pNum',1, @(x) mod(x,1)==0);
+parse(p,obj,gInd,varargin{:});
+
+if p.Results.pNum == 1
 obj.itinerary.group(gInd).position_order(end+1) = length(obj.itinerary.group(gInd).position_order)+1;
 pInd = obj.itinerary.group(gInd).position_order(end);
 if length(obj.itinerary.group(gInd).position_order) < length(obj.itinerary.group(gInd).position)
@@ -30,5 +37,18 @@ else
     % update the labels in this postion
     mystr = sprintf('position%d',length(obj.itinerary.group(gInd).position));
     obj.itinerary.group(gInd).position(end).label = mystr;
+end
+else
+    obj.itinerary.group(gInd).positionorder(end+1:end+p.Results.pNum) = ...
+        (length(obj.itinerary.group(gInd).position_order)+1):(length(obj.itinerary.group(gInd).position_order)+p.Results.pNum);
+    myDiff = length(obj.itinerary.group(gInd).position_order)...
+        - length(obj.itinerary.group(gInd).position);
+    if myDiff <= 0
+        % then there are more settings pre-allocated than needed to expand
+        % the group_order property
+        return;
+    else
+        obj.itinerary.group(gInd).position(end+1:end+myDiff) = repmat(obj.itinerary.group(gInd).position(1),myDiff,1);
+    end
 end
 end

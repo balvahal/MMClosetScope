@@ -1,5 +1,5 @@
-%% SCAN6_gui_main
-% a simple gui to pause, stop, and resume a running MDA
+%% SCAN6_gui_axes
+% 
 function [f] = SCAN6_gui_axes(scan6)
 %% Create the figure
 %
@@ -15,7 +15,7 @@ fheight = 70; %910/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
-    'CloseRequestFcn',{@fDeleteFcn},'Name','Main');
+    'CloseRequestFcn',{@fDeleteFcn},'Name','Scan6 Large Stage Map');
 
 %% Assemble the Map
 %
@@ -112,6 +112,14 @@ for i = 1:length(hpatchPerimeterPositions)
             'Visible','off');
 end
 
+hpatchSmdaPositions = cell(6,1);
+for i = 1:length(hpatchSmdaPositions)
+    hpatchPerimeterPositions{i} = patch('Parent',haxesStageMap,...
+            'XData',[],'YData',[],...
+            'FaceColor','none',...
+            'EdgeColor','none',...
+            'Visible','off');
+end
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.axesStageMap = haxesStageMap;
@@ -120,7 +128,7 @@ handles.patchCurrentPosition1 = hpatchCurrentPosition1;
 handles.patchCurrentPosition2 = hpatchCurrentPosition2;
 handles.rectangleDishPerimeter = hrectangleDishPerimeter;
 handles.patchPerimeterPositions = hpatchPerimeterPositions;
-%handles.patchSmdaPositions = hpatchSmdaPositions;
+handles.patchSmdaPositions = hpatchSmdaPositions;
 guidata(f,handles);
 %%
 % make the gui visible

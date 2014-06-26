@@ -1,6 +1,6 @@
-%% SuperMDA_gui_pause_stop_resume
+%% SuperMDAPilot_gui_pause_stop_resume
 % a simple gui to pause, stop, and resume a running MDA
-function [f] = SuperMDA_gui_pause_stop_resume(smdaPilot)
+function [f] = SuperMDAPilot_gui_pause_stop_resume(smdaPilot)
 %% Create the figure
 %
 myunits = get(0,'units');

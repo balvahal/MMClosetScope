@@ -34,23 +34,35 @@ classdef SuperMDATravelAgent_object < handle
         end
         %%
         %
-        function obj = addGroup(obj)
-            obj = SuperMDATravelAgent_method_addGroup(obj);
+        function obj = addGroup(obj,varargin)
+            if isempty(varargin)
+                obj = SuperMDATravelAgent_method_addGroup(obj);
+            else
+                obj = SuperMDATravelAgent_method_addGroup(obj,varargin{:});
+            end
         end
         %%
         %
-        function obj = addPosition(obj,gInd)
-            obj = SuperMDATravelAgent_method_addPosition(obj,gInd);
+        function obj = addPosition(obj,gInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDATravelAgent_method_addPosition(obj,gInd);
+            else
+                obj = SuperMDATravelAgent_method_addPosition(obj,gInd,varargin{:});
+            end
         end
         %%
         %
-        function obj = addPositionSet(obj,gInd,grid)
-            obj = SuperMDATravelAgent_method_addPositionSet(obj,gInd,grid);
+        function obj = addPositionGrid(obj,gInd,grid)
+            obj = SuperMDATravelAgent_method_addPositionGrid(obj,gInd,grid);
         end
         %%
         %
-        function obj = addSettings(obj,gInd,pInd)
-            obj = SuperMDATravelAgent_method_addSettings(obj,gInd,pInd);
+        function obj = addSettings(obj,gInd,pInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDATravelAgent_method_addSettings(obj,gInd,pInd);
+            else
+                obj = SuperMDATravelAgent_method_addSettings(obj,gInd,pInd,varargin{:});
+            end
         end
         %%
         %
@@ -108,7 +120,7 @@ classdef SuperMDATravelAgent_object < handle
         function obj = dropPositionOrder(obj,gInd,dropInd)
             obj = SuperMDATravelAgent_method_dropPositionOrder(obj,gInd,dropInd);
         end
-                %%
+        %%
         %
         function obj = dropSettings(obj,gInd,pInd,dropInd)
             obj = SuperMDATravelAgent_method_dropSettings(obj,gInd,pInd,dropInd);

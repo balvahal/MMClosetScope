@@ -63,7 +63,7 @@
 % plates can be imaged every 10 minutes for 4 days.
 %
 % Better yet, just have the user specify this information ahead of time.
-classdef SuperMDAItinerary < handle
+classdef SuperMDAItinerary_object < handle
     %%
     % * duration: the length of a time lapse experiment in seconds. A
     % duration of zero means only a single set of images are captured, e.g.
@@ -104,7 +104,7 @@ classdef SuperMDAItinerary < handle
     methods
         %% The constructor method
         % The first argument is always mm
-        function obj = SuperMDAItinerary(mm)
+        function obj = SuperMDAItinerary_object(mm)
             %%
             %
             if nargin == 0

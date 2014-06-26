@@ -15,7 +15,7 @@ fheight = 70; %910/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
-    'CloseRequestFcn',{@fDeleteFcn},'Name','Main');
+    'CloseRequestFcn',{@fDeleteFcn},'Name','Scan6 Main');
 
 textBackgroundColorRegion1 = [176 224 230]/255; %PowderBlue
 buttonBackgroundColorRegion1 = [135 206 235]/255; %SkyBlue
@@ -281,6 +281,9 @@ set(f,'Visible','on');
                     set(myDish,'Visible','off');
                     set(myDish2,'Visible','off');
                 end
+                
+                myPositions = handlesStageMap.patchSmdaPositions{i};
+                set(myPositions,'Visible','on');
             end
         end
     end
@@ -328,6 +331,24 @@ set(f,'Visible','on');
             set(handles.listboxTrue,'Value',1);
         end
         scan6.sampleList = scan6.sampleList - myBool;
+        % update the visuals
+        for i = 1:length(scan6.sampleList)
+            if scan6.sampleList(i) == false
+                handlesStageMap = guidata(scan6.gui_axes);
+                myPerimeter = handlesStageMap.patchPerimeterPositions{i};
+                set(myPerimeter,'Visible','off');
+                myPerimeter2 = handles.patchPerimeterPositions{i};
+                set(myPerimeter2,'Visible','off');
+                
+                myDish = handlesStageMap.rectangleDishPerimeter{i};
+                myDish2 = handles.rectangleDishPerimeter{i};
+                set(myDish,'Visible','off');
+                set(myDish2,'Visible','off');
+                
+                myPositions = handlesStageMap.patchSmdaPositions{i};
+                set(myPositions,'Visible','off');
+            end
+        end
     end
 
 %%
@@ -408,11 +429,14 @@ set(f,'Visible','on');
     function pushbuttonMakeGrids_Callback(~,~)
         % initialize the SuperMDAItinerary
         logicalList = logical(scan6.sampleList);
+        sampleListIndex = find(logicalList);
         numberOfPositions = scan6.numberOfPositions(logicalList);
         center = scan6.center(:,find(logicalList)); %#ok<FNDSB>
         radius = scan6.radius(logicalList);
         z = scan6.z(logicalList);
-        scan6.smdaI.group_order = 1:length(numberOfPositions);
+        if length(numberOfPositions) >1 %assumes 1st group is there by default and should not count towards additional groups
+            scan6.smdaTA.addGroup(length(numberOfPositions)-1);
+        end
         for i = 1:length(numberOfPositions)
             if numberOfPositions(i) == Inf
                 imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
@@ -436,14 +460,31 @@ set(f,'Visible','on');
             else
                 grid = super_mda_grid_maker(scan6.mm,'centroid',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
             end
-            scan6.smdaTA.addPositionSet(i,grid);
-            scan6.smdaI.group(i).position(numberOfPositions(i)).user_data = []; % initialize positions in each group
-            scan6.smdaI.group(i).position_order = 1:numberOfPositions(i);
-            for j = 1:numberOfPositions(i)
-                scan6.smdaI.group(i).position(j).xyz = grid.positions(j,:);
-                scan6.smdaI.group(i).position(j).label = grid.position_labels{j};
-            end
-        end 
+            scan6.smdaTA.addPositionGrid(i,grid);
+            
+            % update the visuals
+            imageHeight = mm.core.getPixelSizeUm*mm.core.getImageHeight;
+            imageWidth = mm.core.getPixelSizeUm*mm.core.getImageWidth;
+            
+            handlesStageMap = guidata(scan6.gui_axes);
+            myPositions = handlesStageMap.patchSmdaPositions{sampleListIndex(i)};
+            myPosX = transpose(grid.positions(:,1));
+            myPosX = vertcat(myPosX,transpose(grid.positions(:,1))+imageWidth);
+            myPosX = vertcat(myPosX,transpose(grid.positions(:,1))+imageWidth);
+            myPosX = vertcat(myPosX,transpose(grid.positions(:,1)));
+            
+            myPosY = transpose(grid.positions(:,2));
+            myPosY = vertcat(myPosY,transpose(grid.positions(:,2)));
+            myPosY = vertcat(myPosY,transpose(grid.positions(:,2))+imageHeight);
+            myPosY = vertcat(myPosY,transpose(grid.positions(:,2))+imageHeight);
+            
+            myFaceColor = jet(size(myPosX,2));
+            
+            set(myPerimeter,'XData',myPosX,'YData',myPosY,...
+                'FaceColor',myFaceColor,'Visible','on');
+                
+            set(myPositions,'Visible','on');
+        end
     end
 %%
 %

@@ -15,7 +15,7 @@ fheight = 70; %910/ppChar(4);
 fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
 fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
 f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
-    'CloseRequestFcn',{@fDeleteFcn},'Name','Main');
+    'CloseRequestFcn',{@fDeleteFcn},'Name','Travel Agent Main');
 
 textBackgroundColorRegion1 = [176 224 230]/255; %PowderBlue
 buttonBackgroundColorRegion1 = [135 206 235]/255; %SkyBlue

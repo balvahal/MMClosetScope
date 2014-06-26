@@ -8,7 +8,7 @@ classdef SCAN6_object < handle
         sampleList = zeros(1,6);
         gui_main;
         gui_axes;
-        numberOfPositions = zeros(1,6);
+        numberOfPositions = ones(1,6);
         ind=[]; %listboxInd
         ind2=[]; %pointsInd
         perimeterPoints = cell(1,6);

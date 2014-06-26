@@ -229,7 +229,9 @@ end
 % * pixHeight
 % * pixWidth
 % * ULC
-
+if ~isfinite(NOI)
+    error('GridMake:badNOI','The number of images requested led to ambiguous calculations.');
+end
 positions = zeros(NOI,3);
 position_labels = cell(NOI,1);
 if strcmp(p.Results.path_strategy,'CRLF')
