@@ -58,6 +58,15 @@ handles.colorActiveDish = [135 206 235]/255;
 handles.colorPerimeter = [105 105 105]/255;
 handles.colorActivePerimeter = [0 0 0]/255;
 
+hpatchSmdaPositions = cell(6,1);
+for i = 1:length(hpatchSmdaPositions)
+    hpatchSmdaPositions{i} = patch('Parent',haxesStageMap,...
+            'XData',[],'YData',[],...
+            'FaceColor','flat',...
+            'EdgeColor','none',...
+            'Visible','off');
+end
+
 hrectangleDishPerimeter = cell(6,1);
 for i = 1:length(hrectangleDishPerimeter)
     hrectangleDishPerimeter{i} = rectangle('Parent',haxesStageMap,...
@@ -112,14 +121,6 @@ for i = 1:length(hpatchPerimeterPositions)
             'Visible','off');
 end
 
-hpatchSmdaPositions = cell(6,1);
-for i = 1:length(hpatchSmdaPositions)
-    hpatchPerimeterPositions{i} = patch('Parent',haxesStageMap,...
-            'XData',[],'YData',[],...
-            'FaceColor','none',...
-            'EdgeColor','none',...
-            'Visible','off');
-end
 %%
 % store the uicontrol handles in the figure handles via guidata()
 handles.axesStageMap = haxesStageMap;

@@ -480,11 +480,12 @@ set(f,'Visible','on');
             
             myFaceColor = jet(size(myPosX,2));
             
-            set(myPerimeter,'XData',myPosX,'YData',myPosY,...
-                'FaceColor',myFaceColor,'Visible','on');
+            set(myPositions,'XData',myPosX,'YData',myPosY,...
+                'FaceVertexCData',myFaceColor,'Visible','on');
                 
             set(myPositions,'Visible','on');
         end
+        %scan6.smdaTA.refresh_gui_main;
     end
 %%
 %

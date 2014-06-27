@@ -23,8 +23,8 @@ end
 n=0;
 for i = myIndex
     n=n+1;
-    obj.itinerary.group(1).position(i).xyz(:,1) = grid.positions(n,1);
-    obj.itinerary.group(1).position(i).xyz(:,2) = grid.positions(n,2);
-    obj.itinerary.group(1).position(i).xyz(:,3) = grid.positions(n,3);
-    obj.itinerary.group(1).position(i).label = grid.position_labels{n};
+    obj.itinerary.group(gInd).position(i).xyz(:,1) = grid.positions(n,1);
+    obj.itinerary.group(gInd).position(i).xyz(:,2) = grid.positions(n,2);
+    obj.itinerary.group(gInd).position(i).xyz(:,3) = grid.positions(n,3);
+    obj.itinerary.group(gInd).position(i).label = grid.position_labels{n};
 end

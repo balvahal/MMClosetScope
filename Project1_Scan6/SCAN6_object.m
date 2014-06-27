@@ -38,16 +38,15 @@ classdef SCAN6_object < handle
                 %
                 obj.gui_main = SCAN6_gui_main(obj);
                 obj.gui_axes = SCAN6_gui_axes(obj);
-                obj.refresh_gui_main;
                 obj.timerStageRefresh = timer('ExecutionMode','fixedRate','Period',1,'TimerFcn',@(~,~) obj.timerStageRefreshFcn);
                 start(obj.timerStageRefresh);
             end
         end
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
-        function obj = refresh_gui_main(obj)
-            obj = SCAN6_method_refresh_gui_main(obj);
-        end
+%         function obj = refresh_gui_main(obj)
+%             obj = SCAN6_method_refresh_gui_main(obj);
+%         end
         %%
         %
         function obj = timerStageRefreshFcn(obj)
