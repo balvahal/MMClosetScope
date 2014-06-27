@@ -8,7 +8,7 @@ for i = p.Results.gInd
     obj.itinerary.group(i).label = mystr;
     for j = 1:length(obj.itinerary.group(i).position)
         mystr = sprintf('position%d',j);
-        obj.itinerary.group(end).position(j).label = mystr;
+%         obj.itinerary.group(end).position(j).label = mystr;
     end
 end
 end

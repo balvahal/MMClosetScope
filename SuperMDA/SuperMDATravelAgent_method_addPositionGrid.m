@@ -1,4 +1,15 @@
 function obj = SuperMDATravelAgent_method_addPositionGrid(obj,gInd,grid)
+%% fake data
+% Scenario 1. There is only a single branch of the group struct
+obj.itinerary.group.position.xyz = [];
+obj.itinerary.group.position.label = [];
+obj.itinerary.group.position(1000).xyz = [];
+gInd = 1;
+%%
+% Scenario 2. There is multiple group branches
+obj.itinerary.group(2) = obj.itinerary.group;
+%%
+%
 p = inputParser;
 addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
 addRequired(p, 'gInd', @(x) (numel(x) == 1) && all(ismember(x,1:length(obj.itinerary.group))));
@@ -21,10 +32,17 @@ else
 end
 
 n=0;
+    %myPositions = grid.positions;
+    myPositions = rand(1000,3);
+    tempStruct = obj.itinerary.group(gInd);
 for i = myIndex
     n=n+1;
-    obj.itinerary.group(gInd).position(i).xyz(:,1) = grid.positions(n,1);
-    obj.itinerary.group(gInd).position(i).xyz(:,2) = grid.positions(n,2);
-    obj.itinerary.group(gInd).position(i).xyz(:,3) = grid.positions(n,3);
-    obj.itinerary.group(gInd).position(i).label = grid.position_labels{n};
+     tempStruct.position(i).xyz = myPositions(n,:);
+%     
+%      obj.itinerary.group(gInd).position(i).xyz(:,1) = grid.positions(n,1);
+%      obj.itinerary.group(gInd).position(i).xyz(:,2) = grid.positions(n,2);
+%      obj.itinerary.group(gInd).position(i).xyz(:,3) = grid.positions(n,3);
+%      obj.itinerary.group(gInd).position(i).label = grid.position_labels{n};
 end
+obj.itinerary.group(gInd) = tempStruct;
+fprintf('Finish!\n')
