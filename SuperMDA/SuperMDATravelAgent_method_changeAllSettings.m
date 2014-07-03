@@ -164,10 +164,10 @@ end
 end
 
 function logicOut = inputCheckPInd(obj,gInd,pInd)
-logicOut = true;
+logicOut = false;
 for i = 1:length(pInd)
     if isrow(pInd{i}) && all(ismember(pInd{i},1:length(obj.itinerary.group(gInd(i)).position)))
-        logicOut = false;
+        logicOut = true;
     end
 end
 end
