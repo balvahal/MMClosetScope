@@ -113,8 +113,8 @@ classdef SuperMDAPilot_object < handle
                     'Period',1,'Name','wait_timer');
                 %% Create a simple gui to enable pausing and stopping
                 %
-                obj.gui_pause_stop_resume = SuperMDA_gui_pause_stop_resume(obj);
-                obj.gui_lastImage = SuperMDA_gui_lastImage(obj);
+                obj.gui_pause_stop_resume = SuperMDAPilot_gui_pause_stop_resume(obj);
+                obj.gui_lastImage = SuperMDAPilot_gui_lastImage(obj);
             end
         end
         %% start acquisition
