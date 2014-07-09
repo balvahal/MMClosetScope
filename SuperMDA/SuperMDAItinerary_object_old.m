@@ -2,19 +2,72 @@
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
 % position consists of 1 or more settings.
+%
+% One thing I have struggled with is redundancy in the SuperMDA. In the
+% most common cases where no feedback is implemented much of the data
+% stored in the SuperMDA is redundant. For example, if 1000 timepoints are
+% taken at the same exposure should I keep an array of size 1000 that
+% stores just that single number? Such an array might be termed _sparse_,
+% because the information in the array is near nil. However, having such an
+% array is convenient from a programming sense, because it is easy to
+% iterate over without the need to parse through a set of rules that
+% determine what will happen at a given timepoint; perhaps a rules-based
+% MDA would be more compact, but its interpretation not as clear as a
+% multi-dimensional lookup table. From a performance standpoint it is
+% necessary to pre-allocate enough memory for the SuperMDA, but without
+% going too far and running into the limits of memory in terms of size and
+% speed, which are surprisingly easy to reach due to the combinatoric
+% explosion of the number of settings.
+%
+% Regardless, At some point the information in the SuperMDA will become
+% _full_ in a sense, because each picture that is captured and stored is
+% saved with some metadata. The goal of the SuperMDA is on some level just
+% creating all the metadata in advance, which represents a plan of action
+% for the collection of images; so what's the harm in storing everything in
+% centralized arrays if all this information will eventually be stored in a
+% distributed manner anyways?
+%
+% Perhaps my frustraion is moot, because there is a limit to the number of
+% images that can be captured in any given experiment based on the time it
+% takes to acquire the images and the sensitivity of living cells to light.
+% Also, this doesn't have to be the perfect system, it just has to work.
+% Therefore, the array scheme will be kept even if it will be under
+% utilized and wasteful; it is easy to implement and understand. The number
+% of groups, positions, timepoints, and settings will change based on the
+% nature of each experiment, but the maximum number of images acquired for
+% each experiment will be roughly the same. For example. Scanning large
+% surfaces will yield either a few groups with many positions in the case
+% of slides, or many groups with few positions in the case of multi-well
+% plates. There is a natural tradeoff between the frequency of imaging and
+% the number of positions.
+%
+% In conclusion, there is a limit to the SuperMDA based upon its design
+% where there are no rules and each where, what, and when has an explicit
+% answer stored in memory (though the answers can be modified on the fly).
+% SuperMDA would be not be appropriate for experiments that have an
+% indefinite length of time involved. SuperMDA is |for loop| as opposed to
+% a |while loop|. Memory concerns should not become apparent, because only
+% so many images can be collected over the length of time in a typical
+% experiment. However, the pre-allocation cannot account for all experiment
+% types at once. Therefore, pre-allocation will be made with context in
+% mind:
+%
+% * (groups,positions,settings,timepoints)
+% * 384well plates for a movie: (384,8,6,192); approx 4TB of image data;
+% the plate could be imaged twice an hour for 4 days.
+% * 96well plates for a movie: (96,32,6,192); approx 4TB of image data; the
+% plate could be imaged twice an hour for 4 days.
+% * 24well plates for a movie: (24,128,6,192); approx 4TB of image data;
+% the plate could be imaged twice an hour for 4 days.
+% * 6x  dishes for a movie: (6,64,6,576); approx 2TB of image data; the
+% plates can be imaged every 10 minutes for 4 days.
+%
+% Better yet, just have the user specify this information ahead of time.
 classdef SuperMDAItinerary_object < handle
     %%
-    % * channel_names: the names of the channels group in the current
-    % session of uManager.
-    % * gps: a matrix that contains the groups, positions, and settings
-    % information. As the SuperMDA processes through orderVector it will
-    % keep track of which index is changing and execute a function based on
-    % this change.
-    % * orderVector: a vector with the number of rows of the GPS matrix. It contains the
-    % sequence of natural numbers from 1 to the number of rows. The
-    % SuperMDA will follow the numbers in the orderVector as they increase
-    % and the row that contains the current number corresponds to the next
-    % row in the GPS to be executed.
+    % * duration: the length of a time lapse experiment in seconds. A
+    % duration of zero means only a single set of images are captured, e.g.
+    % for a scan slide feature.
     % * filename_prefix: the string that is placed at the front of the
     % image filename.
     % * fundamental_period: the shortest period that images are taken in
@@ -27,41 +80,24 @@ classdef SuperMDAItinerary_object < handle
     % be sequential (though not necessarily in order).
     properties
         channel_names;
-        gps;
-        orderVector;
-        
-        group_function_after;
-        group_function_before;
-        group_label;
-        group_scratchpad;
-        
-        position_continuous_focus_offset;
-        position_continuous_focus_bool;
-        position_function_after;
-        position_function_before;
-        position_label;
-        position_scratchpad;
-        position_xyz;
-        
-        settings_binning;
-        settings_channel;
-        settings_exposure;
-        settings_function_after;
-        settings_function_before;
-        settings_function_main;
-        settings_gain;
-        settings_period_multiplier;
-        settings_scratchpad;
-        settings_timepoints;
-        settings_z_origin_offset;
-        settings_z_stack_lower_offset;
-        settings_z_stack_upper_offset;
-        settings_z_step_size;
+        database;
+        database_filenamePNG = '';
+        database_imagedescription = '';
+        group;
+        group_order = 1;
+        mda_clock_relative = 0;
+        mm;
+        output_directory = pwd;
+        png_path;
+        prototype_group; %The prototype_group serves as a template for the creation or additon of new groups to the SuperMDA object.
+        prototype_position; %The prototype_position serves as a template for the creation or additon of new groups to the SuperMDA object.
+        prototype_settings; %The prototype_settings serves as a template for the creation or additon of new groups to the SuperMDA object.
     end
     properties (SetAccess = private)
         duration = 0;
         fundamental_period = 600; %The units are seconds. 600 is 10 minutes.
         number_of_timepoints = 1;
+        total_number_images = 0;
     end
     %%
     %
@@ -69,41 +105,71 @@ classdef SuperMDAItinerary_object < handle
         %% The constructor method
         % The first argument is always mm
         function obj = SuperMDAItinerary_object(mm)
-                obj.channel_names = mm.Channel;
-                obj.gps = [1,1,1];
-                obj.orderVector = 1;
-
+            %%
+            %
+            if nargin == 0
+                return
+            elseif nargin == 1
+                %% Initialzing the SuperMDA object
+                % When creating this object it is helpful to create
+                % prototypes of each group, position, and settings. These
+                % MATLAB structs provide a template for the creation and
+                % pre-allocation of a SuperMDA. Pre-allocation can be
+                % important for performance, so a SuperMDA object of
+                % (putatively) enormous size is created in this regard. The
+                % user defined size of the SuperMDA is known by the length
+                % of the _order_ properties.
+                obj.mm = mm;
+                obj.channel_names = obj.mm.Channel;
                 %% initialize the prototype_group
                 %
-                obj.group_function_after = 'SuperMDA_function_group_after_basic';
-                obj.group_function_before = 'SuperMDA_function_group_before_basic';
-                obj.group_label = {};
-                obj.group_scratchpad = {};
+                obj.group.label = '';
+                obj.group.group_function_after_name = 'SuperMDA_function_group_after_basic';
+                obj.group.group_function_after_handle = str2func(obj.group.group_function_after_name);
+                obj.group.group_function_before_name = 'SuperMDA_function_group_before_basic';
+                obj.group.group_function_before_handle = str2func(obj.group.group_function_before_name);
+                obj.group.position_order = 1;
+                obj.group.user_data = [];
+                obj.group.position = [];
                 %% initialize the prototype_position
                 %
-                obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
-                obj.position_continuous_focus_bool = true;
-                obj.position_function_after = 'SuperMDA_function_position_after_basic';
-                obj.position_function_before = 'SuperMDA_function_position_before_basic';
-                obj.position_label = '';
-                obj.position_scratchpad = {};
-                obj.position_xyz = mm.getXYZ; %This is a customizable array
+                obj.group.position.continuous_focus_offset = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+                obj.group.position.continuous_focus_bool = true;
+                obj.group.position.label = '';
+                obj.group.position.tileNumber = 1;
+                obj.group.position.position_function_after_name = 'SuperMDA_function_position_after_basic';
+                obj.group.position.position_function_after_handle = str2func(obj.group.position.position_function_after_name);
+                obj.group.position.position_function_before_name = 'SuperMDA_function_position_before_basic';
+                obj.group.position.position_function_before_handle = str2func(obj.group.position.position_function_before_name);
+                obj.group.position.settings_order = 1;
+                obj.group.position.user_data = [];
+                obj.group.position.xyz = obj.mm.getXYZ; %This is a customizable array
+                obj.group.position.settings = [];
                 %% initialize the prototype_settings
                 %
-                obj.settings_binning = 1;
-                obj.settings_channel = 1;
-                obj.settings_exposure = 1; %This is a customizable arrray
-                obj.settings_function_after = 'SuperMDA_function_settings_after_basic';
-                obj.settings_function_before = 'SuperMDA_function_settings_before_basic';
-                obj.settings_function_main = 'SuperMDA_function_settings_basic';
-                obj.settings_gain = 0; % [0-255] for ORCA R2
-                obj.settings_period_multiplier = 1;
-                obj.settings_timepoints = 1; %This is a customizable array
-                obj.settings_scratchpad = {};
-                obj.settings_z_origin_offset = 0;
-                obj.settings_z_stack_lower_offset = 0;
-                obj.settings_z_stack_upper_offset = 0;
-                obj.settings_z_step_size = 0.3;
+                obj.group.position.settings.binning = 1;
+                obj.group.position.settings.channel = 1;
+                obj.group.position.settings.gain = 0; % [0-255] for ORCA R2
+                obj.group.position.settings.settings_function_name = 'SuperMDA_function_settings_basic';
+                obj.group.position.settings.settings_function_handle = str2func(obj.group.position.settings.settings_function_name);
+                obj.group.position.settings.settings_function_after_name = 'SuperMDA_function_settings_after_basic';
+                obj.group.position.settings.settings_function_after_handle = str2func(obj.group.position.settings.settings_function_after_name);
+                obj.group.position.settings.settings_function_before_name = 'SuperMDA_function_settings_before_basic';
+                obj.group.position.settings.settings_function_before_handle = str2func(obj.group.position.settings.settings_function_before_name);
+                obj.group.position.settings.exposure = 1; %This is a customizable arrray
+                obj.group.position.settings.period_multiplier = 1;
+                obj.group.position.settings.timepoints = 1; %This is a customizable array
+                obj.group.position.settings.user_data = [];
+                obj.group.position.settings.z_origin_offset = 0;
+                obj.group.position.settings.z_stack = 0;
+                obj.group.position.settings.z_stack_upper_offset = 0;
+                obj.group.position.settings.z_stack_lower_offset = 0;
+                obj.group.position.settings.z_step_size = 0.3;
+                %%
+                % by default the Itinerary should always have at least 1
+                % group with 1 position and 1 settings.
+                %obj.preAllocateMemoryAndInitialize(1,1,1);
+            end
         end
         %% Method to change the duration
         %
