@@ -28,12 +28,17 @@ classdef SuperMDAItinerary_object < handle
     properties
         channel_names;
         gps;
+        mm;
         orderVector;
         
         group_function_after;
         group_function_before;
         group_label;
         group_scratchpad;
+        
+        ind_next_group;
+        ind_next_position;
+        ind_next_settings;
         
         position_continuous_focus_offset;
         position_continuous_focus_bool;
@@ -46,9 +51,7 @@ classdef SuperMDAItinerary_object < handle
         settings_binning;
         settings_channel;
         settings_exposure;
-        settings_function_after;
-        settings_function_before;
-        settings_function_main;
+        settings_function;
         settings_gain;
         settings_period_multiplier;
         settings_scratchpad;
@@ -61,6 +64,7 @@ classdef SuperMDAItinerary_object < handle
     properties (SetAccess = private)
         duration = 0;
         fundamental_period = 600; %The units are seconds. 600 is 10 minutes.
+        clock_relative = 0;
         number_of_timepoints = 1;
     end
     %%
@@ -71,13 +75,14 @@ classdef SuperMDAItinerary_object < handle
         function obj = SuperMDAItinerary_object(mm)
                 obj.channel_names = mm.Channel;
                 obj.gps = [1,1,1];
+                obj.mm = mm;
                 obj.orderVector = 1;
 
                 %% initialize the prototype_group
                 %
                 obj.group_function_after = 'SuperMDA_function_group_after_basic';
                 obj.group_function_before = 'SuperMDA_function_group_before_basic';
-                obj.group_label = {};
+                obj.group_label{1} = '';
                 obj.group_scratchpad = {};
                 %% initialize the prototype_position
                 %
@@ -85,7 +90,7 @@ classdef SuperMDAItinerary_object < handle
                 obj.position_continuous_focus_bool = true;
                 obj.position_function_after = 'SuperMDA_function_position_after_basic';
                 obj.position_function_before = 'SuperMDA_function_position_before_basic';
-                obj.position_label = '';
+                obj.position_label{1} = '';
                 obj.position_scratchpad = {};
                 obj.position_xyz = mm.getXYZ; %This is a customizable array
                 %% initialize the prototype_settings
@@ -93,9 +98,7 @@ classdef SuperMDAItinerary_object < handle
                 obj.settings_binning = 1;
                 obj.settings_channel = 1;
                 obj.settings_exposure = 1; %This is a customizable arrray
-                obj.settings_function_after = 'SuperMDA_function_settings_after_basic';
-                obj.settings_function_before = 'SuperMDA_function_settings_before_basic';
-                obj.settings_function_main = 'SuperMDA_function_settings_basic';
+                obj.settings_function = 'SuperMDA_function_settings_basic';
                 obj.settings_gain = 0; % [0-255] for ORCA R2
                 obj.settings_period_multiplier = 1;
                 obj.settings_timepoints = 1; %This is a customizable array
@@ -104,6 +107,11 @@ classdef SuperMDAItinerary_object < handle
                 obj.settings_z_stack_lower_offset = 0;
                 obj.settings_z_stack_upper_offset = 0;
                 obj.settings_z_step_size = 0.3;
+                %% initialize the indices
+                % the next group, position, and settings
+                obj.ind_next_group = 2;
+                obj.ind_next_position = 2;
+                obj.ind_next_settings = 2;
         end
         %% Method to change the duration
         %
@@ -119,7 +127,7 @@ classdef SuperMDAItinerary_object < handle
             obj.duration = mynum;
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
             %%
             % This if-statement exists so the duration, fundamental period,
             % or duration can be set before a group has been
@@ -146,7 +154,7 @@ classdef SuperMDAItinerary_object < handle
             obj.fundamental_period = mynum;
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
             %%
             % This if-statement exists so the duration, fundamental period,
             % or duration can be set before a group has been
@@ -172,7 +180,7 @@ classdef SuperMDAItinerary_object < handle
             % update other dependent parameters
             obj.number_of_timepoints = round(mynum);
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.mda_clock_relative = 0:obj.fundamental_period:obj.duration;
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
             %%
             % This if-statement exists so the duration, fundamental period,
             % or duration can be set before a group has been

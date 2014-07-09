@@ -19,25 +19,22 @@ classdef SuperMDAPilot_object < handle
     properties
         database;
         itinerary;
-        mda_clock_pointer = 1;
-        mda_clock_absolute;
+        clock_absolute;
         mm;
         pause_bool = false;
         running_bool = false;
         runtime_imagecounter = 0;
         gps_previous = [0,0,0]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         gps_current;
-        runtime_timer;
-        wait_timer;
+        timer_runtime;
+        timer_wait;
         gui_pause_stop_resume;
         gui_lastImage;
-        t;
+        t = 0;
         flag_group_before = false;
         flag_group_after = false;
         flag_position_before = false;
         flag_position_after = false;
-        flag_settings_before = false;
-        flag_settings_after = false;
     end
     %%
     %
@@ -49,7 +46,7 @@ classdef SuperMDAPilot_object < handle
     methods
         %% The constructor method
         % The first argument is always mm
-        function obj = SuperMDAPilot_object(smdai)
+        function obj = SuperMDAPilot_object(sdmaI)
             %%
             %
             if nargin == 0
@@ -57,10 +54,10 @@ classdef SuperMDAPilot_object < handle
             elseif nargin == 1
                 %% Initialzing the SuperMDA object
                 %
-                obj.itinerary = smdai;
-                obj.mm = smdai.mm;
-                obj.runtime_timer = timer('TimerFcn',@(~,~) obj.execute,'BusyMode','queue','Name','runtime_timer');
-                obj.wait_timer = timer('TimerFcn',@(~,~) obj.wait,'ExecutionMode','fixedSpacing',...
+                obj.itinerary = sdmaI;
+                obj.mm = sdmaI.mm;
+                obj.timer_runtime = timer('TimerFcn',@(~,~) obj.timerRuntimeFun,'BusyMode','queue','Name','runtime_timer');
+                obj.timer_wait = timer('TimerFcn',@(~,~) obj.timerWaitFun,'ExecutionMode','fixedSpacing',...
                     'Period',1,'Name','wait_timer');
                 %% Create a simple gui to enable pausing and stopping
                 %
@@ -70,8 +67,8 @@ classdef SuperMDAPilot_object < handle
         end
         %% start acquisition
         %
-        function obj = start_acquisition(obj)
-            SuperMDA_method_start_acquisition(obj);
+        function obj = startAcquisition(obj)
+            SuperMDAPilot_method_startAcquisition(obj);
         end
         %% stop acquisition
         %
@@ -90,13 +87,18 @@ classdef SuperMDAPilot_object < handle
         end
         %% execute 1 round of acquisition
         %
-        function obj = execute(obj)
-            SuperMDA_method_execute(obj);
+        function obj = oneLoop(obj)
+            SuperMDAPilot_method_oneLoop(obj);
         end
         %%
         %
-        function obj = wait(obj)
+        function obj = timerWaitFun(obj)
             SuperMDA_method_wait(obj);
+        end
+        %%
+        %
+        function obj = timerRuntimeFun(obj)
+            SuperMDAPilot_method_timerRuntimeFun(obj);
         end
         %%
         %
@@ -108,8 +110,8 @@ classdef SuperMDAPilot_object < handle
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
         function delete(obj)
-            delete(obj.runtime_timer);
-            delete(obj.wait_timer);
+            delete(obj.timer_runtime);
+            delete(obj.timer_wait);
             delete(obj.gui_pause_stop_resume);
             delete(obj.gui_lastImage);
         end
@@ -122,11 +124,6 @@ classdef SuperMDAPilot_object < handle
         %
         function obj = update_database(obj)
             SuperMDA_method_update_database(obj);
-        end
-        %% run in classic mode
-        %
-        function obj = execute_classic_mode(obj)
-            SuperMDAPilot_method_execute_classic_mode(obj);
         end
     end
     %%
