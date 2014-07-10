@@ -2,7 +2,7 @@
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
 % position consists of 1 or more settings.
-classdef SuperMDAItinerary_object < handle
+classdef SuperMDAItineraryTimeFixed_object < handle
     %%
     % * channel_names: the names of the channels group in the current
     % session of uManager.
@@ -10,11 +10,11 @@ classdef SuperMDAItinerary_object < handle
     % information. As the SuperMDA processes through orderVector it will
     % keep track of which index is changing and execute a function based on
     % this change.
-    % * orderVector: a vector with the number of rows of the GPS matrix. It contains the
-    % sequence of natural numbers from 1 to the number of rows. The
-    % SuperMDA will follow the numbers in the orderVector as they increase
-    % and the row that contains the current number corresponds to the next
-    % row in the GPS to be executed.
+    % * orderVector: a vector with the number of rows of the GPS matrix. It
+    % contains the sequence of natural numbers from 1 to the number of
+    % rows. The SuperMDA will follow the numbers in the orderVector as they
+    % increase and the row that contains the current number corresponds to
+    % the next row in the GPS to be executed.
     % * filename_prefix: the string that is placed at the front of the
     % image filename.
     % * fundamental_period: the shortest period that images are taken in
@@ -30,12 +30,14 @@ classdef SuperMDAItinerary_object < handle
         gps;
         mm;
         orderVector;
+        output_directory = fullfile(pwd,'RAWDATA');
         
         group_function_after;
         group_function_before;
         group_label;
         group_scratchpad;
         
+        ind_next_gps;
         ind_next_group;
         ind_next_position;
         ind_next_settings;
@@ -72,46 +74,50 @@ classdef SuperMDAItinerary_object < handle
     methods
         %% The constructor method
         % The first argument is always mm
-        function obj = SuperMDAItinerary_object(mm)
-                obj.channel_names = mm.Channel;
-                obj.gps = [1,1,1];
-                obj.mm = mm;
-                obj.orderVector = 1;
-
-                %% initialize the prototype_group
-                %
-                obj.group_function_after = 'SuperMDA_function_group_after_basic';
-                obj.group_function_before = 'SuperMDA_function_group_before_basic';
-                obj.group_label{1} = '';
-                obj.group_scratchpad = {};
-                %% initialize the prototype_position
-                %
-                obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
-                obj.position_continuous_focus_bool = true;
-                obj.position_function_after = 'SuperMDA_function_position_after_basic';
-                obj.position_function_before = 'SuperMDA_function_position_before_basic';
-                obj.position_label{1} = '';
-                obj.position_scratchpad = {};
-                obj.position_xyz = mm.getXYZ; %This is a customizable array
-                %% initialize the prototype_settings
-                %
-                obj.settings_binning = 1;
-                obj.settings_channel = 1;
-                obj.settings_exposure = 1; %This is a customizable arrray
-                obj.settings_function = 'SuperMDA_function_settings_basic';
-                obj.settings_gain = 0; % [0-255] for ORCA R2
-                obj.settings_period_multiplier = 1;
-                obj.settings_timepoints = 1; %This is a customizable array
-                obj.settings_scratchpad = {};
-                obj.settings_z_origin_offset = 0;
-                obj.settings_z_stack_lower_offset = 0;
-                obj.settings_z_stack_upper_offset = 0;
-                obj.settings_z_step_size = 0.3;
-                %% initialize the indices
-                % the next group, position, and settings
-                obj.ind_next_group = 2;
-                obj.ind_next_position = 2;
-                obj.ind_next_settings = 2;
+        function obj = SuperMDAItineraryTimeFixed_object(mm)
+            if ~isa(mm,'Core_MicroManagerHandle')
+                error('smdaITF:input','The input was not a Core_MicroManagerHandle_object');
+            end
+            obj.channel_names = mm.Channel;
+            obj.gps = [1,1,1];
+            obj.mm = mm;
+            obj.orderVector = 1;
+            
+            %% initialize the prototype_group
+            %
+            obj.group_function_after{1} = 'SuperMDA_function_group_after_basic';
+            obj.group_function_before{1} = 'SuperMDA_function_group_before_basic';
+            obj.group_label{1} = 'group1';
+            obj.group_scratchpad = {};
+            %% initialize the prototype_position
+            %
+            obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_bool = true;
+            obj.position_function_after{1} = 'SuperMDA_function_position_after_basic';
+            obj.position_function_before{1} = 'SuperMDA_function_position_before_basic';
+            obj.position_label{1} = 'position1';
+            obj.position_scratchpad = {};
+            obj.position_xyz = mm.getXYZ; %This is a customizable array
+            %% initialize the prototype_settings
+            %
+            obj.settings_binning = 1;
+            obj.settings_channel = 1;
+            obj.settings_exposure = 1; %This is a customizable arrray
+            obj.settings_function{1} = 'SuperMDA_function_settings_timeFixed';
+            obj.settings_gain = 0; % [0-255] for ORCA R2
+            obj.settings_period_multiplier = 1;
+            obj.settings_timepoints = 1; %This is a customizable array
+            obj.settings_scratchpad = {};
+            obj.settings_z_origin_offset = 0;
+            obj.settings_z_stack_lower_offset = 0;
+            obj.settings_z_stack_upper_offset = 0;
+            obj.settings_z_step_size = 0.3;
+            %% initialize the indices
+            % the next group, position, and settings
+            obj.ind_next_gps = 2;
+            obj.ind_next_group = 2;
+            obj.ind_next_position = 2;
+            obj.ind_next_settings = 2;
         end
         %% Method to change the duration
         %
@@ -128,17 +134,6 @@ classdef SuperMDAItinerary_object < handle
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-            %%
-            % This if-statement exists so the duration, fundamental period,
-            % or duration can be set before a group has been
-            % pre-allocated/initialized. Or so the customizable variables
-            % within the MDA will have the same number of entries as the
-            % number of timepoints
-            if isempty(obj.group)
-                return
-            else
-                SuperMDA_method_update_number_of_timepoints(obj);
-            end
         end
         %% Method to change the fundamental period (units in seconds)
         %
@@ -155,17 +150,6 @@ classdef SuperMDAItinerary_object < handle
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-            %%
-            % This if-statement exists so the duration, fundamental period,
-            % or duration can be set before a group has been
-            % pre-allocated/initialized. Or so the customizable variables
-            % within the MDA will have the same number of entries as the
-            % number of timepoints
-            if isempty(obj.group)
-                return
-            else
-                SuperMDA_method_update_number_of_timepoints(obj);
-            end
         end
         %% Method to change the number of timepoints
         %
@@ -181,17 +165,6 @@ classdef SuperMDAItinerary_object < handle
             obj.number_of_timepoints = round(mynum);
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-            %%
-            % This if-statement exists so the duration, fundamental period,
-            % or duration can be set before a group has been
-            % pre-allocated/initialized. Or so the customizable variables
-            % within the MDA will have the same number of entries as the
-            % number of timepoints
-            if isempty(obj.group)
-                return
-            else
-                SuperMDA_method_update_number_of_timepoints(obj);
-            end
         end
         %% preallocate memory to hold the SuperMDA information
         % This should always be done before and the largest number should
@@ -275,12 +248,6 @@ classdef SuperMDAItinerary_object < handle
         function obj = update_number_of_timepoints(obj)
             SuperMDA_method_update_number_of_timepoints(obj);
         end
-        %% finalize_MDA
-        % A method to be run just prior to take off. Think of it as a
-        % pre-flight checklist.
-        function obj = finalize_MDA(obj)
-            SuperMDA_method_finalize_MDA(obj);
-        end
         %% update_zstack
         %
         function obj = update_zstack(obj)
@@ -314,7 +281,84 @@ classdef SuperMDAItinerary_object < handle
                 end
             end
         end
+        %%
+        %
+        function n = indOfGroup(obj)
+            n = transpose(1:length(obj.group_label)); %outputs a column
+        end
+        %%
+        %
+        function n = indOfPosition(obj,gNum)
+            myGpsPosition = obj.gps(:,2);
+            myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
+            n = unique(myPositionsInGNum); %outputs a column
+        end
+        %%
+        %
+        function n = indOfSettings(obj,gNum,pNum)
+            myGpsSettings = obj.gps(:,3);
+            n = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum)); %outputs a column
+        end
+        %%
+        %
+        function n = orderOfGroup(obj)
+            myGpsGroup = obj.gps(:,1);
+            myGpsGroupOrder = myGpsGroup(obj.orderVector);
+            groupInds = obj.indOfGroup;
+            indicesOfFirstAppearance = zeros(size(groupInds));
+            for i = 1:length(indicesOfFirstAppearance)
+                indicesOfFirstAppearance(i) = find(myGpsGroupOrder == groupInds(i),1,'first');
+            end
+            n = sortrows(horzcat(groupInds,indicesOfFirstAppearance),2);
+            n = transpose(n(:,1)); %outputs a row
+        end
+        %%
+        %
+        function n = orderOfPosition(obj,gNum)
+            myGpsPosition = obj.gps(:,2);
+            myGpsPositionOrder = myGpsPosition(obj.orderVector);
+            positionInds = obj.indOfPosition(gNum);
+            indicesOfFirstAppearance = zeros(size(positionInds));
+            for i = 1:length(indicesOfFirstAppearance)
+                indicesOfFirstAppearance(i) = find(myGpsPositionOrder == positionInds(i),1,'first');
+            end
+            n = sortrows(horzcat(positionInds,indicesOfFirstAppearance),2);
+            n = transpose(n(:,1)); %outputs a row
+        end
+        %%
+        %
+        function n = orderOfSettings(obj,gNum,pNum)
+            myGpsSettings = obj.gps(:,3);
+            myGpsSettingsOrder = myGpsSettings(obj.orderVector);
+            settingsInds = obj.indOfSettings(gNum,pNum);
+            indicesOfFirstAppearance = zeros(size(settingsInds));
+            for i = 1:length(indicesOfFirstAppearance)
+                indicesOfFirstAppearance(i) = find(myGpsSettingsOrder == settingsInds(i),1,'first');
+            end
+            n = sortrows(horzcat(settingsInds,indicesOfFirstAppearance),2);
+            n = transpose(n(:,1)); %outputs a row
+        end
+        %%
+        %
+        function n = numberOfGroup(obj)
+            n = length(obj.group_label);
+        end
+        %%
+        %
+        function n = numberOfPosition(obj,gNum)
+            myGpsPosition = obj.gps(:,2);
+            myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
+            n = length(unique(myPositionsInGNum));
+        end
+        %%
+        %
+        function n = numberOfSettings(obj,gNum,pNum)
+            myGpsSettings = obj.gps(:,3);
+            mySettingsInGNumPNum = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum));
+            n = length(mySettingsInGNumPNum);
+        end
     end
+    
     %%
     %
     methods (Static)

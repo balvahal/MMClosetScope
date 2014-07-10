@@ -2,7 +2,7 @@
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
 % position consists of 1 or more settings.
-classdef SuperMDAItinerary_object < handle
+classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
     %%
     % * channel_names: the names of the channels group in the current
     % session of uManager.
@@ -10,11 +10,11 @@ classdef SuperMDAItinerary_object < handle
     % information. As the SuperMDA processes through orderVector it will
     % keep track of which index is changing and execute a function based on
     % this change.
-    % * orderVector: a vector with the number of rows of the GPS matrix. It contains the
-    % sequence of natural numbers from 1 to the number of rows. The
-    % SuperMDA will follow the numbers in the orderVector as they increase
-    % and the row that contains the current number corresponds to the next
-    % row in the GPS to be executed.
+    % * orderVector: a vector with the number of rows of the GPS matrix. It
+    % contains the sequence of natural numbers from 1 to the number of
+    % rows. The SuperMDA will follow the numbers in the orderVector as they
+    % increase and the row that contains the current number corresponds to
+    % the next row in the GPS to be executed.
     % * filename_prefix: the string that is placed at the front of the
     % image filename.
     % * fundamental_period: the shortest period that images are taken in
@@ -62,137 +62,61 @@ classdef SuperMDAItinerary_object < handle
         settings_z_step_size;
     end
     properties (SetAccess = private)
-        duration = 0;
-        fundamental_period = 600; %The units are seconds. 600 is 10 minutes.
-        clock_relative = 0;
-        number_of_timepoints = 1;
+        duration
+        fundamental_period %The units are seconds.
+        clock_relative
+        number_of_timepoints
     end
     %%
     %
     methods
         %% The constructor method
         % The first argument is always mm
-        function obj = SuperMDAItinerary_object(mm)
-                obj.channel_names = mm.Channel;
-                obj.gps = [1,1,1];
-                obj.mm = mm;
-                obj.orderVector = 1;
-
-                %% initialize the prototype_group
-                %
-                obj.group_function_after = 'SuperMDA_function_group_after_basic';
-                obj.group_function_before = 'SuperMDA_function_group_before_basic';
-                obj.group_label{1} = '';
-                obj.group_scratchpad = {};
-                %% initialize the prototype_position
-                %
-                obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
-                obj.position_continuous_focus_bool = true;
-                obj.position_function_after = 'SuperMDA_function_position_after_basic';
-                obj.position_function_before = 'SuperMDA_function_position_before_basic';
-                obj.position_label{1} = '';
-                obj.position_scratchpad = {};
-                obj.position_xyz = mm.getXYZ; %This is a customizable array
-                %% initialize the prototype_settings
-                %
-                obj.settings_binning = 1;
-                obj.settings_channel = 1;
-                obj.settings_exposure = 1; %This is a customizable arrray
-                obj.settings_function = 'SuperMDA_function_settings_basic';
-                obj.settings_gain = 0; % [0-255] for ORCA R2
-                obj.settings_period_multiplier = 1;
-                obj.settings_timepoints = 1; %This is a customizable array
-                obj.settings_scratchpad = {};
-                obj.settings_z_origin_offset = 0;
-                obj.settings_z_stack_lower_offset = 0;
-                obj.settings_z_stack_upper_offset = 0;
-                obj.settings_z_step_size = 0.3;
-                %% initialize the indices
-                % the next group, position, and settings
-                obj.ind_next_group = 2;
-                obj.ind_next_position = 2;
-                obj.ind_next_settings = 2;
-        end
-        %% Method to change the duration
-        %
-        function obj = newDuration(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must zero of greater
-            if mynum < 0
-                return
+        function obj = SuperMDAItineraryTimeTunable_object(smdaITF)
+            if ~isa(smdaITF,'SuperMDATravelAgentTimeFixed_object')
+                error('smdaITT:input','The input was not a SuperMDATravelAgentTimeFixed_object');
             end
-            %%
-            % update other dependent parameters
-            obj.duration = mynum;
-            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-            %%
-            % This if-statement exists so the duration, fundamental period,
-            % or duration can be set before a group has been
-            % pre-allocated/initialized. Or so the customizable variables
-            % within the MDA will have the same number of entries as the
-            % number of timepoints
-            if isempty(obj.group)
-                return
-            else
-                SuperMDA_method_update_number_of_timepoints(obj);
-            end
-        end
-        %% Method to change the fundamental period (units in seconds)
-        %
-        function obj = newFundamentalPeriod(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must be greater than zero
-            if mynum <= 0
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.fundamental_period = mynum;
-            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-            %%
-            % This if-statement exists so the duration, fundamental period,
-            % or duration can be set before a group has been
-            % pre-allocated/initialized. Or so the customizable variables
-            % within the MDA will have the same number of entries as the
-            % number of timepoints
-            if isempty(obj.group)
-                return
-            else
-                SuperMDA_method_update_number_of_timepoints(obj);
-            end
-        end
-        %% Method to change the number of timepoints
-        %
-        function obj = newNumberOfTimepoints(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must be a positive integer
-            if mynum < 1
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.number_of_timepoints = round(mynum);
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-            %%
-            % This if-statement exists so the duration, fundamental period,
-            % or duration can be set before a group has been
-            % pre-allocated/initialized. Or so the customizable variables
-            % within the MDA will have the same number of entries as the
-            % number of timepoints
-            if isempty(obj.group)
-                return
-            else
-                SuperMDA_method_update_number_of_timepoints(obj);
-            end
-        end
+            
+            obj.channel_names = smdaITF.channel_names;
+            obj.gps = [1,1,1];
+            obj.mm = smdaITF.mm;
+            obj.orderVector = 1;
+            
+            %% initialize the prototype_group
+            %
+            obj.group_function_after = 'SuperMDA_function_group_after_basic';
+            obj.group_function_before = 'SuperMDA_function_group_before_basic';
+            obj.group_label{1} = '';
+            obj.group_scratchpad = {};
+            %% initialize the prototype_position
+            %
+            obj.position_continuous_focus_offset = str2double(smdaITF.mm.core.getProperty(mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_bool = true;
+            obj.position_function_after = 'SuperMDA_function_position_after_basic';
+            obj.position_function_before = 'SuperMDA_function_position_before_basic';
+            obj.position_label{1} = '';
+            obj.position_scratchpad = {};
+            obj.position_xyz = mm.getXYZ; %This is a customizable array
+            %% initialize the prototype_settings
+            %
+            obj.settings_binning = 1;
+            obj.settings_channel = 1;
+            obj.settings_exposure = 1; %This is a customizable arrray
+            obj.settings_function = 'SuperMDA_function_settings_basic';
+            obj.settings_gain = 0; % [0-255] for ORCA R2
+            obj.settings_period_multiplier = 1;
+            obj.settings_timepoints = 1; %This is a customizable array
+            obj.settings_scratchpad = {};
+            obj.settings_z_origin_offset = 0;
+            obj.settings_z_stack_lower_offset = 0;
+            obj.settings_z_stack_upper_offset = 0;
+            obj.settings_z_step_size = 0.3;
+            %% initialize the indices
+            % the next group, position, and settings
+            obj.ind_next_group = 2;
+            obj.ind_next_position = 2;
+            obj.ind_next_settings = 2;
+        end        
         %% preallocate memory to hold the SuperMDA information
         % This should always be done before and the largest number should
         % be used for the number of groups, positions, and settings
@@ -280,25 +204,6 @@ classdef SuperMDAItinerary_object < handle
         % pre-flight checklist.
         function obj = finalize_MDA(obj)
             SuperMDA_method_finalize_MDA(obj);
-        end
-        %% update_zstack
-        %
-        function obj = update_zstack(obj)
-            for i = 1:length(obj.group)
-                for j = 1:length(obj.group(i).position)
-                    for k = 1:length(obj.group(i).position(j).settings)
-                        range = obj.group(i).position(j).settings(k).z_stack_upper_offset - obj.group(i).position(j).settings(k).z_stack_lower_offset;
-                        if range<=0
-                            obj.group(i).position(j).settings(k).z_stack_upper_offset = 0;
-                            obj.group(i).position(j).settings(k).z_stack_lower_offset = 0;
-                            obj.group(i).position(j).settings(k).z_stack = 0;
-                        else
-                            obj.group(i).position(j).settings(k).z_stack = obj.group(i).position(j).settings(k).z_stack_lower_offset:obj.group(i).position(j).settings(k).z_step_size:obj.group(i).position(j).settings(k).z_stack_upper_offset;
-                            obj.group(i).position(j).settings(k).z_stack_upper_offset = obj.group(i).position(j).settings(k).z_stack(end);
-                        end
-                    end
-                end
-            end
         end
         %% update_timepoints_with_period_multiplier
         % Note that this will overwrite all information currently in the

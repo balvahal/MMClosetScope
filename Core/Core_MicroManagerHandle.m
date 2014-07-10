@@ -137,6 +137,9 @@ classdef Core_MicroManagerHandle < handle
                 obj.FocusDevice = obj.core.getFocusDevice;
                 obj.AutoFocusDevice = obj.core.getFocusDevice;
                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
+                obj.zLimits = [0,10000];
+                obj.xyStageLimits = [0,150000,0,100000];
+                obj.calibrationAngle = 2;
             end
             
             obj.pos = obj.getXYZ;

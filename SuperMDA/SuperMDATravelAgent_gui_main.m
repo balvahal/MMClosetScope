@@ -481,7 +481,7 @@ set(f,'Visible','on');
 %
     function pushbuttonGroupAdd_Callback(~,~)
         smdaTA.addGroup;
-        smdaTA.pointerGroup = length(smdaTA.itinerary.group_order);
+        smdaTA.pointerGroup = smdaTA.itinerary.numberOfGroup;
         smdaTA.refresh_gui_main;
     end
 
@@ -567,9 +567,10 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonPositionAdd_Callback(~,~)
-        gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
+        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        gInd = myGroupOrder(smdaTA.pointerGroup(1));
         smdaTA.addPosition(gInd);
-        smdaTA.pointerPosition = length(smdaTA.itinerary.group(gInd).position_order);
+        smdaTA.pointerPosition = smdaTA.itinerary.numberOfPosition(gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -896,9 +897,9 @@ set(f,'Visible','on');
         if isempty(eventdata.Indices)
             % if nothing is selected, which triggers after deleting data,
             % make sure the pointer is still valid
-            if any(smdaTA.pointerGroup > length(smdaTA.itinerary.group_order))
+            if any(smdaTA.pointerGroup > smdaTA.itinerary.numberOfGroup)
                 % move pointer to last entry
-                smdaTA.pointerGroup = length(smdaTA.itinerary.group_order);
+                smdaTA.pointerGroup = smdaTA.itinerary.numberOfGroup;
             end
             return
         else

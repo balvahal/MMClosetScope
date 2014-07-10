@@ -16,15 +16,15 @@ set(handles.editOutputDirectory,'String',smdaTA.itinerary.output_directory);
 %
 %% Group Table
 % Show the data in the itinerary |group_order| property
-tableGroupData = cell(length(smdaTA.itinerary.group_order),...
+tableGroupData = cell(length(smdaTA.itinerary.group_label),...
     length(get(handles.tableGroup,'ColumnName')));
 n=1;
-for i = smdaTA.itinerary.group_order
-        tableGroupData{n,1} = smdaTA.itinerary.group(i).label;
+for i = 1:smdaTA.itinerary.numberOfGroup
+        tableGroupData{n,1} = smdaTA.itinerary.group_label{i};
         tableGroupData{n,2} = i;
-        tableGroupData{n,3} = length(smdaTA.itinerary.group(i).position_order);
-        tableGroupData{n,4} = smdaTA.itinerary.group(i).group_function_before_name;
-        tableGroupData{n,5} = smdaTA.itinerary.group(i).group_function_after_name;
+        tableGroupData{n,3} = smdaTA.itinerary.numberOfPosition(i);
+        tableGroupData{n,4} = smdaTA.itinerary.group_function_before{i};
+        tableGroupData{n,5} = smdaTA.itinerary.group_function_after{i};
         n = n + 1;
 end
 set(handles.tableGroup,'Data',tableGroupData);
@@ -33,25 +33,27 @@ set(handles.tableGroup,'Data',tableGroupData);
 %% Position Table
 % Show the data in the itinerary |position_order| property for a given
 % group
-gInd = smdaTA.itinerary.group_order(smdaTA.pointerGroup(1));
-tablePositionData = cell(length(smdaTA.itinerary.group(gInd).position_order),...
+myGroupOrder = smdaTA.itinerary.orderOfGroup;
+gInd = myGroupOrder(smdaTA.pointerGroup(1));
+myPositionOrder = smdaTA.itinerary.orderOfPosition(gInd);
+tablePositionData = cell(length(myPositionOrder),...
     length(get(handles.tablePosition,'ColumnName')));
 n=1;
-for i = smdaTA.itinerary.group(gInd).position_order
-    tablePositionData{n,1} = smdaTA.itinerary.group(gInd).position(i).label;
+for i = myPositionOrder
+    tablePositionData{n,1} = smdaTA.itinerary.position_label{i};
     tablePositionData{n,2} = i;
-    tablePositionData{n,3} = smdaTA.itinerary.group(gInd).position(i).xyz(1,1);
-    tablePositionData{n,4} = smdaTA.itinerary.group(gInd).position(i).xyz(1,2);
-    tablePositionData{n,5} = smdaTA.itinerary.group(gInd).position(i).xyz(1,3);
-    if smdaTA.itinerary.group(gInd).position(i).continuous_focus_bool
+    tablePositionData{n,3} = smdaTA.itinerary.position_xyz(i,1);
+    tablePositionData{n,4} = smdaTA.itinerary.position_xyz(i,2);
+    tablePositionData{n,5} = smdaTA.itinerary.position_xyz(i,3);
+    if smdaTA.itinerary.position_continuous_focus_bool(i)
         tablePositionData{n,6} = 'yes';
     else
         tablePositionData{n,6} = 'no';
     end
-    tablePositionData{n,7} = smdaTA.itinerary.group(gInd).position(i).continuous_focus_offset;
-    tablePositionData{n,8} = smdaTA.itinerary.group(gInd).position(i).position_function_before_name;
-    tablePositionData{n,9} = smdaTA.itinerary.group(gInd).position(i).position_function_after_name;
-    tablePositionData{n,10} = length(smdaTA.itinerary.group(gInd).position(i).settings);
+    tablePositionData{n,7} = smdaTA.itinerary.position_continuous_focus_offset(i);
+    tablePositionData{n,8} = smdaTA.itinerary.position_function_before{i};
+    tablePositionData{n,9} = smdaTA.itinerary.position_function_after{i};
+    tablePositionData{n,10} = smdaTA.itinerary.numberOfSettings(gInd,i);
     n = n + 1;
 end
 set(handles.tablePosition,'Data',tablePositionData);
@@ -59,23 +61,26 @@ set(handles.tablePosition,'Data',tablePositionData);
 %
 %% Settings Table
 % Show the prototype_settings
-tableSettingsData = cell(length(smdaTA.itinerary.group(gInd).position(1).settings_order),...
+pInd = smdaTA.itinerary.indOfPosition(gInd);
+pInd = pInd(1);
+mySettingsOrder = smdaTA.itinerary.orderOfSettings(gInd,pInd);
+tableSettingsData = cell(length(mySettingsOrder),...
     length(get(handles.tableSettings,'ColumnName')));
 n=1;
-for i = smdaTA.itinerary.group(gInd).position(1).settings_order
-    tableSettingsData{n,1} = smdaTA.mm.Channel{smdaTA.itinerary.group(gInd).position(1).settings(i).channel};
-    tableSettingsData{n,2} = smdaTA.itinerary.group(gInd).position(1).settings(i).exposure(1);
-    tableSettingsData{n,3} = smdaTA.itinerary.group(gInd).position(1).settings(i).binning;
-    tableSettingsData{n,4} = smdaTA.itinerary.group(gInd).position(1).settings(i).gain;
-    tableSettingsData{n,5} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_step_size;
-    tableSettingsData{n,6} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_upper_offset;
-    tableSettingsData{n,7} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_lower_offset;
-    tableSettingsData{n,8} = length(smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_lower_offset...
-        :smdaTA.itinerary.group(gInd).position(1).settings(i).z_step_size...
-        :smdaTA.itinerary.group(gInd).position(1).settings(i).z_stack_upper_offset);
-    tableSettingsData{n,9} = smdaTA.itinerary.group(gInd).position(1).settings(i).z_origin_offset;
-    tableSettingsData{n,10} = smdaTA.itinerary.group(gInd).position(1).settings(i).period_multiplier;
-    tableSettingsData{n,11} = smdaTA.itinerary.group(gInd).position(1).settings(i).settings_function_name;
+for i = mySettingsOrder
+    tableSettingsData{n,1} = smdaTA.mm.Channel{smdaTA.itinerary.settings_channel(i)};
+    tableSettingsData{n,2} = smdaTA.itinerary.settings_exposure(i);
+    tableSettingsData{n,3} = smdaTA.itinerary.settings_binning(i);
+    tableSettingsData{n,4} = smdaTA.itinerary.settings_gain(i);
+    tableSettingsData{n,5} = smdaTA.itinerary.settings_z_step_size(i);
+    tableSettingsData{n,6} = smdaTA.itinerary.settings_z_stack_upper_offset(i);
+    tableSettingsData{n,7} = smdaTA.itinerary.settings_z_stack_lower_offset(i);
+    tableSettingsData{n,8} = length(smdaTA.itinerary.settings_z_stack_lower_offset(i)...
+        :smdaTA.itinerary.settings_z_step_size(i)...
+        :smdaTA.itinerary.settings_z_stack_upper_offset(i));
+    tableSettingsData{n,9} = smdaTA.itinerary.settings_z_origin_offset(i);
+    tableSettingsData{n,10} = smdaTA.itinerary.settings_period_multiplier(i);
+    tableSettingsData{n,11} = smdaTA.itinerary.settings_function{i};
     tableSettingsData{n,12} = i;
     n = n + 1;
 end
