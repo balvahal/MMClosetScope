@@ -357,6 +357,35 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             mySettingsInGNumPNum = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum));
             n = length(mySettingsInGNumPNum);
         end
+        %%
+        %
+        function obj = orderVectorInsert(obj,varargin)
+            p = inputParser;
+            addOptional(p, 'OVrow',length(obj.orderVector)+1, @(x) ismember(x,1:length(obj.orderVector)));
+            parse(p,varargin{:});
+            obj.orderVector(end+1) = obj.ind_next_gps;
+            if p.Results.OVrow ~= length(obj.orderVector)+1
+                obj.orderVectorMove(p.Results.OVrow,obj.ind_next_gps);
+            end
+        end
+        %%
+        %
+        function obj = orderVectorMove(obj,OVrow,GPSrow)
+            %find the current position of the GPSrow
+            myInd = find(obj.orderVector == GPSrow,1,'first');
+            %create the array that will rearrange the orderVector
+            swapArray = 1:length(obj.orderVector);
+            swapArray(OVrow) = GPSrow;
+            swapArray(myInd) = OVrow;
+            %swap rows
+            obj.orderVector = obj.orderVector(swapArray);
+        end
+        %%
+        %
+        function obj = orderVectorRemove(obj,GPSrow)
+            myInd = find(obj.orderVector == GPSrow,1,'first');
+            obj.orderVector(myInd) = [];
+        end
     end
     
     %%
