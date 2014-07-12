@@ -28,6 +28,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     properties
         channel_names;
         gps;
+        gps_logical;
         mm;
         orderVector;
         output_directory = fullfile(pwd,'RAWDATA');
@@ -35,6 +36,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         group_function_after;
         group_function_before;
         group_label;
+        group_logical;
         group_scratchpad;
         
         ind_next_gps;
@@ -47,6 +49,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         position_function_after;
         position_function_before;
         position_label;
+        position_logical;
         position_scratchpad;
         position_xyz;
         
@@ -55,6 +58,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         settings_exposure;
         settings_function;
         settings_gain;
+        settings_logical;
         settings_period_multiplier;
         settings_scratchpad;
         settings_timepoints;
@@ -80,6 +84,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
             obj.channel_names = mm.Channel;
             obj.gps = [1,1,1];
+            obj.gps_logical = true;
             obj.mm = mm;
             obj.orderVector = 1;
             
@@ -88,6 +93,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.group_function_after{1} = 'SuperMDA_function_group_after_basic';
             obj.group_function_before{1} = 'SuperMDA_function_group_before_basic';
             obj.group_label{1} = 'group1';
+            obj.group_logical = true;
             obj.group_scratchpad = {};
             %% initialize the prototype_position
             %
@@ -96,6 +102,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.position_function_after{1} = 'SuperMDA_function_position_after_basic';
             obj.position_function_before{1} = 'SuperMDA_function_position_before_basic';
             obj.position_label{1} = 'position1';
+            obj.position_logical = true;
             obj.position_scratchpad = {};
             obj.position_xyz = mm.getXYZ; %This is a customizable array
             %% initialize the prototype_settings
@@ -105,6 +112,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_exposure = 1; %This is a customizable arrray
             obj.settings_function{1} = 'SuperMDA_function_settings_timeFixed';
             obj.settings_gain = 0; % [0-255] for ORCA R2
+            obj.settings_logical = true;
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array
             obj.settings_scratchpad = {};
@@ -328,6 +336,40 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
+        function obj = find_ind_next(obj,mystr)
+            p = inputParser;
+            addRequired(p,mystr,@(x) any(strcmp(x,{'gps','group','position','settings'})));
+            parse(p,mystr);
+      
+            switch mystr
+                case 'gps'
+                    if any(~obj.gps_logical)
+                        obj.ind_next_gps = find(~obj.gps_logical,1,'first');
+                    else
+                        obj.ind_next_gps = obj.ind_next_gps + 1;
+                    end
+                case 'group'
+                    if any(~obj.group_logical)
+                        obj.ind_next_group = find(~obj.group_logical,1,'first');
+                    else
+                        obj.ind_next_group = obj.ind_next_group + 1;
+                    end
+                case 'position'
+                    if any(~obj.position_logical)
+                        obj.ind_next_position = find(~obj.position_logical,1,'first');
+                    else
+                        obj.ind_next_position = obj.ind_next_position + 1;
+                    end
+                case 'settings'
+                    if any(~obj.settings_logical)
+                        obj.ind_next_settings = find(~obj.settings_logical,1,'first');
+                    else
+                        obj.ind_next_settings = obj.ind_next_settings + 1;
+                    end
+            end
+        end
+        %%
+        %
         function n = indOfGroup(obj)
             n = transpose(1:length(obj.group_label)); %outputs a column
         end
@@ -384,19 +426,19 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             n = transpose(n(:,1)); %outputs a row
         end
         %%
-        %
+        % computes the number of groups in the itinerary
         function n = numberOfGroup(obj)
             n = length(obj.group_label);
         end
         %%
-        %
+        % computes the number of positions in a give group
         function n = numberOfPosition(obj,gNum)
             myGpsPosition = obj.gps(:,2);
             myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
             n = length(unique(myPositionsInGNum));
         end
         %%
-        %
+        % computes the number of settings in a given position and group
         function n = numberOfSettings(obj,gNum,pNum)
             myGpsSettings = obj.gps(:,3);
             mySettingsInGNumPNum = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum));

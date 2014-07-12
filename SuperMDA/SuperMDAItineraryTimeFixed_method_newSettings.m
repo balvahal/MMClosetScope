@@ -25,6 +25,7 @@ if p.Results.sNum == 1
     smdaITF.settings_exposure(smdaITF.ind_next_settings) = smdaITF.settings_exposure(firstPositionSettings(1));
     smdaITF.settings_function{smdaITF.ind_next_settings} = smdaITF.settings_function{firstPositionSettings(1)};
     smdaITF.settings_gain(smdaITF.ind_next_settings) = smdaITF.settings_gain(firstPositionSettings(1));
+    smdaITF.settings_logical(smdaITF.ind_next_settings) = true;
     smdaITF.settings_period_multiplier(smdaITF.ind_next_settings) = smdaITF.settings_period_multiplier(firstPositionSettings(1));
     smdaITF.settings_timepoints(smdaITF.ind_next_settings) = smdaITF.settings_timepoints(firstPositionSettings(1));
     smdaITF.settings_z_origin_offset(smdaITF.ind_next_settings) = smdaITF.settings_z_origin_offset(firstPositionSettings(1));
@@ -38,8 +39,9 @@ if p.Results.sNum == 1
     smdaITF.orderVectorInsert(myInd+1);
     % update gps, order vector, and settings index
     smdaITF.gps(smdaITF.ind_next_gps,:) = [gInd,pInd,smdaITF.ind_next_settings];
-    smdaITF.ind_next_gps = smdaITF.ind_next_gps + 1;
-    smdaITF.ind_next_settings = smdaITF.ind_next_settings + 1;
+    smdaITF.gps_logical(smdaITF.ind_next_gps) = true;
+    smdaITF.find_ind_next('gps');
+    smdaITF.find_ind_next('settings');
 else
 error('smdaITF:addSettingsN','this part of the code needs to be created');
 end

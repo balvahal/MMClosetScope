@@ -772,7 +772,7 @@ set(f,'Visible','on');
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);
-        smdaTA.addSettings(gInd,pInd);
+        smdaTA.addSettings(gInd);
         smdaTA.pointerSettings = smdaTA.itinerary.numberOfSettings(gInd,pInd);
         smdaTA.refresh_gui_main;
 %        smdaTA.pushSettings(gInd);

@@ -9,7 +9,7 @@ p = inputParser;
 addRequired(p, 'smdaITF', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
 addRequired(p, 'gInd', @(x) ismember(x,smdaITF.indOfGroup));
 addRequired(p, 'pInd', @(x) ismember(x,smdaITF.indOfPosition(gInd)));
-addRequired(p, 'sInd', @(x) ismember(x,1:length(smdaITF.settings_binning)));
+addRequired(p, 'sInd', @(x) ismember(x,1:length(smdaITF.settings_logical)));
 addOptional(p, 'sNum',1, @(x) mod(x,1)==0);
 parse(p,smdaITF,gInd,pInd,sInd,varargin{:});
 
@@ -26,7 +26,8 @@ if p.Results.sNum == 1
     smdaITF.orderVectorInsert(myInd+1);
     % update gps, order vector, and settings index
     smdaITF.gps(smdaITF.ind_next_gps,:) = [gInd,pInd,sInd];
-    smdaITF.ind_next_gps = smdaITF.ind_next_gps + 1;
+    smdaITF.gps_logical(smdaITF.ind_next_gps) = true;
+    smdaITF.find_ind_next('gps');
 else
 error('smdaITF:addSettingsN','this part of the code needs to be created');
 end

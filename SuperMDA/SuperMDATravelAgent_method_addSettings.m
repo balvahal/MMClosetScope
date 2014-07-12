@@ -20,14 +20,14 @@ if p.Results.sNum == 1
     % The new settings will be the same as the first settings of the first
     % position in the group that contains the pInd.
     %
-    % add the new settings
+    % add the new settings to all positions in a group
     pIndices = smdaTA.itinerary.indOfPosition(gInd);
     pIndFirst = pIndices(1);
     newSettingsInd = smdaITF.ind_next_settings;
     smdaITF.newSettings(gInd,pIndFirst);
     if length(pIndices) > 1
         for i = 2:length(pIndices)
-            smdaITF.addSettings2Position(gInd,pIndices(2),newSettingsInd);
+            smdaITF.addSettings2Position(gInd,pIndices(i),newSettingsInd);
         end
     end
 else

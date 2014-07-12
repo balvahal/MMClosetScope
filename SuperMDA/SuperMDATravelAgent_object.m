@@ -54,11 +54,11 @@ classdef SuperMDATravelAgent_object < handle
         end
         %%
         %
-        function obj = addSettings(obj,gInd,pInd,varargin)
+        function obj = addSettings(obj,gInd,varargin)
             if isempty(varargin)
-                obj = SuperMDATravelAgent_method_addSettings(obj,gInd,pInd);
+                obj = SuperMDATravelAgent_method_addSettings(obj,gInd);
             else
-                obj = SuperMDATravelAgent_method_addSettings(obj,gInd,pInd,varargin{:});
+                obj = SuperMDATravelAgent_method_addSettings(obj,gInd,varargin{:});
             end
         end
         %%
