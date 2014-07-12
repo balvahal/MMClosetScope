@@ -507,13 +507,13 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonGroupDrop_Callback(~,~)
-        if length(smdaTA.itinerary.group_order)==1
+        if smdaTA.itinerary.numberOfGroup==1
             return
-        elseif length(smdaTA.pointerGroup) == length(smdaTA.itinerary.group_order)
+        elseif length(smdaTA.pointerGroup) == smdaTA.itinerary.numberOfGroup
             smdaTA.pointerGroup(1) = [];
         end
         smdaTA.dropGroup(smdaTA.pointerGroup);
-        smdaTA.pointerGroup = length(smdaTA.itinerary.group_order);
+        smdaTA.pointerGroup = smdaTA.itinerary.numberOfGroup;
         smdaTA.refresh_gui_main;
     end
 

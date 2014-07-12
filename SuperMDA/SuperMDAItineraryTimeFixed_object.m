@@ -127,7 +127,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.ind_next_position = 2;
             obj.ind_next_settings = 2;
         end
-       
+        
         %% preallocate memory to hold the SuperMDA information
         % This should always be done before and the largest number should
         % be used for the number of groups, positions, and settings
@@ -272,6 +272,66 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
+        function obj = dropGroup(obj,gInd)
+            % the drop action is reflected in the corresponding logical
+            % vector
+            myPInd = obj.indOfPosition(gInd);
+            mySInd = obj.indOfSettings(gInd);           
+            obj.group_logical(gInd) = false;
+            obj.find_ind_next('group');
+            % update the gps to reflect these changes
+            myGpsGroup = obj.gps(:,1);
+            obj.gps_logical(myGpsGroup == gInd) = false;
+            myGpsRows = find(myGpsGroup == gInd);
+            if ~isempty(myGpsRows)
+                for i = 1:length(myGpsRows)
+                    obj.orderVectorRemove(myGpsRows(i));
+                end
+            end
+            obj.position_logical(myPInd) = false;
+            obj.settings_logical(mySInd) = false;
+            obj.find_ind_next('gps');
+            obj.find_ind_next('position');
+            obj.find_ind_next('settings');
+        end
+        %%
+        %
+        function obj = dropPosition(obj,pInd)
+            % the drop action is reflected in the corresponding logical
+            % vector
+            obj.position_logical(pInd) = false;
+            obj.find_ind_next('position');
+            % update the gps to reflect these changes
+            myGpsPosition = obj.gps(:,2);
+            obj.gps_logical(myGpsPosition == pInd) = false;
+            myGpsRows = find(myGpsPosition == pInd);
+            if ~isempty(myGpsRows)
+                for i = 1:length(myGpsRows)
+                    obj.orderVectorRemove(myGpsRows(i));
+                end
+            end
+            obj.find_ind_next('gps');
+        end
+        %%
+        %
+        function obj = dropSettings(obj,sInd)
+            % the drop action is reflected in the corresponding logical
+            % vector
+            obj.settings_logical(sInd) = false;
+            obj.find_ind_next('settings');
+            % update the gps to reflect these changes
+            myGpsSettings = obj.gps(:,3);
+            obj.gps_logical(myGpsSettings == sInd) = false;
+            myGpsRows = find(myGpsSettings == sInd);
+            if ~isempty(myGpsRows)
+                for i = 1:length(myGpsRows)
+                    obj.orderVectorRemove(myGpsRows(i));
+                end
+            end
+            obj.find_ind_next('gps');
+        end
+        %%
+        %
         function obj = find_ind_next(obj,mystr)
             p = inputParser;
             addRequired(p,mystr,@(x) any(strcmp(x,{'gps','group','position','settings'})));
@@ -307,20 +367,33 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %%
         %
         function n = indOfGroup(obj)
-            n = transpose(1:length(obj.group_label)); %outputs a column
+            n = transpose(1:length(obj.group_logical)); %outputs a column
+            n = n(obj.group_logical);
         end
         %%
         %
         function n = indOfPosition(obj,gNum)
             myGpsPosition = obj.gps(:,2);
+            myGpsPosition = myGpsPosition(obj.gps_logical);
             myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
             n = unique(myPositionsInGNum); %outputs a column
         end
         %%
         %
-        function n = indOfSettings(obj,gNum,pNum)
-            myGpsSettings = obj.gps(:,3);
-            n = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum)); %outputs a column
+        function n = indOfSettings(obj,varargin)
+            if numel(varargin) == 2
+                gNum = varargin{1};
+                pNum = varargin{2};
+                myGpsSettings = obj.gps(:,3);
+                myGpsSettings = myGpsSettings(obj.gps_logical);
+                n = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum)); %outputs a column
+            else
+                gNum = varargin{1};
+                myGpsSettings = obj.gps(:,3);
+                myGpsSettings = myGpsSettings(obj.gps_logical);
+                mySettingsInGNum = myGpsSettings(obj.gps(:,1) == gNum);
+                n = unique(mySettingsInGNum); %outputs a column
+            end
         end
         %% Method to change the duration
         %
@@ -399,21 +472,21 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %%
         % computes the number of groups in the itinerary
         function n = numberOfGroup(obj)
-            n = length(obj.group_label);
+            n = sum(obj.group_logical);
         end
         %%
         % computes the number of positions in a give group
         function n = numberOfPosition(obj,gNum)
             myGpsPosition = obj.gps(:,2);
             myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
-            n = length(unique(myPositionsInGNum));
+            n = sum(obj.position_logical((unique(myPositionsInGNum))));
         end
         %%
         % computes the number of settings in a given position and group
         function n = numberOfSettings(obj,gNum,pNum)
             myGpsSettings = obj.gps(:,3);
             mySettingsInGNumPNum = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum));
-            n = length(mySettingsInGNumPNum);
+            n = sum(obj.settings_logical((mySettingsInGNumPNum)));
         end
         %%
         %
@@ -494,8 +567,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             myInd = find(obj.orderVector == GPSrow,1,'first');
             obj.orderVector(myInd) = [];
         end
+        %%
+        %
+        function obj = removeZeroRows(obj)
+            
+        end
     end
-    
     %%
     %
     methods (Static)

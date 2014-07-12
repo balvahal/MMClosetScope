@@ -16,7 +16,7 @@ set(handles.editOutputDirectory,'String',smdaTA.itinerary.output_directory);
 %
 %% Group Table
 % Show the data in the itinerary |group_order| property
-tableGroupData = cell(length(smdaTA.itinerary.group_label),...
+tableGroupData = cell(smdaTA.itinerary.numberOfGroup,...
     length(get(handles.tableGroup,'ColumnName')));
 n=1;
 for i = 1:smdaTA.itinerary.numberOfGroup
