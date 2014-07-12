@@ -283,6 +283,51 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
+        function obj = newGroup(obj,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj,varargin{:});
+            end
+        end
+        %%
+        %
+        function obj = newPosition(obj,gInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd,varargin{:});
+            end
+        end
+        %%
+        %
+        function obj = newSettings(obj,gInd,pInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd,varargin{:});
+            end
+        end
+        %%
+        %
+        function obj = addPosition2Group(obj,gInd,pInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_addPosition2Group(obj,gInd,pInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_addPosition2Group(obj,gInd,pInd,varargin{:});
+            end
+        end
+        %%
+        %
+        function obj = addSettings2Position(obj,gInd,pInd,sInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_addSettings2Position(obj,gInd,pInd,sInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_addSettings2Position(obj,gInd,pInd,sInd,varargin{:});
+            end
+        end
+        %%
+        %
         function n = indOfGroup(obj)
             n = transpose(1:length(obj.group_label)); %outputs a column
         end
@@ -361,7 +406,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %
         function obj = orderVectorInsert(obj,varargin)
             p = inputParser;
-            addOptional(p, 'OVrow',length(obj.orderVector)+1, @(x) ismember(x,1:length(obj.orderVector)));
+            addOptional(p, 'OVrow',length(obj.orderVector)+1, @(x) ismember(x,(1:length(obj.orderVector)+1)));
             parse(p,varargin{:});
             obj.orderVector(end+1) = obj.ind_next_gps;
             if p.Results.OVrow ~= length(obj.orderVector)+1
@@ -373,12 +418,23 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         function obj = orderVectorMove(obj,OVrow,GPSrow)
             %find the current position of the GPSrow
             myInd = find(obj.orderVector == GPSrow,1,'first');
+            if myInd == OVrow
+                return
+            elseif myInd > OVrow
             %create the array that will rearrange the orderVector
-            swapArray = 1:length(obj.orderVector);
-            swapArray(OVrow) = GPSrow;
-            swapArray(myInd) = OVrow;
-            %swap rows
-            obj.orderVector = obj.orderVector(swapArray);
+            moveArray = 1:length(obj.orderVector);
+            moveArray2Move = moveArray(OVrow:end);
+            moveArray2Move(myInd-OVrow+1) = [];
+            moveArray(OVrow) = myInd;
+            moveArray((OVrow+1):end) = moveArray2Move;
+            else
+            moveArray = 1:length(obj.orderVector);
+            moveArray2Move = moveArray(1:OVrow);
+            moveArray2Move(myInd) = [];
+            moveArray(OVrow) = myInd;
+            moveArray(1:(OVrow-1)) = moveArray2Move;
+            end
+            obj.orderVector = obj.orderVector(moveArray);
         end
         %%
         %
