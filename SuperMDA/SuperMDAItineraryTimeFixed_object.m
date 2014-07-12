@@ -336,11 +336,20 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
+        function obj = addSettings2AllPosition(obj,gInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_addSettings2AllPosition(obj,gInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_addSettings2AllPosition(obj,gInd,varargin{:});
+            end
+        end
+        %%
+        %
         function obj = find_ind_next(obj,mystr)
             p = inputParser;
             addRequired(p,mystr,@(x) any(strcmp(x,{'gps','group','position','settings'})));
             parse(p,mystr);
-      
+            
             switch mystr
                 case 'gps'
                     if any(~obj.gps_logical)
@@ -463,18 +472,18 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             if myInd == OVrow
                 return
             elseif myInd > OVrow
-            %create the array that will rearrange the orderVector
-            moveArray = 1:length(obj.orderVector);
-            moveArray2Move = moveArray(OVrow:end);
-            moveArray2Move(myInd-OVrow+1) = [];
-            moveArray(OVrow) = myInd;
-            moveArray((OVrow+1):end) = moveArray2Move;
+                %create the array that will rearrange the orderVector
+                moveArray = 1:length(obj.orderVector);
+                moveArray2Move = moveArray(OVrow:end);
+                moveArray2Move(myInd-OVrow+1) = [];
+                moveArray(OVrow) = myInd;
+                moveArray((OVrow+1):end) = moveArray2Move;
             else
-            moveArray = 1:length(obj.orderVector);
-            moveArray2Move = moveArray(1:OVrow);
-            moveArray2Move(myInd) = [];
-            moveArray(OVrow) = myInd;
-            moveArray(1:(OVrow-1)) = moveArray2Move;
+                moveArray = 1:length(obj.orderVector);
+                moveArray2Move = moveArray(1:OVrow);
+                moveArray2Move(myInd) = [];
+                moveArray(OVrow) = myInd;
+                moveArray(1:(OVrow-1)) = moveArray2Move;
             end
             obj.orderVector = obj.orderVector(moveArray);
         end
