@@ -127,53 +127,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.ind_next_position = 2;
             obj.ind_next_settings = 2;
         end
-        %% Method to change the duration
-        %
-        function obj = newDuration(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must zero of greater
-            if mynum < 0
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.duration = mynum;
-            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-        end
-        %% Method to change the fundamental period (units in seconds)
-        %
-        function obj = newFundamentalPeriod(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must be greater than zero
-            if mynum <= 0
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.fundamental_period = mynum;
-            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-        end
-        %% Method to change the number of timepoints
-        %
-        function obj = newNumberOfTimepoints(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must be a positive integer
-            if mynum < 1
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.number_of_timepoints = round(mynum);
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-        end
+       
         %% preallocate memory to hold the SuperMDA information
         % This should always be done before and the largest number should
         % be used for the number of groups, positions, and settings
@@ -291,33 +245,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
-        function obj = newGroup(obj,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj,varargin{:});
-            end
-        end
-        %%
-        %
-        function obj = newPosition(obj,gInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd,varargin{:});
-            end
-        end
-        %%
-        %
-        function obj = newSettings(obj,gInd,pInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd,varargin{:});
-            end
-        end
-        %%
-        %
         function obj = addPosition2Group(obj,gInd,pInd,varargin)
             if isempty(varargin)
                 obj = SuperMDAItineraryTimeFixed_method_addPosition2Group(obj,gInd,pInd);
@@ -395,6 +322,99 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             myGpsSettings = obj.gps(:,3);
             n = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum)); %outputs a column
         end
+        %% Method to change the duration
+        %
+        function obj = newDuration(obj,mynum)
+            %%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must zero of greater
+            if mynum < 0
+                return
+            end
+            %%
+            % update other dependent parameters
+            obj.duration = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% Method to change the fundamental period (units in seconds)
+        %
+        function obj = newFundamentalPeriod(obj,mynum)
+            %%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be greater than zero
+            if mynum <= 0
+                return
+            end
+            %%
+            % update other dependent parameters
+            obj.fundamental_period = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %%
+        %
+        function obj = newGroup(obj,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj,varargin{:});
+            end
+        end
+        %% Method to change the number of timepoints
+        %
+        function obj = newNumberOfTimepoints(obj,mynum)
+            %%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be a positive integer
+            if mynum < 1
+                return
+            end
+            %%
+            % update other dependent parameters
+            obj.number_of_timepoints = round(mynum);
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %%
+        %
+        function obj = newPosition(obj,gInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd,varargin{:});
+            end
+        end
+        %%
+        %
+        function obj = newSettings(obj,gInd,pInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd,varargin{:});
+            end
+        end
+        %%
+        % computes the number of groups in the itinerary
+        function n = numberOfGroup(obj)
+            n = length(obj.group_label);
+        end
+        %%
+        % computes the number of positions in a give group
+        function n = numberOfPosition(obj,gNum)
+            myGpsPosition = obj.gps(:,2);
+            myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
+            n = length(unique(myPositionsInGNum));
+        end
+        %%
+        % computes the number of settings in a given position and group
+        function n = numberOfSettings(obj,gNum,pNum)
+            myGpsSettings = obj.gps(:,3);
+            mySettingsInGNumPNum = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum));
+            n = length(mySettingsInGNumPNum);
+        end
         %%
         %
         function n = orderOfGroup(obj)
@@ -433,25 +453,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
             n = sortrows(horzcat(settingsInds,indicesOfFirstAppearance),2);
             n = transpose(n(:,1)); %outputs a row
-        end
-        %%
-        % computes the number of groups in the itinerary
-        function n = numberOfGroup(obj)
-            n = length(obj.group_label);
-        end
-        %%
-        % computes the number of positions in a give group
-        function n = numberOfPosition(obj,gNum)
-            myGpsPosition = obj.gps(:,2);
-            myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
-            n = length(unique(myPositionsInGNum));
-        end
-        %%
-        % computes the number of settings in a given position and group
-        function n = numberOfSettings(obj,gNum,pNum)
-            myGpsSettings = obj.gps(:,3);
-            mySettingsInGNumPNum = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum));
-            n = length(mySettingsInGNumPNum);
         end
         %%
         %
