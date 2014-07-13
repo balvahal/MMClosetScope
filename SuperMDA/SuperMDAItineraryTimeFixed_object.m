@@ -271,7 +271,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
         end
         %%
-        %
+        % a group and all the positions and settings therin shall be
+        % "forgotten".
         function obj = dropGroup(obj,gInd)
             % the drop action is reflected in the corresponding logical
             % vector
@@ -342,25 +343,25 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                     if any(~obj.gps_logical)
                         obj.ind_next_gps = find(~obj.gps_logical,1,'first');
                     else
-                        obj.ind_next_gps = obj.ind_next_gps + 1;
+                        obj.ind_next_gps = length(obj.gps_logical) + 1;
                     end
                 case 'group'
                     if any(~obj.group_logical)
                         obj.ind_next_group = find(~obj.group_logical,1,'first');
                     else
-                        obj.ind_next_group = obj.ind_next_group + 1;
+                        obj.ind_next_group = length(obj.group_logical) + 1;
                     end
                 case 'position'
                     if any(~obj.position_logical)
                         obj.ind_next_position = find(~obj.position_logical,1,'first');
                     else
-                        obj.ind_next_position = obj.ind_next_position + 1;
+                        obj.ind_next_position = length(obj.position_logical) + 1;
                     end
                 case 'settings'
                     if any(~obj.settings_logical)
                         obj.ind_next_settings = find(~obj.settings_logical,1,'first');
                     else
-                        obj.ind_next_settings = obj.ind_next_settings + 1;
+                        obj.ind_next_settings = length(obj.settings_logical) + 1;
                     end
             end
         end
@@ -374,8 +375,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %
         function n = indOfPosition(obj,gNum)
             myGpsPosition = obj.gps(:,2);
-            myGpsPosition = myGpsPosition(obj.gps_logical);
-            myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
+            myPositionsInGNum = myGpsPosition((obj.gps(:,1) == gNum) & transpose(obj.gps_logical));
             n = unique(myPositionsInGNum); %outputs a column
         end
         %%
@@ -385,13 +385,11 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 gNum = varargin{1};
                 pNum = varargin{2};
                 myGpsSettings = obj.gps(:,3);
-                myGpsSettings = myGpsSettings(obj.gps_logical);
-                n = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum)); %outputs a column
+                n = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum) & transpose(obj.gps_logical)); %outputs a column
             else
                 gNum = varargin{1};
                 myGpsSettings = obj.gps(:,3);
-                myGpsSettings = myGpsSettings(obj.gps_logical);
-                mySettingsInGNum = myGpsSettings(obj.gps(:,1) == gNum);
+                mySettingsInGNum = myGpsSettings((obj.gps(:,1) == gNum) & transpose(obj.gps_logical));
                 n = unique(mySettingsInGNum); %outputs a column
             end
         end
@@ -428,7 +426,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
         end
         %%
-        %
+        % a group has been designed such that no two groups will share any
+        % positions or settings.
         function obj = newGroup(obj,varargin)
             if isempty(varargin)
                 obj = SuperMDAItineraryTimeFixed_method_newGroup(obj);

@@ -23,6 +23,12 @@ if p.Results.gNum ==1
     % way as the first settings. These behaviors are somewhat arbitrary,
     % but provide a comfortable starting point for further modification.
     %
+    % find a gInd and pInd to use as a template
+    gInd = smdaITF.indOfGroup;
+    gInd = gInd(1);
+    pInd = smdaITF.indOfPosition(gInd);
+    pInd = pInd(1);
+    
     % add the new group properties
     smdaITF.group_function_after{smdaITF.ind_next_group} = smdaITF.group_function_after{1};
     smdaITF.group_function_before{smdaITF.ind_next_group} = smdaITF.group_function_before{1};
@@ -41,7 +47,7 @@ if p.Results.gNum ==1
     % find the order of the last position in the given group
     myInd = length(smdaITF.orderVector);
     % find how many settings there are for position 1.
-    firstPositionSettings = smdaITF.orderOfSettings(1,1);
+    firstPositionSettings = smdaITF.orderOfSettings(gInd,pInd);
     % add and copy these settings from the first position and update gps
     for i = 1:length(firstPositionSettings)
         % create new settings

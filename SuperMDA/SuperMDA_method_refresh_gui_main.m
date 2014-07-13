@@ -19,7 +19,7 @@ set(handles.editOutputDirectory,'String',smdaTA.itinerary.output_directory);
 tableGroupData = cell(smdaTA.itinerary.numberOfGroup,...
     length(get(handles.tableGroup,'ColumnName')));
 n=1;
-for i = 1:smdaTA.itinerary.numberOfGroup
+for i = smdaTA.itinerary.orderOfGroup
         tableGroupData{n,1} = smdaTA.itinerary.group_label{i};
         tableGroupData{n,2} = i;
         tableGroupData{n,3} = smdaTA.itinerary.numberOfPosition(i);
