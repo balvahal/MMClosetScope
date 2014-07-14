@@ -494,7 +494,7 @@ set(f,'Visible','on');
         if max(smdaTA.pointerGroup) == smdaTA.itinerary.numberOfGroup
             return
         end
-        currentOrder = 1:length(smdaTA.itinerary.group_order); % what the table looks like now
+        currentOrder = 1:smdaTA.itinerary.numberOfGroup; % what the table looks like now
         movingGroup = smdaTA.pointerGroup+1; % where the selected rows want to go
         reactingGroup = setdiff(currentOrder,smdaTA.pointerGroup); % the rows that are not moving
         fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
@@ -504,17 +504,24 @@ set(f,'Visible','on');
         myGroupOrder = smdaTA.itinerary.orderOfGroup;
         myGroupOrder = myGroupOrder(fillmeinArray);
         % use the new group order to rearrange the orderVector
-        newInds = zeros(2,smdaTA.itinerary.numberOfGroup);
-        newInds(1,1) = 1;
-        newInds(2,1) = smdaTA.itinerary.numberOfPosition(myGroupOrder(1));
-        for i = 2:length(newInds)
-            newInds(1,i) = newInds(1,i-1)+smdaTA.itinerary.numberOfPosition(myGroupOrder(i));
-            newInds(2,i) = newInds(2,i-1)+smdaTA.itinerary.numberOfPosition(myGroupOrder(i));
-        end
-        newOrderVector = zeros(size(smdaTA.itinerary.orderVector));
+         groupGPS = smdaTA.itinerary.gps(:,1);
+         groupGPS = groupGPS(smdaTA.itinerary.gps_logical);
+         newInds = zeros(2,smdaTA.itinerary.numberOfGroup);
+         newInds(1,1) = 1;
+         newInds(2,1) = sum(smdaTA.itinerary.gps(:,1) == myGroupOrder(1));
+         for i = 2:length(newInds)
+             newInds(1,i) = newInds(1,i-1)+sum(groupGPS == myGroupOrder(i-1));
+             newInds(2,i) = newInds(2,i-1)+sum(groupGPS == myGroupOrder(i));
+         end
+         newOrderVector = zeros(size(smdaTA.itinerary.orderVector));
         for i = 1:smdaTA.itinerary.numberOfGroup
-            newOrderVector(newInds(1,i):newInds(2,i)) = smdaTA.itinerary.
+            newOrderLogical = (smdaTA.itinerary.gps(:,1) == myGroupOrder(i)) & transpose(smdaTA.itinerary.gps_logical);
+            newOrderLogical = newOrderLogical(smdaTA.itinerary.orderVector);
+            newOrderSegment = smdaTA.itinerary.orderVector(newOrderLogical);
+            newOrderVector(newInds(1,i):newInds(2,i)) = newOrderSegment;
         end
+        smdaTA.itinerary.orderVector = newOrderVector;
+        %
         smdaTA.pointerGroup = movingGroup;
         smdaTA.refresh_gui_main;
     end
@@ -565,20 +572,41 @@ set(f,'Visible','on');
     end
 %%
 %
-    function pushbuttonGroupUp_Callback(~,~)
+    function pushbuttonGroupUp_Callback(~,~)     
         %%
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved up 1.
         if min(smdaTA.pointerGroup) == 1
             return
         end
-        currentOrder = 1:length(smdaTA.itinerary.group_order); % what the table looks like now
+        currentOrder = 1:smdaTA.itinerary.numberOfGroup; % what the table looks like now
         movingGroup = smdaTA.pointerGroup-1; % where the selected rows want to go
         reactingGroup = setdiff(currentOrder,smdaTA.pointerGroup); % the rows that are not moving
         fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
         fillmeinArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
         fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
-        smdaTA.itinerary.group_order = smdaTA.itinerary.group_order(fillmeinArray); % this rearrangement is performed on the group_order
+        % use the fillmeinArray to rearrange the groups
+        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = myGroupOrder(fillmeinArray);
+        % use the new group order to rearrange the orderVector
+         groupGPS = smdaTA.itinerary.gps(:,1);
+         groupGPS = groupGPS(smdaTA.itinerary.gps_logical);
+         newInds = zeros(2,smdaTA.itinerary.numberOfGroup);
+         newInds(1,1) = 1;
+         newInds(2,1) = sum(smdaTA.itinerary.gps(:,1) == myGroupOrder(1));
+         for i = 2:length(newInds)
+             newInds(1,i) = newInds(1,i-1)+sum(groupGPS == myGroupOrder(i-1));
+             newInds(2,i) = newInds(2,i-1)+sum(groupGPS == myGroupOrder(i));
+         end
+         newOrderVector = zeros(size(smdaTA.itinerary.orderVector));
+        for i = 1:smdaTA.itinerary.numberOfGroup
+            newOrderLogical = (smdaTA.itinerary.gps(:,1) == myGroupOrder(i)) & transpose(smdaTA.itinerary.gps_logical);
+            newOrderLogical = newOrderLogical(smdaTA.itinerary.orderVector);
+            newOrderSegment = smdaTA.itinerary.orderVector(newOrderLogical);
+            newOrderVector(newInds(1,i):newInds(2,i)) = newOrderSegment;
+        end
+        smdaTA.itinerary.orderVector = newOrderVector;
+        %
         smdaTA.pointerGroup = movingGroup;
         smdaTA.refresh_gui_main;
     end
