@@ -283,7 +283,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % the drop action is reflected in the corresponding logical
             % vector
             myPInd = obj.indOfPosition(gInd);
-            mySInd = obj.indOfSettings(gInd);           
+            mySInd = obj.indOfSettings(gInd);
             obj.group_logical(gInd) = false;
             obj.find_ind_next('group');
             % update the gps to reflect these changes
