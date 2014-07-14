@@ -97,7 +97,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.calibrationAngle = mytable.calibrationAngle;
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',100); % 'MaxSpeed' range of [0,100].
-            elseif strcmp(obj.computerName,'LB89-68-A06F')
+            elseif strcmp(obj.computerName,'LAHAVSCOPE002')
                 %%
                 % Curtain Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;
@@ -109,7 +109,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-                mytable = readtable(fullfile(mfilepath,'settings_LB89-68-A06F.txt'));
+                mytable = readtable(fullfile(mfilepath,'settings_LAHAVSCOPE002.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.calibrationAngle = mytable.calibrationAngle;
