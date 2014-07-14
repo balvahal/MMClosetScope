@@ -275,6 +275,11 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % "forgotten". It is assumed that groups do not share positions or
         % settings.
         function obj = dropGroup(obj,gInd)
+            % determine if this is the only group
+            if obj.numberOfGroup == 1
+                % if there is only a single group do not remove it
+                return;
+            end
             % the drop action is reflected in the corresponding logical
             % vector
             myPInd = obj.indOfPosition(gInd);
@@ -326,7 +331,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % if the settings are unique to that position, delete them
             mySIndGroup = obj.indOfSettings(gInd);
             for i = mySIndPosition
-                obj.settings_logical
                 if ~ismember(i,mySIndGroup)
                     %then there were settings unique to that position that
                     %must be "forgotten"
@@ -336,8 +340,18 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.find_ind_next('settings');
         end
         %%
-        %
+        % remove this settings from every position of the group where the
+        % settings is located. If there is only one settings in the group
+        % do not delete it.
         function obj = dropSettings(obj,sInd)
+            % determine if this is the only position in the group
+            myInd = find(obj.gps(:,3) == sInd,1,'first');
+            gInd = obj.gps(myInd,1);
+            mySInd = obj.indOfSettings(gInd);
+            if numel(mySInd) == 1
+                return;
+            end
+            myPIndBefore = obj.indOfPosition(gInd);
             % the drop action is reflected in the corresponding logical
             % vector
             obj.settings_logical(sInd) = false;
@@ -352,6 +366,14 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 end
             end
             obj.find_ind_next('gps');
+            % if any positions were removed outright this must be reflected
+            % in the position_logical
+            myPIndAfter = obj.indOfPosition(gInd);
+            myRemovedPosition = myPIndBefore(~ismember(myPIndBefore,myPIndAfter));
+            if ~isempty(myRemovedPosition)
+                obj.position_logical(myRemovedPosition) = false;
+                obj.find_ind_next('position');
+            end
         end
         %%
         %

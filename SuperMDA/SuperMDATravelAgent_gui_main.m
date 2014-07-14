@@ -512,7 +512,11 @@ set(f,'Visible','on');
         elseif length(smdaTA.pointerGroup) == smdaTA.itinerary.numberOfGroup
             smdaTA.pointerGroup(1) = [];
         end
-        smdaTA.dropGroup(smdaTA.pointerGroup);
+        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        gInds = myGroupOrder(smdaTA.pointerGroup);
+        for i = 1:length(gInds)
+            smdaTA.dropGroup(gInds(i));
+        end
         smdaTA.pointerGroup = smdaTA.itinerary.numberOfGroup;
         smdaTA.refresh_gui_main;
     end
@@ -599,6 +603,11 @@ set(f,'Visible','on');
     function pushbuttonPositionDrop_Callback(~,~)
         myGroupOrder = smdaTA.itinerary.orderOfGroup;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
+        if smdaTA.itinerary.numberOfPosition(gInd)==1
+            return
+        elseif length(smdaTA.pointerPosition) == smdaTA.itinerary.numberOfPosition(gInd)
+            smdaTA.pointerPosition(1) = [];
+        end
         myPositionInd = smdaTA.itinerary.orderOfPosition(gInd);
         for i = 1:length(smdaTA.pointerPosition)
             smdaTA.itinerary.dropPosition(myPositionInd(smdaTA.pointerPosition(i)));
@@ -805,14 +814,16 @@ set(f,'Visible','on');
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);
-        if length(smdaTA.itinerary.group(gInd).position(pInd).settings)==1
+        if smdaTA.itinerary.numberOfSettings(gInd,pInd) == 1
             return
-        elseif length(smdaTA.pointerSettings) == length(smdaTA.itinerary.group(gInd).position(pInd).settings)
+        elseif length(smdaTA.pointerSettings) == smdaTA.itinerary.numberOfSettings(gInd,pInd)
             smdaTA.pointerSettings(1) = [];
         end
-        smdaTA.dropSettingsOrder(gInd,1,smdaTA.pointerSettings);
-        smdaTA.pointerSettings = length(smdaTA.itinerary.group(gInd).position(pInd).settings_order);
-        smdaTA.changeAllPosition('settings','all',gInd);
+        mySettingsInd = smdaTA.itinerary.orderOfSettings(gInd,pInd);
+        for i = 1:length(smdaTA.pointerSettings)
+            smdaTA.itinerary.dropSettings(mySettingsInd(smdaTA.pointerSettings(i)));
+        end
+        smdaTA.pointerSettings = smdaTA.itinerary.numberOfSettings(gInd,pInd);
         smdaTA.refresh_gui_main;
     end
 %%
