@@ -598,14 +598,12 @@ set(f,'Visible','on');
 %
     function pushbuttonPositionDrop_Callback(~,~)
         myGroupOrder = smdaTA.itinerary.orderOfGroup;
-        gInd = myGroupOrder(smdaTA.pointerGroup(smdaTA.pointerGroup(1)));
-        if length(smdaTA.itinerary.group(gInd).position_order)==1
-            return
-        elseif length(smdaTA.pointerPosition) == length(smdaTA.itinerary.group(gInd).position_order)
-            smdaTA.pointerposition(1) = [];
+        gInd = myGroupOrder(smdaTA.pointerGroup(1));
+        myPositionInd = smdaTA.itinerary.orderOfPosition(gInd);
+        for i = 1:length(smdaTA.pointerPosition)
+            smdaTA.itinerary.dropPosition(myPositionInd(smdaTA.pointerPosition(i)));
         end
-        smdaTA.dropPositionOrder(gInd,smdaTA.pointerPosition);
-        smdaTA.pointerPosition = length(smdaTA.itinerary.group(gInd).position_order);
+        smdaTA.pointerPosition = smdaTA.itinerary.numberOfPosition(gInd);
         smdaTA.refresh_gui_main;
     end
 %%

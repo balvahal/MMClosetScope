@@ -272,7 +272,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         % a group and all the positions and settings therin shall be
-        % "forgotten".
+        % "forgotten". It is assumed that groups do not share positions or
+        % settings.
         function obj = dropGroup(obj,gInd)
             % the drop action is reflected in the corresponding logical
             % vector
@@ -296,10 +297,20 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.find_ind_next('settings');
         end
         %%
-        %
+        % if the settings in the position that is dropped is unique to that
+        % position, those settings are removed. The last position in a
+        % group cannot be removed.
         function obj = dropPosition(obj,pInd)
+            % determine if this is the only position in the group
+            myInd = find(obj.gps(:,2) == pInd,1,'first');
+            gInd = obj.gps(myInd,1);
+            myPInd = obj.indOfPosition(gInd);
+            if numel(myPInd) == 1
+                return;
+            end
             % the drop action is reflected in the corresponding logical
             % vector
+            mySIndPosition = obj.indOfSettings(gInd,pInd); %this must be obtained before the position is removed
             obj.position_logical(pInd) = false;
             obj.find_ind_next('position');
             % update the gps to reflect these changes
@@ -312,6 +323,17 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 end
             end
             obj.find_ind_next('gps');
+            % if the settings are unique to that position, delete them
+            mySIndGroup = obj.indOfSettings(gInd);
+            for i = mySIndPosition
+                obj.settings_logical
+                if ~ismember(i,mySIndGroup)
+                    %then there were settings unique to that position that
+                    %must be "forgotten"
+                    obj.settings_logical(i) = false;
+                end
+            end
+            obj.find_ind_next('settings');
         end
         %%
         %
@@ -366,20 +388,22 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
         end
         %%
-        %
+        % returns the inds of "active" groups
         function n = indOfGroup(obj)
             n = transpose(1:length(obj.group_logical)); %outputs a column
             n = n(obj.group_logical);
         end
         %%
-        %
+        % returns the positions found in a group
         function n = indOfPosition(obj,gNum)
             myGpsPosition = obj.gps(:,2);
             myPositionsInGNum = myGpsPosition((obj.gps(:,1) == gNum) & transpose(obj.gps_logical));
             n = unique(myPositionsInGNum); %outputs a column
         end
         %%
-        %
+        % returns all the settings found in a group if the group number is
+        % input. returns all the settings for a position if the group and
+        % position number are input
         function n = indOfSettings(obj,varargin)
             if numel(varargin) == 2
                 gNum = varargin{1};
