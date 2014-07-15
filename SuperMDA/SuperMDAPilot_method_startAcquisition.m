@@ -4,7 +4,15 @@ function [smdaP] = SuperMDAPilot_method_startAcquisition(smdaP)
 %%
 %
 if ~smdaP.running_bool
-    smdaP.itinerary.finalize_MDA;
+    %% Establish folder tree that will store images
+    %
+    if ~isdir(obj.output_directory)
+        mkdir(obj.output_directory);
+    end
+    obj.png_path = fullfile(obj.output_directory,'RAW_DATA');
+    if ~isdir(obj.png_path)
+        mkdir(obj.png_path);
+    end
     %%
     % initialize key variables
     smdaP.t = 0;

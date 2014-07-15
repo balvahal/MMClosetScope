@@ -18,6 +18,7 @@ classdef SuperMDAPilot_object < handle
     %
     properties
         database;
+        database_imagedescription = '';
         itinerary;
         clock_absolute;
         mm;
@@ -123,7 +124,7 @@ classdef SuperMDAPilot_object < handle
         %% update_database
         %
         function obj = update_database(obj)
-            SuperMDA_method_update_database(obj);
+            SuperMDAPilot_method_update_database(obj);
         end
     end
     %%

@@ -27,11 +27,13 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % be sequential (though not necessarily in order).
     properties
         channel_names;
+        database_filenamePNG;
         gps;
         gps_logical;
         mm;
         orderVector;
         output_directory = fullfile(pwd,'RAWDATA');
+        png_path;
         
         group_function_after;
         group_function_before;
@@ -91,7 +93,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             %% initialize the prototype_group
             %
             obj.group_function_after{1} = 'SuperMDA_function_group_after_basic';
-            obj.group_function_before{1} = 'SuperMDA_function_group_before_basic';
+            obj.group_function_before{1} = 'SuperMDA_function_group_before_timeFixed';
             obj.group_label{1} = 'group1';
             obj.group_logical = true;
             obj.group_scratchpad = {};
@@ -100,7 +102,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
             obj.position_continuous_focus_bool = true;
             obj.position_function_after{1} = 'SuperMDA_function_position_after_basic';
-            obj.position_function_before{1} = 'SuperMDA_function_position_before_basic';
+            obj.position_function_before{1} = 'SuperMDA_function_position_before_timeFixed';
             obj.position_label{1} = 'position1';
             obj.position_logical = true;
             obj.position_scratchpad = {};
