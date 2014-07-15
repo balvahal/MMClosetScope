@@ -194,16 +194,16 @@ classdef Gamepad_Logitech_F310 < handle
             % the TimerFcn will automatically pass in two input arguments.
             % These are not needed, so they are thrown away using the
             % syntax (~,~).
-            obj.joy_timer = timer('ExecutionMode','fixedRate','Period',0.005,'TimerFcn',@(~,~) obj.read_joystk);
-            obj.button_timer = timer('ExecutionMode','fixedRate','BusyMode','queue','Period',0.005,'TimerFcn',@(~,~) obj.read_button);
-            start(obj.joy_timer);
+            %obj.joy_timer = timer('ExecutionMode','fixedRate','Period',1/60,'TimerFcn',@(~,~) obj.read_joystk);
+            obj.button_timer = timer('ExecutionMode','fixedRate','BusyMode','queue','Period',1/60,'TimerFcn',@(~,~) obj.read_controller);
+            %start(obj.joy_timer);
             start(obj.button_timer);
         end
         %%
         %
         function delete(obj)
-            stop(obj.joy_timer);
-            delete(obj.joy_timer);
+            %stop(obj.joy_timer);
+            %delete(obj.joy_timer);
             stop(obj.button_timer);
             delete(obj.button_timer);
         end
@@ -260,6 +260,11 @@ classdef Gamepad_Logitech_F310 < handle
             obj.button_start_old = obj.button_start; %10
             obj.button_stk_left_old = obj.button_stk_left; %11
             obj.button_stk_right_old = obj.button_stk_right; %12
+        end
+        
+        function obj = read_controller(obj)
+            obj.read_button;
+            obj.read_joystk;
         end
         %%
         % 
