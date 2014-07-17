@@ -27,11 +27,17 @@ classdef Gamepad_Logitech_F310 < handle
         % that direction. The control over the microscope is mediated by a
         % stage controller. The stage controller is periodically sent
         % signals from MATLAB to update its movement.
+        %
         joystk_left_dir
         joystk_left_dir_old
         joystk_left_mag
         joystk_left_mag_old
         microscope
+        stageport
+        speed = 0;
+        speed_old = 0;
+        dir = 0;
+        dir_old = 0;
         
         %% The read command
         % The read command returns three MATLAB values: joystk, button,
@@ -112,10 +118,20 @@ classdef Gamepad_Logitech_F310 < handle
         
         pov_dpad_old
         
+        joystk_left_x_memory7 = zeros(1,7);
+        joystk_left_y_memory7 = zeros(1,7);
+        joystk_left_memoryInd = 1;
         joystk_left_x_old %1
         joystk_left_y_old %2
+        joystk_right_x_memory7 = zeros(1,7);
+        joystk_right_y_memory7 = zeros(1,7);
+        joystk_right_memoryInd = 1;
         joystk_right_x_old %3
         joystk_right_y_old %4
+        %%
+        % data collection
+        mydata = zeros(10000,2);
+        mydataind = 1;
     end
     %%
     %
@@ -195,9 +211,28 @@ classdef Gamepad_Logitech_F310 < handle
             % These are not needed, so they are thrown away using the
             % syntax (~,~).
             %obj.joy_timer = timer('ExecutionMode','fixedRate','Period',1/60,'TimerFcn',@(~,~) obj.read_joystk);
-            obj.button_timer = timer('ExecutionMode','fixedRate','BusyMode','queue','Period',1/60,'TimerFcn',@(~,~) obj.read_controller);
+            obj.button_timer = timer('ExecutionMode','fixedRate','BusyMode','queue','Period',0.0169,'TimerFcn',@(~,~) obj.read_controller);
             %start(obj.joy_timer);
             start(obj.button_timer);
+            
+            %%
+            %
+             computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
+            if strcmp(computerName,'LB89-6A-45FA')
+                %%
+                % Closet Scope
+                obj.stageport = 'COM3';
+            elseif strcmp(computerName,'LAHAVSCOPE002')
+                %%
+                % Curtain Scope
+                obj.stageport = 'COM3';
+            elseif strcmp(computerName,'KISHONYWAB111A')
+                %%
+                % Kishony Scope
+                                obj.stageport = 'COM3';
+            else
+                obj.stageport = 'COM3';
+            end
         end
         %%
         %
@@ -217,8 +252,16 @@ classdef Gamepad_Logitech_F310 < handle
             
             obj.joystk_left_x = obj.joystk(1); %1
             obj.joystk_left_y = obj.joystk(2); %2
+            obj.joystk_left_x_memory7(obj.joystk_left_memoryInd) = obj.joystk_left_x;
+            obj.joystk_left_y_memory7(obj.joystk_left_memoryInd) = obj.joystk_left_y;
+            if obj.joystk_left_memoryInd == 7
+                obj.joystk_left_memoryInd = 1;
+            else
+                obj.joystk_left_memoryInd = obj.joystk_left_memoryInd + 1;
+            end
             obj.joystk_left_dir = obj.angle_joystk_left;
             obj.joystk_left_mag = obj.magnitude_joystk_left;
+            
             obj.joystk_right_x = obj.joystk(3); %3
             obj.joystk_right_y = obj.joystk(4); %4
             
@@ -269,7 +312,9 @@ classdef Gamepad_Logitech_F310 < handle
         %%
         % 
         function my_angle = angle_joystk_left(obj)
-            my_angle = atan2d(obj.joystk_left_y,obj.joystk_left_x);
+            y = mean(obj.joystk_left_y_memory7);
+            x = mean(obj.joystk_left_x_memory7);
+            my_angle = atan2d(y,x);
             if my_angle < 0
                 my_angle = my_angle + 360;
             end
@@ -281,8 +326,11 @@ classdef Gamepad_Logitech_F310 < handle
         % and y signals also leads to faulty angles, but I cannot tell just
         % by looking at a string of numbers. With regards to magnitude,
         % values greater than 1 will be reduced to 1.
+        
         function my_magnitude = magnitude_joystk_left(obj)
-            my_magnitude = hypot(obj.joystk_left_y,obj.joystk_left_x);
+            y = mean(obj.joystk_left_y_memory7);
+            x = mean(obj.joystk_left_x_memory7);
+            my_magnitude = hypot(y,x);
             if my_magnitude > 1
                 my_magnitude = 1;
             end
