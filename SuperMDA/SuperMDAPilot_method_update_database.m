@@ -37,7 +37,4 @@ myNewDatabaseRow = {...
 smdaP.database(smdaP.runtime_imagecounter,:) = myNewDatabaseRow;
 %% Write this row to a text file
 %
-database_filename = fullfile(smdaP.itinerary.output_directory,'smda_database.txt');
-myfid = fopen(database_filename,'a');
-fprintf(myfid,'%s\t%s\t%s\t%s\t%d\t%d\t%f\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%d\t%s\r\n',myNewDatabaseRow{:});
-fclose(myfid);
+fprintf(smdaP.databasefid,'%s\t%s\t%s\t%s\t%d\t%d\t%f\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%d\t%s\r\n',myNewDatabaseRow{:});

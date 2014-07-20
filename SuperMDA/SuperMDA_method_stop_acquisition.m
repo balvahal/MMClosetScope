@@ -12,5 +12,6 @@ if smdaP.running_bool
     handles = guidata(smdaP.gui_pause_stop_resume);
     set(handles.textTime,'String','No Acquisition');
     smdaP.pause_bool = false;
+    fclose(smdaP.databasefid);
     disp('All Done!')
 end
