@@ -8,7 +8,7 @@ i = smdaPilot.gps_current(1); %group
 j = smdaPilot.gps_current(2); %position
 k = smdaPilot.gps_current(3); %settings
 xyz = smdaPilot.itinerary.position_xyz(j,:);
-if smdaPilot.position_continuous_focus_bool(j)
+if smdaPilot.itinerary.position_continuous_focus_bool(j)
     %% PFS lock-on will be attempted
     %
     smdaPilot.mm.setXYZ(xyz(1:2)); % setting the z through the focus device will disable the PFS. Therefore, the stage is moved in the XY direction before assessing the status of the PFS system.

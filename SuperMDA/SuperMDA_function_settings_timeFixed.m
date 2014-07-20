@@ -17,7 +17,7 @@ end
 % else continue with capturing of the image
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)});
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.settings_exposure(k));
-if strcmp(smdaPilot.mm.computerName,'LB89-6A-45FA')||strcmp(smdaPilot.mm.computerName,'LAHAVSCOPE002') %Closet Scope OR Curtain Scope
+if strcmp(smdaPilot.mm.computerName,'LB89-6A-45FA') %Closet Scope OR Curtain Scope
     switch smdaPilot.itinerary.settings_binning(k)
         case 1
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1');
@@ -30,7 +30,7 @@ if strcmp(smdaPilot.mm.computerName,'LB89-6A-45FA')||strcmp(smdaPilot.mm.compute
         otherwise
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1');
     end
-elseif strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')
+elseif strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')||strcmp(smdaPilot.mm.computerName,'LAHAVSCOPE002')
     switch smdaPilot.itinerary.settings_binning(k)
         case 1
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
@@ -50,7 +50,7 @@ smdaPilot.mm.core.waitForSystem();
     %% Snap and Image
     %
     smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label(i),strcat('_',smdaPilot.itinerary.position_label(j),'USA'),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.settings_channel(k)},smdaPilot.t,1);
+    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},'USA'),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,1);
     %         fid =
     %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
     %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);

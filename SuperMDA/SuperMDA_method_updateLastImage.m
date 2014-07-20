@@ -1,9 +1,9 @@
-function [obj] = SuperMDA_method_updateLastImage(obj)
-I = uint8(bitshift(obj.mm.I, -8)); %assumes 16-bit depth
+function [smdaP] = SuperMDA_method_updateLastImage(smdaP)
+I = uint8(bitshift(smdaP.mm.I, -8)); %assumes 16-bit depth
 Isize = size(I);
 Iheight = Isize(1);
 Iwidth = Isize(2);
-handles = guidata(obj.gui_lastImage);
+handles = guidata(smdaP.gui_lastImage);
 set(handles.axesLastImage,'XLim',[1,Iwidth]);
 set(handles.axesLastImage,'YLim',[1,Iheight]);
 I2 = reshape(I,[],1);
@@ -13,10 +13,10 @@ set(handles.I,'CData',I);
 
 %% Create an informative title
 %
-t = obj.runtime_index(1); %time
-i = obj.runtime_index(2); %group
-j = obj.runtime_index(3); %position
-k = obj.runtime_index(4); %settings
-channelName = obj.mm.Channel{obj.itinerary.group(i).position(j).settings(k).channel};
+t = smdaP.t; %time
+i = smdaP.gps_current(1); %group
+j = smdaP.gps_current(2); %position
+k = smdaP.gps_current(3); %settings
+channelName = smdaP.mm.Channel{smdaP.itinerary.settings_channel(k)};
 mytitle = sprintf('Channel: %s, Timepoint: %d',channelName,t);
-set(obj.gui_lastImage,'Name',mytitle);
+set(smdaP.gui_lastImage,'Name',mytitle);

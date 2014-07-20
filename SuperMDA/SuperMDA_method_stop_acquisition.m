@@ -1,15 +1,16 @@
 %%
 %
-function [smdaPilot] = SuperMDA_method_stop_acquisition(smdaPilot)
+function [smdaP] = SuperMDA_method_stop_acquisition(smdaP)
 %%
 %
-if smdaPilot.running_bool
-    smdaPilot.running_bool = false;
-    smdaPilot.pause_bool = true;
-    smdaPilot.runtime_timer.StopFcn = '';
-    stop(smdaPilot.runtime_timer);
-    stop(smdaPilot.wait_timer);
-    handles = guidata(smdaPilot.gui_pause_stop_resume);
+if smdaP.running_bool
+    smdaP.running_bool = false;
+    smdaP.pause_bool = true;
+    smdaP.timer_runtime.StopFcn = '';
+    stop(smdaP.timer_runtime);
+    stop(smdaP.timer_wait);
+    handles = guidata(smdaP.gui_pause_stop_resume);
     set(handles.textTime,'String','No Acquisition');
-    smdaPilot.pause_bool = false;
+    smdaP.pause_bool = false;
+    disp('All Done!')
 end

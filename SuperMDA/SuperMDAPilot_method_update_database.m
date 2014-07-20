@@ -8,15 +8,14 @@ g = smdaP.gps_current(1); %group
 p = smdaP.gps_current(2); %position
 s = smdaP.gps_current(3); %settings
 z = 1;
-smdaP.runtime_imagecounter = smdaP.runtime_imagecounter + 1;
 myGroupOrder = smdaP.itinerary.orderOfGroup;
-myPositionOrder = smdaP.itinerary.orderOfPostion(g);
+myPositionOrder = smdaP.itinerary.orderOfPosition(g);
 mySettingsOrder = smdaP.itinerary.orderOfSettings(g,p);
 myNewDatabaseRow = {...
-    smdaP.itinerary.channel_names{smdaP.settings_channel(s)},... %channel_name
+    smdaP.itinerary.channel_names{smdaP.itinerary.settings_channel(s)},... %channel_name
     smdaP.itinerary.database_filenamePNG,... %filename
-    smdaP.itinerary.group_label(g),... %group_label
-    smdaP.itinerary.position_label(p),... %position_label
+    smdaP.itinerary.group_label{g},... %group_label
+    smdaP.itinerary.position_label{p},... %position_label
     smdaP.itinerary.settings_binning(s),... %binning
     smdaP.itinerary.settings_channel(s),... %channel_number
     smdaP.itinerary.position_continuous_focus_offset(p),... %continuous_focus_offset

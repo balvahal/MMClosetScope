@@ -17,7 +17,7 @@ classdef SuperMDAPilot_object < handle
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        database;
+        database = {};
         database_imagedescription = '';
         itinerary;
         clock_absolute;
@@ -31,7 +31,7 @@ classdef SuperMDAPilot_object < handle
         timer_wait;
         gui_pause_stop_resume;
         gui_lastImage;
-        t = 0;
+        t = 1;
         flag_group_before = false;
         flag_group_after = false;
         flag_position_before = false;
@@ -57,9 +57,9 @@ classdef SuperMDAPilot_object < handle
                 %
                 obj.itinerary = sdmaI;
                 obj.mm = sdmaI.mm;
-                obj.timer_runtime = timer('TimerFcn',@(~,~) obj.timerRuntimeFun,'BusyMode','queue','Name','runtime_timer');
+                obj.timer_runtime = timer('TimerFcn',@(~,~) obj.timerRuntimeFun,'BusyMode','queue','Name','timer_runtime');
                 obj.timer_wait = timer('TimerFcn',@(~,~) obj.timerWaitFun,'ExecutionMode','fixedSpacing',...
-                    'Period',1,'Name','wait_timer');
+                    'Period',1,'Name','timer_wait');
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_pause_stop_resume = SuperMDAPilot_gui_pause_stop_resume(obj);
