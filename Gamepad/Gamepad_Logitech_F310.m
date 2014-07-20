@@ -34,17 +34,14 @@ classdef Gamepad_Logitech_F310 < handle
         joystk_left_mag_old
         microscope
         stageport
-        speed = 0;
-        speed_old = 0;
-        dir = 0;
-        dir_old = 0;
+        pov_speed = [25,50,100,200,400,800,1600]; %speed of microscope movement in microns per second
         
         %% The read command
         % The read command returns three MATLAB values: joystk, button,
         % pov.
         %
-        % * joystk = a four value array representing the x and y direction of
-        % the two joysticks. [stk_left_x, stk_left_y, stk_right_x,
+        % * joystk = a four value array representing the x and y direction
+        % of the two joysticks. [stk_left_x, stk_left_y, stk_right_x,
         % stk_right_y].
         % * buttons = a 12 value logical array where each position
         % represents a button. As far as I can tell only the "mode" button
@@ -84,8 +81,8 @@ classdef Gamepad_Logitech_F310 < handle
         pov_dpad
         %% joystk
         % There are two joystk that represent the left and right joysticks.
-        % The joystk values range from -1 to 1 in a continous fashion with 4
-        % decimal precision. Each joystick has an x-axis and y-axis value
+        % The joystk values range from -1 to 1 in a continous fashion with
+        % 4 decimal precision. Each joystick has an x-axis and y-axis value
         % and a abs(joystk(n)) = 1 means that  the stick is pushed to its
         % furtherest position. The resting position does not necessarily
         % equal [0,0,0,0], so be sure to calibrate the gamepad by
@@ -118,16 +115,31 @@ classdef Gamepad_Logitech_F310 < handle
         
         pov_dpad_old
         
-        joystk_left_x_memory7 = zeros(1,7);
-        joystk_left_y_memory7 = zeros(1,7);
+        joystk_left_x_memory7 = zeros(1,2);
+        joystk_left_y_memory7 = zeros(1,2);
         joystk_left_memoryInd = 1;
         joystk_left_x_old %1
         joystk_left_y_old %2
-        joystk_right_x_memory7 = zeros(1,7);
-        joystk_right_y_memory7 = zeros(1,7);
+        joystk_right_x_memory7 = zeros(1,2);
+        joystk_right_y_memory7 = zeros(1,2);
         joystk_right_memoryInd = 1;
         joystk_right_x_old %3
         joystk_right_y_old %4
+        %% joy stick lookup table
+        % It has been emperically determined that the joystick is unwieldy
+        % when relying upon some formula to determine velocity. The root of
+        % this lies in the communication with the stage. The signal needs
+        % to be broken up when a heading is to be maintained; constantly
+        % sending signals to change direction confounds the stage.
+        % Therefore, I will craft a lookup table that divide a circle into
+        % 24 directions spaced 15 degrees apart. The magnitude will be
+        % divided into 12 regions. The first region will be a deadzone.
+        % The next 6 regions will provide fine control over the stage. The
+        % last 5 regions will provide rapid movement.
+        joystk_left_lookup
+        magArraySlow = [0,20,30,50,70,90,120,150,200,250,350,475,600];
+        magArrayFast = [0,150,250,450,750,1500,2250,3500,5000,6000,7000,8000];
+        joystk_left_speedMode
         %%
         % data collection
         mydata = zeros(10000,2);
@@ -158,7 +170,7 @@ classdef Gamepad_Logitech_F310 < handle
             obj.microscope = mmhandle; %this gamepad is meant to interact with a microscope and mmhandle is the object that grants control over the microscope
             
             [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
-                       
+            
             obj.button_x = obj.button(1); %1
             obj.button_a = obj.button(2); %2
             obj.button_b = obj.button(3); %3
@@ -173,6 +185,7 @@ classdef Gamepad_Logitech_F310 < handle
             obj.button_stk_right = obj.button(12); %12
             
             obj.pov_dpad = obj.pov;
+            obj.pov_dpad_old = obj.pov;
             
             obj.joystk_left_x = obj.joystk(1); %1
             obj.joystk_left_y = obj.joystk(2); %2
@@ -207,17 +220,31 @@ classdef Gamepad_Logitech_F310 < handle
             obj.joystk_left_mag_old = obj.magnitude_joystk_left;
             
             %%
+            %
+            magArray = obj.magArraySlow;
+            degVec = 0:15:345;
+            obj.joystk_left_lookup = cell(12,24);
+            for i = 1:12
+                for j = 1:24
+                    obj.joystk_left_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
+                end
+            end
+            
+            obj.joystk_left_speedMode = 'slow';
+            %%
             % the TimerFcn will automatically pass in two input arguments.
             % These are not needed, so they are thrown away using the
             % syntax (~,~).
-            %obj.joy_timer = timer('ExecutionMode','fixedRate','Period',1/60,'TimerFcn',@(~,~) obj.read_joystk);
-            obj.button_timer = timer('ExecutionMode','fixedRate','BusyMode','queue','Period',0.0169,'TimerFcn',@(~,~) obj.read_controller);
+            %obj.joy_timer =
+            %timer('ExecutionMode','fixedRate','Period',1/60,'TimerFcn',@(~,~)
+            %obj.read_joystk);
+            obj.button_timer = timer('ExecutionMode','fixedRate','BusyMode','queue','Period',0.017,'TimerFcn',@(~,~) obj.read_controller);
             %start(obj.joy_timer);
             start(obj.button_timer);
             
             %%
             %
-             computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
+            computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
             if strcmp(computerName,'LB89-6A-45FA')
                 %%
                 % Closet Scope
@@ -229,32 +256,53 @@ classdef Gamepad_Logitech_F310 < handle
             elseif strcmp(computerName,'KISHONYWAB111A')
                 %%
                 % Kishony Scope
-                                obj.stageport = 'COM3';
+                obj.stageport = 'COM3';
             else
                 obj.stageport = 'COM3';
             end
         end
         %%
         %
+        function obj = makeJoyStkLeftLookup(obj,mystr)
+            switch lower(mystr)
+                case 'slow'
+                    magArray = obj.magArraySlow;
+                case 'fast'
+                    magArray = obj.magArrayFast;
+                otherwise
+                    magArray = obj.magArraySlow;
+            end
+            
+            degVec = 0:15:345;
+            obj.joystk_left_lookup = cell(12,24);
+            for i = 1:12
+                for j = 1:24
+                    obj.joystk_left_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
+                end
+            end
+        end
+        %%
+        %
         function delete(obj)
-            %stop(obj.joy_timer);
-            %delete(obj.joy_timer);
+            %stop(obj.joy_timer); delete(obj.joy_timer);
             stop(obj.button_timer);
             delete(obj.button_timer);
         end
         %%
         %
         function obj = read_joystk(obj)
-            [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);                     
+            [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
             obj.pov_dpad = obj.pov;
             
             Gamepad_function_pov_dpad(obj);
+            
+            obj.pov_dpad_old = obj.pov_dpad;
             
             obj.joystk_left_x = obj.joystk(1); %1
             obj.joystk_left_y = obj.joystk(2); %2
             obj.joystk_left_x_memory7(obj.joystk_left_memoryInd) = obj.joystk_left_x;
             obj.joystk_left_y_memory7(obj.joystk_left_memoryInd) = obj.joystk_left_y;
-            if obj.joystk_left_memoryInd == 7
+            if obj.joystk_left_memoryInd == 2
                 obj.joystk_left_memoryInd = 1;
             else
                 obj.joystk_left_memoryInd = obj.joystk_left_memoryInd + 1;
@@ -274,7 +322,7 @@ classdef Gamepad_Logitech_F310 < handle
         %
         function obj = read_button(obj)
             [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
-                       
+            
             obj.button_x = obj.button(1); %1
             obj.button_a = obj.button(2); %2
             obj.button_b = obj.button(3); %3
@@ -290,6 +338,7 @@ classdef Gamepad_Logitech_F310 < handle
             
             Gamepad_function_button_x(obj);
             Gamepad_function_button_rt(obj);
+            Gamepad_Logitech_button_stk_left(obj);
             
             obj.button_x_old = obj.button_x; %1
             obj.button_a_old = obj.button_a; %2
@@ -310,7 +359,7 @@ classdef Gamepad_Logitech_F310 < handle
             obj.read_joystk;
         end
         %%
-        % 
+        %
         function my_angle = angle_joystk_left(obj)
             y = mean(obj.joystk_left_y_memory7);
             x = mean(obj.joystk_left_x_memory7);
@@ -318,6 +367,9 @@ classdef Gamepad_Logitech_F310 < handle
             if my_angle < 0
                 my_angle = my_angle + 360;
             end
+            %%
+            % convert angle into lookup table index
+            my_angle = round(my_angle/15.6522) + 1; %15.6522 = 1/(24-1)
         end
         %%
         % I have observed that when holding the joystick in any of the four
@@ -334,6 +386,9 @@ classdef Gamepad_Logitech_F310 < handle
             if my_magnitude > 1
                 my_magnitude = 1;
             end
+            %%
+            % convert magnitude into a lookup table index
+            my_magnitude = round(my_magnitude*11) + 1;
         end
     end
     methods (Static)
