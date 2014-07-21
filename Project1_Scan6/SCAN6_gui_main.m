@@ -427,6 +427,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonMakeGrids_Callback(~,~)
+        tic
         % initialize the SuperMDAItinerary
         logicalList = logical(scan6.sampleList);
         sampleListIndex = find(logicalList);
@@ -485,7 +486,8 @@ set(f,'Visible','on');
                 
             set(myPositions,'Visible','on');
         end
-        %scan6.smdaTA.refresh_gui_main;
+        disp('Grid Calculation Complete!');
+        toc
     end
 %%
 %

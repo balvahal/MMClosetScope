@@ -6,10 +6,11 @@
 % NONE
 %% Outputs
 % NONE
-function [mm,smdaI] = SCAN6startup_main
+function [mm,smdaITF] = SCAN6startup_main
 %% Initialize
 %
 mm = Core_MicroManagerHandle;
-smdaI = SuperMDAItinerary(mm);
-smdaTA = SuperMDATravelAgent_object(smdaI);
-scan6 = SCAN6_object(mm,smdaI,smdaTA);
+smdaITF = SuperMDAItineraryTimeFixed_object(mm);
+smdaTA = SuperMDATravelAgent_object(smdaITF);
+scan6 = SCAN6_object(mm,smdaITF,smdaTA);
+disp('yo yo');

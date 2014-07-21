@@ -32,14 +32,16 @@ if p.Results.pNum == 1
     smdaITF.position_function_before{smdaITF.ind_next_position} = smdaITF.position_function_before{pInd};
     smdaITF.position_label{smdaITF.ind_next_position} = sprintf('position%d',smdaITF.numberOfPosition(gInd)+1);
     smdaITF.position_logical(smdaITF.ind_next_position) = true;
-    smdaITF.position_xyz(smdaITF.ind_next_position,:) = mm.getXYZ;
+    smdaITF.position_xyz(smdaITF.ind_next_position,:) = smdaITF.position_xyz(smdaITF.group_ind_last(gInd),:);
     % find the order of the last position in the given group
-    myPOrder = smdaITF.orderOfPosition(gInd);
-    mySOrder = smdaITF.orderOfSettings(gInd,myPOrder(end));
-    [~,myInd] = ismember([gInd,myPOrder(end),mySOrder(end)],smdaITF.gps,'rows');
-    myInd = find(smdaITF.orderVector == myInd,1,'first');
+%     myPOrder = smdaITF.orderOfPosition(gInd);
+%     mySOrder = smdaITF.orderOfSettings(gInd,myPOrder(end));
+%     [~,myInd] = ismember([gInd,myPOrder(end),mySOrder(end)],smdaITF.gps,'rows');
+%     myInd = find(smdaITF.orderVector == myInd,1,'first');
+    myInd = smdaITF.group_ind_last(gInd);
     % find how many settings there are for position at pInd.
     firstPositionSettings = smdaITF.orderOfSettings(gInd,pInd);
+    smdaITF.group_ind_last(gInd) = smdaITF.group_ind_last(gInd) + length(firstPositionSettings);
     % refer to these settings in the gps and update gps
     for i = 1:length(firstPositionSettings)
         % update gps, order vector, and settings index
@@ -50,6 +52,8 @@ if p.Results.pNum == 1
     end
     smdaITF.find_ind_next('position');
 else
-    error('smdaITF:addPositionN','this part of the code needs to be created');
+    for i = 1:p.Results.pNum
+        smdaITF.newPosition(gInd);
+    end
 end
 end

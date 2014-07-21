@@ -42,6 +42,7 @@ if p.Results.sNum == 1
     smdaITF.gps_logical(smdaITF.ind_next_gps) = true;
     smdaITF.find_ind_next('gps');
     smdaITF.find_ind_next('settings');
+    smdaITF.group_ind_last(gInd) = smdaITF.group_ind_last(gInd) + 1;
 else
 error('smdaITF:addSettingsN','this part of the code needs to be created');
 end

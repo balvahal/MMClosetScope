@@ -523,6 +523,7 @@ set(f,'Visible','on');
         smdaTA.itinerary.orderVector = newOrderVector;
         %
         smdaTA.pointerGroup = movingGroup;
+        smdaTA.itinerary.find_group_ind_last;
         smdaTA.refresh_gui_main;
     end
 %%
@@ -539,6 +540,7 @@ set(f,'Visible','on');
             smdaTA.dropGroup(gInds(i));
         end
         smdaTA.pointerGroup = smdaTA.itinerary.numberOfGroup;
+        smdaTA.itinerary.find_group_ind_last;
         smdaTA.refresh_gui_main;
     end
 
@@ -610,6 +612,7 @@ set(f,'Visible','on');
         smdaTA.itinerary.orderVector = newOrderVector;
         %
         smdaTA.pointerGroup = movingGroup;
+        smdaTA.itinerary.find_group_ind_last;
         smdaTA.refresh_gui_main;
     end
 %%
@@ -628,7 +631,7 @@ set(f,'Visible','on');
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved down 1.
         myGroupOrder = smdaTA.itinerary.orderOfGroup;
-        gInd = myGroupOrder(smdaTA.pointerGroup(smdaTA.pointerGroup(1)));
+        gInd = myGroupOrder(smdaTA.pointerGroup(1));
         if max(smdaTA.pointerPosition) == smdaTA.itinerary.numberOfPosition(gInd)
             return
         end
@@ -669,6 +672,7 @@ set(f,'Visible','on');
         smdaTA.itinerary.orderVector(myGInd(1):myGInd(2)) = newOrderVector;
         %
         smdaTA.pointerPosition = movingPosition;
+        smdaTA.itinerary.find_group_ind_last(gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -686,6 +690,7 @@ set(f,'Visible','on');
             smdaTA.itinerary.dropPosition(myPositionInd(smdaTA.pointerPosition(i)));
         end
         smdaTA.pointerPosition = smdaTA.itinerary.numberOfPosition(gInd);
+        smdaTA.itinerary.find_group_ind_last(gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -825,6 +830,7 @@ set(f,'Visible','on');
         smdaTA.itinerary.orderVector(myGInd(1):myGInd(2)) = newOrderVector;
         %
         smdaTA.pointerPosition = movingPosition;
+        smdaTA.itinerary.find_group_ind_last(gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -882,6 +888,7 @@ set(f,'Visible','on');
         pInd = pInd(1);
         smdaTA.addSettings(gInd);
         smdaTA.pointerSettings = smdaTA.itinerary.numberOfSettings(gInd,pInd);
+        smdaTA.itinerary.find_group_ind_last(gInd);
         smdaTA.refresh_gui_main;
         %        smdaTA.pushSettings(gInd);
     end
@@ -921,6 +928,7 @@ set(f,'Visible','on');
         smdaTA.itinerary.settings_z_step_size(mySettingsOrderPrior) = smdaTA.itinerary.settings_z_step_size(mySettingsOrder);
         %
         smdaTA.pointerSettings = movingSettings;
+        smdaTA.itinerary.find_group_ind_last(gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -940,6 +948,7 @@ set(f,'Visible','on');
             smdaTA.itinerary.dropSettings(mySettingsInd(smdaTA.pointerSettings(i)));
         end
         smdaTA.pointerSettings = smdaTA.itinerary.numberOfSettings(gInd,pInd);
+        smdaTA.itinerary.find_group_ind_last(gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -998,6 +1007,7 @@ set(f,'Visible','on');
         smdaTA.itinerary.settings_z_step_size(mySettingsOrderPrior) = smdaTA.itinerary.settings_z_step_size(mySettingsOrder);
         %
         smdaTA.pointerSettings = movingSettings;
+        smdaTA.itinerary.find_group_ind_last(gInd);
         smdaTA.refresh_gui_main;
     end
 %%
@@ -1144,7 +1154,7 @@ set(f,'Visible','on');
         else
             smdaTA.pointerPosition = sort(unique(eventdata.Indices(:,1)));
         end
-        smdaTA.refresh_gui_main;
+        %smdaTA.refresh_gui_main;
     end
 %%
 %

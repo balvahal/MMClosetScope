@@ -70,10 +70,13 @@ if p.Results.gNum ==1
         smdaITF.find_ind_next('gps');
         smdaITF.find_ind_next('settings');
     end
+    smdaITF.find_group_ind_last(smdaITF.ind_next_group);
     smdaITF.find_ind_next('group');
     smdaITF.find_ind_next('position');
     
 else
-    error('smdaITF:newGroupN','this part of the code needs to be created');
+    for i = 1:p.Results.gNum
+        smdaITF.newGroup;
+    end
 end
 end

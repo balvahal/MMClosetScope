@@ -14,7 +14,9 @@ smdaITF = smdaTA.itinerary;
 %%
 %
 if p.Results.pNum == 1
+    myNewPInd = smdaITF.ind_next_position;
     smdaITF.newPosition(gInd);
+    smdaITF.position_xyz(myNewPInd,:) = smdaITF.mm.getXYZ;
 else
     error('smdaTA:addPositionN','this part of the code needs to be created');
 end
