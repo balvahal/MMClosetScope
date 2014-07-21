@@ -135,14 +135,14 @@ switch decision_number
         % calculated
         a = p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1);
         b = p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2);
-        im_num_col = sqrt(p.Results.number_of_images*a/b);
+        im_num_col = sqrt(p.Results.number_of_images*a/b)*pixHeight/pixWidth;
         im_num_row = p.Results.number_of_images/im_num_col;
         im_num_col = round(im_num_col);
         im_num_row = round(im_num_row);
         NOI = im_num_col*im_num_row;
         %%
-        overlap_x = (p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/im_num_col-pixWidth;
-        overlap_y = (p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/im_num_row-pixHeight;
+        overlap_x = -(p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(im_num_col-1)+pixWidth;
+        overlap_y = -(p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(im_num_row-1)+pixHeight;
         ULC = p.Results.upper_left_corner;
         LRC = ...
             [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
@@ -327,14 +327,16 @@ end
 % * subtract the ULC from each point.
 % * rotate all points with the rotation matrix using the calibration angle
 % * add the ULC back to every position
-rotatedPositions = positions;
-centerOfMass = repmat(mean(positions),[size(positions,1),1]);
-centerOfMass(:,3) = [];
-rotatedPositions(:,1:2) = rotatedPositions(:,1:2) - centerOfMass;
-rotationMatrix = [cosd(mmhandle.calibrationAngle) -sind(mmhandle.calibrationAngle); sind(mmhandle.calibrationAngle), cosd(mmhandle.calibrationAngle)];
-rotatedPositions(:,1:2) = (rotationMatrix * rotatedPositions(:,1:2)')';
-rotatedPositions(:,1:2) = rotatedPositions(:,1:2) + centerOfMass;
-positions = rotatedPositions;
+if size(positions,1) > 1
+    rotatedPositions = positions;
+    centerOfMass = repmat(mean(positions),[size(positions,1),1]);
+    centerOfMass(:,3) = [];
+    rotatedPositions(:,1:2) = rotatedPositions(:,1:2) - centerOfMass;
+    rotationMatrix = [cosd(mmhandle.calibrationAngle) -sind(mmhandle.calibrationAngle); sind(mmhandle.calibrationAngle), cosd(mmhandle.calibrationAngle)];
+    rotatedPositions(:,1:2) = (rotationMatrix * rotatedPositions(:,1:2)')';
+    rotatedPositions(:,1:2) = rotatedPositions(:,1:2) + centerOfMass;
+    positions = rotatedPositions;
+end
 %% package the output in a struct
 %
 grid.positions = positions;

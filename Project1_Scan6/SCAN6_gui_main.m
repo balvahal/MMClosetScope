@@ -68,6 +68,13 @@ hpushbuttonMakeGrids = uicontrol('Style','pushbutton','Units','characters',...
     'String','MAKE GRIDS',...
     'Position',[region1(1)+78, region1(2)+4, 30,4],...
     'Callback',{@pushbuttonMakeGrids_Callback});
+
+hpopupGridStyle = uicontrol('Style', 'popup','Units','characters',...
+    'String', 'movie|IF',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
+    'Position', [region1(1)+78, region1(2)+10, 30,4]);
+% The popup function handle callback
+% is implemented as a local function
 %% Assemble Region 2
 %
 %%
@@ -131,7 +138,7 @@ mm = scan6.mm;
 imageHeight = mm.core.getPixelSizeUm*mm.core.getImageHeight;
 imageWidth = mm.core.getPixelSizeUm*mm.core.getImageWidth;
 handles.colorDish = [176 224 230]/255;
-handles.colorActiveDish = [135 206 235]/255;
+handles.colorActiveDish = [255 99 71]/255;
 handles.colorPerimeter = [105 105 105]/255;
 handles.colorActivePerimeter = [0 0 0]/255;
 
@@ -205,6 +212,7 @@ handles.listboxXY = hlistboxXY;
 handles.editNumS = heditNumS;
 handles.textUserFeedback = htextUserFeedback;
 handles.axesStageMap = haxesStageMap;
+handles.popupGridStyle = hpopupGridStyle;
 guidata(f,handles);
 %%
 % make the gui visible
@@ -423,20 +431,25 @@ set(f,'Visible','on');
         scan6.ind = str2double(regexp(listboxTrueContents{myValue(1)},'(?<=s)\d+','match','once'));
         set(handles.editNumS,'String',num2str(scan6.numberOfPositions(scan6.ind)));
         scan6.numberOfPositions(scan6.ind) = str2double(get(handles.editNumS,'String'));
+        scan6.ind2 = get(handles.listboxXY,'Value');
     end
 %%
 %
     function pushbuttonMakeGrids_Callback(~,~)
         tic
         % initialize the SuperMDAItinerary
+        gridStyle = get(handles.popupGridStyle,'Value');
         logicalList = logical(scan6.sampleList);
         sampleListIndex = find(logicalList);
         numberOfPositions = scan6.numberOfPositions(logicalList);
         center = scan6.center(:,find(logicalList)); %#ok<FNDSB>
         radius = scan6.radius(logicalList);
         z = scan6.z(logicalList);
-        if length(numberOfPositions) >1 %assumes 1st group is there by default and should not count towards additional groups
-            scan6.smdaTA.addGroup(length(numberOfPositions)-1);
+        if length(numberOfPositions) > 1 %assumes 1st group is there by default and should not count towards additional groups
+            numberOfGroups = smdaTA.itinerary.numberOfGroup;
+            if numberOfGroups < length(numberOfPositions)
+            scan6.smdaTA.addGroup(length(numberOfPositions)-numberOfGroups);
+            end
         end
         for i = 1:length(numberOfPositions)
             if numberOfPositions(i) == Inf
@@ -456,10 +469,35 @@ set(f,'Visible','on');
                     [(center(1,i) + (cos(pi/4)*radius(i) - tol)),...
                     (center(2,i) + (cos(pi/4)*radius(i) - tol)),...
                     z(i)];
-                grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
-                numberOfPositions(i) = size(grid.positions,1);
+                if gridStyle == 1
+                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
+                    numberOfPositions(i) = size(grid.positions,1);
+                elseif gridStyle == 2
+                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
+                    numberOfPositions(i) = size(grid.positions,1);
+                end
             else
-                grid = super_mda_grid_maker(scan6.mm,'centroid',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
+                if gridStyle == 1
+                    imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
+                    imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
+                    %Use 2x image dimensions as a tolerance for the maximum
+                    %area. In otherwords, the square will be slightly smaller
+                    %than it could be.
+                    tol = 3*(imageWidth+imageHeight);
+                    %Find the corners of the square that maximizes the area
+                    %within the circular coverslip.
+                    ULC = ...
+                        [(center(1,i) - (cos(pi/4)*radius(i) - tol)),...
+                        (center(2,i) - (cos(pi/4)*radius(i) - tol)),...
+                        z(i)];
+                    LRC = ...
+                        [(center(1,i) + (cos(pi/4)*radius(i) - tol)),...
+                        (center(2,i) + (cos(pi/4)*radius(i) - tol)),...
+                        z(i)];
+                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfPositions(i));
+                elseif gridStyle == 2
+                    grid = super_mda_grid_maker(scan6.mm,'centroid',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
+                end
             end
             scan6.smdaTA.addPositionGrid(i,grid);
             
@@ -483,7 +521,7 @@ set(f,'Visible','on');
             
             set(myPositions,'XData',myPosX,'YData',myPosY,...
                 'FaceVertexCData',myFaceColor,'Visible','on');
-                
+            
             set(myPositions,'Visible','on');
         end
         disp('Grid Calculation Complete!');

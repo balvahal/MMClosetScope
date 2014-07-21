@@ -54,7 +54,7 @@ mm = scan6.mm;
 imageHeight = mm.core.getPixelSizeUm*mm.core.getImageHeight;
 imageWidth = mm.core.getPixelSizeUm*mm.core.getImageWidth;
 handles.colorDish = [176 224 230]/255;
-handles.colorActiveDish = [135 206 235]/255;
+handles.colorActiveDish = [255 99 71]/255;
 handles.colorPerimeter = [105 105 105]/255;
 handles.colorActivePerimeter = [0 0 0]/255;
 

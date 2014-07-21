@@ -15,6 +15,6 @@ smdaITF = smdaTA.itinerary;
 if p.Results.gNum ==1
     smdaITF.newGroup;
 else
-    error('smdaTA:addGroupN','this part of the code needs to be created');
+    smdaITF.newGroup(p.Results.gNum);
 end
 end

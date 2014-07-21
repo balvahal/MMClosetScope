@@ -752,14 +752,14 @@ set(f,'Visible','on');
                 % locking onto the correct z.
                 smdaTA.mm.setXYZ(xyz(3),'direction','z');
                 smdaTA.mm.core.waitForDevice(smdaTA.mm.FocusDevice);
-                smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.group(gInd).position(pInd).continuous_focus_offset);
+                smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.position_continuous_focus_offset(pInd));
                 smdaTA.mm.core.fullFocus(); % PFS will return to |OFF|
             else
                 %%
                 % If the PFS system is already on, then changing the offset
                 % will adjust the z-position. fullFocus() will have the
                 % system wait until the new z-position has been reached.
-                smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.group(gInd).position(pInd).continuous_focus_offset);
+                smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.position_continuous_focus_offset(pInd));
                 smdaTA.mm.core.fullFocus(); % PFS will remain |ON|
             end
         else
