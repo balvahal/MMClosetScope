@@ -8,7 +8,10 @@ set(handles_gui_pause_stop_resume.textTime,'String','RUNNING');
 
 %%
 % loop through the multi-dimensional acquisition
+tic
 smdaP.oneLoop;
+disp('LOOP TIME');
+toc
 %%
 % increase the time counter. the timer begins at 0, so the the first
 % timepoint will be 1.

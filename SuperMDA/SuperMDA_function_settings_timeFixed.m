@@ -47,14 +47,14 @@ end
 smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.settings_gain(k))
 smdaPilot.mm.core.waitForSystem();
 
-    %% Snap and Image
-    %
-    smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},'USA'),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,1);
-    %         fid =
-    %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
-    %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
-    imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
-    %% Update the database
-    %
-    smdaPilot.update_database;
+%% Snap and Image
+%
+smdaPilot.snap;
+smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},'USA'),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,1);
+%         fid =
+%         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
+%         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
+imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
+%% Update the database
+%
+smdaPilot.update_database;
