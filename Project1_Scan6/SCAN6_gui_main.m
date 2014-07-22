@@ -73,6 +73,12 @@ hpopupGridStyle = uicontrol('Style', 'popup','Units','characters',...
     'String', 'movie|IF',...
     'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
     'Position', [region1(1)+78, region1(2)+10, 30,4]);
+
+hpushbuttonFlatfield = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
+    'String','Flatfield',...
+    'Position',[region1(1)+110, region1(2)+4, 20,4],...
+    'Callback',{@pushbuttonFlatfield_Callback});
 % The popup function handle callback
 % is implemented as a local function
 %% Assemble Region 2
@@ -225,6 +231,13 @@ set(f,'Visible','on');
     function fDeleteFcn(~,~)
         %do nothing. This means only the master object can close this
         %window.
+    end
+%%
+%
+    function pushbuttonFlatfield_Callback(~,~)
+        gInd = scan6.ind(1);
+        smdaITF2 = SuperMDAItineraryTimeFixed_object(scan6.mm);
+        
     end
 %%
 %
@@ -446,7 +459,7 @@ set(f,'Visible','on');
         radius = scan6.radius(logicalList);
         z = scan6.z(logicalList);
         if length(numberOfPositions) > 1 %assumes 1st group is there by default and should not count towards additional groups
-            numberOfGroups = smdaTA.itinerary.numberOfGroup;
+            numberOfGroups = scan6.smdaI.numberOfGroup;
             if numberOfGroups < length(numberOfPositions)
             scan6.smdaTA.addGroup(length(numberOfPositions)-numberOfGroups);
             end

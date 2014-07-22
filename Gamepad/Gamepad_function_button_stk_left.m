@@ -1,6 +1,6 @@
 %%
 %
-function [gamepad] = Gamepad_Logitech_button_stk_left(gamepad)
+function [gamepad] = Gamepad_function_button_stk_left(gamepad)
 if gamepad.button_stk_left == gamepad.button_stk_left_old
     return
 elseif gamepad.button_stk_left == 1
