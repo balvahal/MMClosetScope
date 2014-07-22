@@ -32,7 +32,8 @@ if p.Results.pNum == 1
     smdaITF.position_function_before{smdaITF.ind_next_position} = smdaITF.position_function_before{pInd};
     smdaITF.position_label{smdaITF.ind_next_position} = sprintf('position%d',smdaITF.numberOfPosition(gInd)+1);
     smdaITF.position_logical(smdaITF.ind_next_position) = true;
-    smdaITF.position_xyz(smdaITF.ind_next_position,:) = smdaITF.position_xyz(smdaITF.group_ind_last(gInd),:);
+    pInd2 = smdaITF.gps(smdaITF.orderVector(smdaITF.group_ind_last(gInd)),2);
+    smdaITF.position_xyz(smdaITF.ind_next_position,:) = smdaITF.position_xyz(pInd2,:);
     % find the order of the last position in the given group
 %     myPOrder = smdaITF.orderOfPosition(gInd);
 %     mySOrder = smdaITF.orderOfSettings(gInd,myPOrder(end));
