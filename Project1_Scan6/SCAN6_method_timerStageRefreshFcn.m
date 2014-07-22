@@ -5,6 +5,10 @@ imageWidth = mm.core.getPixelSizeUm*mm.core.getImageWidth;
 
 mm.getXYZ;
 x = mm.pos(1);
+if x == 0
+    mm.getXYZ;
+    x = mm.pos(1);
+end
 y = mm.pos(2);
 handles = guidata(scan6.gui_axes);
 set(handles.rectangleCurrentPosition,'Position',[x-imageWidth/2,y-imageHeight/2,imageWidth,imageHeight]);

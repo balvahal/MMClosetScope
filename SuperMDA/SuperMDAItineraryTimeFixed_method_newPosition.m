@@ -21,8 +21,6 @@ if p.Results.pNum == 1
     % settings will be the same as the settings for the first position in
     % this group.
     %
-    % add the new position properties reflecting the current smdaTAective
-    % position
     pInd = smdaITF.indOfPosition(gInd);
     pInd = pInd(1);
     
@@ -43,6 +41,13 @@ if p.Results.pNum == 1
     % find how many settings there are for position at pInd.
     firstPositionSettings = smdaITF.orderOfSettings(gInd,pInd);
     smdaITF.group_ind_last(gInd) = smdaITF.group_ind_last(gInd) + length(firstPositionSettings);
+    myGroupOrder = smdaITF.orderOfGroup;
+    indGroupOrder = find(myGroupOrder == gInd,1,'first');
+    if indGroupOrder ~= length(myGroupOrder)
+        for i = (indGroupOrder+1):length(myGroupOrder)
+            smdaITF.group_ind_last(i) = smdaITF.group_ind_last(i) + length(firstPositionSettings);
+        end
+    end
     % refer to these settings in the gps and update gps
     for i = 1:length(firstPositionSettings)
         % update gps, order vector, and settings index

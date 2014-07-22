@@ -1,7 +1,7 @@
-function gamepad = SCAN6_gamepad_rt(gamepad)
-if gamepad.button_rt == gamepad.button_rt_old
+function gamepad = SCAN6_gamepad_lt(gamepad)
+if gamepad.button_lt == gamepad.button_lt_old
     return
-elseif gamepad.button_rt == 1
+elseif gamepad.button_lt == 1
     %%
     % determine which functions to execute
     flag_group_before = false;
@@ -15,10 +15,10 @@ elseif gamepad.button_rt == 1
     gps_current = gpsInOrder(gamepad.ITFpointer,:);
     myTempPointer = gamepad.ITFpointer;
     while true
-        if myTempPointer == 1
-            myTempPointer = length(smdaI.orderVector);
+        if myTempPointer == length(smdaI.orderVector)
+            myTempPointer = 1;
         else
-            myTempPointer = myTempPointer - 1;
+            myTempPointer = myTempPointer + 1;
         end
         if gpsInOrder(gamepad.ITFpointer,2) == gpsInOrder(myTempPointer,2)
             if myTempPointer == gamepad.ITFpointer
@@ -32,13 +32,13 @@ elseif gamepad.button_rt == 1
             break
         end
     end
-%     flagcheck_before;
+%    flagcheck_before;
     myTempPointer = gamepad.ITFpointer;
     while true
-        if myTempPointer == length(smdaI.orderVector)
-            myTempPointer = 1;
+        if myTempPointer == 1
+            myTempPointer = length(smdaI.orderVector);
         else
-            myTempPointer = myTempPointer + 1;
+            myTempPointer = myTempPointer - 1;
         end
         if gpsInOrder(gamepad.ITFpointer,2) == gpsInOrder(myTempPointer,2)
             if myTempPointer == gamepad.ITFpointer

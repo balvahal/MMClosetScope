@@ -75,6 +75,7 @@ classdef SCAN6_object < handle
                         obj.gamepad = gamepad;
                         obj.gamepad.smdaITF = smdaI;
                         obj.gamepad.scan6 = obj;
+                        obj.gamepad.function_button_lt = @SCAN6_gamepad_lt;
                         obj.gamepad.function_button_rt = @SCAN6_gamepad_rt;
                         obj.gamepad.function_button_x = @SCAN6_gamepad_x;
                         obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;

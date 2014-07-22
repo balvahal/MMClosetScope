@@ -8,7 +8,7 @@ function [gamepad] = SCAN6_gamepad_x(gamepad)
         smdaI = gamepad.smdaITF;
         myPInd = smdaI.gps(smdaI.orderVector(gamepad.ITFpointer),2);
         smdaI.position_continuous_focus_offset(myPInd) = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
-        smdaI.position_xyz(myPInd) = mm.getXYZ;
+        smdaI.position_xyz(myPInd,:) = mm.getXYZ;
         fprintf('position %d updated!\n',myPInd);
         return
     else
