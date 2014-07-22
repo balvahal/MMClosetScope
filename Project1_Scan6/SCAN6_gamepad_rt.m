@@ -11,7 +11,7 @@ elseif gamepad.button_rt == 1
     
     smdaI = gamepad.smdaITF;
     mmhandle = gamepad.microscope;
-    gps_current = smdaI.gps(smdaI.orderVector(gamepad.ITFpointer));
+    gps_current = smdaI.gps(smdaI.orderVector(gamepad.ITFpointer),:);
     myTempPointer = gamepad.ITFpointer;
     while true
         if myTempPointer == 1
@@ -27,7 +27,7 @@ elseif gamepad.button_rt == 1
                 continue
             end
         else
-            gps_previous = smdaI.gps(smdaI.orderVector(myTempPointer));
+            gps_previous = smdaI.gps(smdaI.orderVector(myTempPointer),:);
             break
         end
     end
@@ -47,7 +47,7 @@ elseif gamepad.button_rt == 1
                 continue
             end
         else
-            gps_next = smdaI.gps(smdaI.orderVector(myTempPointer));
+            gps_next = smdaI.gps(smdaI.orderVector(myTempPointer),:);
             gamepad.ITFpointer = myTempPointer;
             break
         end

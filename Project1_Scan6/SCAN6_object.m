@@ -29,7 +29,7 @@ classdef SCAN6_object < handle
             %
             if nargin == 0
                 return
-            elseif nargin == 3
+            elseif nargin == 4
                 %% Initialzing the SuperMDA object
                 %
                 obj.smdaI = smdaI;
@@ -78,7 +78,7 @@ classdef SCAN6_object < handle
                         obj.gamepad.function_button_rt = @SCAN6_gamepad_rt;
                         obj.gamepad.function_button_x = @SCAN6_gamepad_x;
                         obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;
-                        obj.gamepad.connectController;
+                        %obj.gamepad.connectController;
                     end
                 end
             end
