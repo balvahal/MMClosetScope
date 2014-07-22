@@ -160,9 +160,10 @@ classdef Gamepad_Logitech_F310 < handle
         joystk_right_lookup
         joystk_right_speedMode
         %%
-        % data collection
-        mydata = zeros(10000,2);
-        mydataind = 1;
+        % scan6 project specifics
+        smdaITF
+        ITFpointer = 1;
+        scan6
     end
     %%
     %

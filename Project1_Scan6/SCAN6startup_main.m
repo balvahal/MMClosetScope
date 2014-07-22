@@ -6,11 +6,12 @@
 % NONE
 %% Outputs
 % NONE
-function [mm,smdaITF] = SCAN6startup_main
+
 %% Initialize
 %
 mm = Core_MicroManagerHandle;
 smdaITF = SuperMDAItineraryTimeFixed_object(mm);
 smdaTA = SuperMDATravelAgent_object(smdaITF);
-scan6 = SCAN6_object(mm,smdaITF,smdaTA);
+gamepad = Gamepad_Logitech_F310(mm);
+scan6 = SCAN6_object(mm,smdaITF,smdaTA,gamepad);
 disp('yo yo');

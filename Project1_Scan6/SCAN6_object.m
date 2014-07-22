@@ -5,6 +5,7 @@ classdef SCAN6_object < handle
         smdaI;
         smdaTA;
         mm;
+        gamepad;
         sampleList = zeros(1,6);
         gui_main;
         gui_axes;
@@ -23,7 +24,7 @@ classdef SCAN6_object < handle
         %% The constructor method
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
-        function obj = SCAN6_object(mm,smdaI,smdaTA)
+        function obj = SCAN6_object(mm,smdaI,smdaTA,gamepad)
             %%
             %
             if nargin == 0
@@ -67,6 +68,17 @@ classdef SCAN6_object < handle
         
                         myPerimeter2 = handles.patchPerimeterPositions{i};
                         set(myPerimeter2,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
+                        
+                        %%
+                        % setup the gamepad for adjusting proposed
+                        % positions
+                        obj.gamepad = gamepad;
+                        obj.gamepad.smdaITF = smdaI;
+                        obj.gamepad.scan6 = obj;
+                        obj.gamepad.function_button_rt = @SCAN6_gamepad_rt;
+                        obj.gamepad.function_button_x = @SCAN6_gamepad_x;
+                        obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;
+                        obj.gamepad.connectController;
                     end
                 end
             end
