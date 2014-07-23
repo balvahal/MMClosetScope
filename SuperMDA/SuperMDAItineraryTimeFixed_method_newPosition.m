@@ -45,7 +45,8 @@ if p.Results.pNum == 1
     indGroupOrder = find(myGroupOrder == gInd,1,'first');
     if indGroupOrder ~= length(myGroupOrder)
         for i = (indGroupOrder+1):length(myGroupOrder)
-            smdaITF.group_ind_last(i) = smdaITF.group_ind_last(i) + length(firstPositionSettings);
+            ix = myGroupOrder(i);
+            smdaITF.group_ind_last(ix) = smdaITF.group_ind_last(ix) + length(firstPositionSettings);
         end
     end
     % refer to these settings in the gps and update gps

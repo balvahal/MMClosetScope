@@ -872,12 +872,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSave_Callback(~,~)
-        myitinerary = smdaTA.itinerary;
-        myitinerary.mm = [];
-        warning('off','all');
-        save(fullfile(myitinerary.output_directory,'mySuperMDAItinerary.mat'),'myitinerary');
-        warning('on','all');
-        myitinerary.mm = smdaTA.mm;
+        smdaTA.itinerary.export;
     end
 %%
 %

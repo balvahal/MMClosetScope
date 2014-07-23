@@ -32,7 +32,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         gps_logical;
         mm;
         orderVector;
-        output_directory = fullfile(pwd,'RAWDATA');
+        output_directory = fullfile(pwd,'SuperMDA');
         png_path;
         
         group_first_ind;
@@ -83,6 +83,9 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %% The constructor method
         % The first argument is always mm
         function obj = SuperMDAItineraryTimeFixed_object(mm)
+            if ~isdir(obj.output_directory)
+                mkdir(obj.output_directory)
+            end
             if ~isa(mm,'Core_MicroManagerHandle')
                 error('smdaITF:input','The input was not a Core_MicroManagerHandle_object');
             end
@@ -641,6 +644,16 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %%
         %
         function obj = removeZeroRows(obj)
+            
+        end
+        %%
+        %
+        function obj = export(obj)
+            SuperMDAItineraryTimeFixed_method_export(obj);
+        end
+        %%
+        %
+        function obj = import(obj)
             
         end
     end
