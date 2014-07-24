@@ -22,7 +22,7 @@ if p.Results.pNum == 1
     % this group.
     %
     pInd = smdaITF.indOfPosition(gInd);
-    pInd = pInd(1);
+    pInd = pInd(1); %this position is used as a template for the new position
     
     smdaITF.position_continuous_focus_offset(smdaITF.ind_next_position) = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
     smdaITF.position_continuous_focus_bool(smdaITF.ind_next_position) = true;
@@ -30,19 +30,22 @@ if p.Results.pNum == 1
     smdaITF.position_function_before{smdaITF.ind_next_position} = smdaITF.position_function_before{pInd};
     smdaITF.position_label{smdaITF.ind_next_position} = sprintf('position%d',smdaITF.numberOfPosition(gInd)+1);
     smdaITF.position_logical(smdaITF.ind_next_position) = true;
-    pInd2 = smdaITF.gps(smdaITF.orderVector(smdaITF.group_ind_last(gInd)),2);
-    smdaITF.position_xyz(smdaITF.ind_next_position,:) = smdaITF.position_xyz(pInd2,:);
+    pInd2 = smdaITF.gps(smdaITF.orderVector(smdaITF.group_ind_last(gInd)),2); % the position index of the last position, in terms of order, in a the group at gInd
+    smdaITF.position_xyz(smdaITF.ind_next_position,:) = smdaITF.position_xyz(pInd2,:); % assigns the xyz of the new position with the xyz of the last position in the group gInd
     % find the order of the last position in the given group
 %     myPOrder = smdaITF.orderOfPosition(gInd);
 %     mySOrder = smdaITF.orderOfSettings(gInd,myPOrder(end));
 %     [~,myInd] = ismember([gInd,myPOrder(end),mySOrder(end)],smdaITF.gps,'rows');
 %     myInd = find(smdaITF.orderVector == myInd,1,'first');
-    myInd = smdaITF.group_ind_last(gInd);
+    myInd = smdaITF.group_ind_last(gInd); % the index of the orderVector that specifies where the last position of gInd is located
     % find how many settings there are for position at pInd.
-    firstPositionSettings = smdaITF.orderOfSettings(gInd,pInd);
-    smdaITF.group_ind_last(gInd) = smdaITF.group_ind_last(gInd) + length(firstPositionSettings);
+    firstPositionSettings = smdaITF.orderOfSettings(gInd,pInd); % the indicies of the settings found at the first position. These settings will be assigned to the new position
+    smdaITF.group_ind_last(gInd) = smdaITF.group_ind_last(gInd) + length(firstPositionSettings); % the location, within the orderVector of the last position in the group gInd, is updated to reflect the addition of the new position that is now the latest last position
+    % the groups that follow the group specified by gInd must also have
+    % their group_ind_last updated since all positions in these groups have
+    % been shifted by this new "upstream" position.
     myGroupOrder = smdaITF.orderOfGroup;
-    indGroupOrder = find(myGroupOrder == gInd,1,'first');
+    indGroupOrder = find(myGroupOrder == gInd,1,'first'); % the order index of the group gInd
     if indGroupOrder ~= length(myGroupOrder)
         for i = (indGroupOrder+1):length(myGroupOrder)
             ix = myGroupOrder(i);
