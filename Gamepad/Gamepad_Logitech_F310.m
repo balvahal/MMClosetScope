@@ -287,7 +287,7 @@ classdef Gamepad_Logitech_F310 < handle
             elseif strcmp(computerName,'KISHONYWAB111A')
                 %%
                 % Kishony Scope
-                obj.stageport = 'COM3';
+                obj.stageport = 'COM2';
             else
                 obj.stageport = 'COM3';
             end

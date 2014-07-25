@@ -10,14 +10,16 @@ j = smdaPilot.gps_current(2); %position
 k = smdaPilot.gps_current(3); %settings
 %%
 %
-if ismember(t,[2,4,103,151,199])
+if ismember(t,[2,4,103,151,199]) && k == 1
     if strcmp(smdaPilot.mm.computerName,'LAHAVSCOPE002')
         myChNum = 6;
         ShutterLabel = 'ShutterFluor';
-    else
+    elseif strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')
         myChNum = 6;
+        ShutterLabel = 'TIEpiShutter';
     end
-    smdaPilot.mm.core.setConfig('Channel',myChNum);
+    smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{myChNum});
+    smdaPilot.mm.core.waitForSystem();
     switch t
         case 2
             smdaPilot.mm.core.setShutterOpen(ShutterLabel,1);
