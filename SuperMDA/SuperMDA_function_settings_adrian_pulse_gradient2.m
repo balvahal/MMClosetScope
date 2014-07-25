@@ -83,7 +83,7 @@ smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinera
 smdaPilot.mm.core.waitForSystem();
 %% Jose's loop for a 2x2 grid
 %
-[grid] = super_mda_grid_maker(smdaPilot.mm,'upper_left_corner',smdaPilot.itinerary.position_xyz(j,:),'number_of_columns',2,'number_of_rows',2,'overlap',25);
+[grid] = super_mda_grid_maker(smdaPilot.mm,'centroid',smdaPilot.itinerary.position_xyz(j,:),'number_of_columns',2,'number_of_rows',2,'overlap',25);
 %% Set PFS
 %
 for m=1:length(grid.positions)
@@ -93,7 +93,7 @@ for m=1:length(grid.positions)
     %% Snap and Image
     %
     smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},'USA'),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,1);
+    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},sprintf('tile%d',m)),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,1);
     %         fid =
     %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
     %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
