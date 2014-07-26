@@ -1,7 +1,6 @@
 %%
 %
 function [smdaPilot] = SuperMDA_function_settings_timeFixed(smdaPilot)
-
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position
 t = smdaPilot.t; %time
@@ -17,7 +16,7 @@ end
 % else continue with capturing of the image
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)});
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.settings_exposure(k));
-if strcmp(smdaPilot.mm.computerName,'LB89-6A-45FA') %Closet Scope OR Curtain Scope
+if strcmp(smdaPilot.mm.computerName,'LAHAVSCOPE0001') %Closet Scope OR Curtain Scope
     switch smdaPilot.itinerary.settings_binning(k)
         case 1
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1');
@@ -47,6 +46,9 @@ end
 smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.settings_gain(k))
 smdaPilot.mm.core.waitForSystem();
 
+smdaPilot.mm.setXYZ(grid.positions(m,1:2));
+smdaPilot.mm.core.waitForDevice(smdaPilot.mm.xyStageDevice);
+smdaPilot.mm.getXYZ;
 %% Snap and Image
 %
 smdaPilot.snap;

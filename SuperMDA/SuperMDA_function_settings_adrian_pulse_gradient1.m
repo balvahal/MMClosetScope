@@ -52,7 +52,7 @@ end
 % else continue with capturing of the image
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)});
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.settings_exposure(k));
-if strcmp(smdaPilot.mm.computerName,'LB89-6A-45FA') %Closet Scope OR Curtain Scope
+if strcmp(smdaPilot.mm.computerName,'LAHAVSCOPE0001') %Closet Scope OR Curtain Scope
     switch smdaPilot.itinerary.settings_binning(k)
         case 1
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1');
