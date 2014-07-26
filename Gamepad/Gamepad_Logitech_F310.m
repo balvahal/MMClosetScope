@@ -276,10 +276,10 @@ classdef Gamepad_Logitech_F310 < handle
             %%
             %
             computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-            if strcmp(computerName,'LB89-6A-45FA')
+            if strcmp(computerName,'LAHAVSCOPE0001')
                 %%
                 % Closet Scope
-                obj.stageport = 'COM3';
+                obj.stageport = 'COM1';
             elseif strcmp(computerName,'LAHAVSCOPE002')
                 %%
                 % Curtain Scope
@@ -289,7 +289,7 @@ classdef Gamepad_Logitech_F310 < handle
                 % Kishony Scope
                 obj.stageport = 'COM2';
             else
-                obj.stageport = 'COM3';
+                obj.stageport = 'COM1';
             end
             %%
             % define functions for the controller

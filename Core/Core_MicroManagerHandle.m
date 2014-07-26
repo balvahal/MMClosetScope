@@ -80,7 +80,7 @@ classdef Core_MicroManagerHandle < handle
             % settings are assigned below to a given microscope using the
             % computer hostname as a unique identifier.
             obj.computerName = obj.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-            if strcmp(obj.computerName,'LB89-6A-45FA')
+            if strcmp(obj.computerName,'LAHAVSCOPE0001')
                 %%
                 % Closet Scope
                 obj.xyStageDevice = obj.core.getXYStageDevice;
@@ -92,7 +92,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-                mytable = readtable(fullfile(mfilepath,'settings_LB89-6A-45FA.txt'));
+                mytable = readtable(fullfile(mfilepath,'settings_LAHAVSCOPE0001.txt'));
                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.calibrationAngle = mytable.calibrationAngle;
