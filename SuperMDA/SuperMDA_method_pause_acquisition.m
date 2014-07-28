@@ -10,8 +10,8 @@ if smdaPilot.running_bool
     % because it consists of exploring a large tree structure and code has
     % been added at each branch node to pause there if need be.
     smdaPilot.pause_bool = true;
-    if strcmp(smdaPilot.runtime_timer.Running,'off')
-        smdaPilot.runtime_timer.StopFcn = '';
+    if strcmp(smdaPilot.timer_runtime.Running,'off')
+        smdaPilot.timer_runtime.StopFcn = '';
         stop(smdaPilot.runtime_timer);
     else
         %%

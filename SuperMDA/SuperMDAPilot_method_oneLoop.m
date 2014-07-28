@@ -6,21 +6,19 @@ function smdaP = SuperMDAPilot_method_oneLoop(smdaP)
 % for the n-1 entries in the gps
 smdaI = smdaP.itinerary;
 smdaP.gps_current = smdaI.gps(smdaI.orderVector(1),:);
-for i = 1:length(smdaI.orderVector)-1
+for i = 1:(length(smdaI.orderVector)-1)
     %%
     % determine which functions to execute
     g = smdaP.gps_current(1);
     p = smdaP.gps_current(2);
     s = smdaP.gps_current(3);
     flagcheck_before;
-    n = smdaI.orderVector(i+1);
-    flagcheck_after(smdaI.gps(smdaI.orderVector(n),:),smdaP.gps_current);
+    flagcheck_after(smdaI.gps(smdaI.orderVector(i+1),:),smdaP.gps_current);
     %%
     % detect pause event and refresh guis
     drawnow;
     while smdaP.pause_bool
         pause(1);
-        disp('i am paused');
         if smdaP.running_bool == false
             return;
         end
@@ -31,7 +29,7 @@ for i = 1:length(smdaI.orderVector)-1
     %%
     % update the pointers
     smdaP.gps_previous = smdaP.gps_current;
-    smdaP.gps_current = smdaI.gps(smdaI.orderVector(n),:);
+    smdaP.gps_current = smdaI.gps(smdaI.orderVector(i+1),:);
 end
 %%
 % for the nth entry in the gps
