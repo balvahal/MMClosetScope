@@ -37,4 +37,6 @@ myNewDatabaseRow = {...
 smdaP.database(smdaP.runtime_imagecounter,:) = myNewDatabaseRow;
 %% Write this row to a text file
 %
-fprintf(smdaP.databasefid,'%s\t%s\t%s\t%s\t%d\t%d\t%f\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%d\t%s\r\n',myNewDatabaseRow{:});
+fid = fopen(obj.databasefilename,'a');
+fprintf(fid,'%s\t%s\t%s\t%s\t%d\t%d\t%f\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%d\t%s\r\n',myNewDatabaseRow{:});
+fclose(fid);

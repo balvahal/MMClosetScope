@@ -18,7 +18,7 @@ classdef SuperMDAPilot_object < handle
     %
     properties
         database = {};
-        databasefid;
+        databasefilename;
         database_imagedescription = '';
         itinerary;
         clock_absolute;
@@ -65,8 +65,9 @@ classdef SuperMDAPilot_object < handle
                 %
                 obj.gui_pause_stop_resume = SuperMDAPilot_gui_pause_stop_resume(obj);
                 obj.gui_lastImage = SuperMDAPilot_gui_lastImage(obj);
-                database_filename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
-                obj.databasefid = fopen(database_filename,'w');
+                obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
+                fid = fopen(obj.databasefilename,'w');
+                fclose(fid);
             end
         end
         %% start acquisition
