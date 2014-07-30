@@ -34,6 +34,7 @@ switch gamepad.pov_dpad
     case 315
         my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*(-0.7071),gamepad.pov_speed(1)*(-0.7071));
         gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        %gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,'=',sprintf('\r'));
         % * -1 = no direction/centered
         % * 0 = N
         % * 45 = NE

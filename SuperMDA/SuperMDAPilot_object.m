@@ -66,6 +66,9 @@ classdef SuperMDAPilot_object < handle
                 obj.gui_pause_stop_resume = SuperMDAPilot_gui_pause_stop_resume(obj);
                 obj.gui_lastImage = SuperMDAPilot_gui_lastImage(obj);
                 obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
+                if ~isdir(obj.itinerary.output_directory)
+                    mkdir(obj.itinerary.output_directory);
+                end
                 fid = fopen(obj.databasefilename,'w');
                 fclose(fid);
                 %%
