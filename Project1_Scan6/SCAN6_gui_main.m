@@ -279,38 +279,39 @@ set(f,'Visible','on');
             smdaITF2.settings_z_step_size(myind) = 0.3;
         end
         
-        imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
-                    imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
-                    %Use 2x image dimensions as a tolerance for the maximum
-                    %area. In otherwords, the square will be slightly smaller
-                    %than it could be.
-                    tol = 2*(imageWidth+imageHeight);
-                    %Find the corners of the square that maximizes the area
-                    %within the circular coverslip.
-                    ULC = ...
-                        [(scan6.center(1,1) - (cos(pi/4)*scan6.radius(1) - tol)),...
-                        (scan6.center(2,1) - (cos(pi/4)*scan6.radius(1) - tol)),...
-                        scan6.z(1)];
-                    LRC = ...
-                        [(scan6.center(1,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
-                        (scan6.center(2,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
-                        scan6.z(1)];
-                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfpositions);
+        %imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
+        %imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
+        %Use 2x image dimensions as a tolerance for the maximum
+        %area. In otherwords, the square will be slightly smaller
+        %than it could be.
+        %tol = 2*(imageWidth+imageHeight);
+        tol = 0.05*scan6.radius(1);
+        %Find the corners of the square that maximizes the area
+        %within the circular coverslip.
+        ULC = ...
+            [(scan6.center(1,1) - (cos(pi/4)*scan6.radius(1) - tol)),...
+            (scan6.center(2,1) - (cos(pi/4)*scan6.radius(1) - tol)),...
+            scan6.z(1)];
+        LRC = ...
+            [(scan6.center(1,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
+            (scan6.center(2,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
+            scan6.z(1)];
+        grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfpositions);
         n = 0;
-    for i = 1:length(settingsInds)
-        for j = 1:16
-        n = n+1;
-        smdaITF2.position_xyz(n,:) = grid.positions(n,:);
-        smdaITF2.position_label{n} = sprintf('%s_%d',smdaITF2.channel_names{smdaITF2.settings_channel(n)},exposureArray(j));
+        for i = 1:length(settingsInds)
+            for j = 1:16
+                n = n+1;
+                smdaITF2.position_xyz(n,:) = grid.positions(n,:);
+                smdaITF2.position_label{n} = sprintf('%s_%d',smdaITF2.channel_names{smdaITF2.settings_channel(n)},exposureArray(j));
+            end
         end
-    end
-    smdaITF2.output_directory = fullfile(scan6.smdaI.output_directory,'flatfield');
-    smdaITF2.position_continuous_focus_offset(:) = myCFO + 100;
-    xyz = mm.getXYZ;
-    smdaITF2.position_xyz(:,3) = xyz(3);
-    
-    smdaP = SuperMDAPilot_object(smdaITF2);
-    smdaP.startAcquisition;
+        smdaITF2.output_directory = fullfile(scan6.smdaI.output_directory,'flatfield');
+        smdaITF2.position_continuous_focus_offset(:) = myCFO + 100;
+        xyz = mm.getXYZ;
+        smdaITF2.position_xyz(:,3) = xyz(3);
+        
+        smdaP = SuperMDAPilot_object(smdaITF2);
+        smdaP.startAcquisition;
     end
 %%
 %
@@ -534,7 +535,7 @@ set(f,'Visible','on');
         if length(numberOfPositions) > 1 %assumes 1st group is there by default and should not count towards additional groups
             numberOfGroups = scan6.smdaI.numberOfGroup;
             if numberOfGroups < length(numberOfPositions)
-            scan6.smdaTA.addGroup(length(numberOfPositions)-numberOfGroups);
+                scan6.smdaTA.addGroup(length(numberOfPositions)-numberOfGroups);
             end
         end
         for i = 1:length(numberOfPositions)
@@ -564,12 +565,13 @@ set(f,'Visible','on');
                 end
             else
                 if gridStyle == 1
-                    imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
-                    imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
+                    %imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
+                    %imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
                     %Use 2x image dimensions as a tolerance for the maximum
                     %area. In otherwords, the square will be slightly smaller
                     %than it could be.
-                    tol = 3*(imageWidth+imageHeight);
+                    %tol = 2*(imageWidth+imageHeight);
+                    tol = 0.05*mean(radius);
                     %Find the corners of the square that maximizes the area
                     %within the circular coverslip.
                     ULC = ...
