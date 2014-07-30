@@ -284,7 +284,7 @@ set(f,'Visible','on');
                     %Use 2x image dimensions as a tolerance for the maximum
                     %area. In otherwords, the square will be slightly smaller
                     %than it could be.
-                    tol = 3*(imageWidth+imageHeight);
+                    tol = 2*(imageWidth+imageHeight);
                     %Find the corners of the square that maximizes the area
                     %within the circular coverslip.
                     ULC = ...
