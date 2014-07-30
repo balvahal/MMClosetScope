@@ -285,7 +285,7 @@ set(f,'Visible','on');
         %area. In otherwords, the square will be slightly smaller
         %than it could be.
         %tol = 2*(imageWidth+imageHeight);
-        tol = 0.05*scan6.radius(1);
+        tol = 0.1*scan6.radius(1);
         %Find the corners of the square that maximizes the area
         %within the circular coverslip.
         ULC = ...
@@ -545,7 +545,7 @@ set(f,'Visible','on');
                 %Use 2x image dimensions as a tolerance for the maximum
                 %area. In otherwords, the square will be slightly smaller
                 %than it could be.
-                tol = imageWidth+imageHeight;
+                tol = 0.1*mean(radius);
                 %Find the corners of the square that maximizes the area
                 %within the circular coverslip.
                 ULC = ...
@@ -571,7 +571,7 @@ set(f,'Visible','on');
                     %area. In otherwords, the square will be slightly smaller
                     %than it could be.
                     %tol = 2*(imageWidth+imageHeight);
-                    tol = 0.05*mean(radius);
+                    tol = 0.1*mean(radius);
                     %Find the corners of the square that maximizes the area
                     %within the circular coverslip.
                     ULC = ...
