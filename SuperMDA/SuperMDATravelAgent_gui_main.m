@@ -269,11 +269,11 @@ uicontrol('Style','text','Units','characters','String',sprintf('Set the position
     'Position',[fwidth - 6 - buttonSize(1)*1.75, region3(2)+4.2308, buttonSize(1),2.6923]);
 %% add a grid
 %
-hpushbuttonPositionGrid = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
-    'String',sprintf('GRID'),...
+hpushbuttonSetAllZ = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',10,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
+    'String',sprintf('Set All Z'),...
     'Position',[fwidth - 2 - buttonSize(1)*.75, region3(2)+7.6923, buttonSize(1)*.75,buttonSize(2)],...
-    'Callback',{@pushbuttonPositionGrid_Callback});
+    'Callback',{@pushbuttonSetAllZ_Callback});
 
 uicontrol('Style','text','Units','characters','String',sprintf('Add a grid\nof positions'),...
     'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -695,8 +695,14 @@ set(f,'Visible','on');
     end
 %%
 %
-    function pushbuttonPositionGrid_Callback(~,~)
-        disp('no working grid function available');
+    function pushbuttonSetAllZ_Callback(~,~)
+        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        gInd = myGroupOrder(smdaTA.pointerGroup(1));
+        myPInd = smdaTA.itinerary.indOfPosition(gInd);
+        smdaTA.itinerary.position_continuous_focus_offset(myPInd) = str2double(smdaTA.mm.core.getProperty(smdaTA.mm.AutoFocusDevice,'Position'));
+        xyz = smdaTA.mm.getXYZ;
+        smdaTA.itinerary.position_xyz(myPInd,3) = xyz(3);
+        fprintf('positions in group %d have Z postions updated!\n',gInd);
     end
 %%
 %
