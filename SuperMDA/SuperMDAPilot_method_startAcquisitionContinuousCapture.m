@@ -21,7 +21,7 @@ if ~smdaP.running_bool
     % Convert the MDA smdaPect unit of time (seconds) to the MATLAB unit of time
     % (days) for the serial date numbers, i.e. the number of days that have
     % passed since January 1, 0000.
-    smdaP.timer_runtime = timer('TimerFcn',@(~,~) obj.timerRuntimeFunContinuousCapture,'BusyMode','queue','Name','timer_runtime');
+    smdaP.timer_runtime = timer('TimerFcn',@(~,~) smdaP.timerRuntimeFunContinuousCapture,'BusyMode','queue','Name','timer_runtime');
     smdaP.clock_absolute = now + smdaP.itinerary.clock_relative/86400;
     smdaP.timer_runtime.StopFcn = {@SuperMDAPilot_function_timerRuntimeStopFunContinuousCapture,smdaP};
     smdaP.running_bool = true;
