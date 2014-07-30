@@ -88,6 +88,11 @@ classdef SuperMDAPilot_object < handle
         function obj = startAcquisition(obj)
             SuperMDAPilot_method_startAcquisition(obj);
         end
+                %% start acquisition
+        %
+        function obj = startAcquisitionContinuousCapture(obj)
+            SuperMDAPilot_method_startAcquisitionContinuousCapture(obj);
+        end
         %% stop acquisition
         %
         function obj = stop_acquisition(obj)
@@ -117,6 +122,11 @@ classdef SuperMDAPilot_object < handle
         %
         function obj = timerRuntimeFun(obj)
             SuperMDAPilot_method_timerRuntimeFun(obj);
+        end
+        %%
+        %
+        function obj = timerRuntimeFunContinuousCapture(obj)
+            SuperMDAPilot_function_timerRuntimeFunContinuousCapture(obj);
         end
         %%
         %
