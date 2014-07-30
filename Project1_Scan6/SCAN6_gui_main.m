@@ -235,9 +235,79 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonFlatfield_Callback(~,~)
-        gInd = scan6.ind(1);
-        smdaITF2 = SuperMDAItineraryTimeFixed_object(scan6.mm);
+        str = sprintf('Flatfield correction images will now be acquired.\n\nDo you wish to proceed?');
+        choice = questdlg(str, ...
+            'Warning! Do you wish to proceed?', ...
+            'Yes','No','No');
+        % Handle response
+        if strcmp(choice,'No')
+            return;
+        end
         
+        str = sprintf('Bring the objective into focus on the top of the glass surface using the PFS.\n\nDo you wish to proceed?');
+        choice = questdlg(str, ...
+            'Warning! Do you wish to proceed?', ...
+            'Yes','No','No');
+        % Handle response
+        if strcmp(choice,'No')
+            return;
+        end
+        
+        myCFO = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
+        
+        gInd = 1;
+        smdaITF2 = SuperMDAItineraryTimeFixed_object(scan6.mm);
+        settingsInds = scan6.smdaI.indOfSettings(gInd);
+        numberOfpositions = length(settingsInds)*8; % 8 exposures
+        smdaITF2.newPositionNewSettings(gInd,numberOfpositions-1);
+        exposureArray = [0,50,100,150,200,300,400,500]; % 8 exposures
+        for i = 1:length(settingsInds)
+            myind = (1:8)+(i-1)*8;
+            smdaITF2.settings_binning(myind) = scan6.smdaI.settings_binning(settingsInds(i));
+            smdaITF2.settings_channel(myind) = scan6.smdaI.settings_channel(settingsInds(i));
+            smdaITF2.settings_exposure(myind) = exposureArray;
+            smdaITF2.settings_function(myind) = {'SuperMDA_function_settings_timeFixed'};
+            smdaITF2.settings_gain(myind) = scan6.smdaI.settings_gain(settingsInds(i));
+            smdaITF2.settings_logical(myind) = true;
+            smdaITF2.settings_period_multiplier(myind) = 1;
+            smdaITF2.settings_scratchpad = {};
+            smdaITF2.settings_timepoints(myind) = 1;
+            smdaITF2.settings_z_origin_offset(myind) = 0;
+            smdaITF2.settings_z_stack_lower_offset(myind) = 0;
+            smdaITF2.settings_z_stack_upper_offset(myind) = 0;
+            smdaITF2.settings_z_step_size(myind) = 0.3;
+        end
+        
+        imageHeight = scan6.mm.core.getPixelSizeUm*mm.core.getImageHeight;
+                    imageWidth = scan6.mm.core.getPixelSizeUm*mm.core.getImageWidth;
+                    %Use 2x image dimensions as a tolerance for the maximum
+                    %area. In otherwords, the square will be slightly smaller
+                    %than it could be.
+                    tol = 3*(imageWidth+imageHeight);
+                    %Find the corners of the square that maximizes the area
+                    %within the circular coverslip.
+                    ULC = ...
+                        [(scan6.center(1,1) - (cos(pi/4)*scan6.radius(1) - tol)),...
+                        (scan6.center(2,1) - (cos(pi/4)*scan6.radius(1) - tol)),...
+                        scan6.z(1)];
+                    LRC = ...
+                        [(scan6.center(1,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
+                        (scan6.center(2,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
+                        scan6.z(1)];
+                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfpositions);
+        n = 0;
+    for i = 1:length(settingsInds)
+        for j = 1:8
+        n = n+1;
+        smdaITF2.position_xyz(n,:) = grid.positions(n,:);
+        smdaITF2.position_label{n} = sprintf('%s_%d',smdaITF2.channel_names{smdaITF2.settings_channel(n)},exposureArray(j));
+        end
+    end
+    smdaITF2.output_directory = fullfile(scan6.smdaI.output_directory,'flatfield');
+    smdaITF2.position_continuous_focus_offset(:) = myCFO + 100;
+    
+    smdaP = SuperMDAPilot_object(smdaITF2);
+    smdaP.startAcquisition;
     end
 %%
 %
@@ -537,7 +607,7 @@ set(f,'Visible','on');
             
             set(myPositions,'Visible','on');
         end
-        disp('Grid Calculation Complete!');
+        fprintf('Grid Calculation Complete! ');
         toc
     end
 %%

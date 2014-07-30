@@ -52,20 +52,30 @@ if (~strcmp(p.Results.number_of_images, 'undefined')) && (~strcmp(p.Results.numb
     end
 end
 %%
+%
+if ~strcmp(p.Results.number_of_images, 'undefined')
+    NOIFLAG = true;
+else
+    NOIFLAG = false;
+end
+%%
 % Is the upper-left corner above and to the left of the lower-right? Any
 % two points can be converted into the proper upper-left and lower-right.
 if (~strcmp(p.Results.upper_left_corner,'undefined')) && (~strcmp(p.Results.lower_right_corner,'undefined'))
     temp_1 = p.Results.upper_left_corner;
     temp_2 = p.Results.lower_right_corner;
     if p.Results.upper_left_corner(1)>p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)>p.Results.lower_right_corner(2)
-        p.Results.upper_left_corner = temp_2;
-        p.Results.lower_right_corner = temp_1;
+        upper_left_corner = temp_2;
+        lower_right_corner = temp_1;
     elseif p.Results.upper_left_corner(1)>p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)<p.Results.lower_right_corner(2)
-        p.Results.upper_left_corner(1) = temp_2(1);
-        p.Results.lower_right_corner(1) = temp_1(1);
+        upper_left_corner(1) = temp_2(1);
+        lower_right_corner(1) = temp_1(1);
     elseif p.Results.upper_left_corner(1)<p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)>p.Results.lower_right_corner(2)
-        p.Results.upper_left_corner(2) = temp_2(2);
-        p.Results.lower_right_corner(2) = temp_1(2);
+        upper_left_corner(2) = temp_2(2);
+        lower_right_corner(2) = temp_1(2);
+    else
+        upper_left_corner = temp_1;
+        lower_right_corner = temp_2;
     end
 end
 %%
@@ -103,6 +113,15 @@ switch decision_number
         im_num_col = widthCandidates(ind);
         im_num_row = floor(p.Results.number_of_images/im_num_col);
         NOI = im_num_col*im_num_row;
+        while NOI < p.Results.number_of_images
+            if im_num_col < im_num_row
+                im_num_col = im_num_col + 1;
+            else
+                im_num_row = im_num_row + 1;
+            end
+            NOI = im_num_col*im_num_row;
+        end
+        
         %% update the coordinates for the upper-left and lower-right
         % What is meant by ULC and LRC and the centroid? The ULC and LRC
         % are positions on the stage and do not represent any particular
@@ -133,21 +152,29 @@ switch decision_number
         % Use when you want a given number of images to fill a given space.
         % This means the overlap (or underlap?) between images must be
         % calculated
-        a = p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1);
-        b = p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2);
+        a = lower_right_corner(1) - upper_left_corner(1);
+        b = lower_right_corner(2) - upper_left_corner(2);
         im_num_col = sqrt(p.Results.number_of_images*a/b)*pixHeight/pixWidth;
         im_num_row = p.Results.number_of_images/im_num_col;
         im_num_col = round(im_num_col);
         im_num_row = round(im_num_row);
         NOI = im_num_col*im_num_row;
+        while NOI < p.Results.number_of_images
+            if im_num_col < im_num_row
+                im_num_col = im_num_col + 1;
+            else
+                im_num_row = im_num_row + 1;
+            end
+            NOI = im_num_col*im_num_row;
+        end
         %%
-        overlap_x = -(p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(im_num_col-1)+pixWidth;
-        overlap_y = -(p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(im_num_row-1)+pixHeight;
-        ULC = p.Results.upper_left_corner;
+        overlap_x = -(lower_right_corner(1) - upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(im_num_col-1)+pixWidth;
+        overlap_y = -(lower_right_corner(2) - upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(im_num_row-1)+pixHeight;
+        ULC = upper_left_corner;
         LRC = ...
             [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2)+(im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
-            p.Results.lower_right_corner(3)];
+            lower_right_corner(3)];
     case 34 %upper-left and number of images
         widthCandidates = floor(sqrt(p.Results.number_of_images./(linspace(0.5625,1,10)*pixWidth/pixHeight)));
         objectiveArray = mod(p.Results.number_of_images,widthCandidates);
@@ -155,8 +182,15 @@ switch decision_number
         im_num_col = widthCandidates(ind);
         im_num_row = floor(p.Results.number_of_images/im_num_col);
         NOI = im_num_col*im_num_row;
-        
-        ULC = p.Results.upper_left_corner;
+        while NOI < p.Results.number_of_images
+            if im_num_col < im_num_row
+                im_num_col = im_num_col + 1;
+            else
+                im_num_row = im_num_row + 1;
+            end
+            NOI = im_num_col*im_num_row;
+        end
+        ULC = upper_left_corner;
         LRC = ...
             [ULC(1) + (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2) + (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
@@ -168,8 +202,15 @@ switch decision_number
         im_num_col = widthCandidates(ind);
         im_num_row = floor(p.Results.number_of_images/im_num_col);
         NOI = im_num_col*im_num_row;
-        
-        LRC = p.Results.lower_right_corner;
+        while NOI < p.Results.number_of_images
+            if im_num_col < im_num_row
+                im_num_col = im_num_col + 1;
+            else
+                im_num_row = im_num_row + 1;
+            end
+            NOI = im_num_col*im_num_row;
+        end
+        LRC = lower_right_corner;
         ULC = ...
             [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
@@ -190,7 +231,7 @@ switch decision_number
         im_num_col = p.Results.number_of_columns;
         im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
-        ULC = p.Results.upper_left_corner;
+        ULC = upper_left_corner;
         LRC = ...
             [ULC(1) + (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2) + (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
@@ -199,20 +240,20 @@ switch decision_number
         im_num_col = p.Results.number_of_columns;
         im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
-        LRC = p.Results.lower_right_corner;
+        LRC = lower_right_corner;
         ULC = ...
             [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             LRC(3)];
     case 3 %upper-left and lower-right
-        im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x))+1;
-        im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y))+1;
+        im_num_col = ceil((lower_right_corner(1) - upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x))+1;
+        im_num_row = ceil((lower_right_corner(2) - upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y))+1;
         NOI = im_num_col*im_num_row;
-        ULC = p.Results.upper_left_corner;
+        ULC = upper_left_corner;
         LRC = ...
             [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2)+(im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
-            p.Results.lower_right_corner(3)];
+            lower_right_corner(3)];
     otherwise
         error('GridMake:bad_param','The set parameters entered cannot be interpreted. Please specify a valid set of parameters');
 end
@@ -320,6 +361,13 @@ elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
                 position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
             end
         end
+    end
+end
+if NOIFLAG
+    if NOI > p.Results.number_of_images
+        positions(end-(NOI - p.Results.number_of_images - 1):end,:) = [];
+        position_labels(end-(NOI - p.Results.number_of_images - 1):end) = [];
+        NOI = length(position_labels);
     end
 end
 

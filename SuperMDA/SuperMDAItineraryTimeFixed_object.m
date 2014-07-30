@@ -536,6 +536,15 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
+        function obj = newPositionNewSettings(obj,gInd,varargin)
+            if isempty(varargin)
+                obj = SuperMDAItineraryTimeFixed_method_newPositionNewSettings(obj,gInd);
+            else
+                obj = SuperMDAItineraryTimeFixed_method_newPositionNewSettings(obj,gInd,varargin{:});
+            end
+        end
+        %%
+        %
         function obj = newSettings(obj,gInd,pInd,varargin)
             if isempty(varargin)
                 obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd);

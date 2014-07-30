@@ -67,6 +67,7 @@ set(f,'Visible','on');
     function fDeleteFcn(~,~)
         %do nothing. This means only the master object can close this
         %window.
+        smdaPilot.delete;
     end
 %%
 %
