@@ -70,7 +70,7 @@ if p.Results.gNum ==1
         smdaITF.find_ind_next('gps');
         smdaITF.find_ind_next('settings');
     end
-    smdaITF.find_group_ind_last(smdaITF.ind_next_group);
+    smdaITF.find_ind_last_group(smdaITF.ind_next_group);
     smdaITF.find_ind_next('group');
     smdaITF.find_ind_next('position');
     

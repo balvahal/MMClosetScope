@@ -35,14 +35,14 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         output_directory = fullfile(pwd,'SuperMDA');
         png_path;
         
-        group_first_ind;
         group_function_after;
         group_function_before;
         group_label;
-        group_ind_last;
         group_logical;
         group_scratchpad;
         
+        ind_first_group;
+        ind_last_group;
         ind_next_gps;
         ind_next_group;
         ind_next_position;
@@ -97,11 +97,10 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             
             %% initialize the prototype_group
             %
-            obj.group_first_ind = 1;
+            
             obj.group_function_after{1} = 'SuperMDA_function_group_after_basic';
             obj.group_function_before{1} = 'SuperMDA_function_group_before_timeFixed';
             obj.group_label{1} = 'group1';
-            obj.group_ind_last = 1;
             obj.group_logical = true;
             obj.group_scratchpad = {};
             %% initialize the prototype_position
@@ -131,6 +130,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_z_step_size = 0.3;
             %% initialize the indices
             % the next group, position, and settings
+            obj.ind_first_group = 1;
+            obj.ind_last_group = 1;
             obj.ind_next_gps = 2;
             obj.ind_next_group = 2;
             obj.ind_next_position = 2;
@@ -387,20 +388,20 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         
         %%
         %
-        function obj = find_group_ind_last(obj,varargin)
+        function obj = find_ind_last_group(obj,varargin)
             if numel(varargin) == 1
                 gInd = varargin{1};
                 myPOrder = obj.orderOfPosition(gInd);
                 mySOrder = obj.orderOfSettings(gInd,myPOrder(end));
                 [~,myInd] = ismember([gInd,myPOrder(end),mySOrder(end)],obj.gps,'rows');
-                obj.group_ind_last(gInd) = find(obj.orderVector == myInd,1,'first');
+                obj.ind_last_group(gInd) = find(obj.orderVector == myInd,1,'first');
             else
                 gInd = obj.indOfGroup;
                 for i = 1:length(gInd)
                     myPOrder = obj.orderOfPosition(gInd(i));
                     mySOrder = obj.orderOfSettings(gInd(i),myPOrder(end));
                     [~,myInd] = ismember([gInd(i),myPOrder(end),mySOrder(end)],obj.gps,'rows');
-                    obj.group_ind_last(gInd(i)) = find(obj.orderVector == myInd,1,'first');
+                    obj.ind_last_group(gInd(i)) = find(obj.orderVector == myInd,1,'first');
                 end
             end
         end
