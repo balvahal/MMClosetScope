@@ -1,14 +1,17 @@
 %%
 %
 function [smdaITF] = SuperMDAItineraryTimeFixed_method_export(smdaITF)
-
 %%
 %
 jsonStrings = {};
 n = 1;
 %%
 %
+jsonStrings{n} = micrographIOT_cellStringArray2json('channel_names',smdaITF.channel_names); n = n + 1;
+jsonStrings{n} = micrographIOT_2dmatrix2json('gps',smdaITF.gps); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('gps_logical',smdaITF.gps_logical); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('orderVector',smdaITF.orderVector); n = n + 1;
+jsonStrings{n} = micrographIOT_cellStringArray2json('output_directory',strsplit(smdaITF.output_directory,filesep)); n = n + 1;
 %%
 % group
 jsonStrings{n} = micrographIOT_cellStringArray2json('group_function_after',smdaITF.group_function_after); n = n + 1;
@@ -46,6 +49,12 @@ jsonStrings{n} = micrographIOT_array2json('settings_z_origin_offset',smdaITF.set
 jsonStrings{n} = micrographIOT_array2json('settings_z_stack_lower_offset',smdaITF.settings_z_stack_lower_offset); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('settings_z_stack_upper_offset',smdaITF.settings_z_stack_upper_offset); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('settings_z_step_size',smdaITF.settings_z_step_size); n = n + 1;
+%%
+%
+jsonStrings{n} = micrographIOT_array2json('duration',smdaITF.duration); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('fundamental_period',smdaITF.fundamental_period); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('clock_relative',smdaITF.clock_relative); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('number_of_timepoints',smdaITF.number_of_timepoints);
 %%
 %
 myjson = micrographIOT_jsonStrings2Object(jsonStrings);

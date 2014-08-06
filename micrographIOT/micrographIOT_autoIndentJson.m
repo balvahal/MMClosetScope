@@ -1,7 +1,7 @@
 %%
 % The input file must not already contain indents. Also, the input file
-% must have closing brackets } and ] alone on their own line followed by a
-% comma.
+% must have closing brackets *"}"* and *"]"* that are alone on their own
+% line followed by a comma.
 function [myjson] = micrographIOT_autoIndentJson(filename)
 fid = fopen(filename,'r');
 if fid == -1

@@ -663,8 +663,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
-        function obj = import(obj)
-            
+        function obj = import(obj,filename)
+            SuperMDAItineraryTimeFixed_method_import(obj,filename);
         end
     end
     %%
