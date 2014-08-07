@@ -31,7 +31,7 @@ end
 for i = 1:4
     smdaITF2.settings_channel(i) = smdaITFPositionSource.settings_channel(i);
 end
-smdaITF2.settings_binning(:) = 8;
+smdaITF2.settings_binning(:) = 4;
 smdaITF2.settings_exposure(:) = 100;
 
 smdaTA = SuperMDATravelAgent_object(smdaITF2);
