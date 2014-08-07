@@ -121,6 +121,45 @@ classdef SCAN6_object < handle
                         obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;
                         %obj.gamepad.connectController;
                     end
+                elseif strcmp(mm.computerName,'KISHONYWAB111A')
+                    [mfilepath,~,~] = fileparts(mfilename('fullpath'));
+                    mytable = readtable(fullfile(mfilepath,'settings_KISHONYWAB111A.txt'));
+                    obj.center(1,:) = mytable.center_x;
+                    obj.center(2,:) = mytable.center_y;
+                    obj.radius(:) = mytable.radius;
+                    obj.z = 1000*ones(1,6);
+                    myAngles = [10;72;144;225;269;333];
+                    handlesStageMap = guidata(obj.gui_axes);
+                    handles = guidata(obj.gui_main);
+                    for i = 1:6
+                        obj.perimeterPoints{i} = [obj.radius(i)*cosd(myAngles)+obj.center(1,i),...
+                            obj.radius(i)*sind(myAngles)+obj.center(2,i),1000*ones(numel(myAngles),1)];
+                        [xc,yc,r] = deal(obj.center(1,i),obj.center(2,i),obj.radius(i));
+                        % update the visuals
+                        myDish = handlesStageMap.rectangleDishPerimeter{i};
+                        set(myDish,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
+                        myDish2 = handles.rectangleDishPerimeter{i};
+                        set(myDish2,'Position',[xc-r,yc-r,2*r,2*r],'Visible','on');
+                        
+                        myPPts = obj.perimeterPoints{i};
+                        myPerimeter = handlesStageMap.patchPerimeterPositions{i};
+                        set(myPerimeter,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
+                        
+                        myPerimeter2 = handles.patchPerimeterPositions{i};
+                        set(myPerimeter2,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
+                        
+                        %%
+                        % setup the gamepad for adjusting proposed
+                        % positions
+                        obj.gamepad = gamepad;
+                        obj.gamepad.smdaITF = smdaI;
+                        obj.gamepad.scan6 = obj;
+                        obj.gamepad.function_button_lt = @SCAN6_gamepad_lt;
+                        obj.gamepad.function_button_rt = @SCAN6_gamepad_rt;
+                        obj.gamepad.function_button_x = @SCAN6_gamepad_x;
+                        obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;
+                        %obj.gamepad.connectController;
+                    end
                 end
             end
         end
