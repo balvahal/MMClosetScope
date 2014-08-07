@@ -69,8 +69,6 @@ classdef SuperMDAPilot_object < handle
                 if ~isdir(obj.itinerary.output_directory)
                     mkdir(obj.itinerary.output_directory);
                 end
-                fid = fopen(obj.databasefilename,'w');
-                fclose(fid);
                 %%
                 % initialize the database to hold information on 1,000,000
                 % images
