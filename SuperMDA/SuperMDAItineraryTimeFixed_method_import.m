@@ -9,16 +9,36 @@ end
 data = loadjson(filename);
 %%
 %
-smdaITF.channel_names = data.channel_names;
+if iscell(data.channel_names)
+    smdaITF.channel_names = data.channel_names;
+else
+    smdaITF.channel_names = {data.channel_names};
+end
 smdaITF.gps = data.gps;
 smdaITF.gps_logical = logical(data.gps_logical);
 smdaITF.orderVector = data.orderVector;
-smdaITF.output_directory = fullfile(data.output_directory{:});
+if iscell(data.output_directory)
+    smdaITF.output_directory = fullfile(data.output_directory{:});
+else
+    smdaITF.output_directory = data.output_directory;
+end
 %%
 % group
-smdaITF.group_function_after = data.group_function_after;
-smdaITF.group_function_before = data.group_function_before;
-smdaITF.group_label = data.group_label;
+if iscell(data.group_function_after)
+    smdaITF.group_function_after = data.group_function_after;
+else
+    smdaITF.group_function_after = {data.group_function_after};
+end
+if iscell(data.group_function_before)
+    smdaITF.group_function_before = data.group_function_before;
+else
+    smdaITF.group_function_before = {data.group_function_before};
+end
+if iscell(data.group_label)
+    smdaITF.group_label = data.group_label;
+else
+    smdaITF.group_label = {data.group_label};
+end
 smdaITF.group_logical = logical(data.group_logical);
 %%
 % navigation indices
@@ -32,9 +52,21 @@ smdaITF.ind_next_settings = data.ind_next_settings;
 % position
 smdaITF.position_continuous_focus_offset = data.position_continuous_focus_offset;
 smdaITF.position_continuous_focus_bool = logical(data.position_continuous_focus_bool);
-smdaITF.position_function_after = data.position_function_after;
-smdaITF.position_function_before = data.position_function_before;
-smdaITF.position_label = data.position_label;
+if iscell(data.position_function_after)
+    smdaITF.position_function_after = data.position_function_after;
+else
+    smdaITF.position_function_after = {data.position_function_after};
+end
+if iscell(data.position_function_before)
+    smdaITF.position_function_before = data.position_function_before;
+else
+    smdaITF.position_function_before = {data.position_function_before};
+end
+if iscell(data.position_label)
+    smdaITF.position_label = data.position_label;
+else
+    smdaITF.position_label = {data.position_label};
+end
 smdaITF.position_logical = logical(data.position_logical);
 smdaITF.position_xyz = data.position_xyz;
 %%
@@ -42,7 +74,11 @@ smdaITF.position_xyz = data.position_xyz;
 smdaITF.settings_binning = data.settings_binning;
 smdaITF.settings_channel = data.settings_channel;
 smdaITF.settings_exposure = data.settings_exposure;
-smdaITF.settings_function = data.settings_function;
+if iscell(data.settings_function)
+    smdaITF.settings_function = data.settings_function;
+else
+    smdaITF.settings_function = {data.settings_function};
+end
 smdaITF.settings_gain = data.settings_gain;
 smdaITF.settings_logical = logical(data.settings_logical);
 smdaITF.settings_period_multiplier = data.settings_period_multiplier;
