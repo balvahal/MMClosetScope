@@ -22,6 +22,7 @@ fileListJarBool = regexp(fileList,'.jar$','end');
 fileListJarBool = cellfun(@isempty,fileListJarBool);
 fileListJar = fileList(~fileListJarBool);
 fid = fopen(fullfile(prefdir,'MMjavaclasspath.txt'),'w');
+fprintf(fid,'<before>\r\n');
 cellfun(@(x) fprintf(fid,'%s\r\n',x), fileListJar);
 fclose(fid);
 %% nested directory listing ala gnovice from stackoverflow
