@@ -20,6 +20,7 @@ classdef SuperMDAPilot_object < handle
         database = {};
         databasefilename;
         database_imagedescription = '';
+        database_z_number = 1;
         itinerary;
         clock_absolute;
         mm;

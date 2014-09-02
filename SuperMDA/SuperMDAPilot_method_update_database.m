@@ -1,5 +1,6 @@
 %%
-%
+% This function was designed to be called from within a *settings
+% function*.
 function [smdaP] = SuperMDAPilot_method_update_database(smdaP)
 %% update the internal smdaPect database
 %
@@ -7,7 +8,8 @@ t = smdaP.t; %time
 g = smdaP.gps_current(1); %group
 p = smdaP.gps_current(2); %position
 s = smdaP.gps_current(3); %settings
-z = 1;
+z = smdaP.database_z_number;
+smdaP.mm.getXYZ;
 myGroupOrder = smdaP.itinerary.orderOfGroup;
 myPositionOrder = smdaP.itinerary.orderOfPosition(g);
 mySettingsOrder = smdaP.itinerary.orderOfSettings(g,p);
