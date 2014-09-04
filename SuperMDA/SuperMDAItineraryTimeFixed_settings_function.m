@@ -50,7 +50,7 @@ if smdaPilot.itinerary.settings_z_stack_upper_offset(k) - smdaPilot.itinerary.se
         smdaPilot.database_z_number = a;
         move_z(zstack(a));
         smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},'USA'),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
+    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},''),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
     imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
     %% Update the database
     %
@@ -61,7 +61,7 @@ else
     %
     smdaPilot.database_z_number = 1;
     smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},'USA'),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
+    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},''),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
     imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
     %% Update the database
     %

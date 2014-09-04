@@ -296,7 +296,7 @@ set(f,'Visible','on');
             [(scan6.center(1,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
             (scan6.center(2,1) + (cos(pi/4)*scan6.radius(1) - tol)),...
             scan6.z(1)];
-        grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfpositions);
+        grid = SuperMDA_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfpositions);
         n = 0;
         for i = 1:length(settingsInds)
             for j = 1:16
@@ -557,10 +557,10 @@ set(f,'Visible','on');
                     (center(2,i) + (cos(pi/4)*radius(i) - tol)),...
                     z(i)];
                 if gridStyle == 1
-                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
+                    grid = SuperMDA_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
                     numberOfPositions(i) = size(grid.positions,1);
                 elseif gridStyle == 2
-                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
+                    grid = SuperMDA_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
                     numberOfPositions(i) = size(grid.positions,1);
                 end
             else
@@ -582,9 +582,9 @@ set(f,'Visible','on');
                         [(center(1,i) + (cos(pi/4)*radius(i) - tol)),...
                         (center(2,i) + (cos(pi/4)*radius(i) - tol)),...
                         z(i)];
-                    grid = super_mda_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfPositions(i));
+                    grid = SuperMDA_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfPositions(i));
                 elseif gridStyle == 2
-                    grid = super_mda_grid_maker(scan6.mm,'centroid',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
+                    grid = SuperMDA_grid_maker(scan6.mm,'centroid',[center(1,i),center(2,i),z(i)],'number_of_images',numberOfPositions(i),'overlap',25);
                 end
             end
             scan6.smdaTA.addPositionGrid(i,grid);
