@@ -1,6 +1,6 @@
 %%
 %
-function [] = super_mda_function_convertMetamorph2SuperMDA(path)
+function [] = SuperMDA_convertMetamorph2SuperMDA(path)
 mydir = dir(path);
 myexpression = '(?<group_label>.+(?=_s))_s(?<position>\d+)_w(?<channel_num>\d+)(?<channel_name>.+(?=_t))_t(?<timepoint>\d+)_z(?<zlevel>\d+)\.png';
 database = [];

@@ -1,6 +1,6 @@
 %% SuperMDA_gui_pause_stop_resume
 % a simple gui to pause, stop, and resume a running MDA
-function [f] = SuperMDA_gui_lastImage(smdaPilot)
+function [f] = SuperMDAPilot_gui_lastImage(smdaPilot)
 Isize = size(smdaPilot.mm.I);
 Iheight = Isize(1);
 Iwidth = Isize(2);

@@ -1,6 +1,6 @@
 %%
 %
-function [smdaPilot] = SuperMDA_function_settings_timeFixed(smdaPilot)
+function [smdaPilot] = SuperMDAItineraryTimeFixed_settings_function(smdaPilot)
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position
 t = smdaPilot.t; %time

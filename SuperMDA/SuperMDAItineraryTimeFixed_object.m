@@ -213,13 +213,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             SuperMDAtable = cell2table(pre_allocation_cell,'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description'});
             writetable(SuperMDAtable,fullfile(obj.output_directory,'smda_database_copy.txt'),'Delimiter','\t');
         end
-        %% Update child objects to reflect number of timepoints
-        % The highly customizable features of the mda include exposure,
-        % xyz, and timepoints. These properties must have the same length.
-        % This function will ensure they all have the same length.
-        function obj = update_number_of_timepoints(obj)
-            SuperMDA_method_update_number_of_timepoints(obj);
-        end
         %% update_zstack
         %
         function obj = update_zstack(obj)

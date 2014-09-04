@@ -1,4 +1,4 @@
-function [smdaP] = SuperMDA_method_updateLastImage(smdaP)
+function [smdaP] = SuperMDAPilot_method_updateLastImage(smdaP)
 I = uint8(bitshift(smdaP.mm.I, -8)); %assumes 16-bit depth
 Isize = size(I);
 Iheight = Isize(1);

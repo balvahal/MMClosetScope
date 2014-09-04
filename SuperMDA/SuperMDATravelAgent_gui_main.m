@@ -1,4 +1,4 @@
-%% SuperMDA_gui_main2
+%% SuperMDATravelAgent_gui_main
 % a simple gui to pause, stop, and resume a running MDA
 function [f] = SuperMDATravelAgent_gui_main(smdaTA)
 %% Create the figure

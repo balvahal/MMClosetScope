@@ -1,6 +1,6 @@
 %%
 %
-function [smdaPilot] = SuperMDA_method_pause_acquisition(smdaPilot)
+function [smdaPilot] = SuperMDAPilot_method_pause_acquisition(smdaPilot)
 if smdaPilot.running_bool
     %%
     % The operation of pause is different depending on whether or not the

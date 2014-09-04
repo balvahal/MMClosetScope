@@ -1,6 +1,6 @@
 %%
 %
-function smdaTA = SuperMDA_method_refresh_gui_main(smdaTA)
+function smdaTA = SuperMDATravelAgent_method_refresh_gui_main(smdaTA)
 handles = guidata(smdaTA.gui_main);
 %% Region 1
 %

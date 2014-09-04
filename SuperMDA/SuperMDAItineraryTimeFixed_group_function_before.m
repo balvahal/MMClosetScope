@@ -1,6 +1,6 @@
 %%
 %
-function [smdaPilot] = SuperMDA_function_group_before_timeFixed(smdaPilot)
+function [smdaPilot] = SuperMDAItineraryTimeFixed_group_function_before(smdaPilot)
 %%
 %
 mmhandle = smdaPilot.mm;

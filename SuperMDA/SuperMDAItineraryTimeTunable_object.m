@@ -84,16 +84,16 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
             
             %% initialize the prototype_group
             %
-            obj.group_function_after = 'SuperMDA_function_group_after_basic';
-            obj.group_function_before = 'SuperMDA_function_group_before_basic';
+            obj.group_function_after = '';
+            obj.group_function_before = '';
             obj.group_label{1} = '';
             obj.group_scratchpad = {};
             %% initialize the prototype_position
             %
-            obj.position_continuous_focus_offset = str2double(smdaITF.mm.core.getProperty(mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_offset = str2double(smdaITF.mm.core.getProperty(smdaITF.mm.AutoFocusDevice,'Position'));
             obj.position_continuous_focus_bool = true;
-            obj.position_function_after = 'SuperMDA_function_position_after_basic';
-            obj.position_function_before = 'SuperMDA_function_position_before_basic';
+            obj.position_function_after = '';
+            obj.position_function_before = '';
             obj.position_label{1} = '';
             obj.position_scratchpad = {};
             obj.position_xyz = mm.getXYZ; %This is a customizable array
@@ -102,7 +102,7 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
             obj.settings_binning = 1;
             obj.settings_channel = 1;
             obj.settings_exposure = 1; %This is a customizable arrray
-            obj.settings_function = 'SuperMDA_function_settings_basic';
+            obj.settings_function = '';
             obj.settings_gain = 0; % [0-255] for ORCA R2
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array
@@ -191,19 +191,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
             % involved.
             SuperMDAtable = cell2table(pre_allocation_cell,'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description'});
             writetable(SuperMDAtable,fullfile(obj.output_directory,'smda_database_copy.txt'),'Delimiter','\t');
-        end
-        %% Update child objects to reflect number of timepoints
-        % The highly customizable features of the mda include exposure,
-        % xyz, and timepoints. These properties must have the same length.
-        % This function will ensure they all have the same length.
-        function obj = update_number_of_timepoints(obj)
-            SuperMDA_method_update_number_of_timepoints(obj);
-        end
-        %% finalize_MDA
-        % A method to be run just prior to take off. Think of it as a
-        % pre-flight checklist.
-        function obj = finalize_MDA(obj)
-            SuperMDA_method_finalize_MDA(obj);
         end
         %% update_timepoints_with_period_multiplier
         % Note that this will overwrite all information currently in the

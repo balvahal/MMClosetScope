@@ -95,17 +95,17 @@ classdef SuperMDAPilot_object < handle
         %% stop acquisition
         %
         function obj = stop_acquisition(obj)
-            SuperMDA_method_stop_acquisition(obj);
+            SuperMDAPilot_method_stop_acquisition(obj);
         end
         %% pause acquisition
         %
         function obj = pause_acquisition(obj)
-            SuperMDA_method_pause_acquisition(obj);
+            SuperMDAPilot_method_pause_acquisition(obj);
         end
         %% resume acquisition
         %
         function obj = resume_acquisition(obj)
-            SuperMDA_method_resume_acquisition(obj);
+            SuperMDAPilot_method_resume_acquisition(obj);
         end
         %% execute 1 round of acquisition
         %
@@ -115,7 +115,7 @@ classdef SuperMDAPilot_object < handle
         %%
         %
         function obj = timerWaitFun(obj)
-            SuperMDA_method_wait(obj);
+            SuperMDAPilot_method_wait(obj);
         end
         %%
         %
@@ -131,7 +131,7 @@ classdef SuperMDAPilot_object < handle
         %
         function obj = snap(obj)
             obj.mm.snapImage;
-            SuperMDA_method_updateLastImage(obj);
+            SuperMDAPilot_method_updateLastImage(obj);
             obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
         %% delete (make sure its child objects are also deleted)
@@ -141,11 +141,6 @@ classdef SuperMDAPilot_object < handle
             delete(obj.timer_wait);
             delete(obj.gui_pause_stop_resume);
             delete(obj.gui_lastImage);
-        end
-        %% database to CellProfiler CSV
-        %
-        function obj = database2CellProfilerCSV(obj)
-            SuperMDA_method_database2CellProfilerCSV(obj);
         end
         %% update_database
         %

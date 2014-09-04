@@ -267,7 +267,7 @@ set(f,'Visible','on');
             smdaITF2.settings_binning(myind) = scan6.smdaI.settings_binning(settingsInds(i));
             smdaITF2.settings_channel(myind) = scan6.smdaI.settings_channel(settingsInds(i));
             smdaITF2.settings_exposure(myind) = exposureArray;
-            smdaITF2.settings_function(myind) = {'SuperMDA_function_settings_timeFixed'};
+            smdaITF2.settings_function(myind) = {'SuperMDAItineraryTimeFixed_settings_function'};
             smdaITF2.settings_gain(myind) = scan6.smdaI.settings_gain(settingsInds(i));
             smdaITF2.settings_logical(myind) = true;
             smdaITF2.settings_period_multiplier(myind) = 1;

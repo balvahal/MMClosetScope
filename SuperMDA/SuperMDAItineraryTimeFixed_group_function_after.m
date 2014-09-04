@@ -1,6 +1,6 @@
 %%
 %
-function [smda] = SuperMDA_function_group_after_basic(smda)
+function [smda] = SuperMDAItineraryTimeFixed_group_function_after(smda)
 %%
 %
 

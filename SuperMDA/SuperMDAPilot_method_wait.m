@@ -1,6 +1,6 @@
 %%
 %
-function [smdaP] = SuperMDA_method_wait(smdaP)
+function [smdaP] = SuperMDAPilot_method_wait(smdaP)
 if smdaP.pause_bool
     %%
     % update the gui_pause_stop_resume

@@ -1,6 +1,6 @@
 %%
 %
-function [smdaPilot] = SuperMDA_function_settings_adrian_pulse_gradient1(smdaPilot)
+function [smdaPilot] = SuperMDAItineraryTimeFixed_settings_function_adrian_pulse_gradient1(smdaPilot)
 
 %% Set all microscope settings for the image acquisition
 % Set the microscope settings according to the settings at this position

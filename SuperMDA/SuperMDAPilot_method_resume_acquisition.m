@@ -1,6 +1,6 @@
 %%
 %
-function [smdaPilot] = SuperMDA_method_resume_acquisition(smdaPilot)
+function [smdaPilot] = SuperMDAPilot_method_resume_acquisition(smdaPilot)
 if smdaPilot.running_bool
     %%
     % The operation of pause is different depending on whether or not the
@@ -12,7 +12,7 @@ if smdaPilot.running_bool
     smdaPilot.pause_bool = false;
     if strcmp(smdaPilot.runtime_timer.Running,'off')
         smdaPilot.mda_clock_pointer = find(smdaPilot.mda_clock_absolute > now,1,'first');
-        smdaPilot.runtime_timer.StopFcn = {@SuperMDA_function_runtime_timer_stopfcn,smdaPilot};
+        smdaPilot.runtime_timer.StopFcn = {@SuperMDAPilot_function_timerRuntimeStopFun,smdaPilot};
         startat(smdaPilot.runtime_timer,smdaPilot.mda_clock_absolute(smdaPilot.mda_clock_pointer));
     else
         %%

@@ -1,6 +1,6 @@
 %%
 %
-function [smdaP] = SuperMDA_method_stop_acquisition(smdaP)
+function [smdaP] = SuperMDAPilot_method_stop_acquisition(smdaP)
 %%
 %
 if smdaP.running_bool

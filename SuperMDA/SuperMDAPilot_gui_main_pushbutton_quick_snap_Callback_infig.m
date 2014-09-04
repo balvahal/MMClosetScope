@@ -1,6 +1,6 @@
 %%
 %
-function [] = SuperMDA_gui_main_pushbutton_quick_snap_Callback_infig(hObject)
+function [] = SuperMDAPilot_gui_main_pushbutton_quick_snap_Callback_infig(hObject)
 handles = guidata(hObject);
 handles.quick_snap_count = handles.quick_snap_count+1;
 %% Set all microscope settings for the image acquisition

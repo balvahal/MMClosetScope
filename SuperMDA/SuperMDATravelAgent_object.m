@@ -145,7 +145,7 @@ classdef SuperMDATravelAgent_object < handle
         %%
         %
         function obj = refresh_gui_main(obj)
-            SuperMDA_method_refresh_gui_main(obj);
+            SuperMDATravelAgent_method_refresh_gui_main(obj);
         end
         %% delete (make sure its child objects are also deleted)
         % for a clean delete

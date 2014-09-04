@@ -1,6 +1,6 @@
 %%
 %
-function [smdaPilot] = SuperMDA_function_position_before_timeFixed(smdaPilot)
+function [smdaPilot] = SuperMDAItineraryTimeFixed_position_function_before(smdaPilot)
 %% Tell the scope to move to the position
 %
 t = smdaPilot.t; %time
