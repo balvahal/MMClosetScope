@@ -1,0 +1,162 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>cpCSVmaker</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-04"><meta name="DC.source" content="SuperMDA_database2CellProfilerCSV.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>cpCSVmaker</h1><!--introduction--><p>Converts a folder of TIFF images created via Metamorph into PNG images. A <tt>.mat</tt> file containing metadata about all the images is also created.</p><p>PNG images are preferred to TIFF images, because the format is simpler and more standardized. Also, the PNG has better lossless compression for this type of image.</p><pre class="language-matlab">[] = cpCSVmaker(path)
+</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Input</a></li><li><a href="#2">Output:</a></li><li><a href="#3">Detailed Description</a></li><li><a href="#4">Other Notes</a></li><li><a href="#5">Create the header to the CSV file</a></li><li><a href="#6">Add the filenames to the CSV file</a></li><li><a href="#8">Create the CSV file</a></li></ul></div><h2>Input<a name="1"></a></h2><div><ul><li>path: a char. The path where the image metadata is located.</li></ul></div><h2>Output:<a name="2"></a></h2><p>There is no direct argument output. Rather, a CSV file the is compatible with Cell Profiler is created.</p><h2>Detailed Description<a name="3"></a></h2><h2>Other Notes<a name="4"></a></h2><pre class="codeinput"><span class="keyword">function</span> [] = SuperMDA_database2CellProfilerCSV(path2database)
+</pre><h2>Create the header to the CSV file<a name="5"></a></h2><pre class="codeinput">header = cell(1,2*imageMetadata.numbers.howManyW);
+<span class="keyword">for</span> i=1:imageMetadata.numbers.howManyW
+    header{2*i-1} = sprintf(<span class="string">'Image_FileName_%s'</span>,imageMetadata.wavelengthInfo{i+1,2});
+    header{2*i} = sprintf(<span class="string">'Image_PathName_%s'</span>,imageMetadata.wavelengthInfo{i+1,2});
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Undefined variable "imageMetadata" or class "imageMetadata.numbers.howManyW".
+
+Error in SuperMDA_database2CellProfilerCSV (line 26)
+header = cell(1,2*imageMetadata.numbers.howManyW);
+</pre><h2>Add the filenames to the CSV file<a name="6"></a></h2><pre class="codeinput">M = cell(10000,length(header));
+<span class="keyword">for</span> w=1:imageMetadata.numbers.howManyW
+    <span class="keyword">for</span> s=1:imageMetadata.numbers.howManyS
+        <span class="keyword">if</span> ~isempty(imageMetadata.filenames{s,w})
+            M{s,2*w-1} = imageMetadata.filenames{s,w};
+            M{s,2*w} = fullfile(path,<span class="string">'png'</span>);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p>Remove empty rows</p><pre class="codeinput">isemptyM = cellfun(@isempty,M(:,1));
+M(isemptyM,:) = [];
+M = vertcat(header,M);
+</pre><h2>Create the CSV file<a name="8"></a></h2><p>The code below works, but does not seem to be the most elegant way of making the file.</p><pre class="codeinput">fid=fopen(fullfile(path,<span class="string">'cpCSV.csv'</span>),<span class="string">'w'</span>); <span class="comment">%create the file</span>
+csvFun = @(str)sprintf(<span class="string">'%s,'</span>,str); <span class="comment">%create a function that adds a comma after an input string</span>
+<span class="keyword">for</span> i=1:size(M,1)
+    xchar = cellfun(csvFun, M(i,:),<span class="string">'UniformOutput'</span>,false); <span class="comment">%commas are added after each entry in a row</span>
+    xchar = strcat(xchar{:}); <span class="comment">%the separate entries are combined into a single string</span>
+    fprintf(fid,<span class="string">'%s\r\n'</span>,xchar(1:end-1)); <span class="comment">%this single string, which represents a row is added to the file. The last comma is left off</span>
+<span class="keyword">end</span>
+fclose(fid);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% cpCSVmaker
+% Converts a folder of TIFF images created via Metamorph into PNG images. A
+% |.mat| file containing metadata about all the images is also created.
+%
+% PNG images are preferred to TIFF images, because the format is simpler
+% and more standardized. Also, the PNG has better lossless compression for
+% this type of image.
+%
+%   [] = cpCSVmaker(path)
+%
+%%% Input
+% * path: a char. The path where the image metadata is located.
+%
+%%% Output:
+% There is no direct argument output. Rather, a CSV file the is compatible
+% with Cell Profiler is created.
+%
+%%% Detailed Description
+%
+%
+%%% Other Notes
+%
+function [] = SuperMDA_database2CellProfilerCSV(path2database)
+%% Create the header to the CSV file
+%
+header = cell(1,2*imageMetadata.numbers.howManyW);
+for i=1:imageMetadata.numbers.howManyW
+    header{2*i-1} = sprintf('Image_FileName_%s',imageMetadata.wavelengthInfo{i+1,2});
+    header{2*i} = sprintf('Image_PathName_%s',imageMetadata.wavelengthInfo{i+1,2});
+end
+%% Add the filenames to the CSV file
+%
+M = cell(10000,length(header));
+for w=1:imageMetadata.numbers.howManyW
+    for s=1:imageMetadata.numbers.howManyS
+        if ~isempty(imageMetadata.filenames{s,w})
+            M{s,2*w-1} = imageMetadata.filenames{s,w};
+            M{s,2*w} = fullfile(path,'png');
+        end
+    end
+end
+%%
+% Remove empty rows
+isemptyM = cellfun(@isempty,M(:,1));
+M(isemptyM,:) = [];
+M = vertcat(header,M);
+%% Create the CSV file
+% The code below works, but does not seem to be the most elegant way of
+% making the file.
+fid=fopen(fullfile(path,'cpCSV.csv'),'w'); %create the file
+csvFun = @(str)sprintf('%s,',str); %create a function that adds a comma after an input string
+for i=1:size(M,1)
+    xchar = cellfun(csvFun, M(i,:),'UniformOutput',false); %commas are added after each entry in a row
+    xchar = strcat(xchar{:}); %the separate entries are combined into a single string
+    fprintf(fid,'%s\r\n',xchar(1:end-1)); %this single string, which represents a row is added to the file. The last comma is left off
+end
+fclose(fid);
+end
+##### SOURCE END #####
+--></body></html>

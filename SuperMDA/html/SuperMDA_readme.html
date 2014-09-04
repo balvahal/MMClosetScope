@@ -1,0 +1,144 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>SuperMDA</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-04"><meta name="DC.source" content="SuperMDA_readme.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>SuperMDA</h1><!--introduction--><p>The first goal of SuperMDA is to unleash the power of MATLAB&reg; on microscopy. This has been accomplished by creating a MATLAB&reg; library built upon the micro-manager.org API. SuperMDA differs from the traditional multi-dimensional-acquisition (MDA), because now it is possible to idependently modify each aspect of the <i>what?</i>, <i>where?</i>, and <i>when?</i> pertaining to image acquisition, including on-the-fly during operation, openning the possibility of incorporating feedback into the acquisition.</p><p>Another goal is to have SuperMDA evolve an app-store like functionality. The flexibility of using MATLAB&reg; means microscope behavior can be tailored to each experiment. Traditionally, MDA has been a one-size-fits-all tool, but microscopy experiments are becoming increasing complicated: light-controlled fluorophores, screening large libraries, lengthy time-lapse movies. SuperMDA can serve as a foundation for an application made to serve each purpose; of course, the SuperMDA can serve as a traditional MDA, too.</p><p>SuperMDA has an instruction hierarchy. The lowest level is <i>settings</i> where most of the microscope details are defined. For example, filter sets, exposures times, and z-stack information is stored here. The next level is the <i>position</i>. The <i>position</i> contains the (x,y,z) information of where the stage should be placed above the objective. The top level is the <i>group</i>, which is meant to organize sets of positions. Note, that <i>group of groups</i> is being considered as another level of the hierarchy. The relationship between these levels of instructional information is specified and stored within a group-position-settings (GPS) matrix. More detail into the SuperMDA instruction hierarchy can be found <a href="SuperMDAItineraryTimeFixed_object">here</a>.</p><p>SuperMDA is meant to integrate more seemlessly into the data analysis pipeline by making the images acquired immediately available to the MATLAB&reg; environment. The SuperMDA solution is simple: create a helpful database, a tab-delimited table, that is easily parsed. A separate project uses this database as a starting point for image analysis. Additionally, this database can be transformed into a CSV file for use in the cellprofiler.org image analysis software.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Function List</a></li></ul></div><h2>Function List<a name="1"></a></h2><div><ol><li><b><a href="SuperMDA_database2CellProfilerCSV.html">SuperMDA_database2CellProfilerCSV</a></b> : Transform the default database into a CSV file recognized by the cellprofiler.org open source software. cellprofiler.org is especially great for fixed cells.</li><li><b><a href="SuperMDA_grid_maker.html">SuperMDA_grid_maker</a></b> : Creates a list of (x,y) coordinates that can be used to acquire images over a rectangular area.</li><li><b><a href="SuperMDAItineraryTimeFixed_group_function_after.html">SuperMDAItineraryTimeFixed_group_function_after</a></b> : Default instructions set to execute <i>after</i> looping through a group of positions.</li><li><b><a href="SuperMDAItineraryTimeFixed_group_function_before.html">SuperMDAItineraryTimeFixed_group_function_before</a></b> : Default instructions set to execute <i>before</i> looping through a group of positions.</li><li><b><a href="SuperMDAItinearyTimeFixed_method_addPosition2Group.html">SuperMDAItineraryTimeFixed_method_addPosition2Group</a></b> : A method that maintains the fidelity of the intinerary while adding a new position to a given group.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_addSettings2AllPosition.html">SuperMDAItineraryTimeFixed_method_addSettings2AllPosition</a></b> : It is common to share settings between a group of positions. This function will add a new settings to each position in a given group.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_addSettings2Position.html">SuperMDAItineraryTimeFixed_method_addSettings2Position</a></b> : A settings is created and added to a given position.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_export.html">SuperMDAItineraryTimeFixed_method_export</a></b> : The contents of an instance of the <tt>SuperMDAItineraryTimeFixed_object</tt> can be saved in a text file using this function.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_import.html">SuperMDAItineraryTimeFixed_method_import</a></b> : A previously saved <tt>SuperMDAItineraryTimeFixed_object</tt> can replace the contents of a <tt>SuperMDAItineraryTimeFixed_object</tt> currently in the workspace.</li></ol></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% SuperMDA
+% The first goal of SuperMDA is to unleash the power of MATLAB(R) on
+% microscopy. This has been accomplished by creating a MATLAB(R) library
+% built upon the micro-manager.org API. SuperMDA differs from the
+% traditional multi-dimensional-acquisition (MDA), because now it is
+% possible to idependently modify each aspect of the _what?_, _where?_, and
+% _when?_ pertaining to image acquisition, including on-the-fly during
+% operation, openning the possibility of incorporating feedback into the
+% acquisition.
+%
+% Another goal is to have SuperMDA evolve an app-store like functionality.
+% The flexibility of using MATLAB(R) means microscope behavior can be
+% tailored to each experiment. Traditionally, MDA has been a
+% one-size-fits-all tool, but microscopy experiments are becoming
+% increasing complicated: light-controlled fluorophores, screening large
+% libraries, lengthy time-lapse movies. SuperMDA can serve as a foundation
+% for an application made to serve each purpose; of course, the SuperMDA
+% can serve as a traditional MDA, too.
+%
+% SuperMDA has an instruction hierarchy. The lowest level is _settings_
+% where most of the microscope details are defined. For example, filter
+% sets, exposures times, and z-stack information is stored here. The next
+% level is the _position_. The _position_ contains the (x,y,z) information
+% of where the stage should be placed above the objective. The top level is
+% the _group_, which is meant to organize sets of positions. Note, that
+% _group of groups_ is being considered as another level of the hierarchy.
+% The relationship between these levels of instructional information is
+% specified and stored within a group-position-settings (GPS) matrix. More
+% detail into the SuperMDA instruction hierarchy can be found
+% <SuperMDAItineraryTimeFixed_object here>.
+%
+% SuperMDA is meant to integrate more seemlessly into the data analysis
+% pipeline by making the images acquired immediately available to the
+% MATLAB(R) environment. The SuperMDA solution is simple: create a helpful
+% database, a tab-delimited table, that is easily parsed. A separate
+% project uses this database as a starting point for image analysis.
+% Additionally, this database can be transformed into a CSV file for use in
+% the cellprofiler.org image analysis software.
+%% Function List
+%
+% # *<SuperMDA_database2CellProfilerCSV.html
+% SuperMDA_database2CellProfilerCSV>* : Transform the default database into
+% a CSV file recognized by the cellprofiler.org open source software.
+% cellprofiler.org is especially great for fixed cells.
+% # *<SuperMDA_grid_maker.html SuperMDA_grid_maker>* : Creates a list of
+% (x,y) coordinates that can be used to acquire images over a rectangular
+% area.
+% # *<SuperMDAItineraryTimeFixed_group_function_after.html
+% SuperMDAItineraryTimeFixed_group_function_after>* : Default instructions
+% set to execute _after_ looping through a group of positions.
+% # *<SuperMDAItineraryTimeFixed_group_function_before.html
+% SuperMDAItineraryTimeFixed_group_function_before>* : Default instructions
+% set to execute _before_ looping through a group of positions.
+% # *<SuperMDAItinearyTimeFixed_method_addPosition2Group.html
+% SuperMDAItineraryTimeFixed_method_addPosition2Group>* : A method that
+% maintains the fidelity of the intinerary while adding a new position to a
+% given group.
+% # *<SuperMDAItineraryTimeFixed_method_addSettings2AllPosition.html
+% SuperMDAItineraryTimeFixed_method_addSettings2AllPosition>* : It is
+% common to share settings between a group of positions. This function will
+% add a new settings to each position in a given group.
+% # *<SuperMDAItineraryTimeFixed_method_addSettings2Position.html
+% SuperMDAItineraryTimeFixed_method_addSettings2Position>* : A settings is
+% created and added to a given position.
+% # *<SuperMDAItineraryTimeFixed_method_export.html
+% SuperMDAItineraryTimeFixed_method_export>* : The contents of an instance
+% of the |SuperMDAItineraryTimeFixed_object| can be saved in a text file
+% using this function.
+% # *<SuperMDAItineraryTimeFixed_method_import.html
+% SuperMDAItineraryTimeFixed_method_import>* : A previously saved
+% |SuperMDAItineraryTimeFixed_object| can replace the contents of a
+% |SuperMDAItineraryTimeFixed_object| currently in the workspace.
+##### SOURCE END #####
+--></body></html>
