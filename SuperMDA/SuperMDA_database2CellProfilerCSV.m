@@ -1,12 +1,10 @@
-%% cpCSVmaker
-% Converts a folder of TIFF images created via Metamorph into PNG images. A
-% |.mat| file containing metadata about all the images is also created.
+%% SuperMDA_database2CellProfilerCSV
+% A database text-file is created after using SuperMDA. If the images will
+% be analyzed using cellprofiler.org software it is useful to have the
+% cellprofiler.org ready CSV file created. This function will create such a
+% file.
 %
-% PNG images are preferred to TIFF images, because the format is simpler
-% and more standardized. Also, the PNG has better lossless compression for
-% this type of image.
-%
-%   [] = cpCSVmaker(path)
+%   [] = SuperMDA_database2CellProfilerCSV(path2database)
 %
 %%% Input
 % * path: a char. The path where the image metadata is located.

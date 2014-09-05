@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>SuperMDA</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-04"><meta name="DC.source" content="SuperMDA_readme.m"><style type="text/css">
+      --><title>SuperMDA</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-05"><meta name="DC.source" content="SuperMDA_readme.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>SuperMDA</h1><!--introduction--><p>The first goal of SuperMDA is to unleash the power of MATLAB&reg; on microscopy. This has been accomplished by creating a MATLAB&reg; library built upon the micro-manager.org API. SuperMDA differs from the traditional multi-dimensional-acquisition (MDA), because now it is possible to idependently modify each aspect of the <i>what?</i>, <i>where?</i>, and <i>when?</i> pertaining to image acquisition, including on-the-fly during operation, openning the possibility of incorporating feedback into the acquisition.</p><p>Another goal is to have SuperMDA evolve an app-store like functionality. The flexibility of using MATLAB&reg; means microscope behavior can be tailored to each experiment. Traditionally, MDA has been a one-size-fits-all tool, but microscopy experiments are becoming increasing complicated: light-controlled fluorophores, screening large libraries, lengthy time-lapse movies. SuperMDA can serve as a foundation for an application made to serve each purpose; of course, the SuperMDA can serve as a traditional MDA, too.</p><p>SuperMDA has an instruction hierarchy. The lowest level is <i>settings</i> where most of the microscope details are defined. For example, filter sets, exposures times, and z-stack information is stored here. The next level is the <i>position</i>. The <i>position</i> contains the (x,y,z) information of where the stage should be placed above the objective. The top level is the <i>group</i>, which is meant to organize sets of positions. Note, that <i>group of groups</i> is being considered as another level of the hierarchy. The relationship between these levels of instructional information is specified and stored within a group-position-settings (GPS) matrix. More detail into the SuperMDA instruction hierarchy can be found <a href="SuperMDAItineraryTimeFixed_object">here</a>.</p><p>SuperMDA is meant to integrate more seemlessly into the data analysis pipeline by making the images acquired immediately available to the MATLAB&reg; environment. The SuperMDA solution is simple: create a helpful database, a tab-delimited table, that is easily parsed. A separate project uses this database as a starting point for image analysis. Additionally, this database can be transformed into a CSV file for use in the cellprofiler.org image analysis software.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Function List</a></li></ul></div><h2>Function List<a name="1"></a></h2><div><ol><li><b><a href="SuperMDA_database2CellProfilerCSV.html">SuperMDA_database2CellProfilerCSV</a></b> : Transform the default database into a CSV file recognized by the cellprofiler.org open source software. cellprofiler.org is especially great for fixed cells.</li><li><b><a href="SuperMDA_grid_maker.html">SuperMDA_grid_maker</a></b> : Creates a list of (x,y) coordinates that can be used to acquire images over a rectangular area.</li><li><b><a href="SuperMDAItineraryTimeFixed_group_function_after.html">SuperMDAItineraryTimeFixed_group_function_after</a></b> : Default instructions set to execute <i>after</i> looping through a group of positions.</li><li><b><a href="SuperMDAItineraryTimeFixed_group_function_before.html">SuperMDAItineraryTimeFixed_group_function_before</a></b> : Default instructions set to execute <i>before</i> looping through a group of positions.</li><li><b><a href="SuperMDAItinearyTimeFixed_method_addPosition2Group.html">SuperMDAItineraryTimeFixed_method_addPosition2Group</a></b> : A method that maintains the fidelity of the intinerary while adding a new position to a given group.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_addSettings2AllPosition.html">SuperMDAItineraryTimeFixed_method_addSettings2AllPosition</a></b> : It is common to share settings between a group of positions. This function will add a new settings to each position in a given group.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_addSettings2Position.html">SuperMDAItineraryTimeFixed_method_addSettings2Position</a></b> : A settings is created and added to a given position.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_export.html">SuperMDAItineraryTimeFixed_method_export</a></b> : The contents of an instance of the <tt>SuperMDAItineraryTimeFixed_object</tt> can be saved in a text file using this function.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_import.html">SuperMDAItineraryTimeFixed_method_import</a></b> : A previously saved <tt>SuperMDAItineraryTimeFixed_object</tt> can replace the contents of a <tt>SuperMDAItineraryTimeFixed_object</tt> currently in the workspace.</li></ol></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>SuperMDA</h1><!--introduction--><p>The first goal of SuperMDA is to unleash the power of MATLAB&reg; on microscopy. This has been accomplished by creating a MATLAB&reg; library built upon the micro-manager.org API. SuperMDA differs from the traditional multi-dimensional-acquisition (MDA), because now it is possible to idependently modify each aspect of the <i>what?</i>, <i>where?</i>, and <i>when?</i> pertaining to image acquisition, including on-the-fly during operation, openning the possibility of incorporating feedback into the acquisition.</p><p>Another goal is to have SuperMDA evolve an app-store like functionality. The flexibility of using MATLAB&reg; means microscope behavior can be tailored to each experiment. Traditionally, MDA has been a one-size-fits-all tool, but microscopy experiments are becoming increasing complicated: light-controlled fluorophores, screening large libraries, lengthy time-lapse movies. SuperMDA can serve as a foundation for an application made to serve each purpose; of course, the SuperMDA can serve as a traditional MDA, too.</p><p>SuperMDA has an instruction hierarchy. The lowest level is <i>settings</i> where most of the microscope details are defined. For example, filter sets, exposures times, and z-stack information is stored here. The next level is the <i>position</i>. The <i>position</i> contains the (x,y,z) information of where the stage should be placed above the objective. The top level is the <i>group</i>, which is meant to organize sets of positions. Note, that <i>group of groups</i> is being considered as another level of the hierarchy. The relationship between these levels of instructional information is specified and stored within a group-position-settings (GPS) matrix. More detail into the SuperMDA instruction hierarchy can be found <a href="SuperMDAItineraryTimeFixed_object">here</a>.</p><p>SuperMDA is meant to integrate more seemlessly into the data analysis pipeline by making the images acquired immediately available to the MATLAB&reg; environment. The SuperMDA solution is simple: create a helpful database, a tab-delimited table, that is easily parsed. A separate project uses this database as a starting point for image analysis. Additionally, this database can be transformed into a CSV file for use in the cellprofiler.org image analysis software.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Function List</a></li></ul></div><h2>Function List<a name="1"></a></h2><div><ol><li><b><a href="SuperMDA_database2CellProfilerCSV.html">SuperMDA_database2CellProfilerCSV</a></b> : Transform the default database into a CSV file recognized by the cellprofiler.org open source software. cellprofiler.org is especially great for fixed cells.</li><li><b><a href="SuperMDA_grid_maker.html">SuperMDA_grid_maker</a></b> : Creates a list of (x,y) coordinates that can be used to acquire images over a rectangular area.</li><li><b><a href="SuperMDAItineraryTimeFixed_group_function_after.html">SuperMDAItineraryTimeFixed_group_function_after</a></b> : Default instructions set to execute <i>after</i> looping through a group of positions.</li><li><b><a href="SuperMDAItineraryTimeFixed_group_function_before.html">SuperMDAItineraryTimeFixed_group_function_before</a></b> : Default instructions set to execute <i>before</i> looping through a group of positions.</li><li><b><a href="SuperMDAItinearyTimeFixed_method_addPosition2Group.html">SuperMDAItineraryTimeFixed_method_addPosition2Group</a></b> : A method that maintains the fidelity of the itinerary while adding a new position to a given group.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_addSettings2AllPosition.html">SuperMDAItineraryTimeFixed_method_addSettings2AllPosition</a></b> : It is common to share settings between a group of positions. This function will add a new settings to each position in a given group.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_addSettings2Position.html">SuperMDAItineraryTimeFixed_method_addSettings2Position</a></b> : A settings is created and added to a given position.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_export.html">SuperMDAItineraryTimeFixed_method_export</a></b> : The contents of an instance of the <tt>SuperMDAItineraryTimeFixed_object</tt> can be saved in a text file using this function.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_import.html">SuperMDAItineraryTimeFixed_method_import</a></b> : A previously saved <tt>SuperMDAItineraryTimeFixed_object</tt> can replace the contents of a <tt>SuperMDAItineraryTimeFixed_object</tt> currently in the workspace.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_newGroup.html">SuperMDAItineraryTimeFixed_method_newGroup</a></b> : The fidelity of the itinerary is maintained and a new group is added.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_newPosition.html">SuperMDAItineraryTimeFixed_method_newPosition</a></b> : The fidelity of the itinerary is maintained and a new position is added.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_newPositionNewSettings.html">SuperMDAItineraryTimeFixed_method_newPositionNewSettings</a></b> : A new position is added along with a new settings.</li><li><b><a href="SuperMDAItineraryTimeFixed_method_newSettings.html">SuperMDAItineraryTimeFixed_method_newSettings</a></b> : The fidelity of the itinerary is maintained and a new settings is added.</li><li><b><a href="SuperMDAItineraryTimeFixed_object.html">SuperMDAItineraryTimeFixed_object</a></b> : An object that houses the itinerary, which is a set of instructions that specify the <i>what?</i>, <i>where?</i>, and <i>when?</i> pertaining to image acquisition.</li><li><b><a href="SuperMDAItineraryTimeFixed_position_function_after.html">SuperMDAItineraryTimeFixed_position_function_after</a></b> : Default instructions set to execute <i>after</i> visiting a position.</li><li><b><a href="SuperMDAItineraryTimeFixed_position_function_before.html">SuperMDAItineraryTimeFixed_position_function_before</a></b> : Default instructions set to execute <i>before</i> visiting a position.</li><li><b><a href="SuperMDAItineraryTimeFixed_settings_function.html">SuperMDAItineraryTimeFixed_settings_function</a></b> : Default instructions set to execute at a position. This function configures the binning, gain, channel, and z-stack. An image(s) is acquired and the database is updated.</li><li><b><a href="SuperMDAItineraryTimeFixed_settings_function_2x2grid.html">SuperMDAItineraryTimeFixed_settings_function_2x2grid</a></b> : Instructions that configure everything in the default, except z-stack. A 2x2 grid centered at the selected position is acquired.</li><li><b><a href="SuperMDAItineraryTimeFixed_settings_function_minimal.html">SuperMDAItineraryTimeFixed_settings_function_minimal</a></b> : Instructions that configure everything in the default, except the z-stack. The z-stack requires loops, so removing the z-stack makes a very compact file.</li><li><b><a href="SuperMDAItineraryTimeTunable_object.html">SuperMDAItineraryTimeTunable_object</a></b> : In contrast to the <i>TimeFixed</i> itinerary, this object has several parameters defined for every timepoint. These parameters are timepoints, exposure, and (x,y,z).</li><li><b><a href="SuperMDAPilot_function_timerRuntimeFunContinuousCapture.html">SuperMDAPilot_function_timerRuntimeFunContinuousCapture</a></b> : Continuous capture means the itinerary is looped through repeatedly.</li><li><b><a href="SuperMDAPilot_function_timerRuntimeStopFun.html">SuperMDAPilot_function_timerRuntimeStopFun</a></b> : A special stop function is created for the MATLAB&reg; timer object that trigger at the times specified in the itinerary.</li><li><b><a href="SuperMDAPilot_function_timerRuntimeStopFunContinuousCapture.html">SuperMDAPilot_function_timerRuntimeStopFunContinuousCapture</a></b> : A special stop function is created for the MATLAB&reg; timer object that triggers continuously, effectively creating a <tt>for</tt> loop. A <tt>for</tt> loop wasn't used, so that the <i>Pilot</i> object could be reused.</li><li><b><a href="SuperMDAPilot_gui_lastImage.html">SuperMDAPilot_gui_lastImage</a></b> : A figure that displays the last image collected through the SuperMDA.</li><li><b><a href="SuperMDAPilot_gui_puase_stop_resume.html">SuperMDAPilot_gui_pause_stop_resume</a></b> : A figure that displays the time between acquisitions and several buttons to pause, stop, and resume the acquisition.</li><li><b><a href="SuperMDAPilot_method_oneLoop.html">SuperMDAPilot_method_oneLoop</a></b> :</li><li><b><a href="SuperMDAPilot_method_pause_acquisition.html">SuperMDAPilot_method_pause_acquistion</a></b> :</li><li><b><a href="SuperMDAPilot_method_resume_acquisition.html">SuperMDAPilot_method_resume_acquisition</a></b> :</li><li><b><a href="SuperMDAPilot_method_startAcquisition.html">SuperMDAPilot_method_startAcquisition</a></b> :</li><li><b><a href="SuperMDAPilot_method_startAcquisitionContinuousCapture.html">SuperMDAPilot_method_startAcquisitionContinuousCapture</a></b> :</li><li><b><a href="SuperMDAPilot_method_stop_acquisition.html">SuperMDAPilot_method_stop_acquisition</a></b> :</li><li><b><a href="SuperMDAPilot_method_timerRuntimeFun.html">SuperMDAPilot_method_timerRuntimeFun</a></b> :</li><li><b><a href="SuperMDAPilot_method_update_database.html">SuperMDAPilot_method_update_database</a></b> :</li><li><b><a href="SuperMDAPilot_method_updateLastImage.html">SuperMDAPilot_method_updateLastImage</a></b> :</li><li><b><a href="SuperMDAPilot_method_wait.html">SuperMDAPilot_method_wait</a></b> :</li><li><b><a href="SuperMDAPilot_object.html">SuperMDAPilot_object</a></b> :</li><li><b><a href="SuperMDATravelAgent_gui_main.html">SuperMDATravelAgent_gui_main</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_addGroup.html">SuperMDATravelAgent_method_addGroup</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_addPosition.html">SuperMDATravelAgent_method_addPosition</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_addPositionGrid.html">SuperMDATravelAgent_method_addPositionGrid</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_addSettings.html">SuperMDATravelAgent_method_addSettings</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_changeAllGroup.html">SuperMDATravelAgent_method_changeAllGroup</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_changeAllPosition.html">SuperMDATravelAgent_method_changeAllPosition</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_changeAllSettings.html">SuperMDATravelAgent_method_changeAllSettings</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_createOrdinalLabels.html">SuperMDATravelAgent_method_createOrdinalLabels</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_dropGroup.html">SuperMDATravelAgent_method_dropGroup</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_dropGroupOrder.html">SuperMDATravelAgent_method_dropGroupOrder</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_dropPosition.html">SuperMDATravelAgent_method_dropPosition</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_dropPositionOrder.html">SuperMDATravelAgent_method_dropPositionOrder</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_dropSettings.html">SuperMDATravelAgent_method_dropSettings</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_dropSettingsOrder.html">SuperMDATravelAgent_method_dropSettingsOrder</a></b> :</li><li><b><a href="SuperMDATravelAgent_method_refresh_gui_main.html">SuperMDATravelAgent_method_refresh_gui_main</a></b> :</li><li><b><a href="SuperMDATravelAgent_object.html">SuperMDATravelAgent_object</a></b> :</li></ol></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% SuperMDA
 % The first goal of SuperMDA is to unleash the power of MATLAB(R) on
@@ -123,7 +123,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 % set to execute _before_ looping through a group of positions.
 % # *<SuperMDAItinearyTimeFixed_method_addPosition2Group.html
 % SuperMDAItineraryTimeFixed_method_addPosition2Group>* : A method that
-% maintains the fidelity of the intinerary while adding a new position to a
+% maintains the fidelity of the itinerary while adding a new position to a
 % given group.
 % # *<SuperMDAItineraryTimeFixed_method_addSettings2AllPosition.html
 % SuperMDAItineraryTimeFixed_method_addSettings2AllPosition>* : It is
@@ -140,5 +140,113 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 % SuperMDAItineraryTimeFixed_method_import>* : A previously saved
 % |SuperMDAItineraryTimeFixed_object| can replace the contents of a
 % |SuperMDAItineraryTimeFixed_object| currently in the workspace.
+% # *<SuperMDAItineraryTimeFixed_method_newGroup.html
+% SuperMDAItineraryTimeFixed_method_newGroup>* : The fidelity of the
+% itinerary is maintained and a new group is added.
+% # *<SuperMDAItineraryTimeFixed_method_newPosition.html
+% SuperMDAItineraryTimeFixed_method_newPosition>* : The fidelity of the
+% itinerary is maintained and a new position is added.
+% # *<SuperMDAItineraryTimeFixed_method_newPositionNewSettings.html
+% SuperMDAItineraryTimeFixed_method_newPositionNewSettings>* : A new
+% position is added along with a new settings.
+% # *<SuperMDAItineraryTimeFixed_method_newSettings.html
+% SuperMDAItineraryTimeFixed_method_newSettings>* : The fidelity of the
+% itinerary is maintained and a new settings is added.
+% # *<SuperMDAItineraryTimeFixed_object.html
+% SuperMDAItineraryTimeFixed_object>* : An object that houses the
+% itinerary, which is a set of instructions that specify the _what?_,
+% _where?_, and _when?_ pertaining to image acquisition.
+% # *<SuperMDAItineraryTimeFixed_position_function_after.html
+% SuperMDAItineraryTimeFixed_position_function_after>* : Default
+% instructions set to execute _after_ visiting a position.
+% # *<SuperMDAItineraryTimeFixed_position_function_before.html
+% SuperMDAItineraryTimeFixed_position_function_before>* : Default
+% instructions set to execute _before_ visiting a position.
+% # *<SuperMDAItineraryTimeFixed_settings_function.html
+% SuperMDAItineraryTimeFixed_settings_function>* : Default instructions set
+% to execute at a position. This function configures the binning, gain,
+% channel, and z-stack. An image(s) is acquired and the database is
+% updated.
+% # *<SuperMDAItineraryTimeFixed_settings_function_2x2grid.html
+% SuperMDAItineraryTimeFixed_settings_function_2x2grid>* : Instructions
+% that configure everything in the default, except z-stack. A 2x2 grid
+% centered at the selected position is acquired.
+% # *<SuperMDAItineraryTimeFixed_settings_function_minimal.html
+% SuperMDAItineraryTimeFixed_settings_function_minimal>* : Instructions
+% that configure everything in the default, except the z-stack. The z-stack
+% requires loops, so removing the z-stack makes a very compact file.
+% # *<SuperMDAItineraryTimeTunable_object.html
+% SuperMDAItineraryTimeTunable_object>* : In contrast to the _TimeFixed_
+% itinerary, this object has several parameters defined for every
+% timepoint. These parameters are timepoints, exposure, and (x,y,z).
+% # *<SuperMDAPilot_function_timerRuntimeFunContinuousCapture.html
+% SuperMDAPilot_function_timerRuntimeFunContinuousCapture>* : Continuous
+% capture means the itinerary is looped through repeatedly.
+% # *<SuperMDAPilot_function_timerRuntimeStopFun.html
+% SuperMDAPilot_function_timerRuntimeStopFun>* : A special stop function is
+% created for the MATLAB(R) timer object that trigger at the times
+% specified in the itinerary.
+% # *<SuperMDAPilot_function_timerRuntimeStopFunContinuousCapture.html
+% SuperMDAPilot_function_timerRuntimeStopFunContinuousCapture>* : A special
+% stop function is created for the MATLAB(R) timer object that triggers
+% continuously, effectively creating a |for| loop. A |for| loop wasn't
+% used, so that the _Pilot_ object could be reused.
+% # *<SuperMDAPilot_gui_lastImage.html SuperMDAPilot_gui_lastImage>* : A
+% figure that displays the last image collected through the SuperMDA.
+% # *<SuperMDAPilot_gui_puase_stop_resume.html
+% SuperMDAPilot_gui_pause_stop_resume>* : A figure that displays the time
+% between acquisitions and several buttons to pause, stop, and resume the
+% acquisition.
+% # *<SuperMDAPilot_method_oneLoop.html SuperMDAPilot_method_oneLoop>* : 
+% # *<SuperMDAPilot_method_pause_acquisition.html
+% SuperMDAPilot_method_pause_acquistion>* : 
+% # *<SuperMDAPilot_method_resume_acquisition.html
+% SuperMDAPilot_method_resume_acquisition>* : 
+% # *<SuperMDAPilot_method_startAcquisition.html
+% SuperMDAPilot_method_startAcquisition>* : 
+% # *<SuperMDAPilot_method_startAcquisitionContinuousCapture.html
+% SuperMDAPilot_method_startAcquisitionContinuousCapture>* :
+% # *<SuperMDAPilot_method_stop_acquisition.html
+% SuperMDAPilot_method_stop_acquisition>* : 
+% # *<SuperMDAPilot_method_timerRuntimeFun.html
+% SuperMDAPilot_method_timerRuntimeFun>* :
+% # *<SuperMDAPilot_method_update_database.html
+% SuperMDAPilot_method_update_database>* : 
+% # *<SuperMDAPilot_method_updateLastImage.html
+% SuperMDAPilot_method_updateLastImage>* : 
+% # *<SuperMDAPilot_method_wait.html SuperMDAPilot_method_wait>* : 
+% # *<SuperMDAPilot_object.html SuperMDAPilot_object>* : 
+% # *<SuperMDATravelAgent_gui_main.html SuperMDATravelAgent_gui_main>* : 
+% # *<SuperMDATravelAgent_method_addGroup.html
+% SuperMDATravelAgent_method_addGroup>* : 
+% # *<SuperMDATravelAgent_method_addPosition.html
+% SuperMDATravelAgent_method_addPosition>* : 
+% # *<SuperMDATravelAgent_method_addPositionGrid.html
+% SuperMDATravelAgent_method_addPositionGrid>* : 
+% # *<SuperMDATravelAgent_method_addSettings.html
+% SuperMDATravelAgent_method_addSettings>* : 
+% # *<SuperMDATravelAgent_method_changeAllGroup.html
+% SuperMDATravelAgent_method_changeAllGroup>* : 
+% # *<SuperMDATravelAgent_method_changeAllPosition.html
+% SuperMDATravelAgent_method_changeAllPosition>* :
+% # *<SuperMDATravelAgent_method_changeAllSettings.html
+% SuperMDATravelAgent_method_changeAllSettings>* : 
+% # *<SuperMDATravelAgent_method_createOrdinalLabels.html
+% SuperMDATravelAgent_method_createOrdinalLabels>* :
+% # *<SuperMDATravelAgent_method_dropGroup.html
+% SuperMDATravelAgent_method_dropGroup>* :
+% # *<SuperMDATravelAgent_method_dropGroupOrder.html
+% SuperMDATravelAgent_method_dropGroupOrder>* :
+% # *<SuperMDATravelAgent_method_dropPosition.html
+% SuperMDATravelAgent_method_dropPosition>* :
+% # *<SuperMDATravelAgent_method_dropPositionOrder.html
+% SuperMDATravelAgent_method_dropPositionOrder>* :
+% # *<SuperMDATravelAgent_method_dropSettings.html
+% SuperMDATravelAgent_method_dropSettings>* : 
+% # *<SuperMDATravelAgent_method_dropSettingsOrder.html
+% SuperMDATravelAgent_method_dropSettingsOrder>* : 
+% # *<SuperMDATravelAgent_method_refresh_gui_main.html
+% SuperMDATravelAgent_method_refresh_gui_main>* :
+% # *<SuperMDATravelAgent_object.html SuperMDATravelAgent_object>* :
 ##### SOURCE END #####
 --></body></html>
