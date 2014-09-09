@@ -1,4 +1,37 @@
-%%
+%% SuperMDA_grid_maker
+% A database text-file is created after using SuperMDA. If the images will
+% be analyzed using cellprofiler.org software it is useful to have a
+% cellprofiler.org-ready CSV file created. This function will create such a
+% file.
+%
+%   [grid] = SuperMDA_grid_maker(mmhandle,varargin)
+%
+%%% Input
+% * mmhandle: a string. The path to the SuperMDA database file.
+% * varargin: a string. The path to the directory containing the
+% image files.
+%%% Varargin Parameters
+% * number_of_images: the number of images in a grid
+% * number_of_columns: the number of columns in a grid 
+% * number_of_rows: the number of rows in a grid
+% * centroid: the position of the center of the grid
+% * upper_left_corner: the position of the upper left corner of the grid
+% * lower_right_corner: the position of the lower right corner of the grid
+% * overlap: the amount of overlap between images in both x and y. Negative
+% distances represents the space between images.
+% * overlap_x: overlap specific to the x-direction
+% * overlap_y: overlap specific to the y-direction
+% * overlap_units: pixels or micro-meters. |px| or |um|.
+% * path_strategy: |snake|, |CRLF|, or |Jacob Pyramid|.
+%
+%%% Output:
+% * grid: a struct. It contains string names and the (x,y,z) coordinates of
+% the grid.
+%
+%%% Detailed Description
+% There is no detailed description.
+%
+%%% Other Notes
 % It is assumed that the origin is in the ULC and x increases due east and
 % y increases due south when the stage is viewed from above.
 function [grid] = SuperMDA_grid_maker(mmhandle,varargin)
