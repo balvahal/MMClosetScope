@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>cpCSVmaker</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-05"><meta name="DC.source" content="SuperMDA_database2CellProfilerCSV.m"><style type="text/css">
+      --><title>SuperMDA_database2CellProfilerCSV</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-09"><meta name="DC.source" content="SuperMDA_database2CellProfilerCSV.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,97 +66,115 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>cpCSVmaker</h1><!--introduction--><p>Converts a folder of TIFF images created via Metamorph into PNG images. A <tt>.mat</tt> file containing metadata about all the images is also created.</p><p>PNG images are preferred to TIFF images, because the format is simpler and more standardized. Also, the PNG has better lossless compression for this type of image.</p><pre class="language-matlab">[] = cpCSVmaker(path)
-</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Input</a></li><li><a href="#2">Output:</a></li><li><a href="#3">Detailed Description</a></li><li><a href="#4">Other Notes</a></li><li><a href="#5">Create the header to the CSV file</a></li><li><a href="#6">Add the filenames to the CSV file</a></li><li><a href="#8">Create the CSV file</a></li></ul></div><h2>Input<a name="1"></a></h2><div><ul><li>path: a char. The path where the image metadata is located.</li></ul></div><h2>Output:<a name="2"></a></h2><p>There is no direct argument output. Rather, a CSV file the is compatible with Cell Profiler is created.</p><h2>Detailed Description<a name="3"></a></h2><h2>Other Notes<a name="4"></a></h2><pre class="codeinput"><span class="keyword">function</span> [] = SuperMDA_database2CellProfilerCSV(path2database)
-</pre><h2>Create the header to the CSV file<a name="5"></a></h2><pre class="codeinput">header = cell(1,2*imageMetadata.numbers.howManyW);
-<span class="keyword">for</span> i=1:imageMetadata.numbers.howManyW
-    header{2*i-1} = sprintf(<span class="string">'Image_FileName_%s'</span>,imageMetadata.wavelengthInfo{i+1,2});
-    header{2*i} = sprintf(<span class="string">'Image_PathName_%s'</span>,imageMetadata.wavelengthInfo{i+1,2});
+  </style></head><body><div class="content"><h1>SuperMDA_database2CellProfilerCSV</h1><!--introduction--><p>A database text-file is created after using SuperMDA. If the images will be analyzed using cellprofiler.org software it is useful to have a cellprofiler.org-ready CSV file created. This function will create such a file.</p><pre class="language-matlab">[] =
+SuperMDA_database2CellProfilerCSV(path2database,path2imagefiles,outputpath)
+</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Input</a></li><li><a href="#2">Output:</a></li><li><a href="#3">Detailed Description</a></li><li><a href="#4">Other Notes</a></li><li><a href="#5">Import the SuperMDA database file</a></li><li><a href="#6">Look into the database and find the channels</a></li><li><a href="#7">Check: each channel should have the same number of files</a></li><li><a href="#9">Create a table variable to hold the CSV file data</a></li></ul></div><h2>Input<a name="1"></a></h2><div><ul><li>path2database: a string. The path to the SuperMDA database file.</li><li>path2imagefiles: a string. The path to the directory containing the image files.</li><li>outputpath: a string. The path to the directory where the CSV file will be saved.</li></ul></div><h2>Output:<a name="2"></a></h2><p>There is no direct argument output. Rather, a CSV file that is compatible with cellprofiler.org is created and saved in the outputpath directory.</p><h2>Detailed Description<a name="3"></a></h2><p>There is no detailed description.</p><h2>Other Notes<a name="4"></a></h2><p>There are no other notes</p><pre class="codeinput"><span class="keyword">function</span> [] = SuperMDA_database2CellProfilerCSV(path2database,path2imagefiles,outputpath)
+</pre><h2>Import the SuperMDA database file<a name="5"></a></h2><pre class="codeinput">myDatabase = readtable(path2database,<span class="string">'Delimiter'</span>,<span class="string">'\t'</span>);
+</pre><h2>Look into the database and find the channels<a name="6"></a></h2><pre class="codeinput">channelNumberColumn = myDatabase.channel_number;
+channelNumberUnique = unique(channelNumberColumn);
+channelNames = cell(size(channelNumberUnique));
+<span class="keyword">for</span> i = 1:length(channelNames) <span class="comment">%floop 1</span>
+    floop1ChannelNumber = channelNumberUnique(i);
+    floop1ChannelInd = find(channelNumberColumn == floop1ChannelNumber,1,<span class="string">'first'</span>);
+    channelNames(i) = myDatabase.channel_name(floop1ChannelInd);
 <span class="keyword">end</span>
-</pre><pre class="codeoutput error">Undefined variable "imageMetadata" or class "imageMetadata.numbers.howManyW".
-
-Error in SuperMDA_database2CellProfilerCSV (line 26)
-header = cell(1,2*imageMetadata.numbers.howManyW);
-</pre><h2>Add the filenames to the CSV file<a name="6"></a></h2><pre class="codeinput">M = cell(10000,length(header));
-<span class="keyword">for</span> w=1:imageMetadata.numbers.howManyW
-    <span class="keyword">for</span> s=1:imageMetadata.numbers.howManyS
-        <span class="keyword">if</span> ~isempty(imageMetadata.filenames{s,w})
-            M{s,2*w-1} = imageMetadata.filenames{s,w};
-            M{s,2*w} = fullfile(path,<span class="string">'png'</span>);
-        <span class="keyword">end</span>
-    <span class="keyword">end</span>
+</pre><h2>Check: each channel should have the same number of files<a name="7"></a></h2><p>cellprofiler.org expects each channel to have the same number of images. Since this is not a requirement in SuperMDA a test is made.</p><pre class="codeinput">numberOfImagesInEachChannel = zeros(size(channelNumberUnique));
+<span class="keyword">for</span> i = 1:length(channelNumberUnique) <span class="comment">%floop 2</span>
+    numberOfImagesInEachChannel(i) = sum(channelNumberColumn == channelNumberUnique(i));
 <span class="keyword">end</span>
-</pre><p>Remove empty rows</p><pre class="codeinput">isemptyM = cellfun(@isempty,M(:,1));
-M(isemptyM,:) = [];
-M = vertcat(header,M);
-</pre><h2>Create the CSV file<a name="8"></a></h2><p>The code below works, but does not seem to be the most elegant way of making the file.</p><pre class="codeinput">fid=fopen(fullfile(path,<span class="string">'cpCSV.csv'</span>),<span class="string">'w'</span>); <span class="comment">%create the file</span>
-csvFun = @(str)sprintf(<span class="string">'%s,'</span>,str); <span class="comment">%create a function that adds a comma after an input string</span>
-<span class="keyword">for</span> i=1:size(M,1)
-    xchar = cellfun(csvFun, M(i,:),<span class="string">'UniformOutput'</span>,false); <span class="comment">%commas are added after each entry in a row</span>
-    xchar = strcat(xchar{:}); <span class="comment">%the separate entries are combined into a single string</span>
-    fprintf(fid,<span class="string">'%s\r\n'</span>,xchar(1:end-1)); <span class="comment">%this single string, which represents a row is added to the file. The last comma is left off</span>
+</pre><p>The database will be reduced such that each channel will have corresponding images for the channel with the fewest images. This reduction will only take into account differences in image frequency and does not account for differences in tiling or z-stack; if these latter differences occur and error will not be thrown and a corrupt CSV file will be created.</p><pre class="codeinput"><span class="keyword">if</span> ~all(numberOfImagesInEachChannel == numberOfImagesInEachChannel(1)) <span class="comment">%if 1</span>
+    [~,if1min] = min(numberOfImagesInEachChannel);
+    if1MinLogical = strcmp(myDatabase.channel_name,channelNames{if1min});
+    if1FinalLogical = ismember(myDatabase.timepoint,myDatabase.timepoint(if1MinLogical));
+    myDatabase = myDatabase(if1FinalLogical,:);
 <span class="keyword">end</span>
-fclose(fid);
-</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><h2>Create a table variable to hold the CSV file data<a name="9"></a></h2><p>The table will have two columns for each channel_name</p><pre class="codeinput">cellprofilerCSVheader = cell(1,2*length(channelNumberUnique));
+cellprofilerdata = cell(1,2*length(channelNumberUnique));
+</pre><p>cellprofiler.org wants a column of filenames and a column of paths for each channel.</p><pre class="codeinput"><span class="keyword">for</span> i = 1:length(channelNumberUnique) <span class="comment">%floop 3</span>
+    cellprofilerCSVheader{2*i-1} = sprintf(<span class="string">'Image_FileName_%s'</span>,channelNames{i});
+    cellprofilerCSVheader{2*i} = sprintf(<span class="string">'Image_PathName_%s'</span>,channelNames{i});
+    floop3logical = strcmp(myDatabase.channel_name,channelNames{i});
+    cellprofilerdata{2*i-1} = myDatabase.filename(floop3logical);
+    cellprofilerdata{2*i} = repmat(path2imagefiles,[numberOfImagesInEachChannel(1),1]);
+<span class="keyword">end</span>
+cellprofilerCSVTable = table(cellprofilerdata{:},<span class="string">'VariableNames'</span>,cellprofilerCSVheader);
+writetable(cellprofilerCSVTable,fullfile(outputpath,<span class="string">'cellprofilerCSV.csv'</span>),<span class="string">'Delimiter'</span>,<span class="string">','</span>);
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% cpCSVmaker
-% Converts a folder of TIFF images created via Metamorph into PNG images. A
-% |.mat| file containing metadata about all the images is also created.
+%% SuperMDA_database2CellProfilerCSV
+% A database text-file is created after using SuperMDA. If the images will
+% be analyzed using cellprofiler.org software it is useful to have a
+% cellprofiler.org-ready CSV file created. This function will create such a
+% file.
 %
-% PNG images are preferred to TIFF images, because the format is simpler
-% and more standardized. Also, the PNG has better lossless compression for
-% this type of image.
-%
-%   [] = cpCSVmaker(path)
+%   [] =
+%   SuperMDA_database2CellProfilerCSV(path2database,path2imagefiles,outputpath)
 %
 %%% Input
-% * path: a char. The path where the image metadata is located.
+% * path2database: a string. The path to the SuperMDA database file.
+% * path2imagefiles: a string. The path to the directory containing the
+% image files.
+% * outputpath: a string. The path to the directory where the CSV file will
+% be saved.
 %
 %%% Output:
-% There is no direct argument output. Rather, a CSV file the is compatible
-% with Cell Profiler is created.
+% There is no direct argument output. Rather, a CSV file that is compatible
+% with cellprofiler.org is created and saved in the outputpath directory.
 %
 %%% Detailed Description
-%
+% There is no detailed description.
 %
 %%% Other Notes
+% There are no other notes
+function [] = SuperMDA_database2CellProfilerCSV(path2database,path2imagefiles,outputpath)
+%% Import the SuperMDA database file
 %
-function [] = SuperMDA_database2CellProfilerCSV(path2database)
-%% Create the header to the CSV file
+myDatabase = readtable(path2database,'Delimiter','\t');
+%% Look into the database and find the channels
 %
-header = cell(1,2*imageMetadata.numbers.howManyW);
-for i=1:imageMetadata.numbers.howManyW
-    header{2*i-1} = sprintf('Image_FileName_%s',imageMetadata.wavelengthInfo{i+1,2});
-    header{2*i} = sprintf('Image_PathName_%s',imageMetadata.wavelengthInfo{i+1,2});
+channelNumberColumn = myDatabase.channel_number;
+channelNumberUnique = unique(channelNumberColumn);
+channelNames = cell(size(channelNumberUnique));
+for i = 1:length(channelNames) %floop 1
+    floop1ChannelNumber = channelNumberUnique(i);
+    floop1ChannelInd = find(channelNumberColumn == floop1ChannelNumber,1,'first');
+    channelNames(i) = myDatabase.channel_name(floop1ChannelInd);
 end
-%% Add the filenames to the CSV file
-%
-M = cell(10000,length(header));
-for w=1:imageMetadata.numbers.howManyW
-    for s=1:imageMetadata.numbers.howManyS
-        if ~isempty(imageMetadata.filenames{s,w})
-            M{s,2*w-1} = imageMetadata.filenames{s,w};
-            M{s,2*w} = fullfile(path,'png');
-        end
-    end
+%% Check: each channel should have the same number of files
+% cellprofiler.org expects each channel to have the same number of images.
+% Since this is not a requirement in SuperMDA a test is made.
+numberOfImagesInEachChannel = zeros(size(channelNumberUnique));
+for i = 1:length(channelNumberUnique) %floop 2
+    numberOfImagesInEachChannel(i) = sum(channelNumberColumn == channelNumberUnique(i));
 end
 %%
-% Remove empty rows
-isemptyM = cellfun(@isempty,M(:,1));
-M(isemptyM,:) = [];
-M = vertcat(header,M);
-%% Create the CSV file
-% The code below works, but does not seem to be the most elegant way of
-% making the file.
-fid=fopen(fullfile(path,'cpCSV.csv'),'w'); %create the file
-csvFun = @(str)sprintf('%s,',str); %create a function that adds a comma after an input string
-for i=1:size(M,1)
-    xchar = cellfun(csvFun, M(i,:),'UniformOutput',false); %commas are added after each entry in a row
-    xchar = strcat(xchar{:}); %the separate entries are combined into a single string
-    fprintf(fid,'%s\r\n',xchar(1:end-1)); %this single string, which represents a row is added to the file. The last comma is left off
+% The database will be reduced such that each channel will have
+% corresponding images for the channel with the fewest images. This
+% reduction will only take into account differences in image frequency and
+% does not account for differences in tiling or z-stack; if these latter
+% differences occur and error will not be thrown and a corrupt CSV file
+% will be created.
+if ~all(numberOfImagesInEachChannel == numberOfImagesInEachChannel(1)) %if 1
+    [~,if1min] = min(numberOfImagesInEachChannel);
+    if1MinLogical = strcmp(myDatabase.channel_name,channelNames{if1min});
+    if1FinalLogical = ismember(myDatabase.timepoint,myDatabase.timepoint(if1MinLogical));
+    myDatabase = myDatabase(if1FinalLogical,:);
 end
-fclose(fid);
+%% Create a table variable to hold the CSV file data
+% The table will have two columns for each channel_name
+cellprofilerCSVheader = cell(1,2*length(channelNumberUnique));
+cellprofilerdata = cell(1,2*length(channelNumberUnique));
+%%
+% cellprofiler.org wants a column of filenames and a column of paths for
+% each channel.
+for i = 1:length(channelNumberUnique) %floop 3
+    cellprofilerCSVheader{2*i-1} = sprintf('Image_FileName_%s',channelNames{i});
+    cellprofilerCSVheader{2*i} = sprintf('Image_PathName_%s',channelNames{i});
+    floop3logical = strcmp(myDatabase.channel_name,channelNames{i});
+    cellprofilerdata{2*i-1} = myDatabase.filename(floop3logical);
+    cellprofilerdata{2*i} = repmat(path2imagefiles,[numberOfImagesInEachChannel(1),1]);
 end
+cellprofilerCSVTable = table(cellprofilerdata{:},'VariableNames',cellprofilerCSVheader);
+writetable(cellprofilerCSVTable,fullfile(outputpath,'cellprofilerCSV.csv'),'Delimiter',',');
 ##### SOURCE END #####
 --></body></html>
