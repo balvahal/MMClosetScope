@@ -339,16 +339,16 @@
 		1.837250e+02,1.837250e+02,1.848750e+02,1.848750e+02,1.837000e+02,1.837000e+02,1.843250e+02,1.845000e+02
 	],
 	"position_continuous_focus_bool": [
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1,1,1,
-		1,1,1,1,1,1,1,1
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0
 	],
 	"position_function_after": [
 		"SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic","SuperMDA_function_position_after_basic",

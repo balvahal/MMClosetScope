@@ -1,3 +1,8 @@
+%% Setup
+% Before SuperMDA will work, the uManager software must be properly
+% configured for the microscope. This must include the following:
+%
+% # Define the pixel size within uManager.
 %% How to Use the SuperMDA
 %
 % 1. Open micro-manager through MATLAB. MATLAB will create an object that

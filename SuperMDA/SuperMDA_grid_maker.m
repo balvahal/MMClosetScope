@@ -8,15 +8,17 @@
 %
 %%% Input
 % * mmhandle: a string. The path to the SuperMDA database file.
-% * varargin: a string. The path to the directory containing the
-% image files.
-%%% Varargin Parameters
+% * varargin: a string. The path to the directory containing the image
+% files.
+%%% |varargin| Parameters
 % * number_of_images: the number of images in a grid
-% * number_of_columns: the number of columns in a grid 
+% * number_of_columns: the number of columns in a grid
 % * number_of_rows: the number of rows in a grid
-% * centroid: the position of the center of the grid
-% * upper_left_corner: the position of the upper left corner of the grid
-% * lower_right_corner: the position of the lower right corner of the grid
+% * centroid: the (x,y,z) position of the center of the grid.
+% * upper_left_corner: the (x,y,z) position of the upper left corner of the
+% grid
+% * lower_right_corner: the (x,y,z) position of the lower right corner of
+% the grid
 % * overlap: the amount of overlap between images in both x and y. Negative
 % distances represents the space between images.
 % * overlap_x: overlap specific to the x-direction
@@ -32,9 +34,21 @@
 % There is no detailed description.
 %
 %%% Other Notes
-% It is assumed that the origin is in the ULC and x increases due east and
-% y increases due south when the stage is viewed from above.
+% It is assumed that the origin is in the ULC and _x_ increases due east
+% and _y_ increases due south when the stage is viewed from above.
+%
+% NOI means number of images. ULC means upper lefthand corner. LRC means
+% lower righthand corner.
 function [grid] = SuperMDA_grid_maker(mmhandle,varargin)
+%% Parse the input
+% A grid of images can be defined by many combinations of its
+% characteristics, but each combination must either directly or implicitly
+% specify a point of reference, the number of rows and columns of the grid,
+% and the spacing between images. This function will accept a variety of
+% parameter combinations and a significant amount of code in this function
+% deals with identifying and evaluating valid combinations. In addition,
+% beyond combinations of grid characteristics, the path traveresed across
+% can also be specified.
 p = inputParser;
 addRequired(p, 'mmhandle', @(x) isa(x,'Core_MicroManagerHandle'));
 addParameter(p, 'number_of_images', 'undefined', @(x) mod(x,1)==0);
@@ -48,91 +62,142 @@ addParameter(p, 'overlap_x', 'undefined', @isnumeric);
 addParameter(p, 'overlap_y', 'undefined', @isnumeric);
 addParameter(p, 'overlap_units','px',@(x) any(strcmp(x,{'px', 'um'})));
 addParameter(p, 'path_strategy','snake',@(x) any(strcmp(x,{'snake','CRLF','Jacob Pyramid'})));
-
 parse(p,mmhandle,varargin{:});
-%% the units of overlap must be pixels for the ensuing calculations
+%% Examine _overlap_units_ parameter
+% This function requires the _overlap_units_ to be in the dimensions of
+% pixels (|px|). Therefore, if the units have been specified as
+% micro-meters (|um|), a conversion must be made. In addition, if the
+% overlap in the x and y directions are not explicity defined, then the
+% value chosen for _overlap_ parameter is used.
 %
-if strcmp(p.Results.overlap_units,'um')
+% If the units are micro-meters then a conversion is made. _overlap_x_ and
+% _overlap_y_ are also assessed.
+if strcmp(p.Results.overlap_units,'um') %if 1
     overlap = round(p.Results.overlap/mmhandle.core.getPixelSizeUm);
-    if strcmp(p.Results.overlap_x,'undefined')
+    if strcmp(p.Results.overlap_x,'undefined') %if 1_1
         overlap_x = overlap;
     else
         overlap_x = round(p.Results.overlap_x/mmhandle.core.getPixelSizeUm);
     end
-    if strcmp(p.Results.overlap_y,'undefined')
+    if strcmp(p.Results.overlap_y,'undefined') %if 1_2
         overlap_y = overlap;
     else
         overlap_y = round(p.Results.overlap_y/mmhandle.core.getPixelSizeUm);
     end
-elseif strcmp(p.Results.overlap_units,'px')
+    %%%
+    % If the units are pixels then no conversion is made and _overlap_x_
+    % and _overlap_y_ are assessed.
+elseif strcmp(p.Results.overlap_units,'px') %if 2
     overlap = round(p.Results.overlap);
-    if strcmp(p.Results.overlap_x,'undefined')
+    if strcmp(p.Results.overlap_x,'undefined') %if 2_1
         overlap_x = overlap;
     else
         overlap_x = round(p.Results.overlap_x);
     end
-    if strcmp(p.Results.overlap_y,'undefined')
+    if strcmp(p.Results.overlap_y,'undefined') %if 2_2
         overlap_y = overlap;
     else
         overlap_y = round(p.Results.overlap_y);
     end
 end
-%% Test for conflicts in parameters
+%% Number of Images Conflict
+% While there are many grid characteristics combinations that work there
+% are many grid combintations that do not. The following code will identify
+% bad combinations.
 %
-if (~strcmp(p.Results.number_of_images, 'undefined')) && (~strcmp(p.Results.number_of_columns, 'undefined')) && (~strcmp(p.Results.number_of_rows, 'undefined'))
-    if p.Results.number_of_columns*p.Results.number_of_rows ~= p.Results.number_of_images
+% If the number or images is defined in addition to the number of rows and
+% columns, then there is the possibility that these do not agree. If the
+% number of rows and columns are given, then the number of images should be
+% equal to their product.
+if (~strcmp(p.Results.number_of_images, 'undefined')) && (~strcmp(p.Results.number_of_columns, 'undefined')) && (~strcmp(p.Results.number_of_rows, 'undefined')) %if 3
+    if p.Results.number_of_columns*p.Results.number_of_rows ~= p.Results.number_of_images %if 3_1
         error('GridMake:bad_rowCol','The number of rows and columns does not agree with the number of images');
     end
 end
-%%
+%% Number of Images Flag
+% If the number of images has been defined explicity then a grid will be
+% formed with exactly that number. However, when a grid is created and the
+% rows and columns prodcut may not contain the correct number of images. In
+% this case images from the last row are removed or and extra, partial row
+% is added.
 %
-if ~strcmp(p.Results.number_of_images, 'undefined')
-    NOIFLAG = true;
+% a flag variable is created to store this particular event, so action can
+% be taken later.
+if ~strcmp(p.Results.number_of_images, 'undefined') %if 4
+    wasNumOfImDefinedFlag = true;
 else
-    NOIFLAG = false;
+    wasNumOfImDefinedFlag = false;
 end
-%%
-% Is the upper-left corner above and to the left of the lower-right? Any
-% two points can be converted into the proper upper-left and lower-right.
-if (~strcmp(p.Results.upper_left_corner,'undefined')) && (~strcmp(p.Results.lower_right_corner,'undefined'))
-    temp_1 = p.Results.upper_left_corner;
-    temp_2 = p.Results.lower_right_corner;
-    if p.Results.upper_left_corner(1)>p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)>p.Results.lower_right_corner(2)
-        upper_left_corner = temp_2;
-        lower_right_corner = temp_1;
-    elseif p.Results.upper_left_corner(1)>p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)<p.Results.lower_right_corner(2)
-        upper_left_corner(1) = temp_2(1);
-        lower_right_corner(1) = temp_1(1);
-    elseif p.Results.upper_left_corner(1)<p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)>p.Results.lower_right_corner(2)
-        upper_left_corner(2) = temp_2(2);
-        lower_right_corner(2) = temp_1(2);
+%% ULC and LRC Reversal Conflict
+% Is the upper-left corner above and to the left of the lower-right corner?
+% If not then the labels should be swapped, because between any two points
+% one must be above and to the left. This function makes sure these points
+% are labeled correctly.
+if (~strcmp(p.Results.upper_left_corner,'undefined')) && (~strcmp(p.Results.lower_right_corner,'undefined')) %if 5
+    if5Point1 = p.Results.upper_left_corner;
+    if5Point2 = p.Results.lower_right_corner;
+    if p.Results.upper_left_corner(1)>p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)>p.Results.lower_right_corner(2) %if 5_1
+        upper_left_corner = if5Point2;
+        lower_right_corner = if5Point1;
+    elseif p.Results.upper_left_corner(1)>p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)<p.Results.lower_right_corner(2) %if 5_2
+        upper_left_corner(1) = if5Point2(1);
+        lower_right_corner(1) = if5Point1(1);
+    elseif p.Results.upper_left_corner(1)<p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)>p.Results.lower_right_corner(2) %if 5_3
+        upper_left_corner(2) = if5Point2(2);
+        lower_right_corner(2) = if5Point1(2);
     else
-        upper_left_corner = temp_1;
-        lower_right_corner = temp_2;
+        upper_left_corner = if5Point1;
+        lower_right_corner = if5Point2;
     end
 end
-%%
+%% Parse valid combinations of grid characteristics
 % The grid to be made depends upon the collection of parameters that were
-% specified when the function was called. Specifically, the parameters that
+% specified when the function was called. The parameters that
 % default to the string 'undefined' determine the type of grid to be made.
-% A boolean array identifies which of the 'undefined' parameters were
-% specified with a logical 1. The 'undefined' parameters were defined first
-% followed by other parameters that do not influence the type of grid.
-% These other parameters are ignored in the decision array. The decision
-% array is then converted into a number that is input in a switch/case code
-% block.
-fields = {'number_of_images','number_of_columns','number_of_rows','centroid','upper_left_corner','lower_right_corner'};
-decision_array = ones(1,numel(fields));
-for i = 1:(numel(fields))
-    if strcmp(p.Results.(fields{i}),'undefined')
+% Like a barcode, a logical array is created, identifying which of the
+% parameters were left undefined 
+% with a logical 1.
+%
+% The parameters that do not default to 'undefined' are not part of the
+% decision array. After the decision array is defined it is
+% converted into a base 10 number.
+barcodeParameters = {'number_of_images','number_of_columns','number_of_rows','centroid','upper_left_corner','lower_right_corner'};
+decision_array = ones(1,numel(barcodeParameters));
+for i = 1:(numel(barcodeParameters))
+    if strcmp(p.Results.(barcodeParameters{i}),'undefined')
         decision_array(i) = 0;
     end
 end
 decision_number = bin2dec(int2str(decision_array));
-
+%% Fill in the blanks
+% From the user input several variables must be defined in order to
+% calculate and define a grid.
+%
+% * im_num_col: number of columns
+% * im_num_row: number of rows
+% * NOI: number of images total
+% * overlap_x: pixel overlap between images in the x direction
+% * overlap_y: pixel overlap between images in the y direction
+% * pixHeight: image height in pixels
+% * pixWidth: image width in pixels
+% * ULC: the upper lefthand corner of the grid.
+%
+% These variables are either directly defined by the user input or
+% implicity defined. A switch case code block and the |decision_number|
+% will determine the correct code to execute in order to "fill in any
+% blanks" in the list of variables above.
+%%%
+% The uManager core object can be queried for the height and width of the
+% image, but for code readability these values are stored in separate
+% variables and are necessary for defining the image grid.
 pixWidth = mmhandle.core.getImageWidth;
 pixHeight = mmhandle.core.getImageHeight;
+%% The switch-case code block
+%
 switch decision_number
+    %% _centroid_ + _number_of_images_
+    % The _centroid_ and _number_of_images_ was defined by the user. In
+    % this case the shape of the grid will be automatically determined.
     case 36 %centroid + number_of_images
         %% Specify upper-left and lower-right corners
         %
@@ -396,7 +461,7 @@ elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
         end
     end
 end
-if NOIFLAG
+if wasNumOfImDefinedFlag
     if NOI > p.Results.number_of_images
         positions(end-(NOI - p.Results.number_of_images - 1):end,:) = [];
         position_labels(end-(NOI - p.Results.number_of_images - 1):end) = [];
