@@ -1,0 +1,23 @@
+%mmhandle = Core_MicroManagerHandle;
+grid36 = SuperMDA_grid_maker(mmhandle,'centroid',[0,0,0],'number_of_images',11);
+grid35 = SuperMDA_grid_maker(mmhandle,'upper_left_corner',[1000,3000,0],'lower_right_corner',[0,0,0],'number_of_images',11);
+grid34 = SuperMDA_grid_maker(mmhandle,'upper_left_corner',[0,0,0],'number_of_images',11);
+grid33 = SuperMDA_grid_maker(mmhandle,'lower_right_corner',[0,0,0],'number_of_images',11);
+grid28 = SuperMDA_grid_maker(mmhandle,'number_of_columns',3,'number_of_rows',5,'centroid',[0,0,0],'overlap_x',-500,'overlap_y',-200);
+grid26 = SuperMDA_grid_maker(mmhandle,'number_of_columns',3,'number_of_rows',5,'upper_left_corner',[0,0,0],'overlap_x',-500,'overlap_y',-200);
+grid25 = SuperMDA_grid_maker(mmhandle,'number_of_columns',3,'number_of_rows',5,'lower_right_corner',[0,0,0],'overlap_x',-500,'overlap_y',-200);
+grid3 = SuperMDA_grid_maker(mmhandle,'upper_left_corner',[0,0,0],'lower_right_corner',[1000,3000,0]);
+myfig = figure;
+scatter(grid36.positions(:,1),grid36.positions(:,2),'o','y','LineWidth',8);
+myaxes = gca;
+hold on
+scatter(grid35.positions(:,1),grid35.positions(:,2),'o','m','LineWidth',8);
+scatter(grid34.positions(:,1),grid34.positions(:,2),'o','c','LineWidth',8);
+scatter(grid33.positions(:,1),grid33.positions(:,2),'o','r','LineWidth',8);
+scatter(grid28.positions(:,1),grid28.positions(:,2),'o','g','LineWidth',8);
+scatter(grid26.positions(:,1),grid26.positions(:,2),'o','b','LineWidth',8);
+scatter(grid25.positions(:,1),grid25.positions(:,2),'o','k','LineWidth',8);
+scatter(grid3.positions(:,1),grid3.positions(:,2),'Marker','o','MarkerEdgeColor',[128 0 128]/255,'LineWidth',8);
+hold off;
+axis equal;
+legend(myaxes,'36','35','34','33','28','26','25','3');

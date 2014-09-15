@@ -3,6 +3,8 @@
 % configured for the microscope. This must include the following:
 %
 % # Define the pixel size within uManager.
+% # The MATLAB Java class path must include the uManager files. It is
+% recommended to use the function |MMsetup_javaclasspath|.
 %% How to Use the SuperMDA
 %
 % 1. Open micro-manager through MATLAB. MATLAB will create an object that

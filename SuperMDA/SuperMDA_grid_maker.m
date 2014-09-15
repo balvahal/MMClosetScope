@@ -273,21 +273,27 @@ switch decision_number
             [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2)+(im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             lower_right_corner(3)];
-    case 34 %upper-left and number of images
+        %% _upper_left_corner_ and _number_of_images_
+        %
+    case 34 %upper_left_corner and number_of_images
         [NOI,im_num_row,im_num_col] = findGridSize(p.Results.number_of_images,pixWidth,pixHeight,overlap_x,overlap_y);
-        ULC = upper_left_corner;
+        ULC = p.Results.upper_left_corner;
         LRC = ...
             [ULC(1) + (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2) + (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             ULC(3)];
-    case 33 %lower-right and number of images
+        %% _lower_right_corner_ and _number_of_images_
+        %
+    case 33 %lower_right_corner and number_of_images
         [NOI,im_num_row,im_num_col] = findGridSize(p.Results.number_of_images,pixWidth,pixHeight,overlap_x,overlap_y);
-        LRC = lower_right_corner;
+        LRC = p.Results.lower_right_corner;
         ULC = ...
             [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             LRC(3)];
-    case 28 %row, col, and centroid
+        %% _number_of_columns_, _number_of_rows_, and _centroid_
+        %
+    case 28 %number_of_columns, number_of_rows, and centroid
         im_num_col = p.Results.number_of_columns;
         im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
@@ -303,7 +309,7 @@ switch decision_number
         im_num_col = p.Results.number_of_columns;
         im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
-        ULC = upper_left_corner;
+        ULC = p.Results.upper_left_corner;
         LRC = ...
             [ULC(1) + (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2) + (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
@@ -312,20 +318,20 @@ switch decision_number
         im_num_col = p.Results.number_of_columns;
         im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
-        LRC = lower_right_corner;
+        LRC = p.Results.lower_right_corner;
         ULC = ...
             [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             LRC(3)];
     case 3 %upper-left and lower-right
-        im_num_col = ceil((lower_right_corner(1) - upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x))+1;
-        im_num_row = ceil((lower_right_corner(2) - upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y))+1;
+        im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x))+1;
+        im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y))+1;
         NOI = im_num_col*im_num_row;
-        ULC = upper_left_corner;
+        ULC = p.Results.upper_left_corner;
         LRC = ...
             [ULC(1)+(im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2)+(im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
-            lower_right_corner(3)];
+            p.Results.lower_right_corner(3)];
     otherwise
         error('GridMake:bad_param','The set parameters entered cannot be interpreted. Please specify a valid set of parameters');
 end
