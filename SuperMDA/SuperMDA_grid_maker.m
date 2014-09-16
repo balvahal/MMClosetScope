@@ -23,6 +23,8 @@
 % distances represents the space between images.
 % * overlap_x: overlap specific to the x-direction
 % * overlap_y: overlap specific to the y-direction
+% * diameter: the diameter of a circular area to image. Units of
+% micro-meters.
 % * overlap_units: pixels or micro-meters. |px| or |um|.
 % * path_strategy: |snake|, |CRLF|, or |Jacob Pyramid|.
 %
@@ -78,6 +80,7 @@ addParameter(p, 'lower_right_corner', 'undefined', @(x) numel(x) == 3);
 addParameter(p, 'overlap', 0, @isnumeric);
 addParameter(p, 'overlap_x', 'undefined', @isnumeric);
 addParameter(p, 'overlap_y', 'undefined', @isnumeric);
+addParameter(p, 'diameter', 'undefined', @isnumeric);
 addParameter(p, 'overlap_units','px',@(x) any(strcmp(x,{'px', 'um'})));
 addParameter(p, 'path_strategy','snake',@(x) any(strcmp(x,{'snake','CRLF','Jacob Pyramid'})));
 parse(p,mmhandle,varargin{:});
@@ -155,6 +158,8 @@ end
 if (~strcmp(p.Results.upper_left_corner,'undefined')) && (~strcmp(p.Results.lower_right_corner,'undefined')) %if 5
     if5Point1 = p.Results.upper_left_corner;
     if5Point2 = p.Results.lower_right_corner;
+    upper_left_corner = if5Point1;
+    lower_right_corner = if5Point2;
     if p.Results.upper_left_corner(1)>p.Results.lower_right_corner(1) && p.Results.upper_left_corner(2)>p.Results.lower_right_corner(2) %if 5_1
         upper_left_corner = if5Point2;
         lower_right_corner = if5Point1;
@@ -180,7 +185,7 @@ end
 % The parameters that do not default to 'undefined' are not part of the
 % decision array. After the decision array is defined it is converted into
 % a base 10 number.
-barcodeParameters = {'number_of_images','number_of_columns','number_of_rows','centroid','upper_left_corner','lower_right_corner'};
+barcodeParameters = {'diameter','number_of_images','number_of_columns','number_of_rows','centroid','upper_left_corner','lower_right_corner'};
 decision_array = ones(1,numel(barcodeParameters));
 for i = 1:(numel(barcodeParameters))
     if strcmp(p.Results.(barcodeParameters{i}),'undefined')
@@ -220,11 +225,18 @@ pixHeight = mmhandle.core.getImageHeight;
 %% The switch-case code block
 %
 switch decision_number
-    %% _centroid_ + _number_of_images_
-    % The _centroid_ and _number_of_images_ was defined by the user. In
-    % this case the shape of the grid will be automatically determined.
+    %% _centroid_ and _diameter_
+    % A circular area will be imaged. First, create a template grid that
+    % is a square that covers the area of the circle. Then, going row by
+    % row, determine which images are inside the circle, removing the rest.
+    case 68 % centroid and diameter
+        grid = findCircleGrid(mmhandle,p.Results.diameter,p.Results.centroid,overlap_x,overlap_y);
+        return;
+        %% _centroid_ and _number_of_images_
+        % The _centroid_ and _number_of_images_ was defined by the user. In
+        % this case the shape of the grid will be automatically determined.
     case 36 %centroid + number_of_images
-        %%% 
+        %%%
         % Specify upper-left and lower-right corners. The minRatio has been
         % given a value of 9/16 or 0.5625. The maxRatio is 1 o
         [NOI,im_num_row,im_num_col] = findGridSize(p.Results.number_of_images,pixWidth,pixHeight,overlap_x,overlap_y);
@@ -305,7 +317,9 @@ switch decision_number
             [p.Results.centroid(1) + (im_num_col-1)/2*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             p.Results.centroid(2) + (im_num_row-1)/2*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             p.Results.centroid(3)];
-    case 26 %row, col, and upper-left
+        %% _number_of_rows_, _number_of_columns_, and _upper_left_corner_
+        %
+    case 26 %number_of_rows, number_of_columns, and upper_left_corner
         im_num_col = p.Results.number_of_columns;
         im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
@@ -314,7 +328,9 @@ switch decision_number
             [ULC(1) + (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             ULC(2) + (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             ULC(3)];
-    case 25 %row, col, and lower-right
+        %% _number_of_rows_, _number_of_columns_, and _lower_right_corner_
+        %
+    case 25 %number_of_rows, number_of_columns, and upper_left_corner
         im_num_col = p.Results.number_of_columns;
         im_num_row = p.Results.number_of_rows;
         NOI = im_num_col*im_num_row;
@@ -323,9 +339,11 @@ switch decision_number
             [LRC(1) - (im_num_col-1)*(pixWidth-overlap_x)*mmhandle.core.getPixelSizeUm,...
             LRC(2) - (im_num_row-1)*(pixHeight-overlap_y)*mmhandle.core.getPixelSizeUm,...
             LRC(3)];
-    case 3 %upper-left and lower-right
-        im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x))+1;
-        im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y))+1;
+        %% _upper_left_corner_ and _lower_right_corner_
+        %
+    case 3 %upper_left_corner and lower_right_corner
+        im_num_col = ceil((p.Results.lower_right_corner(1) - p.Results.upper_left_corner(1))/mmhandle.core.getPixelSizeUm/(pixWidth-overlap_x));
+        im_num_row = ceil((p.Results.lower_right_corner(2) - p.Results.upper_left_corner(2))/mmhandle.core.getPixelSizeUm/(pixHeight-overlap_y));
         NOI = im_num_col*im_num_row;
         ULC = p.Results.upper_left_corner;
         LRC = ...
@@ -353,6 +371,8 @@ if ~isfinite(NOI)
 end
 positions = zeros(NOI,3);
 position_labels = cell(NOI,1);
+rowNumber = zeros(NOI,1);
+columnNumber = zeros(NOI,1);
 if strcmp(p.Results.path_strategy,'CRLF')
     for i=1:im_num_row
         for j=1:im_num_col
@@ -362,6 +382,8 @@ if strcmp(p.Results.path_strategy,'CRLF')
                 ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
                 ULC(3)];
             position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+            rowNumber(ind) = i;
+            columnNumber(ind) = j;
         end
     end
 elseif strcmp(p.Results.path_strategy,'snake')
@@ -375,6 +397,8 @@ elseif strcmp(p.Results.path_strategy,'snake')
                     ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
                     ULC(3)];
                 position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+                rowNumber(ind) = i;
+                columnNumber(ind) = j;
             end
         else
             for j=im_num_col:-1:1
@@ -384,6 +408,8 @@ elseif strcmp(p.Results.path_strategy,'snake')
                     ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
                     ULC(3)];
                 position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+                rowNumber(ind) = i;
+                columnNumber(ind) = j;
             end
         end
     end
@@ -404,6 +430,8 @@ elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
                     ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
                     ULC(3)];
                 position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+                rowNumber(ind) = i;
+                columnNumber(ind) = j;
             end
         else
             for j=my_cols(i):-1:1
@@ -413,6 +441,8 @@ elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
                     ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
                     ULC(3)];
                 position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+                rowNumber(ind) = i;
+                columnNumber(ind) = j;
             end
         end
     end
@@ -428,6 +458,8 @@ elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
                     ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
                     ULC(3)];
                 position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+                rowNumber(ind) = i;
+                columnNumber(ind) = j;
             end
         else
             for j=my_cols2(i):-1:1
@@ -437,6 +469,8 @@ elseif strcmp(p.Results.path_strategy,'Jacob Pyramid')
                     ULC(2)+(i-1)*mmhandle.core.getPixelSizeUm*(pixHeight-overlap_y),...
                     ULC(3)];
                 position_labels{ind} = sprintf('pos%d_x%d_y%d',ind,j,i);
+                rowNumber(ind) = i;
+                columnNumber(ind) = j;
             end
         end
     end
@@ -445,20 +479,22 @@ if wasNumOfImDefinedFlag
     if NOI > p.Results.number_of_images
         positions(end-(NOI - p.Results.number_of_images - 1):end,:) = [];
         position_labels(end-(NOI - p.Results.number_of_images - 1):end) = [];
+        rowNumber(end-(NOI - p.Results.number_of_images - 1):end) = [];
+        columnNumber(end-(NOI - p.Results.number_of_images - 1):end) = [];
         NOI = length(position_labels);
     end
 end
 
 %% Update positions with calibration angle
-% * subtract the ULC from each point.
+% * subtract the _centerOfMass_ from each point.
 % * rotate all points with the rotation matrix using the calibration angle
-% * add the ULC back to every position
+% * add the _centerOfMass_ back to every position
 if size(positions,1) > 1
     rotatedPositions = positions;
     centerOfMass = repmat(mean(positions),[size(positions,1),1]);
     centerOfMass(:,3) = [];
     rotatedPositions(:,1:2) = rotatedPositions(:,1:2) - centerOfMass;
-    rotationMatrix = [cosd(mmhandle.calibrationAngle) -sind(mmhandle.calibrationAngle); sind(mmhandle.calibrationAngle), cosd(mmhandle.calibrationAngle)];
+    rotationMatrix = [cosd(mmhandle.calibrationAngle), -sind(mmhandle.calibrationAngle); sind(mmhandle.calibrationAngle), cosd(mmhandle.calibrationAngle)];
     rotatedPositions(:,1:2) = (rotationMatrix * rotatedPositions(:,1:2)')';
     rotatedPositions(:,1:2) = rotatedPositions(:,1:2) + centerOfMass;
     positions = rotatedPositions;
@@ -467,6 +503,8 @@ end
 %
 grid.positions = positions;
 grid.position_labels = position_labels;
+grid.rowNumber = rowNumber;
+grid.columnNumber = columnNumber;
 grid.NOI = NOI;
 grid.ULC = ULC;
 grid.LRC = LRC;
@@ -510,4 +548,50 @@ while NOI < numberOfImages
     end
     NOI = im_num_col*im_num_row;
 end
+end
+%% findCircleGrid
+% This function is not nearly as cool as I thought it would be when I set
+% out to create it. The motivation was to capture the entirety of a round
+% glass surface and ensuring that the objective would always be centered
+% underneath the glass, which is not guarunteed if the area being imaged is
+% a sqaure that encompasses the glass. As it turns out it, a square fits
+% rather neatly inside of a circle. It looks like for large, round glass
+% surfaces the best benefit might be a 150% increase in image coverage. For
+% smaller circles this improvement decreases.
+function [grid] = findCircleGrid(mmhandle,diameter,centroid,overlap_x,overlap_y)
+imageWidthOffset = mmhandle.core.getImageWidth*mmhandle.core.getPixelSizeUm*cosd(mmhandle.calibrationAngle);
+myRadius = (diameter+imageWidthOffset)/2;
+upperLeftCorner = [centroid(1)-myRadius,centroid(2)-myRadius,centroid(3)];
+lowerRightCorner = [centroid(1)+myRadius,centroid(2)+myRadius,centroid(3)];
+templateGrid = SuperMDA_grid_maker(mmhandle,'overlap_x',overlap_x,'overlap_y',overlap_y,'upper_left_corner',upperLeftCorner,'lower_right_corner',lowerRightCorner);
+columnStart = zeros(templateGrid.im_num_row,1);
+columnEnd = zeros(templateGrid.im_num_row,1);
+for i = 1:templateGrid.im_num_row
+    yMin = min(templateGrid.positions(templateGrid.rowNumber == i,2));
+    if abs(centroid(2)-yMin) > myRadius
+        columnStart(i) = templateGrid.im_num_col + 1;
+        continue;
+    end
+    xCutoff = centroid(1) - sqrt(myRadius^2-(centroid(2)-yMin)^2) - imageWidthOffset/4;
+    columnStart(i) = min(templateGrid.columnNumber(templateGrid.positions(:,1) > xCutoff & templateGrid.rowNumber == i));
+end
+for i = 1:templateGrid.im_num_row
+    yMax = max(templateGrid.positions(templateGrid.rowNumber == i,2));
+    if abs(centroid(2)-yMax) > myRadius
+        columnEnd(i) = 0;
+        continue;
+    end
+    xCutoff = centroid(1) + sqrt(myRadius^2-(centroid(2)-yMax)^2) - imageWidthOffset/4;
+    columnEnd(i) = max(templateGrid.columnNumber(templateGrid.positions(:,1) < xCutoff & templateGrid.rowNumber == i));
+end
+images2KeepLogical = false(templateGrid.NOI,1);
+for i = 1:templateGrid.im_num_row
+    myLogical = templateGrid.rowNumber == i & templateGrid.columnNumber >= columnStart(i) & templateGrid.columnNumber <= columnEnd(i);
+    images2KeepLogical = images2KeepLogical | myLogical;
+end
+grid = templateGrid;
+grid.positions = grid.positions(images2KeepLogical,:);
+grid.position_labels = grid.position_labels(images2KeepLogical);
+grid.rowNumber = grid.rowNumber(images2KeepLogical);
+grid.columnNumber = grid.columnNumber(images2KeepLogical);
 end
