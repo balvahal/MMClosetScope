@@ -48,8 +48,9 @@ for m=1:length(grid.positions)
     smdaPilot.mm.getXYZ;
     %% Snap and Image
     %
+    smdaPilot.database_z_number = 1;
     smdaPilot.snap;
-    smdaPilot.itinerary.database_filenamePNG = sprintf('%s%s_s%d_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},strcat('_',smdaPilot.itinerary.position_label{j},sprintf('tile%d',m)),j,smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,1);
+    smdaPilot.itinerary.database_filenamePNG = sprintf('%s_s%d%s_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},j,strcat(smdaPilot.itinerary.position_label{j},sprintf('tile%d',m)),smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
     %         fid =
     %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
     %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
