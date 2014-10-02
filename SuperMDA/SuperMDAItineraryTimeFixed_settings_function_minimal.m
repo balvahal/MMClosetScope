@@ -37,7 +37,7 @@ smdaPilot.mm.core.waitForSystem();
 %
 smdaPilot.database_z_number = 1;
 smdaPilot.snap;
-smdaPilot.itinerary.database_filenamePNG = sprintf('%s_s%d%s_w%d%s_t%d_z%d.tiff',smdaPilot.itinerary.group_label{i},j,strcat(smdaPilot.itinerary.position_label{j},''),smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
+smdaPilot.itinerary.database_filenamePNG = sprintf('g%d_%s_s%d_%s_w%d_%s_t%d_z%d.tiff',i,smdaPilot.itinerary.group_label{i},j,strcat(smdaPilot.itinerary.position_label{j},''),smdaPilot.itinerary.settings_channel(k),smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
 imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
 %% Update the database
 %
