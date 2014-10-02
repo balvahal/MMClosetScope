@@ -70,7 +70,7 @@ hpushbuttonMakeGrids = uicontrol('Style','pushbutton','Units','characters',...
     'Callback',{@pushbuttonMakeGrids_Callback});
 
 hpopupGridStyle = uicontrol('Style', 'popup','Units','characters',...
-    'String', 'movie|IF',...
+    'String', 'movie|IF|IFCircle',...
     'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
     'Position', [region1(1)+78, region1(2)+10, 30,4]);
 
@@ -556,12 +556,16 @@ set(f,'Visible','on');
                     [(center(1,i) + (cos(pi/4)*radius(i) - tol)),...
                     (center(2,i) + (cos(pi/4)*radius(i) - tol)),...
                     z(i)];
+                CEN = [center(1,i),center(2,i),z(i)];
+                myDiameter = radius(i)*2;
                 if gridStyle == 1
                     grid = SuperMDA_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
                     numberOfPositions(i) = size(grid.positions,1);
                 elseif gridStyle == 2
                     grid = SuperMDA_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'overlap',25);
                     numberOfPositions(i) = size(grid.positions,1);
+                elseif gridStyle == 3
+                    grid = SuperMDA_grid_maker(scan6.mm,'centroid',CEN,'diameter',myDiameter);
                 end
             else
                 if gridStyle == 1
