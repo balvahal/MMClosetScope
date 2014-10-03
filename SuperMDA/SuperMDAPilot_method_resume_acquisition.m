@@ -10,10 +10,10 @@ if smdaPilot.running_bool
     % because it consists of exploring a large tree structure and code has
     % been added at each branch node to pause there if need be.
     smdaPilot.pause_bool = false;
-    if strcmp(smdaPilot.runtime_timer.Running,'off')
+    if strcmp(smdaPilot.timer_runtime.Running,'off')
         smdaPilot.mda_clock_pointer = find(smdaPilot.mda_clock_absolute > now,1,'first');
-        smdaPilot.runtime_timer.StopFcn = {@SuperMDAPilot_function_timerRuntimeStopFun,smdaPilot};
-        startat(smdaPilot.runtime_timer,smdaPilot.mda_clock_absolute(smdaPilot.mda_clock_pointer));
+        smdaPilot.timer_runtime.StopFcn = {@SuperMDAPilot_function_timerRuntimeStopFun,smdaPilot};
+        startat(smdaPilot.timer_runtime,smdaPilot.mda_clock_absolute(smdaPilot.mda_clock_pointer));
     else
         %%
         % update the gui_pause_stop_resume
