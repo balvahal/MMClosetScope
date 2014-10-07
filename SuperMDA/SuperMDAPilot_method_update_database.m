@@ -84,7 +84,7 @@ formatSpecHeader = strcat(...
     '%s\t',...%smdaP.itinerary.group(g).position(p).xyz(t,2),... %y
     '%s\t',...%     smdaP.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     smdaP.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     smdaP.itinerary.group(g).position(p).xyz(t,3),... %z
     '%s\t',... %the order of zstack from bottom to top
-    '%s\n'); %image_description
+    '%s\r\n'); %image_description
 formatSpecDatabaseRow = strcat(...
     '%s\t',... %channel_name
     '%s\t',... %filename
@@ -92,22 +92,22 @@ formatSpecDatabaseRow = strcat(...
     '%s\t',... %position_label
     '%d\t',... %binning
     '%d\t',... %channel_number
-    '%f\t',... %continuous_focus_offset
+    '%1.15g\t',... %continuous_focus_offset
     '%d\t',... %continuous_focus_bool
-    '%f\t',... %exposure
+    '%1.15g\t',... %exposure
     '%d\t',... %group_number
     '%d\t',... %group_order
-    '%g\t',... %matlab_serial_date_number
+    '%1.30g\t',... %matlab_serial_date_number
     '%d\t',... %position_number
     '%d\t',... %position_order,
-    '$d\t',... %settings_number
+    '%d\t',... %settings_number
     '%d\t',... %settings_order
     '%d\t',... %timepoint
-    '%f\t',...%smdaP.itinerary.group(g).position(p).xyz(t,1),... %x
-    '%f\t',...%smdaP.itinerary.group(g).position(p).xyz(t,2),... %y
-    '%f\t',...%     smdaP.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     smdaP.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     smdaP.itinerary.group(g).position(p).xyz(t,3),... %z
+    '%1.15g\t',...%smdaP.itinerary.group(g).position(p).xyz(t,1),... %x
+    '%1.15g\t',...%smdaP.itinerary.group(g).position(p).xyz(t,2),... %y
+    '%1.20g\t',...%     smdaP.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     smdaP.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     smdaP.itinerary.group(g).position(p).xyz(t,3),... %z
     '%d\t',... %the order of zstack from bottom to top
-    '%s\n'); %image_description
+    '%s\r\n'); %image_description
 fprintf(fileID,formatSpecHeader,varNames{:});
 fprintf(fileID,formatSpecDatabaseRow,myNewDatabaseRow{:});
 fclose(fileID);

@@ -17,7 +17,6 @@ classdef SuperMDAPilot_object < handle
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        database = {};
         databasefilename;
         database_imagedescription = '';
         database_z_number = 1;
@@ -70,16 +69,6 @@ classdef SuperMDAPilot_object < handle
                 if ~isdir(obj.itinerary.output_directory)
                     mkdir(obj.itinerary.output_directory);
                 end
-                %%
-                % initialize the database to hold information on 1,000,000
-                % images
-                obj.database = repmat({'channel_name','filename','group_label',...
-                    'position_label','binning','channel_number',...
-                    'continuous_focus_offset','continuous_focus_bool','exposure',...
-                    'group_number','group_order','matlab_serial_date_number',...
-                    'position_number','position_order','settings_number',...
-                    'settings_order','timepoint','x','y','z','z_order',...
-                    'image_description'},2^20,1);
             end
         end
         %% start acquisition
@@ -106,6 +95,11 @@ classdef SuperMDAPilot_object < handle
         %
         function obj = resume_acquisition(obj)
             SuperMDAPilot_method_resume_acquisition(obj);
+        end
+        %%
+        %
+        function obj = makeMasterDatabase(obj)
+            SuperMDAPilot_method_makeMasterDatabase(obj);
         end
         %% execute 1 round of acquisition
         %
