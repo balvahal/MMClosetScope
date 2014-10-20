@@ -20,26 +20,19 @@ if strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')||strcmp(smdaPilot.mm.compu
     switch smdaPilot.itinerary.settings_binning(k)
         case 1
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
-            myOverlap = 50;
         case 2
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','2x2');
-            myOverlap = 25;
-        case 3
-            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','3x3');
-            myOverlap = 25;
         case 4
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','4x4');
-            myOverlap = 15;
         otherwise
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
-            myOverlap = 50;
     end
 end
 smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.settings_gain(k))
 smdaPilot.mm.core.waitForSystem();
 %% Jose's loop for a 2x2 grid
 %
-[grid] = SuperMDA_grid_maker(smdaPilot.mm,'centroid',smdaPilot.itinerary.position_xyz(j,:),'number_of_columns',2,'number_of_rows',2,'overlap',myOverlap);
+[grid] = SuperMDA_grid_maker(smdaPilot.mm,'centroid',smdaPilot.itinerary.position_xyz(j,:),'number_of_columns',2,'number_of_rows',2,'overlap',0.05);
 %% Set PFS
 %
 for m=1:length(grid.positions)

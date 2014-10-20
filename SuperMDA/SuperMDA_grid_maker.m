@@ -81,7 +81,7 @@ addParameter(p, 'overlap', 0, @isnumeric);
 addParameter(p, 'overlap_x', 'undefined', @isnumeric);
 addParameter(p, 'overlap_y', 'undefined', @isnumeric);
 addParameter(p, 'diameter', 'undefined', @isnumeric);
-addParameter(p, 'overlap_units','px',@(x) any(strcmp(x,{'px', 'um'})));
+addParameter(p, 'overlap_units','fraction',@(x) any(strcmp(x,{'px', 'um', 'fraction'})));
 addParameter(p, 'path_strategy','snake',@(x) any(strcmp(x,{'snake','CRLF','Jacob Pyramid'})));
 parse(p,mmhandle,varargin{:});
 %% Examine _overlap_units_ parameter
@@ -94,7 +94,20 @@ parse(p,mmhandle,varargin{:});
 % If the units are micro-meters then a conversion is made. _overlap_x_ and
 % _overlap_y_ are defined. The code ultimately depends on _overlap_x_ and
 % _overlap_y_, not _overlap_.
-if strcmp(p.Results.overlap_units,'um') %if 1
+pixWidth = mmhandle.core.getImageWidth;
+pixHeight = mmhandle.core.getImageHeight;
+if strcmp(p.Results.overlap_units,'fraction')
+    if strcmp(p.Results.overlap_x,'undefined') %if 1_1
+        overlap_x = round(p.Results.overlap*pixWidth);
+    else
+        overlap_x = round(p.Results.overlap_x*pixWidth);
+    end
+    if strcmp(p.Results.overlap_y,'undefined') %if 1_2
+        overlap_y = round(p.Results.overlap*pixHeight);
+    else
+        overlap_y = round(p.Results.overlap_y*pixHeight);
+    end
+elseif strcmp(p.Results.overlap_units,'um') %if 1
     overlap = round(p.Results.overlap/mmhandle.core.getPixelSizeUm);
     if strcmp(p.Results.overlap_x,'undefined') %if 1_1
         overlap_x = overlap;
@@ -220,8 +233,7 @@ decision_number = bin2dec(int2str(decision_array));
 % The uManager core object can be queried for the height and width of the
 % image, but for code readability these values are stored in separate
 % variables and are necessary for defining the image grid.
-pixWidth = mmhandle.core.getImageWidth;
-pixHeight = mmhandle.core.getImageHeight;
+
 %% The switch-case code block
 %
 switch decision_number
@@ -563,7 +575,7 @@ imageWidthOffset = mmhandle.core.getImageWidth*mmhandle.core.getPixelSizeUm*cosd
 myRadius = (diameter+imageWidthOffset)/2;
 upperLeftCorner = [centroid(1)-myRadius,centroid(2)-myRadius,centroid(3)];
 lowerRightCorner = [centroid(1)+myRadius,centroid(2)+myRadius,centroid(3)];
-templateGrid = SuperMDA_grid_maker(mmhandle,'overlap_x',overlap_x,'overlap_y',overlap_y,'upper_left_corner',upperLeftCorner,'lower_right_corner',lowerRightCorner);
+templateGrid = SuperMDA_grid_maker(mmhandle,'overlap_x',overlap_x,'overlap_y',overlap_y,'upper_left_corner',upperLeftCorner,'lower_right_corner',lowerRightCorner,'overlap_units','px');
 columnStart = zeros(templateGrid.im_num_row,1);
 columnEnd = zeros(templateGrid.im_num_row,1);
 for i = 1:templateGrid.im_num_row
