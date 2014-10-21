@@ -35,6 +35,7 @@ elseif gamepad.button_lb == 1
     end
     flagcheck_before;
     flagcheck_after;
+    flag_group_before = true;
     %%
     % execute the functions
     gps_execute;

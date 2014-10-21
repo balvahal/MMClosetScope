@@ -162,7 +162,7 @@ classdef Gamepad_Logitech_F310 < handle
         %%
         % scan6 project specifics
         smdaITF
-        ITFpointer = 1;
+        ITFpointer = 0;
         scan6
     end
     %%

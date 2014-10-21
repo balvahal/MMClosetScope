@@ -1,4 +1,4 @@
-function gamepad = SCAN6_gamepad_lt(gamepad)
+function gamepad = SCAN6_gamepad_rb(gamepad)
 if gamepad.button_lt == gamepad.button_lt_old
     return
 elseif gamepad.button_lt == 1
@@ -35,6 +35,7 @@ elseif gamepad.button_lt == 1
     end
     flagcheck_before;
     flagcheck_after;
+    flag_group_before = true;
     %%
     % execute the functions
     gps_execute;

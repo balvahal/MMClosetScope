@@ -2,6 +2,10 @@ function gamepad = SCAN6_gamepad_lt(gamepad)
 if gamepad.button_lt == gamepad.button_lt_old
     return
 elseif gamepad.button_lt == 1
+    zeroflag = false;
+    if gamepad.ITFpointer == 0
+        zeroflag = true;
+    end
     %%
     % determine which functions to execute
     flag_group_before = false;
@@ -32,7 +36,7 @@ elseif gamepad.button_lt == 1
             break
         end
     end
-%    flagcheck_before;
+    %    flagcheck_before;
     myTempPointer = gamepad.ITFpointer;
     while true
         if myTempPointer == 1
@@ -55,6 +59,9 @@ elseif gamepad.button_lt == 1
     end
     flagcheck_before;
     flagcheck_after;
+    if zeroflag
+        flag_group_before = true;
+    end
     %%
     % execute the functions
     gps_execute;
@@ -89,7 +96,7 @@ end
         p = gpsInOrder(gamepad.ITFpointer,2);
         if flag_group_before
             %% lower objective
-
+            
             mmhandle.getXYZ;
             currentZ = mmhandle.pos(3) - 500;
             if currentZ < 1000
@@ -108,42 +115,6 @@ end
             xyz = smdaI.position_xyz(p,:);
             mmhandle.setXYZ(xyz(1:2)); % setting the z through the focus device will disable the PFS. Therefore, the stage is moved in the XY direction before assessing the status of the PFS system.
             mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
-%             if smdaI.position_continuous_focus_bool(p)
-%                 %% PFS lock-on will be attempted
-%                 %
-%                 mmhandle.setXYZ(xyz(1:2)); % setting the z through the focus device will disable the PFS. Therefore, the stage is moved in the XY direction before assessing the status of the PFS system.
-%                 mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
-%                 if strcmp(mmhandle.core.getProperty(mmhandle.AutoFocusStatusDevice,'State'),'Off')
-%                     %%
-%                     % If the PFS is |OFF|, then the scope is moved to an absolute z
-%                     % that will give the system the best chance of locking onto the
-%                     % correct z.
-%                     mmhandle.setXYZ(xyz(3),'direction','z');
-%                     mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-%                     mmhandle.core.setProperty(mmhandle.AutoFocusDevice,'Position',smdaI.position_continuous_focus_offset(p));
-%                     mmhandle.core.fullFocus(); % PFS will return to |OFF|
-%                 else
-%                     %%
-%                     % If the PFS system is already on, then changing the offset will
-%                     % adjust the z-position. fullFocus() will have the system wait
-%                     % until the new z-position has been reached.
-%                     mmhandle.core.setProperty(mmhandle.AutoFocusDevice,'Position',smdaI.position_continuous_focus_offset(p));
-%                     mmhandle.core.fullFocus(); % PFS will remain |ON|
-%                 end
-%                 %%
-%                 % Account for vertical stage drift by updating the z position
-%                 % information in the intinerary. Updating the z position is also
-%                 % important for imaging z-stacks using the PFS. Use this information to
-%                 % update the z for the next position, too.
-%                 mmhandle.getXYZ;
-%                 smdaI.position_xyz(p,3) = mmhandle.pos(3);
-%             else
-%                 %% PFS will not be utilized
-%                 %
-%                 mmhandle.setXYZ(xyz);
-%                 mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-%                 mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
-%             end
         end
         if flag_position_after
             
