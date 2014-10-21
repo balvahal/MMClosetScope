@@ -1,7 +1,10 @@
 function gamepad = SCAN6_gamepad_rb(gamepad)
-if gamepad.button_lt == gamepad.button_lt_old
+if gamepad.button_rb == gamepad.button_rb_old
     return
-elseif gamepad.button_lt == 1
+elseif gamepad.button_rb == 1
+    if gamepad.ITFpointer == 0
+        gamepad.ITFpointer = 1;
+    end
     %%
     % determine which functions to execute
     flag_group_before = false;

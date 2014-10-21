@@ -312,7 +312,7 @@ set(f,'Visible','on');
             end
         end
         smdaITF2.output_directory = fullfile(scan6.smdaI.output_directory,'flatfield');
-        smdaITF2.position_continuous_focus_offset(:) = myCFO + 150;
+        smdaITF2.position_continuous_focus_offset(:) = myCFO + 100;
         xyz = mm.getXYZ;
         smdaITF2.position_xyz(:,3) = xyz(3);
         

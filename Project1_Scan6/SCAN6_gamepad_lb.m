@@ -2,6 +2,9 @@ function gamepad = SCAN6_gamepad_lb(gamepad)
 if gamepad.button_lb == gamepad.button_lb_old
     return
 elseif gamepad.button_lb == 1
+    if gamepad.ITFpointer == 0
+        gamepad.ITFpointer = 1;
+    end
     %%
     % determine which functions to execute
     flag_group_before = false;

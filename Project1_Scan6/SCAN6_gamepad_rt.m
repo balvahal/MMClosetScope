@@ -5,6 +5,7 @@ elseif gamepad.button_rt == 1
     zeroflag = false;
     if gamepad.ITFpointer == 0
         zeroflag = true;
+        gamepad.ITFpointer = 1;
     end
     %%
     % determine which functions to execute
