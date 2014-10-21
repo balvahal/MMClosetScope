@@ -25,9 +25,9 @@ end
 if p.Results.Exposure >= 0
     mm.core.setExposure(mm.CameraDevice,p.Results.Exposure);
 end
-if p.Results.Gain >= 0
-    mm.core.setProperty(mm.CameraDevice,'Gain',p.Results.Gain);
-end
+% if p.Results.Gain >= 0
+%     mm.core.setProperty(mm.CameraDevice,'Gain',p.Results.Gain);
+% end
 if p.Results.Binning >= 0
     mm.core.setProperty(mm.CameraDevice,'Binning',p.Results.Binning);
 end

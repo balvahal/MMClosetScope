@@ -97,6 +97,12 @@ hpushbuttonXYAdd= uicontrol('Style','pushbutton','Units','characters',...
     'Position',[region2(1)+64, region2(2)+10, 12,3],...
     'Callback',{@pushbuttonXYAdd_Callback});
 
+hpushbuttonXYMove= uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
+    'String','Move',...
+    'Position',[region2(1)+64, region2(2)+6, 12,3],...
+    'Callback',{@pushbuttonXYMove_Callback});
+
 hpushbuttonXYDrop = uicontrol('Style','pushbutton','Units','characters',...
     'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
     'String','Drop',...
@@ -306,7 +312,7 @@ set(f,'Visible','on');
             end
         end
         smdaITF2.output_directory = fullfile(scan6.smdaI.output_directory,'flatfield');
-        smdaITF2.position_continuous_focus_offset(:) = myCFO + 100;
+        smdaITF2.position_continuous_focus_offset(:) = myCFO + 150;
         xyz = mm.getXYZ;
         smdaITF2.position_xyz(:,3) = xyz(3);
         
@@ -686,6 +692,16 @@ set(f,'Visible','on');
     end
 %%
 %
+    function pushbuttonXYMove_Callback(~,~)
+        set(handles.textUserFeedback,'String',[]);
+        if isempty(scan6.ind) || isempty (scan6.ind2) || scan6.ind2 == 0
+            return;
+        end
+        myXYZ = scan6.perimeterPoints{scan6.ind}(scan6.ind2,:);
+        scan6.mm.setXYZ(myXYZ(1:2));
+    end
+%%
+%
     function pushbuttonXYDrop_Callback(~,~)
         set(handles.textUserFeedback,'String',[]);
         if isempty(scan6.ind) || isempty (scan6.ind2) || scan6.ind2 == 0
@@ -719,7 +735,7 @@ set(f,'Visible','on');
             myDish2 = handlesStageMap.rectangleDishPerimeter{scan6.ind};
             set(myDish2,'Visible','off');
         end
-        % remove this position data to the listboxPts
+        % remove this position data from the listboxPts
         listboxPtsContents = get(handles.listboxXY,'String');
         listboxPtsContents(scan6.ind2) = [];
         scan6.ind2 = length(listboxPtsContents);

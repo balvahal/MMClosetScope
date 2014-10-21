@@ -28,7 +28,7 @@ if strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')||strcmp(smdaPilot.mm.compu
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
     end
 end
-smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.settings_gain(k))
+%smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.settings_gain(k))
 smdaPilot.mm.core.waitForSystem();
 %% Jose's loop for a 2x2 grid
 %

@@ -22,15 +22,13 @@ if strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')||strcmp(smdaPilot.mm.compu
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
         case 2
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','2x2');
-        case 3
-            smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','3x3');
         case 4
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','4x4');
         otherwise
             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
     end
 end
-smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.settings_gain(k))
+%smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Gain',smdaPilot.itinerary.settings_gain(k))
 smdaPilot.mm.core.waitForSystem();
 %% Z origin offset
 %

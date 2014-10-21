@@ -4,6 +4,7 @@ function [smdaP] = SuperMDAPilot_method_startAcquisition(smdaP)
 %%
 %
 if ~smdaP.running_bool
+    smdaP.itinerary.export;
     %% Establish folder tree that will store images
     %
     if ~isdir(smdaP.itinerary.output_directory)

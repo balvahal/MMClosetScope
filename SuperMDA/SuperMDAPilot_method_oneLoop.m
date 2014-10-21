@@ -31,7 +31,6 @@ for i = 1:(length(smdaI.orderVector)-1)
         handles = guidata(smdaP.gui_pause_stop_resume);
         set(handles.textTime,'String','No Acquisition');
         smdaP.pause_bool = false;
-        smdaP.makeMasterDatabase;
         disp('All Done!')
         return;
     end
