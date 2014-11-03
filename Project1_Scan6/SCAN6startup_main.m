@@ -14,4 +14,3 @@ smdaITF = SuperMDAItineraryTimeFixed_object(mm);
 smdaTA = SuperMDATravelAgent_object(smdaITF);
 gamepad = Gamepad_Logitech_F310(mm);
 scan6 = SCAN6_object(mm,smdaITF,smdaTA,gamepad);
-disp('yo yo');
