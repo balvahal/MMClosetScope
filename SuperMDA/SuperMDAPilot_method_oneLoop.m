@@ -20,7 +20,7 @@ for i = 1:(length(smdaI.orderVector)-1)
     while smdaP.pause_bool
         pause(1);
         if smdaP.running_bool == false
-            return;
+            break;
         end
     end
     if smdaP.running_bool == false

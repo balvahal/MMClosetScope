@@ -109,12 +109,12 @@ classdef SuperMDAPilot_object < handle
         %%
         %
         function obj = timerWaitFun(obj)
-            SuperMDAPilot_method_wait(obj);
+            SuperMDAPilot_function_timerWaitFun(obj);
         end
         %%
         %
         function obj = timerRuntimeFun(obj)
-            SuperMDAPilot_method_timerRuntimeFun(obj);
+            SuperMDAPilot_function_timerRuntimeFun(obj);
         end
         %%
         %

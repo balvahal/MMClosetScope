@@ -1,6 +1,6 @@
 %%
 %
-function smdaP = SuperMDAPilot_method_timerRuntimeFun(smdaP)
+function smdaP = SuperMDAPilot_function_timerRuntimeFun(smdaP)
 %%
 % update the gui_pause_stop_resume
 handles_gui_pause_stop_resume = guidata(smdaP.gui_pause_stop_resume);
