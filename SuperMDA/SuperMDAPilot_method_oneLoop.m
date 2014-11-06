@@ -27,7 +27,7 @@ for i = 1:(length(smdaI.orderVector)-1)
         smdaP.gps_previous = [0,0,0]; %reset the gps_previous pointer
         smdaP.timer_runtime.StopFcn = '';
         stop(smdaP.timer_runtime);
-        stop(smdaP.timer_wait);
+        %stop(smdaP.timer_wait);
         handles = guidata(smdaP.gui_pause_stop_resume);
         set(handles.textTime,'String','No Acquisition');
         smdaP.pause_bool = false;

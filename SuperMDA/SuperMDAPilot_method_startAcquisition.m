@@ -25,7 +25,7 @@ if ~smdaP.running_bool
     smdaP.clock_absolute = now + smdaP.itinerary.clock_relative/86400;
     smdaP.timer_runtime.StopFcn = {@SuperMDAPilot_function_timerRuntimeStopFun,smdaP};
     smdaP.running_bool = true;
-    start(smdaP.timer_wait);
+    %start(smdaP.timer_wait);
     smdaP.timer_runtime.StartDelay = 0; %this value must be reset after stopping it b/c it holds time left on timer.
     start(smdaP.timer_runtime);
 end
