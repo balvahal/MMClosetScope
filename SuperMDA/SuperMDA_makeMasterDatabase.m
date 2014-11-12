@@ -18,6 +18,7 @@ for i = 1:length(mydir)
     fprintf('%2.2f: %s\r\n',i/mylength*100,mydir(i).name);
 end
 mytable = vertcat(mytable{:});
+mytable = sortrows(mytable,{'group_number','position_number','settings_number','timepoint','z_order'},{'ascend','ascend','ascend','ascend','ascend'});
 databasefilename = fullfile(path,'smda_database.txt');
 writetable(mytable,databasefilename,'Delimiter','tab');
 end
