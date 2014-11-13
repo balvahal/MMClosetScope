@@ -848,14 +848,7 @@ set(f,'Visible','on');
         [filename,pathname] = uigetfile({'*.mat'},'Load a SuperMDAItinerary');
         cd(mypwd);
         if exist(fullfile(pathname,filename),'file')
-            load(fullfile(pathname,filename),'myitinerary');
-            if isa(myitinerary,'SuperMDAItinerary')
-                smdaTA.itinerary = myitinerary;
-                smdaTA.itinerary.mm = smdaTA.mm;
-                disp('import successful');
-            else
-                disp('a valid SuperMDAItinerary object was not found');
-            end
+            smdaTA.itinerary.import(fullfile(pathname,filename));
         else
             disp('The SuperMDAItinerary file selected was invalid.');
         end
