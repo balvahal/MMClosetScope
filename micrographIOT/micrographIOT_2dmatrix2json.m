@@ -17,6 +17,6 @@ if isnumeric(myarray) || islogical(myarray)
         myjson = horzcat(myjson,sprintf('%d],\n[',myarray(i,end)));
     end
     myjson = horzcat(myjson,sprintf('%d,',myarray(end,1:end-1)));
-    myjson = horzcat(myjson,sprintf('%d]\n]',myarray(i,end)));
+    myjson = horzcat(myjson,sprintf('%d]\n]',myarray(end,end)));
 end
 end
