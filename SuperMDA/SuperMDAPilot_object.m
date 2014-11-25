@@ -28,8 +28,6 @@ classdef SuperMDAPilot_object < handle
         runtime_imagecounter = 0;
         gps_previous = [0,0,0]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
         gps_current;
-        timer_runtime;
-        timer_wait;
         gui_pause_stop_resume;
         gui_lastImage;
         t = 1;
@@ -58,9 +56,6 @@ classdef SuperMDAPilot_object < handle
                 %
                 obj.itinerary = sdmaI;
                 obj.mm = sdmaI.mm;
-                obj.timer_runtime = timer('TimerFcn',@(~,~) obj.timerRuntimeFun,'BusyMode','queue','Name','timer_runtime');
-                obj.timer_wait = timer('TimerFcn',@(~,~) obj.timerWaitFun,'ExecutionMode','fixedSpacing',...
-                    'Period',1,'Name','timer_wait');
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_pause_stop_resume = SuperMDAPilot_gui_pause_stop_resume(obj);
@@ -108,21 +103,6 @@ classdef SuperMDAPilot_object < handle
         end
         %%
         %
-        function obj = timerWaitFun(obj)
-            SuperMDAPilot_function_timerWaitFun(obj);
-        end
-        %%
-        %
-        function obj = timerRuntimeFun(obj)
-            SuperMDAPilot_function_timerRuntimeFun(obj);
-        end
-        %%
-        %
-        function obj = timerRuntimeFunContinuousCapture(obj)
-            SuperMDAPilot_function_timerRuntimeFunContinuousCapture(obj);
-        end
-        %%
-        %
         function obj = snap(obj)
             obj.mm.snapImage;
             SuperMDAPilot_method_updateLastImage(obj);
@@ -131,8 +111,6 @@ classdef SuperMDAPilot_object < handle
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
         function delete(obj)
-            delete(obj.timer_runtime);
-            delete(obj.timer_wait);
             delete(obj.gui_pause_stop_resume);
             delete(obj.gui_lastImage);
         end

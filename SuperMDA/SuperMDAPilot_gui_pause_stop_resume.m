@@ -21,26 +21,32 @@ f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx 
 hwidth = 100/ppChar(3);
 hheight = 70/ppChar(4);
 hx = 20/ppChar(3);
-hygap = (fheight - 3*hheight)/4;
+hygap = (fheight - 3*hheight)/5;
 hy = fheight - (hygap + hheight);
 hpushbuttonPause = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',14,'FontName','Verdana','BackgroundColor',[255 215 0]/255,...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',[255 214 95]/255,...
     'String','Pause','Position',[hx hy hwidth hheight],...
     'Callback',{@pushbuttonPause_Callback});
 
 hy = hy - (hygap + hheight);
 hpushbuttonResume = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',14,'FontName','Verdana','BackgroundColor',[60 179 113]/255,...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',[56 165 95]/255,...
     'String','Resume','Position',[hx hy hwidth hheight],...
     'Callback',{@pushbuttonResume_Callback});
 
 hy = hy - (hygap + hheight);
 hpushbuttonStop = uicontrol('Style','pushbutton','Units','characters',...
-    'FontSize',14,'FontName','Verdana','BackgroundColor',[205 92 92]/255,...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',[255 103 97]/255,...
     'String','Stop','Position',[hx hy hwidth hheight],...
     'Callback',{@pushbuttonStop_Callback});
 
-align([hpushbuttonPause,hpushbuttonResume,hpushbuttonStop],'Center','None');
+hy = hy - (hygap + hheight);
+hpushbuttonFinishAcq = uicontrol('Style','pushbutton','Units','characters',...
+    'FontSize',14,'FontName','Verdana','BackgroundColor',[37 124 224]/255,...
+    'String','Finish Acq.','Position',[hx hy hwidth hheight],...
+    'Callback',{@pushbuttonFinishAcq_Callback});
+
+align([hpushbuttonPause,hpushbuttonResume,hpushbuttonStop,hpushbuttonFinishAcq],'Center','None');
 %%
 % A text box showing the time until the next acquisition
 hwidth = 250/ppChar(3);
@@ -82,6 +88,28 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonStop_Callback(~,~)
+        str = sprintf('The current acquisition will be stopped.\n\nDo you wish to proceed?');
+        choice = questdlg(str, ...
+            'Warning! Do you wish to proceed?', ...
+            'Yes','No','No');
+        % Handle response
+        if strcmp(choice,'No')
+            return;
+        end
         smdaPilot.stop_acquisition;
+    end
+%%
+%
+    function pushbuttonFinishAcq_Callback(~,~)
+        str = sprintf('The current acquisition will be stopped after a running acquisition ends. You cannot unmake this decision.\n\nDo you wish to proceed?');
+        choice = questdlg(str, ...
+            'Warning! Do you wish to proceed?', ...
+            'Yes','No','No');
+        % Handle response
+        if strcmp(choice,'No')
+            return;
+        end
+        smdaP.itinerary.clock_absolute(end) = now;
+        smdaP.t = length(smdaP.itinerary.clock_absolute);
     end
 end
