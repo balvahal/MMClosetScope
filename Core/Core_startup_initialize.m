@@ -19,8 +19,8 @@ function [mmhandle] = Core_startup_initialize()
 %% Create the GUI and the core API object
 %
 hmsg = msgbox('Click ''OK'' after the micromanager configuration file has been loaded.','Wait For Configuration');
-import org.micromanager.MMStudioMainFrame;
-mmhandle.gui = MMStudioMainFrame(false);
+import org.micromanager.MMStudio;
+mmhandle.gui = MMStudio(false);
 mmhandle.gui.show;
 uiwait(hmsg);
 mmhandle.core = mmhandle.gui.getMMCore;
