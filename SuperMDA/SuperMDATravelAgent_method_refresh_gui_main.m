@@ -71,7 +71,6 @@ for i = mySettingsOrder
     tableSettingsData{n,1} = smdaTA.mm.Channel{smdaTA.itinerary.settings_channel(i)};
     tableSettingsData{n,2} = smdaTA.itinerary.settings_exposure(i);
     tableSettingsData{n,3} = smdaTA.itinerary.settings_binning(i);
-    tableSettingsData{n,4} = smdaTA.itinerary.settings_gain(i);
     tableSettingsData{n,5} = smdaTA.itinerary.settings_z_step_size(i);
     tableSettingsData{n,6} = smdaTA.itinerary.settings_z_stack_upper_offset(i);
     tableSettingsData{n,7} = smdaTA.itinerary.settings_z_stack_lower_offset(i);

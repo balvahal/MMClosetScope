@@ -913,7 +913,6 @@ set(f,'Visible','on');
         smdaTA.itinerary.settings_channel(mySettingsOrderPrior) = smdaTA.itinerary.settings_channel(mySettingsOrder);
         smdaTA.itinerary.settings_exposure(mySettingsOrderPrior) = smdaTA.itinerary.settings_exposure(mySettingsOrder);
         smdaTA.itinerary.settings_function(mySettingsOrderPrior) = smdaTA.itinerary.settings_function(mySettingsOrder);
-        smdaTA.itinerary.settings_gain(mySettingsOrderPrior) = smdaTA.itinerary.settings_gain(mySettingsOrder);
         smdaTA.itinerary.settings_period_multiplier(mySettingsOrderPrior) = smdaTA.itinerary.settings_period_multiplier(mySettingsOrder);
         smdaTA.itinerary.settings_timepoints(mySettingsOrderPrior) = smdaTA.itinerary.settings_timepoints(mySettingsOrder);
         smdaTA.itinerary.settings_z_origin_offset(mySettingsOrderPrior) = smdaTA.itinerary.settings_z_origin_offset(mySettingsOrder);
@@ -992,7 +991,6 @@ set(f,'Visible','on');
         smdaTA.itinerary.settings_channel(mySettingsOrderPrior) = smdaTA.itinerary.settings_channel(mySettingsOrder);
         smdaTA.itinerary.settings_exposure(mySettingsOrderPrior) = smdaTA.itinerary.settings_exposure(mySettingsOrder);
         smdaTA.itinerary.settings_function(mySettingsOrderPrior) = smdaTA.itinerary.settings_function(mySettingsOrder);
-        smdaTA.itinerary.settings_gain(mySettingsOrderPrior) = smdaTA.itinerary.settings_gain(mySettingsOrder);
         smdaTA.itinerary.settings_period_multiplier(mySettingsOrderPrior) = smdaTA.itinerary.settings_period_multiplier(mySettingsOrder);
         smdaTA.itinerary.settings_timepoints(mySettingsOrderPrior) = smdaTA.itinerary.settings_timepoints(mySettingsOrder);
         smdaTA.itinerary.settings_z_origin_offset(mySettingsOrderPrior) = smdaTA.itinerary.settings_z_origin_offset(mySettingsOrder);
@@ -1170,17 +1168,15 @@ set(f,'Visible','on');
                 smdaTA.itinerary.settings_exposure(myRow) = eventdata.NewData;
             case 3 %binning
                 smdaTA.itinerary.settings_binning(myRow) = eventdata.NewData;
-            case 4 %gain
-                smdaTA.itinerary.settings_gain(myRow) = eventdata.NewData;
-            case 5 %Z step size
+            case 4 %Z step size
                 smdaTA.itinerary.settings_z_step_size(myRow) = eventdata.NewData;
-            case 6 %Z upper
+            case 5 %Z upper
                 smdaTA.itinerary.settings_z_stack_upper_offset(myRow) = eventdata.NewData;
-            case 7 %Z lower
+            case 6 %Z lower
                 smdaTA.itinerary.settings_z_stack_lower_offset(myRow) = eventdata.NewData;
-            case 9 %Z offset
+            case 8 %Z offset
                 smdaTA.itinerary.settings_z_origin_offset(myRow) = eventdata.NewData;
-            case 10 %period multiplier
+            case 9 %period multiplier
                 smdaTA.itinerary.settings_period_multiplier(myRow) = eventdata.NewData;
         end
         smdaTA.refresh_gui_main;

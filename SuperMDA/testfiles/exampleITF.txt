@@ -510,9 +510,6 @@
 	"settings_function": [
 		"SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed","SuperMDA_function_settings_timeFixed"
 	],
-	"settings_gain": [
-		0,0,0,0,0,0,0,0,0,0
-	],
 	"settings_logical": [
 		1,1,1,1,1,1,1,1,1,1
 	],

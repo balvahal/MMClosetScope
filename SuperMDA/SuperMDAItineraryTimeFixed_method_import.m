@@ -76,7 +76,6 @@ if iscell(data.settings_function)
 else
     smdaITF.settings_function = {data.settings_function};
 end
-smdaITF.settings_gain = data.settings_gain;
 smdaITF.settings_logical = logical(data.settings_logical);
 smdaITF.settings_period_multiplier = data.settings_period_multiplier;
 smdaITF.settings_timepoints = data.settings_timepoints;

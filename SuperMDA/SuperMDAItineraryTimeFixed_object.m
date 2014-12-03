@@ -41,12 +41,19 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         group_logical;
         group_scratchpad;
         
-        ind_first_group;
-        ind_last_group;
+        ind_first_group; % as many rows as groups. each row holds the gps row where the group begins
+        ind_group; % a single row with the indices of the groups
+        ind_last_group; % as many rows as groups. each row holds the gps row where the group ends
         ind_next_gps;
         ind_next_group;
         ind_next_position;
         ind_next_settings;
+        ind_position; % as many rows as groups. each row with the indices of positions within that group.
+        ind_settings; % as many rows as positions. each row has the order of settings at that position.
+        
+        order_group; % a single row with the order of the groups
+        order_position; % as many rows as groups. each row with the order of positions within that group.
+        order_settings; % as many rows as positions. each row has the order of settings at that position.
         
         position_continuous_focus_offset;
         position_continuous_focus_bool;
@@ -61,7 +68,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         settings_channel;
         settings_exposure;
         settings_function;
-        settings_gain;
         settings_logical;
         settings_period_multiplier;
         settings_scratchpad;
@@ -78,7 +84,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         number_of_timepoints = 1;
     end
     %%
-    %
+    % * addPosition2Group
     methods
         %% The constructor method
         % The first argument is always mm
@@ -119,7 +125,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_channel = 1;
             obj.settings_exposure = 1; %This is a customizable arrray
             obj.settings_function{1} = 'SuperMDAItineraryTimeFixed_settings_function';
-            obj.settings_gain = 0; % [0-255] for ORCA R2
             obj.settings_logical = true;
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array
@@ -128,123 +133,20 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_z_stack_lower_offset = 0;
             obj.settings_z_stack_upper_offset = 0;
             obj.settings_z_step_size = 0.3;
-            %% initialize the indices
+            %% initialize the indices and order
             % the next group, position, and settings
             obj.ind_first_group = 1;
             obj.ind_last_group = 1;
+            obj.ind_group = 1;
             obj.ind_next_gps = 2;
             obj.ind_next_group = 2;
             obj.ind_next_position = 2;
             obj.ind_next_settings = 2;
-        end
-        
-        %% preallocate memory to hold the SuperMDA information
-        % This should always be done before and the largest number should
-        % be used for the number of groups, positions, and settings
-        %
-        % Note that the |order| properties of group, position, and settings
-        % remain initialized at 1. The |order| represents which groups,
-        % positions, or settings from the preallocated data should be part
-        % of the SuperMDA when acquisition begins. By manipulating the
-        % |order| groups, positions, or settings can be skipped on the fly,
-        % but remember this information will have to be added back to
-        % revisit them.
-        function obj = preAllocateMemoryAndInitialize(obj, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings)
-            p = inputParser;
-            addRequired(p, 'obj', @(x) isa(x,'SuperMDAItinerary'));
-            addRequired(p, 'myNumberOfGroups', @(x) (mod(x,1)==0) && (x>0));
-            addRequired(p, 'myNumberOfPositions', @(x) (mod(x,1)==0) && (x>0));
-            addRequired(p, 'myNumberOfSettings', @(x) (mod(x,1)==0) && (x>0));
-            parse(p, obj, myNumberOfGroups, myNumberOfPositions, myNumberOfSettings);
-            %% Update prototypes
-            % * settings: exposure and timepoints
-            % * position: xyz
-            obj.group(1).position(1).settings(1).exposure = ones(obj.number_of_timepoints,1);
-            obj.group(1).position(1).settings(1).timepoints = ones(obj.number_of_timepoints,1);
-            obj.mm.getXYZ;
-            obj.group(1).position(1).xyz = ones(obj.number_of_timepoints,3);
-            obj.group(1).position(1).xyz(:,1) = obj.mm.pos(1);
-            obj.group(1).position(1).xyz(:,2) = obj.mm.pos(2);
-            obj.group(1).position(1).xyz(:,3) = obj.mm.pos(3);
-            %% Fill the SuperMDA with this preallocated information
-            %
-            obj.group.position.settings = repmat(obj.group(1).position(1).settings(1),myNumberOfSettings,1);
-            obj.group.position = repmat(obj.group(1).position(1),myNumberOfPositions,1);
-            obj.group = repmat(obj.group(1),myNumberOfGroups,1);
-            %% Create labels
-            %
-            for i = 1:length(obj.group)
-                mystr = sprintf('group%d',i);
-                obj.group(i).label = mystr;
-                for j = 1:length(obj.group(i).position)
-                    mystr = sprintf('position%d',j);
-                    obj.group(i).position(j).label = mystr;
-                end
-            end
-        end
-        %% preAllocateDatabase
-        %
-        function obj = preAllocateDatabaseAndInitialize(obj)
-            %% Calculate the number of images
-            % The number of images will be used to pre-allocate memory for
-            % the database. Without memory pre-allocation the SuperMDA will
-            % grind to a halt.
-            obj.total_number_images = 0;
-            for i = obj.group_order
-                for j = obj.group(i).position_order
-                    for k = obj.group(i).position(j).settings_order
-                        obj.total_number_images = obj.total_number_images + obj.group(i).position(j).tileNumber*sum(obj.group(i).position(j).settings(k).timepoints)*length(obj.group(i).position(j).settings(k).z_stack);
-                    end
-                end
-            end
-            %% Pre-allocate the database
-            %
-            pre_allocation_cell = {'channel name','filename','group label','position label',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'image description'};
-            obj.database = repmat(pre_allocation_cell,obj.total_number_images,1);
-            database_filename = fullfile(obj.output_directory,'smda_database.txt');
-            myfid = fopen(database_filename,'w');
-            fprintf(myfid,'%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n','channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description');
-            fclose(myfid);
-            %%
-            % Save the SuperMDA in a text or xml format, so that it can be
-            % reloaded later on. SuperMDA is an object and objects don't
-            % necessarily load properly, especially if listeners are
-            % involved.
-            SuperMDAtable = cell2table(pre_allocation_cell,'VariableNames',{'channel_name','filename','group_label','position_label','binning','channel_number','continuous_focus_offset','continuous_focus_bool','exposure','group_number','group_order','matlab_serial_date_number','position_number','position_order','settings_number','settings_order','timepoint','x','y','z','z_order','image_description'});
-            writetable(SuperMDAtable,fullfile(obj.output_directory,'smda_database_copy.txt'),'Delimiter','\t');
-        end
-        %% update_zstack
-        %
-        function obj = update_zstack(obj)
-            for i = 1:length(obj.group)
-                for j = 1:length(obj.group(i).position)
-                    for k = 1:length(obj.group(i).position(j).settings)
-                        range = obj.group(i).position(j).settings(k).z_stack_upper_offset - obj.group(i).position(j).settings(k).z_stack_lower_offset;
-                        if range<=0
-                            obj.group(i).position(j).settings(k).z_stack_upper_offset = 0;
-                            obj.group(i).position(j).settings(k).z_stack_lower_offset = 0;
-                            obj.group(i).position(j).settings(k).z_stack = 0;
-                        else
-                            obj.group(i).position(j).settings(k).z_stack = obj.group(i).position(j).settings(k).z_stack_lower_offset:obj.group(i).position(j).settings(k).z_step_size:obj.group(i).position(j).settings(k).z_stack_upper_offset;
-                            obj.group(i).position(j).settings(k).z_stack_upper_offset = obj.group(i).position(j).settings(k).z_stack(end);
-                        end
-                    end
-                end
-            end
-        end
-        %% update_timepoints_with_period_multiplier
-        % Note that this will overwrite all information currently in the
-        % timepoint arrays.
-        function obj = update_timepoints_with_period_multiplier(obj)
-            for i = 1:length(obj.group)
-                for j = 1:length(obj.group(i).position)
-                    for k = 1:length(obj.group(i).position(j).settings)
-                        myNumbers = 1:obj.group(i).position(j).settings(k).period_multiplier:obj.number_of_timepoints;
-                        obj.group(i).position(j).settings(k).timepoints = zeroes(obj.number_of_timepoints,1);
-                        obj.group(i).position(j).settings(k).timepoints(myNumbers) = 1;
-                    end
-                end
-            end
+            obj.ind_position = 1;
+            obj.ind_settings = 1;
+            obj.order_group = 1;
+            obj.order_position = 1;
+            obj.order_settings = 1;
         end
         %%
         %
@@ -378,7 +280,11 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 obj.find_ind_next('position');
             end
         end
-        
+        %%
+        %
+        function obj = export(obj)
+            SuperMDAItineraryTimeFixed_method_export(obj);
+        end
         %%
         %
         function obj = find_ind_last_group(obj,varargin)
@@ -431,6 +337,11 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                         obj.ind_next_settings = length(obj.settings_logical) + 1;
                     end
             end
+        end
+        %%
+        %
+        function obj = import(obj,filename)
+            SuperMDAItineraryTimeFixed_method_import(obj,filename);
         end
         %%
         % returns the inds of "active" groups
@@ -646,18 +557,18 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
+        function obj = organize(obj)
+            SuperMDAItineraryTimeFixed_method_organize(obj);
+        end
+        %%
+        %
+        function obj = refreshIndAndOrder(obj)
+            SuperMDAItineraryTimeFixed_method_refreshIndAndOrder(obj);
+        end
+        %%
+        %
         function obj = removeZeroRows(obj)
             
-        end
-        %%
-        %
-        function obj = export(obj)
-            SuperMDAItineraryTimeFixed_method_export(obj);
-        end
-        %%
-        %
-        function obj = import(obj,filename)
-            SuperMDAItineraryTimeFixed_method_import(obj,filename);
         end
     end
     %%

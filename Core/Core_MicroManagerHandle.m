@@ -30,7 +30,6 @@ classdef Core_MicroManagerHandle < handle
             hmsg = msgbox('Click ''OK'' after the micromanager configuration file has been loaded.','Wait For Configuration');
             import org.micromanager.MMStudio;
             obj.gui = MMStudio(false);
-            obj.gui.show; %this opens the uM gui that can be used at the same time MATLAB is open. Closing this gui closes MATLAB and vice versa.
             uiwait(hmsg); %the uM gui must load the correct configuration and relys upon user input. MATLAB will wait until the user confirms that uM loaded properly.
             obj.core = obj.gui.getMMCore;
             obj.mda = obj.gui.getAcquisitionEngine();

@@ -41,7 +41,6 @@ jsonStrings{n} = micrographIOT_array2json('settings_binning',smdaITF.settings_bi
 jsonStrings{n} = micrographIOT_array2json('settings_channel',smdaITF.settings_channel); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('settings_exposure',smdaITF.settings_exposure); n = n + 1;
 jsonStrings{n} = micrographIOT_cellStringArray2json('settings_function',smdaITF.settings_function); n = n + 1;
-jsonStrings{n} = micrographIOT_array2json('settings_gain',smdaITF.settings_gain); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('settings_logical',smdaITF.settings_logical); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('settings_period_multiplier',smdaITF.settings_period_multiplier); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('settings_timepoints',smdaITF.settings_timepoints); n = n + 1;

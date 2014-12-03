@@ -55,7 +55,6 @@ if p.Results.gNum ==1
         smdaITF.settings_channel(smdaITF.ind_next_settings) = smdaITF.settings_channel(firstPositionSettings(i));
         smdaITF.settings_exposure(smdaITF.ind_next_settings) = smdaITF.settings_exposure(firstPositionSettings(i));
         smdaITF.settings_function{smdaITF.ind_next_settings} = smdaITF.settings_function{firstPositionSettings(i)};
-        smdaITF.settings_gain(smdaITF.ind_next_settings) = smdaITF.settings_gain(firstPositionSettings(i));
         smdaITF.settings_logical(smdaITF.ind_next_settings) = true;
         smdaITF.settings_period_multiplier(smdaITF.ind_next_settings) = smdaITF.settings_period_multiplier(firstPositionSettings(i));
         smdaITF.settings_timepoints(smdaITF.ind_next_settings) = smdaITF.settings_timepoints(firstPositionSettings(i));

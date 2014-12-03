@@ -52,7 +52,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
         settings_channel;
         settings_exposure;
         settings_function;
-        settings_gain;
         settings_period_multiplier;
         settings_scratchpad;
         settings_timepoints;
@@ -103,7 +102,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
             obj.settings_channel = 1;
             obj.settings_exposure = 1; %This is a customizable arrray
             obj.settings_function = '';
-            obj.settings_gain = 0; % [0-255] for ORCA R2
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array
             obj.settings_scratchpad = {};
