@@ -25,7 +25,19 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % are only active if their index exists in the group_order. The
     % |TravelAgent| enforces the numbers within the group_order vector to
     % be sequential (though not necessarily in order).
+    %% Properties
     properties
+        %%% General
+        %
+        % * channel_names
+        % * database_filenamePNG
+        % * gps
+        % * gps_logical
+        % * mm
+        % * orderVector
+        % * output_directory
+        % * png_path
+        
         channel_names;
         database_filenamePNG;
         gps;
@@ -35,11 +47,29 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         output_directory = fullfile(pwd,'SuperMDA');
         png_path;
         
+        %%% Group
+        %
+        % * group_function_after
+        % * group_function_before
+        % * group_label
+        % * group_logical
+        
         group_function_after;
         group_function_before;
         group_label;
         group_logical;
-        group_scratchpad;
+        
+        %%% Indices
+        % 
+        % * ind_first_group
+        % * ind_group
+        % * ind_last_group
+        % * ind_next_gps
+        % * ind_next_group
+        % * ind_next_position
+        % * ind_next_settings
+        % * ind_position
+        % * ind_settings
         
         ind_first_group; % as many rows as groups. each row holds the gps row where the group begins
         ind_group; % a single row with the indices of the groups
@@ -51,9 +81,25 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         ind_position; % as many rows as groups. each row with the indices of positions within that group.
         ind_settings; % as many rows as positions. each row has the order of settings at that position.
         
+        %%% Order
+        %
+        % * order_group
+        % * order_position
+        % * order_settings
+        
         order_group; % a single row with the order of the groups
         order_position; % as many rows as groups. each row with the order of positions within that group.
         order_settings; % as many rows as positions. each row has the order of settings at that position.
+        
+        %%% Position
+        %
+        % * position_continuous_focus_offset
+        % * position_continuous_focus_bool
+        % * position_function_after
+        % * position_function_before
+        % * position_label
+        % * position_logical
+        % * position_xyz
         
         position_continuous_focus_offset;
         position_continuous_focus_bool;
@@ -61,8 +107,20 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         position_function_before;
         position_label;
         position_logical;
-        position_scratchpad;
         position_xyz;
+        
+        %%% Settings
+        % * settings_binning
+        % * settings_channel
+        % * settings_exposure
+        % * settings_function
+        % * settings_logical
+        % * settings_period_multiplier
+        % * settings_timepoints
+        % * settings_z_origin_offset
+        % * settings_z_stack_lower_offset
+        % * settings_z_stack_upper_offset
+        % * settings_z_step_size
         
         settings_binning;
         settings_channel;
@@ -70,14 +128,22 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         settings_function;
         settings_logical;
         settings_period_multiplier;
-        settings_scratchpad;
         settings_timepoints;
         settings_z_origin_offset;
         settings_z_stack_lower_offset;
         settings_z_stack_upper_offset;
         settings_z_step_size;
     end
+    %% Properties (private)
+    %
     properties (SetAccess = private)
+        %%% General
+        %
+        % * duration
+        % * fundamental_period
+        % * clock_relative
+        % * number_of_timepoints
+        
         duration = 0;
         fundamental_period = 600; %The units are seconds. 600 is 10 minutes.
         clock_relative = 0;
@@ -108,7 +174,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.group_function_before{1} = 'SuperMDAItineraryTimeFixed_group_function_before';
             obj.group_label{1} = 'group1';
             obj.group_logical = true;
-            obj.group_scratchpad = {};
             %% initialize the prototype_position
             %
             obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
@@ -117,7 +182,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.position_function_before{1} = 'SuperMDAItineraryTimeFixed_position_function_before';
             obj.position_label{1} = 'position1';
             obj.position_logical = true;
-            obj.position_scratchpad = {};
             obj.position_xyz = mm.getXYZ; %This is a customizable array
             %% initialize the prototype_settings
             %
@@ -128,7 +192,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_logical = true;
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array
-            obj.settings_scratchpad = {};
             obj.settings_z_origin_offset = 0;
             obj.settings_z_stack_lower_offset = 0;
             obj.settings_z_stack_upper_offset = 0;

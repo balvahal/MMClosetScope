@@ -34,7 +34,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
         group_function_after;
         group_function_before;
         group_label;
-        group_scratchpad;
         
         ind_next_group;
         ind_next_position;
@@ -45,7 +44,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
         position_function_after;
         position_function_before;
         position_label;
-        position_scratchpad;
         position_xyz;
         
         settings_binning;
@@ -53,7 +51,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
         settings_exposure;
         settings_function;
         settings_period_multiplier;
-        settings_scratchpad;
         settings_timepoints;
         settings_z_origin_offset;
         settings_z_stack_lower_offset;
@@ -86,7 +83,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
             obj.group_function_after = '';
             obj.group_function_before = '';
             obj.group_label{1} = '';
-            obj.group_scratchpad = {};
             %% initialize the prototype_position
             %
             obj.position_continuous_focus_offset = str2double(smdaITF.mm.core.getProperty(smdaITF.mm.AutoFocusDevice,'Position'));
@@ -94,8 +90,7 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
             obj.position_function_after = '';
             obj.position_function_before = '';
             obj.position_label{1} = '';
-            obj.position_scratchpad = {};
-            obj.position_xyz = mm.getXYZ; %This is a customizable array
+            obj.position_xyz = smdaITF.mm.getXYZ; %This is a customizable array
             %% initialize the prototype_settings
             %
             obj.settings_binning = 1;
@@ -104,7 +99,6 @@ classdef SuperMDAItineraryTimeTunable_object < SuperMDAItineraryTimeFixed_object
             obj.settings_function = '';
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array
-            obj.settings_scratchpad = {};
             obj.settings_z_origin_offset = 0;
             obj.settings_z_stack_lower_offset = 0;
             obj.settings_z_stack_upper_offset = 0;

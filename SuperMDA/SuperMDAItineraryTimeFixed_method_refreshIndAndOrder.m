@@ -5,18 +5,6 @@ function [smdaITF] = SuperMDAItineraryTimeFixed_method_refreshIndAndOrder(smdaIT
 %
 gpsGrp = 1:length(smdaITF.group_logical);
 smdaITF.ind_group = gpsGrp(smdaITF.group_logical);
-%%% ind_first_group
-%
-smdaITF.ind_first_group = zeros(length(smdaITF.group_logical),1);
-for i = smdaITF.ind_group
-    smdaITF.ind_first_group(i) = find(smdaITF.gps(:,1) == i,1,'first');
-end
-%%% ind_last_group
-%
-smdaITF.ind_last_group = zeros(length(smdaITF.group_logical),1);
-for i = smdaITF.ind_group
-    smdaITF.ind_last_group(i) = find(smdaITF.gps(:,1) == i,1,'last');
-end
 %%% ind_next_gps
 %
 if any(~smdaITF.gps_logical)
@@ -89,5 +77,17 @@ for i = smdaITF.ind_group
         gpsSet = gpsOrder(gpsPosLogical & gpsSetLogical,3);
         smdaITF.order_settings{j} = transpose(unique(gpsSet,'stable'));
     end
+end
+%%% ind_first_group
+%
+smdaITF.ind_first_group = zeros(length(smdaITF.group_logical),1);
+for i = smdaITF.ind_group
+    smdaITF.ind_first_group(i) = find(gpsGrp(:,1) == i,1,'first');
+end
+%%% ind_last_group
+%
+smdaITF.ind_last_group = zeros(length(smdaITF.group_logical),1);
+for i = smdaITF.ind_group
+    smdaITF.ind_last_group(i) = find(gpsGrp(:,1) == i,1,'last');
 end
 end

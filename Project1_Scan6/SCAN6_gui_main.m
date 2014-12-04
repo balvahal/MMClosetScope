@@ -264,12 +264,12 @@ set(f,'Visible','on');
         gInd = 1;
         smdaITF2 = SuperMDAItineraryTimeFixed_object(scan6.mm);
         settingsInds = scan6.smdaI.indOfSettings(gInd);
-        numberOfpositions = length(settingsInds)*16; % 16 exposures
+        numberOfpositions = length(settingsInds)*20; % 20 exposures
         smdaITF2.newPositionNewSettings(gInd,numberOfpositions-1);
-        exposureArray = [0,50,100,150,200,300,400,500,...
-            600,700,800,900,1000,1300,1600,2000]; % 8 exposures
+        exposureArray = [0,25,50,75,100,150,200,250,300,400,...
+            500,600,700,800,900,1000,1300,1600,1900,2200];
         for i = 1:length(settingsInds)
-            myind = (1:16)+(i-1)*16;
+            myind = (1:20)+(i-1)*20;
             smdaITF2.settings_binning(myind) = scan6.smdaI.settings_binning(settingsInds(i));
             smdaITF2.settings_channel(myind) = scan6.smdaI.settings_channel(settingsInds(i));
             smdaITF2.settings_exposure(myind) = exposureArray;
@@ -277,7 +277,6 @@ set(f,'Visible','on');
             smdaITF2.settings_gain(myind) = scan6.smdaI.settings_gain(settingsInds(i));
             smdaITF2.settings_logical(myind) = true;
             smdaITF2.settings_period_multiplier(myind) = 1;
-            smdaITF2.settings_scratchpad = {};
             smdaITF2.settings_timepoints(myind) = 1;
             smdaITF2.settings_z_origin_offset(myind) = 0;
             smdaITF2.settings_z_stack_lower_offset(myind) = 0;
@@ -305,7 +304,7 @@ set(f,'Visible','on');
         grid = SuperMDA_grid_maker(scan6.mm,'upper_left_corner',ULC,'lower_right_corner',LRC,'number_of_images',numberOfpositions);
         n = 0;
         for i = 1:length(settingsInds)
-            for j = 1:16
+            for j = 1:20
                 n = n+1;
                 smdaITF2.position_xyz(n,:) = grid.positions(n,:);
                 smdaITF2.position_label{n} = sprintf('%s_%d',smdaITF2.channel_names{smdaITF2.settings_channel(n)},exposureArray(j));
