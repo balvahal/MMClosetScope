@@ -60,7 +60,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         group_logical;
         
         %%% Indices
-        % 
+        %
         % * ind_first_group
         % * ind_group
         % * ind_last_group
@@ -79,7 +79,22 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         ind_next_position;
         ind_next_settings;
         ind_position; % as many rows as groups. each row with the indices of positions within that group.
-        ind_settings; % as many rows as positions. each row has the order of settings at that position.
+        ind_settings; % as many rows as positions. each row has the indices of settings at that position.
+        
+        %%% Number
+        % Each number refers to the number of active elements. An active
+        % element is defined by the corresponding value within the logical
+        % arrays for the group, position, and settings.
+        %
+        % * number_group: the number of groups.
+        % * number_position: as many rows as groups. each row with the
+        % number of positions within that group.
+        % * number_settings: as many rows as positions. each row has the
+        % number of settings at that position.
+        
+        number_group;
+        number_position;
+        number_settings;
         
         %%% Order
         %
@@ -137,7 +152,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     %% Properties (private)
     %
     properties (SetAccess = private)
-        %%% General
+        %%% Time
+        % The time related properties were made private, because they are
+        % co-dependent, e.g. changing the _duration_ will change the
+        % _number_of_timepoints_. Special methods were created to change
+        % the time properties while also updating the co-dependent
+        % properties. The units for the time properties are seconds.
         %
         % * duration
         % * fundamental_period
@@ -149,11 +169,48 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         clock_relative = 0;
         number_of_timepoints = 1;
     end
-    %%
+    %% Methods
+    % In general each method was created to help construct a valid,
+    % self-consistent itinerary. An itinerary can be constructed without
+    % the use of any of these methods, but there are no guaruntees that a
+    % logical error may not be present. By using these methods to construct
+    % an itinerary there will be no doubt about its logic and validity.
+    %
     % * addPosition2Group
+    % * addSettings2Position
+    % * addSettings2AllPosition
+    % * dropGroup
+    % * dropPosition
+    % * dropSettings
+    % * export
+    % * find_ind_last_group
+    % * find_ind_next
+    % * import
+    % * indOfGroup
+    % * indOfPosition
+    % * indOfSettings
+    % * newDuration
+    % * newFundamentalPeriod
+    % * newGroup
+    % * newNumberOfTimepoints
+    % * newPosition
+    % * newPositionNewSettings
+    % * newSettings
+    % * numberOfGroup
+    % * numberOfPosition
+    % * numberOfSettings
+    % * orderOfGroup
+    % * orderOfPosition
+    % * orderOfSettings
+    % * orderVectorInsert
+    % * orderVectorMove
+    % * orderVectorRemove
+    % * organize
+    % * refreshIndAndOrder
+    
     methods
         %% The constructor method
-        % The first argument is always mm
+        %
         function obj = SuperMDAItineraryTimeFixed_object(mm)
             if ~isdir(obj.output_directory)
                 mkdir(obj.output_directory)
@@ -627,11 +684,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %
         function obj = refreshIndAndOrder(obj)
             SuperMDAItineraryTimeFixed_method_refreshIndAndOrder(obj);
-        end
-        %%
-        %
-        function obj = removeZeroRows(obj)
-            
         end
     end
     %%
