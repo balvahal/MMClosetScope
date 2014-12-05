@@ -11,9 +11,12 @@
 %
 % pov and joystk will be polled continously by a timer object.
 classdef Gamepad_Logitech_F310 < handle
+    properties
+        
+    end
     %%
     %
-    properties
+    properties (SetObservable)
         gamepad
         button
         controller_timer
@@ -164,11 +167,9 @@ classdef Gamepad_Logitech_F310 < handle
         smdaITF
         ITFpointer = 0;
         scan6
-    end
-    %%
-    %
-    properties (SetObservable)
-        
+        %%
+        %
+        listener_joystk_right
     end
     %%
     %
@@ -309,6 +310,9 @@ classdef Gamepad_Logitech_F310 < handle
             obj.function_joystk_left = @Gamepad_function_joystk_left;
             obj.function_joystk_right = @Gamepad_function_joystk_right;
             obj.function_read_controller = @Gamepad_function_read_controller;
+            %%
+            %
+            obj.listener_joystk_right = addlistener(obj,'joystk_right_dir','PostSet',@Gamepad_listener_joystk_right);
         end
         %%
         %
