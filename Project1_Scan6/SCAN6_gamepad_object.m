@@ -95,40 +95,22 @@ classdef SCAN6_gamepad_object < Gamepad_Logitech_F310
 
             %%
             %
-            computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-            if strcmp(computerName,'LAHAVSCOPE0001')
-                %%
-                % Closet Scope
-                obj.stageport = 'COM1';
-            elseif strcmp(computerName,'LAHAVSCOPE002')
-                %%
-                % Curtain Scope
-                obj.stageport = 'COM3';
-            elseif strcmp(computerName,'KISHONYWAB111A')
-                %%
-                % Kishony Scope
-                obj.stageport = 'COM2';
-            else
-                obj.stageport = 'COM1';
-            end
+            obj.stageport = mmhandle.stageport;
             %%
             % define functions for the controller
-            obj.function_button_x = @Gamepad_function_button_x; %1
-            obj.function_button_a = @Gamepad_function_button_a; %2
-            obj.function_button_b = @Gamepad_function_button_b; %3
-            obj.function_button_y = @Gamepad_function_button_y; %4
-            obj.function_button_lb = @Gamepad_function_button_lb; %5
-            obj.function_button_rb = @Gamepad_function_button_rb; %6
-            obj.function_button_lt = @Gamepad_function_button_lt; %7
-            obj.function_button_rt = @Gamepad_function_button_rt; %8
-            obj.function_button_back = @Gamepad_function_button_back; %9
-            obj.function_button_start = @Gamepad_function_button_start; %10
-            obj.function_button_stk_left = @Gamepad_function_button_stk_left; %11
-            obj.function_button_stk_right = @Gamepad_function_button_stk_right; %12
-            obj.function_pov_dpad = @Gamepad_function_pov_dpad;
-            obj.function_joystk_left = @Gamepad_function_joystk_left;
-            obj.function_joystk_right = @Gamepad_function_joystk_right;
-            obj.function_read_controller = @Gamepad_function_read_controller;
+            obj.function_button_x = @SCAN6_gamepad_x; %1
+            obj.function_button_y = @SCAN6_gamepad_y; %4
+            obj.function_button_lb = @SCAN6_gamepad_lb; %5
+            obj.function_button_rb = @SCAN6_gamepad_rb; %6
+            obj.function_button_lt = @SCAN6_gamepad_lt; %7
+            obj.function_button_rt = @SCAN6_gamepad_rt; %8
+            obj.function_button_stk_left = @SCAN6_gamepad_button_stk_left; %11
+            obj.function_button_stk_right = @SCAN6_gamepad_button_stk_right; %12
+            obj.function_pov_dpad = @SCAN6_gamepad_pov_dpad;
+            obj.function_joystk_left = @SCAN6_gamepad_function_joystk_left;
+            obj.function_joystk_right = @SCAN6_gamepad_function_joystk_right;
+            
+            %obj.gamepad_timer.TimerFcn = @(~,~) )
         end
         %%
         %

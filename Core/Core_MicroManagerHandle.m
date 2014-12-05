@@ -16,6 +16,7 @@ classdef Core_MicroManagerHandle < handle
         ShutterDevice
         xyStageLimits
         zLimits
+        stageport
     end
     properties (SetObservable)
         I
@@ -96,6 +97,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.calibrationAngle = mytable.calibrationAngle;
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',100); % 'MaxSpeed' range of [0,100].
+                obj.stageport = 'COM1';
             elseif strcmp(obj.computerName,'LAHAVSCOPE002')
                 %%
                 % Curtain Scope
@@ -113,6 +115,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.calibrationAngle = mytable.calibrationAngle;
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',50); %There was concern of slippage and slowing the scope down was thought to be a solution to prevent this. 'MaxSpeed' range of [0,100].
+                obj.stageport = 'COM3';
             elseif strcmp(obj.computerName,'KISHONYWAB111A')
                 %%
                 % Kishony Scope
@@ -131,6 +134,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.zLimits = [mytable.zmin,mytable.zmax];
                 obj.calibrationAngle = mytable.calibrationAngle;
                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
+                obj.stageport = 'COM2';
             else
                 obj.xyStageDevice = obj.core.getXYStageDevice;
                 obj.FocusDevice = obj.core.getFocusDevice;
@@ -139,6 +143,7 @@ classdef Core_MicroManagerHandle < handle
                 obj.zLimits = [0,10000];
                 obj.xyStageLimits = [0,150000,0,100000];
                 obj.calibrationAngle = 2;
+                obj.stageport = 'COM1';
             end
             
             obj.pos = obj.getXYZ;
