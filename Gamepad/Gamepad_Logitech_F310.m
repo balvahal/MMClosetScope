@@ -186,9 +186,9 @@ classdef Gamepad_Logitech_F310 < handle
         % sacraficing to much customization. After the creation of the
         % SuperMDA tiered-object use the new_position method to add another
         % position object.
-        function obj = Gamepad_Logitech_F310(mmhandle)
+        function obj = Gamepad_Logitech_F310()
             obj.gamepad = vrjoystick(1); %assumes the F310 is the only gamepad connected to the computer.
-            obj.microscope = mmhandle; %this gamepad is meant to interact with a microscope and mmhandle is the object that grants control over the microscope
+            %obj.microscope = mmhandle; %this gamepad is meant to interact with a microscope and mmhandle is the object that grants control over the microscope
             [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
             %%
             %
@@ -276,22 +276,22 @@ classdef Gamepad_Logitech_F310 < handle
 
             %%
             %
-            computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-            if strcmp(computerName,'LAHAVSCOPE0001')
-                %%
-                % Closet Scope
-                obj.stageport = 'COM1';
-            elseif strcmp(computerName,'LAHAVSCOPE002')
-                %%
-                % Curtain Scope
-                obj.stageport = 'COM3';
-            elseif strcmp(computerName,'KISHONYWAB111A')
-                %%
-                % Kishony Scope
-                obj.stageport = 'COM2';
-            else
-                obj.stageport = 'COM1';
-            end
+%             computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
+%             if strcmp(computerName,'LAHAVSCOPE0001')
+%                 %%
+%                 % Closet Scope
+%                 obj.stageport = 'COM1';
+%             elseif strcmp(computerName,'LAHAVSCOPE002')
+%                 %%
+%                 % Curtain Scope
+%                 obj.stageport = 'COM3';
+%             elseif strcmp(computerName,'KISHONYWAB111A')
+%                 %%
+%                 % Kishony Scope
+%                 obj.stageport = 'COM2';
+%             else
+%                 obj.stageport = 'COM1';
+%             end
             %%
             % define functions for the controller
             obj.function_button_x = @Gamepad_function_button_x; %1
