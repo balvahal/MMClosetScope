@@ -12,12 +12,39 @@
 % pov and joystk will be polled continously by a timer object.
 classdef SCAN6_gamepad_object < Gamepad_Logitech_F310
     properties
-        
-    end
-    %%
-    %
-    properties (SetObservable)
-       
+        %%
+        % scan6 project specifics
+        smdaITF
+        ITFpointer = 0;
+        scan6
+        %% Microscope relevant properties
+        % The left joystick will control movement of the stage. Two
+        % pertinent pieces of information will be the direction the
+        % joystick is pointing and the magnitude the joystick is tilted in
+        % that direction. The control over the microscope is mediated by a
+        % stage controller. The stage controller is periodically sent
+        % signals from MATLAB to update its movement.
+        %
+        microscope
+        stageport
+        pov_speed = [25,50,100,200,400,800,1600]; %speed of microscope movement in microns per second
+        %% joy stick lookup table
+        % It has been emperically determined that the joystick is unwieldy
+        % when relying upon some formula to determine velocity. The root of
+        % this lies in the communication with the stage. The signal needs
+        % to be broken up when a heading is to be maintained; constantly
+        % sending signals to change direction confounds the stage.
+        % Therefore, I will craft a lookup table that divide a circle into
+        % 24 directions spaced 15 degrees apart. The magnitude will be
+        % divided into 12 regions. The first region will be a deadzone.
+        % The next 6 regions will provide fine control over the stage. The
+        % last 5 regions will provide rapid movement.
+        joystk_left_lookup
+        magArraySlow = [0,20,30,50,70,90,120,150,200,250,350,475,600];
+        magArrayFast = [0,150,250,450,750,1500,2250,3500,5000,6000,7000,8000];
+        joystk_left_speedMode
+        joystk_right_lookup
+        joystk_right_speedMode
     end
     %%
     %
@@ -35,63 +62,7 @@ classdef SCAN6_gamepad_object < Gamepad_Logitech_F310
         % SuperMDA tiered-object use the new_position method to add another
         % position object.
         function obj = SCAN6_gamepad_object(mmhandle)
-            obj.gamepad = vrjoystick(1); %assumes the F310 is the only gamepad connected to the computer.
             obj.microscope = mmhandle; %this gamepad is meant to interact with a microscope and mmhandle is the object that grants control over the microscope
-            [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
-            %%
-            %
-            obj.button_x = obj.button(1); %1
-            obj.button_a = obj.button(2); %2
-            obj.button_b = obj.button(3); %3
-            obj.button_y = obj.button(4); %4
-            obj.button_lb = obj.button(5); %5
-            obj.button_rb = obj.button(6); %6
-            obj.button_lt = obj.button(7); %7
-            obj.button_rt = obj.button(8); %8
-            obj.button_back = obj.button(9); %9
-            obj.button_start = obj.button(10); %10
-            obj.button_stk_left = obj.button(11); %11
-            obj.button_stk_right = obj.button(12); %12
-            
-            obj.pov_dpad = obj.pov;
-            obj.pov_dpad_old = obj.pov;
-            
-            obj.joystk_left_x = obj.joystk(1); %1
-            obj.joystk_left_y = obj.joystk(2); %2
-            obj.joystk_left_dir = obj.angle_joystk_left;
-            obj.joystk_left_mag = obj.magnitude_joystk_left;
-            obj.joystk_right_x = obj.joystk(3); %3
-            obj.joystk_right_y = obj.joystk(4); %4
-            
-            obj.joystk_right_dir = obj.angle_joystk_right;
-            obj.joystk_right_mag = obj.magnitude_joystk_right;
-            
-            obj.button_x_old = obj.button(1); %1
-            obj.button_a_old = obj.button(2); %2
-            obj.button_b_old = obj.button(3); %3
-            obj.button_y_old = obj.button(4); %4
-            obj.button_lb_old = obj.button(5); %5
-            obj.button_rb_old = obj.button(6); %6
-            obj.button_lt_old = obj.button(7); %7
-            obj.button_rt_old = obj.button(8); %8
-            obj.button_back_old = obj.button(9); %9
-            obj.button_start_old = obj.button(10); %10
-            obj.button_stk_left_old = obj.button(11); %11
-            obj.button_stk_right_old = obj.button(12); %12
-            
-            obj.pov_dpad_old = obj.pov;
-            
-            obj.joystk_left_x_old = obj.joystk(1); %1
-            obj.joystk_left_y_old = obj.joystk(2); %2
-            obj.joystk_right_x_old = obj.joystk(3); %3
-            obj.joystk_right_y_old = obj.joystk(4); %4
-            
-            %%
-            %
-            obj.joystk_left_dir_old = obj.angle_joystk_left;
-            obj.joystk_left_mag_old = obj.magnitude_joystk_left;
-            obj.joystk_right_dir_old = obj.angle_joystk_right;
-            obj.joystk_right_mag_old = obj.magnitude_joystk_right;
             %%
             %
             magArray = obj.magArraySlow;
@@ -158,9 +129,46 @@ classdef SCAN6_gamepad_object < Gamepad_Logitech_F310
             obj.function_joystk_left = @Gamepad_function_joystk_left;
             obj.function_joystk_right = @Gamepad_function_joystk_right;
             obj.function_read_controller = @Gamepad_function_read_controller;
-            %%
-            %
-            obj.listener_joystk_right = addlistener(obj,'joystk_right_dir','PostSet',@Gamepad_listener_joystk_right);
+        end
+        %%
+        %
+        function obj = makeJoyStkLeftLookup(obj,mystr)
+            switch lower(mystr)
+                case 'slow'
+                    magArray = obj.magArraySlow;
+                case 'fast'
+                    magArray = obj.magArrayFast;
+                otherwise
+                    magArray = obj.magArraySlow;
+            end
+            
+            degVec = 0:15:345;
+            obj.joystk_left_lookup = cell(12,24);
+            for i = 1:12
+                for j = 1:24
+                    obj.joystk_left_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
+                end
+            end
+        end
+        %%
+        %
+        function obj = makeJoyStkRightLookup(obj,mystr)
+            switch lower(mystr)
+                case 'slow'
+                    magArray = obj.magArraySlow;
+                case 'fast'
+                    magArray = obj.magArrayFast;
+                otherwise
+                    magArray = obj.magArraySlow;
+            end
+            
+            degVec = 0:15:345;
+            obj.joystk_left_lookup = cell(12,24);
+            for i = 1:12
+                for j = 1:24
+                    obj.joystk_left_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
+                end
+            end
         end
     end
 end

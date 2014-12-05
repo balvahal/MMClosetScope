@@ -8,5 +8,5 @@ if (gamepad.joystk_right_mag_old == gamepad.joystk_right_mag) && (gamepad.joystk
     return;
 end
 my_command = sprintf('VS,%d,%d',gamepad.joystk_right_lookup{gamepad.joystk_right_mag,gamepad.joystk_right_dir}(1),gamepad.joystk_right_lookup{gamepad.joystk_right_mag,gamepad.joystk_right_dir}(2));
-gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+%gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
 end

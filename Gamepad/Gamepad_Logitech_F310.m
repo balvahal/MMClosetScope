@@ -11,38 +11,27 @@
 %
 % pov and joystk will be polled continously by a timer object.
 classdef Gamepad_Logitech_F310 < handle
-    properties
-        
-    end
     %%
     %
-    properties (SetObservable)
+    properties
+        %% Core
+        % These properties contain the _vrjoystick_ object and its
+        % properties: _button_, _joystk_, and _pov_. The exception is the
+        % _gamepad_timer_. In order to use the gamepad in an interactive
+        % way a timer at a high speed checks the states of all the buttons,
+        % bumpers, and joysticks. The speed was empirically chosen to be
+        % faster than can be detected by a human. That is to say when a
+        % button is pressed there are very good odds that a timer will
+        % trigger and detect this change, even if the button is pushed
+        % briefly. The timer speed was chosen to be just beyond this
+        % threshold to spare MATLAB some CPU cycles for other activities.
+        % For reference, the fixed rate to read the controller state is
+        % 1/25th of a second.
         gamepad
         button
-        controller_timer
-        function_read_controller
+        gamepad_timer
         joystk
         pov
-        %% Microscope relevant properties
-        % The left joystick will control movement of the stage. Two
-        % pertinent pieces of information will be the direction the
-        % joystick is pointing and the magnitude the joystick is tilted in
-        % that direction. The control over the microscope is mediated by a
-        % stage controller. The stage controller is periodically sent
-        % signals from MATLAB to update its movement.
-        %
-        joystk_left_dir
-        joystk_left_dir_old
-        joystk_left_mag
-        joystk_left_mag_old
-        joystk_right_mag
-        joystk_right_mag_old
-        joystk_right_dir
-        joystk_right_dir_old
-        microscope
-        stageport
-        pov_speed = [25,50,100,200,400,800,1600]; %speed of microscope movement in microns per second
-        
         %% The read command
         % The read command returns three MATLAB values: joystk, button,
         % pov.
@@ -122,6 +111,24 @@ classdef Gamepad_Logitech_F310 < handle
         
         function_joystk_left
         function_joystk_right
+
+        %%% direction and magnitude
+        % To help interpret the joystick values, the cartesian sense of x
+        % and y can be converted into polar coordinates described by a
+        % direction and magnitude. Note that the direction and magnitude
+        % has been discretized, because the joystick has been empiraclly
+        % found to be a touch sensitive in use. Therefore, the magnitude is
+        % expressed as an integer [1,12] and the direction as an integer
+        % [1,24]. Together this represents 288 possibilities, which is an
+        % order of magnitude more than the d-pad/pov has available.
+        joystk_left_dir
+        joystk_left_dir_old
+        joystk_left_mag
+        joystk_left_mag_old
+        joystk_right_mag
+        joystk_right_mag_old
+        joystk_right_dir
+        joystk_right_dir_old
         %% Prior States
         % Knowing the previous state of a button determines whether or not
         % a button has been pressed and released or is being held down.
@@ -144,32 +151,7 @@ classdef Gamepad_Logitech_F310 < handle
         joystk_left_y_old %2
         joystk_right_x_old %3
         joystk_right_y_old %4
-        %% joy stick lookup table
-        % It has been emperically determined that the joystick is unwieldy
-        % when relying upon some formula to determine velocity. The root of
-        % this lies in the communication with the stage. The signal needs
-        % to be broken up when a heading is to be maintained; constantly
-        % sending signals to change direction confounds the stage.
-        % Therefore, I will craft a lookup table that divide a circle into
-        % 24 directions spaced 15 degrees apart. The magnitude will be
-        % divided into 12 regions. The first region will be a deadzone.
-        % The next 6 regions will provide fine control over the stage. The
-        % last 5 regions will provide rapid movement.
-        joystk_left_lookup
-        magArraySlow = [0,20,30,50,70,90,120,150,200,250,350,475,600];
-        magArrayFast = [0,150,250,450,750,1500,2250,3500,5000,6000,7000,8000];
-        joystk_left_speedMode
         
-        joystk_right_lookup
-        joystk_right_speedMode
-        %%
-        % scan6 project specifics
-        smdaITF
-        ITFpointer = 0;
-        scan6
-        %%
-        %
-        listener_joystk_right
     end
     %%
     %
@@ -188,7 +170,6 @@ classdef Gamepad_Logitech_F310 < handle
         % position object.
         function obj = Gamepad_Logitech_F310()
             obj.gamepad = vrjoystick(1); %assumes the F310 is the only gamepad connected to the computer.
-            %obj.microscope = mmhandle; %this gamepad is meant to interact with a microscope and mmhandle is the object that grants control over the microscope
             [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
             %%
             %
@@ -245,53 +226,10 @@ classdef Gamepad_Logitech_F310 < handle
             obj.joystk_right_dir_old = obj.angle_joystk_right;
             obj.joystk_right_mag_old = obj.magnitude_joystk_right;
             %%
-            %
-            magArray = obj.magArraySlow;
-            degVec = 0:15:345;
-            obj.joystk_left_lookup = cell(12,24);
-            for i = 1:12
-                for j = 1:24
-                    obj.joystk_left_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
-                end
-            end
-            
-            obj.joystk_left_speedMode = 'slow';
-            %%
-            %
-            magArray = obj.magArraySlow;
-            degVec = 0:15:345;
-            obj.joystk_right_lookup = cell(12,24);
-            for i = 1:12
-                for j = 1:24
-                    obj.joystk_right_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
-                end
-            end
-            
-            obj.joystk_right_speedMode = 'slow';
-            %%
             % the TimerFcn will automatically pass in two input arguments.
             % These are not needed, so they are thrown away using the
             % syntax (~,~).
-            obj.controller_timer = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',0.04,'TimerFcn',@(~,~) obj.read_controller);
-
-            %%
-            %
-%             computerName = mmhandle.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-%             if strcmp(computerName,'LAHAVSCOPE0001')
-%                 %%
-%                 % Closet Scope
-%                 obj.stageport = 'COM1';
-%             elseif strcmp(computerName,'LAHAVSCOPE002')
-%                 %%
-%                 % Curtain Scope
-%                 obj.stageport = 'COM3';
-%             elseif strcmp(computerName,'KISHONYWAB111A')
-%                 %%
-%                 % Kishony Scope
-%                 obj.stageport = 'COM2';
-%             else
-%                 obj.stageport = 'COM1';
-%             end
+            obj.gamepad_timer = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',0.04,'TimerFcn',@(~,~) obj.read_controller);
             %%
             % define functions for the controller
             obj.function_button_x = @Gamepad_function_button_x; %1
@@ -309,56 +247,12 @@ classdef Gamepad_Logitech_F310 < handle
             obj.function_pov_dpad = @Gamepad_function_pov_dpad;
             obj.function_joystk_left = @Gamepad_function_joystk_left;
             obj.function_joystk_right = @Gamepad_function_joystk_right;
-            obj.function_read_controller = @Gamepad_function_read_controller;
-            %%
-            %
-            obj.listener_joystk_right = addlistener(obj,'joystk_right_dir','PostSet',@Gamepad_listener_joystk_right);
-        end
-        %%
-        %
-        function obj = makeJoyStkLeftLookup(obj,mystr)
-            switch lower(mystr)
-                case 'slow'
-                    magArray = obj.magArraySlow;
-                case 'fast'
-                    magArray = obj.magArrayFast;
-                otherwise
-                    magArray = obj.magArraySlow;
-            end
-            
-            degVec = 0:15:345;
-            obj.joystk_left_lookup = cell(12,24);
-            for i = 1:12
-                for j = 1:24
-                    obj.joystk_left_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
-                end
-            end
-        end
-                %%
-        %
-        function obj = makeJoyStkRightLookup(obj,mystr)
-            switch lower(mystr)
-                case 'slow'
-                    magArray = obj.magArraySlow;
-                case 'fast'
-                    magArray = obj.magArrayFast;
-                otherwise
-                    magArray = obj.magArraySlow;
-            end
-            
-            degVec = 0:15:345;
-            obj.joystk_left_lookup = cell(12,24);
-            for i = 1:12
-                for j = 1:24
-                    obj.joystk_left_lookup{i,j} = magArray(i)*[cosd(degVec(j)),sind(degVec(j))];
-                end
-            end
         end
         %%
         %
         function delete(obj)
-            stop(obj.controller_timer);
-            delete(obj.controller_timer);
+            stop(obj.gamepad_timer);
+            delete(obj.gamepad_timer);
         end
         %%
         %
@@ -442,10 +336,11 @@ classdef Gamepad_Logitech_F310 < handle
         function obj = read_controller(obj)
             obj.read_button;
             obj.read_joystk;
-            obj.function_read_controller(obj);
         end
         %%
-        %
+        % The output _my_angle_ will be an integer [1,24]. A circle, having
+        % 360 degrees, was divided into 24 equally spaced possibilities.
+        % Each wedge between two possibilities is 15 degrees.
         function my_angle = angle_joystk_left(obj)
             y = obj.joystk_left_y;
             x = obj.joystk_left_x;
@@ -453,9 +348,32 @@ classdef Gamepad_Logitech_F310 < handle
             if my_angle < 0
                 my_angle = my_angle + 360;
             end
-            %%
+            %%%
             % convert angle into lookup table index
-            my_angle = round(my_angle/15.6522) + 1; %15.6522 = 1/(24-1)
+            my_angle = round(my_angle/15) + 1; %15 = 360/24.
+            if my_angle == 25
+                my_angle = 1;
+            end
+        end
+        %%
+        % The output _my_angle_ will be an integer [1,24]. A circle, having
+        % 360 degrees, was divided into 24 equally spaced possibilities.
+        % Each wedge between two possibilities is 15 degrees.
+        function my_angle = angle_joystk_right(obj)
+            y = obj.joystk_right_y;
+            x = obj.joystk_right_x;
+            my_angle = atan2d(y,x);
+            if my_angle < 0
+                my_angle = my_angle + 360;
+            end
+            %%%
+            % convert angle into lookup table index. 1 must be added to the
+            % output, because the first index in MATLAB is 1 and the angle
+            % could be rounded to 0.
+            my_angle = round(my_angle/15) + 1; %15 = 360/24.
+            if my_angle == 25
+                my_angle = 1;
+            end
         end
         %%
         % I have observed that when holding the joystick in any of the four
@@ -472,25 +390,15 @@ classdef Gamepad_Logitech_F310 < handle
             if my_magnitude > 1
                 my_magnitude = 1;
             end
-            %%
+            %%%
             % convert magnitude into a lookup table index
-            my_magnitude = round(my_magnitude*11) + 1;
+            my_magnitude = ceil(my_magnitude*12);
         end
+
         %%
-        %
-        function my_angle = angle_joystk_right(obj)
-            y = obj.joystk_right_y;
-            x = obj.joystk_right_x;
-            my_angle = atan2d(y,x);
-            if my_angle < 0
-                my_angle = my_angle + 360;
-            end
-            %%
-            % convert angle into lookup table index
-            my_angle = round(my_angle/15.6522) + 1; %15.6522 = 1/(24-1)
-        end
-        %%
-        %
+        % The output _my_magnitude_ will be an integer [1,12]. The possible
+        % magnitude of the joystick, values between 0 and 1, was divided
+        % into 12 equally spaced possiblities.
         function my_magnitude = magnitude_joystk_right(obj)
             y = obj.joystk_right_y;
             x = obj.joystk_right_x;
@@ -498,16 +406,10 @@ classdef Gamepad_Logitech_F310 < handle
             if my_magnitude > 1
                 my_magnitude = 1;
             end
-            %%
+            %%%
             % convert magnitude into a lookup table index
-            my_magnitude = round(my_magnitude*11) + 1;
-        end
-        %%
-        %
-        function obj = connectController(obj)
-            start(obj.controller_timer);
-        end
-        
+            my_magnitude = ceil(my_magnitude*12);
+        end        
     end
     methods (Static)
         %%
