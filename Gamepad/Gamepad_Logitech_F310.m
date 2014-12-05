@@ -14,7 +14,7 @@ classdef Gamepad_Logitech_F310 < handle
     %%
     %
     properties
-        %% Core
+        %%% Core
         % These properties contain the _vrjoystick_ object and its
         % properties: _button_, _joystk_, and _pov_. The exception is the
         % _gamepad_timer_. In order to use the gamepad in an interactive
@@ -32,7 +32,7 @@ classdef Gamepad_Logitech_F310 < handle
         gamepad_timer
         joystk
         pov
-        %% The read command
+        %%% The read command
         % The read command returns three MATLAB values: joystk, button,
         % pov.
         %
@@ -43,7 +43,7 @@ classdef Gamepad_Logitech_F310 < handle
         % represents a button. As far as I can tell only the "mode" button
         % and the "Logitech" button are not detected by the @vrjoystick.
         % * povs = a single value reporting on the direction of the d-pad.
-        %% buttons
+        %%% buttons
         % buttons = a 1x12 logical
         %
         % the buttons are ordered in the place they appear in the logical
@@ -61,19 +61,7 @@ classdef Gamepad_Logitech_F310 < handle
         button_stk_left %11
         button_stk_right %12
         
-        function_button_x %1
-        function_button_a %2
-        function_button_b %3
-        function_button_y %4
-        function_button_lb %5
-        function_button_rb %6
-        function_button_lt %7
-        function_button_rt %8
-        function_button_back %9
-        function_button_start %10
-        function_button_stk_left %11
-        function_button_stk_right %12
-        %% povs
+        %%% povs
         % Eight values that range from 0 to 315 representing 360 degrees in
         % a circle. The values increase in a clockwise fashion when looking
         % down at the gamepad.
@@ -89,8 +77,7 @@ classdef Gamepad_Logitech_F310 < handle
         % * 315 = NW
         pov_dpad
         
-        function_pov_dpad
-        %% joystk
+        %%% joystk
         % There are two joystk that represent the left and right joysticks.
         % The joystk values range from -1 to 1 in a continous fashion with
         % 4 decimal precision. Each joystick has an x-axis and y-axis value
@@ -109,9 +96,6 @@ classdef Gamepad_Logitech_F310 < handle
         joystk_right_x %3
         joystk_right_y %4
         
-        function_joystk_left
-        function_joystk_right
-
         %%% direction and magnitude
         % To help interpret the joystick values, the cartesian sense of x
         % and y can be converted into polar coordinates described by a
@@ -121,15 +105,15 @@ classdef Gamepad_Logitech_F310 < handle
         % expressed as an integer [1,12] and the direction as an integer
         % [1,24]. Together this represents 288 possibilities, which is an
         % order of magnitude more than the d-pad/pov has available.
+        % Although, the magnitude integer of 1 represents the zero vector
+        % which is directionless, so more practically speaking there are
+        % 265 possiblities.
         joystk_left_dir
-        joystk_left_dir_old
         joystk_left_mag
-        joystk_left_mag_old
         joystk_right_mag
-        joystk_right_mag_old
         joystk_right_dir
-        joystk_right_dir_old
-        %% Prior States
+        
+        %%% Prior States
         % Knowing the previous state of a button determines whether or not
         % a button has been pressed and released or is being held down.
         button_x_old %1
@@ -151,7 +135,30 @@ classdef Gamepad_Logitech_F310 < handle
         joystk_left_y_old %2
         joystk_right_x_old %3
         joystk_right_y_old %4
+        joystk_left_dir_old
+        joystk_left_mag_old
+        joystk_right_mag_old
+        joystk_right_dir_old
         
+        %%% Functions
+        %
+        function_button_x %1
+        function_button_a %2
+        function_button_b %3
+        function_button_y %4
+        function_button_lb %5
+        function_button_rb %6
+        function_button_lt %7
+        function_button_rt %8
+        function_button_back %9
+        function_button_start %10
+        function_button_stk_left %11
+        function_button_stk_right %12
+        
+        function_pov_dpad
+        
+        function_joystk_left
+        function_joystk_right
     end
     %%
     %
@@ -160,6 +167,15 @@ classdef Gamepad_Logitech_F310 < handle
     end
     %%
     %
+    % * angle_joystk_left
+    % * angle_joystk_right
+    % * delete
+    % * magnitude_joystk_left
+    % * magnitude_joystk_right
+    % * read_button
+    % * read_controller
+    % * read_joystk
+    
     methods
         %% The constructor method
         % The constructor method was designed to only be called by its
@@ -231,6 +247,7 @@ classdef Gamepad_Logitech_F310 < handle
             % syntax (~,~).
             obj.gamepad_timer = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',0.04,'TimerFcn',@(~,~) obj.read_controller);
             %%
+            %
             % define functions for the controller
             obj.function_button_x = @Gamepad_function_button_x; %1
             obj.function_button_a = @Gamepad_function_button_a; %2
@@ -249,44 +266,82 @@ classdef Gamepad_Logitech_F310 < handle
             obj.function_joystk_right = @Gamepad_function_joystk_right;
         end
         %%
+        % The output _my_angle_ will be an integer [1,24]. A circle, having
+        % 360 degrees, was divided into 24 equally spaced possibilities.
+        % Each wedge between two possibilities is 15 degrees.
+        function my_angle = angle_joystk_left(obj)
+            y = obj.joystk_left_y;
+            x = obj.joystk_left_x;
+            my_angle = atan2d(y,x);
+            if my_angle < 0
+                my_angle = my_angle + 360;
+            end
+            %%%
+            % convert angle into lookup table index
+            my_angle = round(my_angle/15) + 1; %15 = 360/24.
+            if my_angle == 25
+                my_angle = 1;
+            end
+        end
+        %%
+        % The output _my_angle_ will be an integer [1,24]. A circle, having
+        % 360 degrees, was divided into 24 equally spaced possibilities.
+        % Each wedge between two possibilities is 15 degrees.
+        function my_angle = angle_joystk_right(obj)
+            y = obj.joystk_right_y;
+            x = obj.joystk_right_x;
+            my_angle = atan2d(y,x);
+            if my_angle < 0
+                my_angle = my_angle + 360;
+            end
+            %%%
+            % convert angle into lookup table index. 1 must be added to the
+            % output, because the first index in MATLAB is 1 and the angle
+            % could be rounded to 0.
+            my_angle = round(my_angle/15) + 1; %15 = 360/24.
+            if my_angle == 25
+                my_angle = 1;
+            end
+        end
+        %%
         %
         function delete(obj)
             stop(obj.gamepad_timer);
             delete(obj.gamepad_timer);
         end
         %%
-        %
-        function obj = read_joystk(obj)
-            %%
-            % dpad
-            [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
-            obj.pov_dpad = obj.pov;
-            obj.function_pov_dpad(obj);
-            obj.pov_dpad_old = obj.pov_dpad;
-            %%
-            % joystick left
-            obj.joystk_left_x = obj.joystk(1); %1
-            obj.joystk_left_y = obj.joystk(2); %2
-
-            obj.joystk_left_dir = obj.angle_joystk_left;
-            obj.joystk_left_mag = obj.magnitude_joystk_left;
-            
-            obj.function_joystk_left(obj);
-            
-            obj.joystk_left_dir_old = obj.joystk_left_dir;
-            obj.joystk_left_mag_old = obj.joystk_left_mag;
-            %%
-            % joystick right
-            obj.joystk_right_x = obj.joystk(3); %3
-            obj.joystk_right_y = obj.joystk(4); %4
-            
-            obj.joystk_right_dir = obj.angle_joystk_right;
-            obj.joystk_right_mag = obj.magnitude_joystk_right;
-            
-            obj.function_joystk_right(obj);
-            
-            obj.joystk_right_dir_old = obj.joystk_right_dir;
-            obj.joystk_right_mag_old = obj.joystk_right_mag;
+        % I have observed that when holding the joystick in any of the four
+        % diagonal directions that the magnitude is greater than 1 and
+        % reaches values around 1.2. I wonder if imbalance between the x
+        % and y signals also leads to faulty angles, but I cannot tell just
+        % by looking at a string of numbers. With regards to magnitude,
+        % values greater than 1 will be reduced to 1.
+        
+        function my_magnitude = magnitude_joystk_left(obj)
+            y = obj.joystk_left_y;
+            x = obj.joystk_left_x;
+            my_magnitude = hypot(y,x);
+            if my_magnitude > 1
+                my_magnitude = 1;
+            end
+            %%%
+            % convert magnitude into a lookup table index
+            my_magnitude = ceil(my_magnitude*12);
+        end
+        %%
+        % The output _my_magnitude_ will be an integer [1,12]. The possible
+        % magnitude of the joystick, values between 0 and 1, was divided
+        % into 12 equally spaced possiblities.
+        function my_magnitude = magnitude_joystk_right(obj)
+            y = obj.joystk_right_y;
+            x = obj.joystk_right_x;
+            my_magnitude = hypot(y,x);
+            if my_magnitude > 1
+                my_magnitude = 1;
+            end
+            %%%
+            % convert magnitude into a lookup table index
+            my_magnitude = ceil(my_magnitude*12);
         end
         %%
         %
@@ -332,88 +387,45 @@ classdef Gamepad_Logitech_F310 < handle
             obj.button_stk_left_old = obj.button_stk_left; %11
             obj.button_stk_right_old = obj.button_stk_right; %12
         end
-        
+        %%
+        %
         function obj = read_controller(obj)
             obj.read_button;
             obj.read_joystk;
         end
         %%
-        % The output _my_angle_ will be an integer [1,24]. A circle, having
-        % 360 degrees, was divided into 24 equally spaced possibilities.
-        % Each wedge between two possibilities is 15 degrees.
-        function my_angle = angle_joystk_left(obj)
-            y = obj.joystk_left_y;
-            x = obj.joystk_left_x;
-            my_angle = atan2d(y,x);
-            if my_angle < 0
-                my_angle = my_angle + 360;
-            end
-            %%%
-            % convert angle into lookup table index
-            my_angle = round(my_angle/15) + 1; %15 = 360/24.
-            if my_angle == 25
-                my_angle = 1;
-            end
-        end
-        %%
-        % The output _my_angle_ will be an integer [1,24]. A circle, having
-        % 360 degrees, was divided into 24 equally spaced possibilities.
-        % Each wedge between two possibilities is 15 degrees.
-        function my_angle = angle_joystk_right(obj)
-            y = obj.joystk_right_y;
-            x = obj.joystk_right_x;
-            my_angle = atan2d(y,x);
-            if my_angle < 0
-                my_angle = my_angle + 360;
-            end
-            %%%
-            % convert angle into lookup table index. 1 must be added to the
-            % output, because the first index in MATLAB is 1 and the angle
-            % could be rounded to 0.
-            my_angle = round(my_angle/15) + 1; %15 = 360/24.
-            if my_angle == 25
-                my_angle = 1;
-            end
-        end
-        %%
-        % I have observed that when holding the joystick in any of the four
-        % diagonal directions that the magnitude is greater than 1 and
-        % reaches values around 1.2. I wonder if imbalance between the x
-        % and y signals also leads to faulty angles, but I cannot tell just
-        % by looking at a string of numbers. With regards to magnitude,
-        % values greater than 1 will be reduced to 1.
-        
-        function my_magnitude = magnitude_joystk_left(obj)
-            y = obj.joystk_left_y;
-            x = obj.joystk_left_x;
-            my_magnitude = hypot(y,x);
-            if my_magnitude > 1
-                my_magnitude = 1;
-            end
-            %%%
-            % convert magnitude into a lookup table index
-            my_magnitude = ceil(my_magnitude*12);
-        end
-
-        %%
-        % The output _my_magnitude_ will be an integer [1,12]. The possible
-        % magnitude of the joystick, values between 0 and 1, was divided
-        % into 12 equally spaced possiblities.
-        function my_magnitude = magnitude_joystk_right(obj)
-            y = obj.joystk_right_y;
-            x = obj.joystk_right_x;
-            my_magnitude = hypot(y,x);
-            if my_magnitude > 1
-                my_magnitude = 1;
-            end
-            %%%
-            % convert magnitude into a lookup table index
-            my_magnitude = ceil(my_magnitude*12);
-        end        
-    end
-    methods (Static)
-        %%
         %
-        
+        function obj = read_joystk(obj)
+            %%
+            % dpad
+            [obj.joystk,obj.button,obj.pov] = read(obj.gamepad);
+            obj.pov_dpad = obj.pov;
+            obj.function_pov_dpad(obj);
+            obj.pov_dpad_old = obj.pov_dpad;
+            %%
+            % joystick left
+            obj.joystk_left_x = obj.joystk(1); %1
+            obj.joystk_left_y = obj.joystk(2); %2
+            
+            obj.joystk_left_dir = obj.angle_joystk_left;
+            obj.joystk_left_mag = obj.magnitude_joystk_left;
+            
+            obj.function_joystk_left(obj);
+            
+            obj.joystk_left_dir_old = obj.joystk_left_dir;
+            obj.joystk_left_mag_old = obj.joystk_left_mag;
+            %%
+            % joystick right
+            obj.joystk_right_x = obj.joystk(3); %3
+            obj.joystk_right_y = obj.joystk(4); %4
+            
+            obj.joystk_right_dir = obj.angle_joystk_right;
+            obj.joystk_right_mag = obj.magnitude_joystk_right;
+            
+            obj.function_joystk_right(obj);
+            
+            obj.joystk_right_dir_old = obj.joystk_right_dir;
+            obj.joystk_right_mag_old = obj.joystk_right_mag;
+        end
     end
 end

@@ -9,32 +9,25 @@ if gamepad.pov_dpad_old == gamepad.pov_dpad
 end
 switch gamepad.pov_dpad
     case -1
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,'VS,0,0',sprintf('\r'));
+        disp('dpad ''no input''');
     case 0
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*0,gamepad.pov_speed(1)*(-1));
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        disp('you pressed ''North''');
     case 45
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*0.7071,gamepad.pov_speed(1)*(-0.7071));
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        disp('you pressed ''North-East''');
     case 90
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*1,gamepad.pov_speed(1)*0);
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        disp('you pressed ''East''');
     case 135
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*0.7071,gamepad.pov_speed(1)*0.7071);
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        disp('you pressed ''South-East''');
     case 180
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*0,gamepad.pov_speed(1)*1);
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        disp('you pressed ''South''');
     case 225
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*(-0.7071),gamepad.pov_speed(1)*0.7071);
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        disp('you pressed ''South-West''');
     case 270
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*(-1),gamepad.pov_speed(1)*0);
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
+        disp('you pressed ''West''');
     case 315
-        my_command = sprintf('VS,%d,%d',gamepad.pov_speed(1)*(-0.7071),gamepad.pov_speed(1)*(-0.7071));
-        gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,my_command,sprintf('\r'));
-        %gamepad.microscope.core.setSerialPortCommand(gamepad.stageport,'=',sprintf('\r'));
+        disp('you pressed ''North-West''');
+        %%%
+        %
         % * -1 = no direction/centered
         % * 0 = N
         % * 45 = NE
