@@ -42,7 +42,7 @@ if length(smdaP.itinerary.clock_relative) == 1
 else
     %%%
     % there is more than one time point to collect data
-    while smdaP.t < length(smdaP.itinerary.clock_absolute)
+    while smdaP.t < length(smdaP.clock_absolute)
         tic
         smdaP.oneLoop
         fprintf('Loop-');
@@ -55,10 +55,10 @@ else
         end
         %%% Determine wait time for the next timepoint
         %
-        if now < smdaP.itinerary.clock_absolute(smdaP.t)
+        if now < smdaP.clock_absolute(smdaP.t)
             smdaP.t = smdaP.t+1;
         else
-            smdaP.t = find(smdaP.itinerary.clock_absolute > now,1,'first');
+            smdaP.t = find(smdaP.clock_absolute > now,1,'first');
             if isempty(smdaP.t)
                 %%%
                 % if the _finish_acq_ button was pressed then this is the
@@ -69,10 +69,11 @@ else
         end
         %%%
         % update the gui_pause_stop_resume
-        while now < smdaP.itinerary.clock_absolute(smdaP.t)
+        while now < smdaP.clock_absolute(smdaP.t)
             pause(1)
-            myWait = smdaP.itinerary.clock_absolute(smdaP.t)-now;
+            myWait = smdaP.clock_absolute(smdaP.t)-now;
             set(handles_gui_pause_stop_resume.textTime,'String',sprintf('HH:MM:SS\n%s',datestr(myWait,13)));
+            drawnow;
             if smdaP.running_bool == false
                 %%%
                 % if acquisition was stopped during the pause
@@ -84,14 +85,15 @@ else
                 % this loop is entered if the process is paused in the time
                 % between acquisitions
                 pause(1);
-                if smdaP.itinerary.clock_absolute(smdaP.t) > now
+                if smdaP.clock_absolute(smdaP.t) > now
                     %%%
                     % if the smda is still paused and a time to start a new
                     % acquisition passes, then that acquisition will be
                     % skipped.
-                    smdaP.t = find(smdaP.itinerary.clock_absolute > now,1,'first');
+                    smdaP.t = find(smdaP.clock_absolute > now,1,'first');
                 end
                 set(handles_gui_pause_stop_resume.textTime,'String','PAUSED');
+                drawnow;
                 if smdaP.running_bool == false
                     smdaP.stop_acquisition;
                     return;

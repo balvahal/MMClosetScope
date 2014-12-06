@@ -14,6 +14,7 @@ for i = 1:(length(smdaI.orderVector)-1)
     p = smdaP.gps_current(2);
     s = smdaP.gps_current(3);
     set(handles_gui_pause_stop_resume.textTime,'String',sprintf('G:%d P:%d S:%d',g,p,s));
+    drawnow;
     flagcheck_before;
     flagcheck_after(smdaI.gps(smdaI.orderVector(i+1),:),smdaP.gps_current);
     %%
@@ -22,6 +23,7 @@ for i = 1:(length(smdaI.orderVector)-1)
     while smdaP.pause_bool
         pause(1);
         set(handles_gui_pause_stop_resume.textTime,'String','PAUSED');
+        drawnow;
         if smdaP.running_bool == false
             break;
         end
