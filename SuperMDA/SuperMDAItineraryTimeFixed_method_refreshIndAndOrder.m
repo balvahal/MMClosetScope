@@ -35,7 +35,7 @@ end
 %%% ind_position and number_position
 %
 smdaITF.ind_position = cell(length(smdaITF.group_logical),1);
-smdaITF.number_position = zeros(length(smdaITF.group_logical,1));
+smdaITF.number_position = zeros(length(smdaITF.group_logical),1);
 for i = smdaITF.ind_group
     gpsPosLogical = smdaITF.gps(:,1) == i;
     gpsPos = smdaITF.gps(gpsPosLogical,2);
