@@ -15,7 +15,8 @@ classdef SCAN6_object < handle
         perimeterPoints = cell(1,6);
         center = zeros(2,6);
         radius = zeros(1,6);
-        timerStageRefresh;
+        timer_scan6;
+        mapRefreshCounter
         z = zeros(1,6);
     end
     %%
@@ -24,23 +25,27 @@ classdef SCAN6_object < handle
         %% The constructor method
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
-        function obj = SCAN6_object(mm,smdaI,smdaTA,gamepad)
+        function obj = SCAN6_object(mm,smdaI,smdaTA)
             %%
             %
             if nargin == 0
                 return
-            elseif nargin == 4
+            elseif nargin == 3
                 %% Initialzing the SuperMDA object
                 %
                 obj.smdaI = smdaI;
                 obj.mm = mm;
                 obj.smdaTA = smdaTA;
+                obj.gamepad = SCAN6_gamepad_object(mm);
+                obj.gamepad.smdaITF = smdaI;
+                obj.gamepad.scan6 = obj;
                 %% Create a simple gui to enable pausing and stopping
                 %
                 obj.gui_main = SCAN6_gui_main(obj);
                 obj.gui_axes = SCAN6_gui_axes(obj);
-                obj.timerStageRefresh = timer('ExecutionMode','fixedRate','Period',1,'TimerFcn',@(~,~) obj.timerStageRefreshFcn);
-                start(obj.timerStageRefresh);
+                obj.mapRefreshCounter = 1;
+                obj.timer_scan6 = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',.04,'TimerFcn',@(~,~) obj.timer_scan6Fcn);
+                start(obj.timer_scan6);
                 
                 if strcmp(mm.computerName,'LAHAVSCOPE002')
                     [mfilepath,~,~] = fileparts(mfilename('fullpath'));
@@ -68,21 +73,6 @@ classdef SCAN6_object < handle
                         
                         myPerimeter2 = handles.patchPerimeterPositions{i};
                         set(myPerimeter2,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
-                        
-                        %%
-                        % setup the gamepad for adjusting proposed
-                        % positions
-                        obj.gamepad = gamepad;
-                        obj.gamepad.smdaITF = smdaI;
-                        obj.gamepad.scan6 = obj;
-                        obj.gamepad.function_button_lt = @SCAN6_gamepad_lt;
-                        obj.gamepad.function_button_rt = @SCAN6_gamepad_rt;
-                        obj.gamepad.function_button_lb = @SCAN6_gamepad_lb;
-                        obj.gamepad.function_button_rb = @SCAN6_gamepad_rb;
-                        obj.gamepad.function_button_x = @SCAN6_gamepad_x;
-                        obj.gamepad.function_button_y = @SCAN6_gamepad_y;
-                        obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;
-                        %obj.gamepad.connectController;
                     end
                 elseif strcmp(mm.computerName,'LAHAVSCOPE0001')
                     [mfilepath,~,~] = fileparts(mfilename('fullpath'));
@@ -110,20 +100,6 @@ classdef SCAN6_object < handle
                         
                         myPerimeter2 = handles.patchPerimeterPositions{i};
                         set(myPerimeter2,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
-                        
-                        %%
-                        % setup the gamepad for adjusting proposed
-                        % positions
-                        obj.gamepad = gamepad;
-                        obj.gamepad.smdaITF = smdaI;
-                        obj.gamepad.scan6 = obj;
-                        obj.gamepad.function_button_lt = @SCAN6_gamepad_lt;
-                        obj.gamepad.function_button_rt = @SCAN6_gamepad_rt;
-                        obj.gamepad.function_button_lb = @SCAN6_gamepad_lb;
-                        obj.gamepad.function_button_rb = @SCAN6_gamepad_rb;
-                        obj.gamepad.function_button_x = @SCAN6_gamepad_x;
-                        obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;
-                        %obj.gamepad.connectController;
                     end
                 elseif strcmp(mm.computerName,'KISHONYWAB111A')
                     [mfilepath,~,~] = fileparts(mfilename('fullpath'));
@@ -151,20 +127,6 @@ classdef SCAN6_object < handle
                         
                         myPerimeter2 = handles.patchPerimeterPositions{i};
                         set(myPerimeter2,'XData',myPPts(:,1),'YData',myPPts(:,2),'Visible','on');
-                        
-                        %%
-                        % setup the gamepad for adjusting proposed
-                        % positions
-                        obj.gamepad = gamepad;
-                        obj.gamepad.smdaITF = smdaI;
-                        obj.gamepad.scan6 = obj;
-                        obj.gamepad.function_button_lt = @SCAN6_gamepad_lt;
-                        obj.gamepad.function_button_rt = @SCAN6_gamepad_rt;
-                        obj.gamepad.function_button_lb = @SCAN6_gamepad_lb;
-                        obj.gamepad.function_button_rb = @SCAN6_gamepad_rb;
-                        obj.gamepad.function_button_x = @SCAN6_gamepad_x;
-                        obj.gamepad.function_read_controller = @SCAN6_gamepad_read_controller;
-                        %obj.gamepad.connectController;
                     end
                 end
             end
@@ -176,16 +138,17 @@ classdef SCAN6_object < handle
         %         end
         %%
         %
-        function obj = timerStageRefreshFcn(obj)
-            SCAN6_method_timerStageRefreshFcn(obj);
+        function obj = timer_scan6Fcn(obj)
+            SCAN6_timer_function(obj);
         end
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
         function delete(obj)
+            stop(obj.timer_scan6);
+            delete(obj.timer_scan6);
             delete(obj.gui_main);
             delete(obj.gui_axes);
-            stop(obj.timerStageRefresh);
-            delete(obj.timerStageRefresh);
+            delete(obj.gamepad);
         end
     end
 end

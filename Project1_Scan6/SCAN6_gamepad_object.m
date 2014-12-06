@@ -88,12 +88,6 @@ classdef SCAN6_gamepad_object < Gamepad_Logitech_F310
             
             obj.joystk_right_speedMode = 'slow';
             %%
-            % the TimerFcn will automatically pass in two input arguments.
-            % These are not needed, so they are thrown away using the
-            % syntax (~,~).
-            obj.controller_timer = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',0.04,'TimerFcn',@(~,~) obj.read_controller);
-
-            %%
             %
             obj.stageport = mmhandle.stageport;
             %%

@@ -172,8 +172,8 @@ classdef Gamepad_Logitech_F310 < handle
     % * delete
     % * magnitude_joystk_left
     % * magnitude_joystk_right
+    % * read
     % * read_button
-    % * read_controller
     % * read_joystk
     
     methods
@@ -245,7 +245,7 @@ classdef Gamepad_Logitech_F310 < handle
             % the TimerFcn will automatically pass in two input arguments.
             % These are not needed, so they are thrown away using the
             % syntax (~,~).
-            obj.gamepad_timer = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',0.04,'TimerFcn',@(~,~) obj.read_controller);
+            obj.gamepad_timer = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',0.04,'TimerFcn',@(~,~) obj.read);
             %%
             %
             % define functions for the controller
@@ -389,7 +389,7 @@ classdef Gamepad_Logitech_F310 < handle
         end
         %%
         %
-        function obj = read_controller(obj)
+        function obj = read(obj)
             obj.read_button;
             obj.read_joystk;
         end

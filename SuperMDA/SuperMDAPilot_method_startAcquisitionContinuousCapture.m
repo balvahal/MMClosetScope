@@ -20,9 +20,9 @@ if ~smdaP.running_bool
     smdaP.runtime_imagecounter = 0;
     smdaP.gps_previous = [0,0,0];
     %% Configure the absolute clock
-    % Convert the MDA smdaPect unit of time (seconds) to the MATLAB unit of time
-    % (days) for the serial date numbers, i.e. the number of days that have
-    % passed since January 1, 0000.
+    % Convert the smdaP.itinerary.clock_relative unit of time (seconds) to
+    % the MATLAB unit of time (days) for the serial date numbers, i.e. the
+    % number of days that have passed since January 1, 0000.
     smdaP.clock_absolute = now + smdaP.itinerary.clock_relative/86400;
     smdaP.running_bool = true;
     while now < smdaP.clock_absolute(end)

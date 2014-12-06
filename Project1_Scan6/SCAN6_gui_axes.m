@@ -145,8 +145,7 @@ set(f,'Visible','on');
     end
 %%
 %
-    function axesStageMap_ButtonDownFcn(a,b)
-        disp('hello button push');
-        
+    function axesStageMap_ButtonDownFcn(~,~)
+        disp('mouse click on map');
     end
 end
