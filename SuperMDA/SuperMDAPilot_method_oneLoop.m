@@ -45,6 +45,8 @@ end
 g = smdaP.gps_current(1);
 p = smdaP.gps_current(2);
 s = smdaP.gps_current(3);
+set(handles_gui_pause_stop_resume.textTime,'String',sprintf('G:%d P:%d S:%d',g,p,s));
+drawnow;
 flagcheck_before;
 flagcheck_after([0,0,0],smdaP.gps_current);
 gps_execute;
