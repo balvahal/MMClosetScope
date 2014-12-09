@@ -509,7 +509,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 end
             end
             obj.gps = myGPS;
-            obj.gps_logical = ones(size(myGPS,1));
+            obj.gps_logical = ones(1,size(myGPS,1));
             obj.orderVector = 1:size(myGPS,1);
             obj.ind_next_gps = size(myGPS,1)+1;
         end
