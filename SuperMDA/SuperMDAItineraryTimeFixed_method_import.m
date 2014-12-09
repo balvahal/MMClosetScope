@@ -88,4 +88,7 @@ smdaITF.settings_z_step_size = data.settings_z_step_size;
 smdaITF.newDuration(data.duration);
 smdaITF.newFundamentalPeriod(data.fundamental_period);
 smdaITF.newNumberOfTimepoints(data.number_of_timepoints);
+%%
+%
+smdaITF.refreshIndAndOrder;
 end

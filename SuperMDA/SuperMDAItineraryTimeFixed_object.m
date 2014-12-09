@@ -189,6 +189,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % * indOfGroup
     % * indOfPosition
     % * indOfSettings
+    % * mirrorSettings
     % * newDuration
     % * newFundamentalPeriod
     % * newGroup
@@ -225,8 +226,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.orderVector = 1;
             
             %% initialize the prototype_group
-            %
-            
+            %            
             obj.group_function_after{1} = 'SuperMDAItineraryTimeFixed_group_function_after';
             obj.group_function_before{1} = 'SuperMDAItineraryTimeFixed_group_function_before';
             obj.group_label{1} = 'group1';
@@ -492,6 +492,26 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 mySettingsInGNum = myGpsSettings((obj.gps(:,1) == gNum) & transpose(obj.gps_logical));
                 n = unique(mySettingsInGNum); %outputs a column
             end
+        end
+        %%
+        % Take all the settings for a given position, _sInd_, and mirror
+        % these settings across all positions
+        function obj = mirrorSettings(obj,sInd)
+            mySettings = obj.order_settings{sInd};
+            myGPS = zeros(sum(obj.position_logical)*length(mySettings),3);
+            counter = 0;
+            for i = obj.order_group
+                for j = obj.order_position{i}
+                    for k = mySettings
+                        counter = counter + 1;
+                        myGPS(counter,:) = [i,j,k];
+                    end
+                end
+            end
+            obj.gps = myGPS;
+            obj.gps_logical = ones(size(myGPS,1));
+            obj.orderVector = 1:size(myGPS,1);
+            obj.ind_next_gps = size(myGPS,1)+1;
         end
         %% Method to change the duration
         %
