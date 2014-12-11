@@ -17,31 +17,6 @@ mynames = mynames(dirLogic);
 mytimes = mytimes(dirLogic);
 %%
 % create the file and header for the database
-%fileID = fopen(fullfile(mypath,'smda_database.txt'),'w');
-formatSpecHeader = strcat(...
-    '%s\t',... %channel_name
-    '%s\t',... %filename
-    '%s\t',... %group_label
-    '%s\t',... %position_label
-    '%s\t',... %binning
-    '%s\t',... %channel_number
-    '%s\t',... %continuous_focus_offset
-    '%s\t',... %continuous_focus_bool
-    '%s\t',... %exposure
-    '%s\t',... %group_number
-    '%s\t',... %group_order
-    '%s\t',... %matlab_serial_date_number
-    '%s\t',... %position_number
-    '%s\t',... %position_order,
-    '%s\t',... %settings_number
-    '%s\t',... %settings_order
-    '%s\t',... %timepoint
-    '%s\t',...%smdaP.itinerary.group(g).position(p).xyz(t,1),... %x
-    '%s\t',...%smdaP.itinerary.group(g).position(p).xyz(t,2),... %y
-    '%s\t',...%     smdaP.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     smdaP.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     smdaP.itinerary.group(g).position(p).xyz(t,3),... %z
-    '%s\t',... %the order of zstack from bottom to top
-    '%s\r\n'); %image_description
-
 varNames = {'channel_name',...
     'filename',...
     'group_label',...
@@ -64,32 +39,6 @@ varNames = {'channel_name',...
     'z',...
     'z_order',...
     'image_description'};
-
-formatSpecDatabaseRow = strcat(...
-    '%s\t',... %channel_name
-    '%s\t',... %filename
-    '%s\t',... %group_label
-    '%s\t',... %position_label
-    '%d\t',... %binning
-    '%d\t',... %channel_number
-    '%1.15g\t',... %continuous_focus_offset
-    '%d\t',... %continuous_focus_bool
-    '%1.15g\t',... %exposure
-    '%d\t',... %group_number
-    '%d\t',... %group_order
-    '%1.30g\t',... %matlab_serial_date_number
-    '%d\t',... %position_number
-    '%d\t',... %position_order,
-    '%d\t',... %settings_number
-    '%d\t',... %settings_order
-    '%d\t',... %timepoint
-    '%1.15g\t',...%smdaP.itinerary.group(g).position(p).xyz(t,1),... %x
-    '%1.15g\t',...%smdaP.itinerary.group(g).position(p).xyz(t,2),... %y
-    '%1.20g\t',...%     smdaP.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     smdaP.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     smdaP.itinerary.group(g).position(p).xyz(t,3),... %z
-    '%d\t',... %the order of zstack from bottom to top
-    '%s\r\n'); %image_description
-
-%fprintf(fileID,formatSpecHeader,varNames{:});
 %% parse images from metamorph
 %
 myTable = cell(length(mytimes),length(varNames));
@@ -155,12 +104,11 @@ for i = 1:length(mytimes)
         1,... %the order of zstack from bottom to top
         ''}; %image_description
     myTable(i,:) = myNewDatabaseRow;
-    %fprintf(fileID,formatSpecDatabaseRow,myNewDatabaseRow{:});
     fprintf('%1.2f\n',i/length(mytimes));
 end
 %%
-% close the file
-%fclose(fileID);
+% 
+delete(fullfile(mypath,'t3mp.xml'));
 myTable = cell2table(myTable,'VariableNames',varNames);
 writetable(myTable,fullfile(mypath,'smda_database.txt'),'Delimiter','\t');
 end
