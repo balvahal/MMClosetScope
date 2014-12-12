@@ -33,6 +33,7 @@ smdaP.running_bool = true;
 while now < smdaP.clock_absolute(end)
     tic
     smdaP.oneLoop
+    smdaP.t = smdaP.t + 1;
     fprintf('Loop-');
     toc
     if smdaP.running_bool == false
