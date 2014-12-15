@@ -41,11 +41,11 @@ end
 currentZ = smdaPilot.mm.pos(3);
 currentPFS = smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Position');
 if smdaPilot.itinerary.settings_z_stack_upper_offset(k) - smdaPilot.itinerary.settings_z_stack_lower_offset(k) > 0
-    z_stack = smdaPilot.itinerary.z_stack_lower_offset(k):smdaPilot.itinerary.z_step_size(k):smdaPilot.itinerary.z_stack_upper_offset(k);
-    smdaPilot.itinerary.z_stack_upper_offset(k) = z_stack(end);
-    for a = 1:length(zstack)
+    z_stack = smdaPilot.itinerary.settings_z_stack_lower_offset(k):smdaPilot.itinerary.settings_z_step_size(k):smdaPilot.itinerary.settings_z_stack_upper_offset(k);
+    smdaPilot.itinerary.settings_z_stack_upper_offset(k) = z_stack(end);
+    for a = 1:length(z_stack)
         smdaPilot.database_z_number = a;
-        move_z(zstack(a));
+        move_z(z_stack(a));
         smdaPilot.snap;
     smdaPilot.itinerary.database_filenamePNG = sprintf('g%d_%s_s%d_%s_w%d_%s_t%d_z%d.tiff',i,smdaPilot.itinerary.group_label{i},j,strcat(smdaPilot.itinerary.position_label{j},''),k,smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)},smdaPilot.t,smdaPilot.database_z_number);
     imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
