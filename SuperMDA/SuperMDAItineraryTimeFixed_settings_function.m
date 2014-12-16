@@ -68,7 +68,7 @@ end
 %
     function move_z(my_offset)
         if smdaPilot.itinerary.position_continuous_focus_bool(j)
-            smdaPilot.mm.core.setProperty(smdaPilot.mm.AutoFocusDevice,'Position',str2num(currentPFS) + my_offset);
+            smdaPilot.mm.core.setProperty(smdaPilot.mm.AutoFocusDevice,'Position',str2double(currentPFS) + my_offset);
             smdaPilot.mm.core.fullFocus(); % PFS will remain |ON|
         else
             %% PFS will not be utilized

@@ -306,10 +306,10 @@ hpushbuttonPositionFunctionAfter = uicontrol('Style','pushbutton','Units','chara
 
 htableSettings = uitable('Units','characters',...
     'BackgroundColor',[textBackgroundColorRegion4;buttonBackgroundColorRegion4],...
-    'ColumnName',{'channel','exposure','binning','gain','Z step size','Z upper','Z lower','# of Z steps','Z offset','period mult.','function','settings #'},...
-    'ColumnEditable',logical([1,1,1,1,1,1,1,0,1,1,0,0]),...
-    'ColumnFormat',{transpose(smdaTA.mm.Channel),'numeric','numeric','numeric','numeric','numeric','numeric','numeric','numeric','numeric','char','numeric'},...
-    'ColumnWidth',{'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto'},...
+    'ColumnName',{'channel','exposure','binning','Z step size','Z upper','Z lower','# of Z steps','Z offset','period mult.','function','settings #'},...
+    'ColumnEditable',logical([1,1,1,1,1,1,0,1,1,0,0]),...
+    'ColumnFormat',{transpose(smdaTA.mm.Channel),'numeric','numeric','numeric','numeric','numeric','numeric','numeric','numeric','char','numeric'},...
+    'ColumnWidth',{'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto'},...
     'FontSize',8,'FontName','Verdana',...
     'CellEditCallback',@tableSettings_CellEditCallback,...
     'CellSelectionCallback',@tableSettings_CellSelectionCallback,...
@@ -457,6 +457,7 @@ set(f,'Visible','on');
         smdaTA.itinerary.newNumberOfTimepoints(myValue);
         smdaTA.refresh_gui_main;
     end
+
 
 %%
 %
@@ -1013,7 +1014,12 @@ set(f,'Visible','on');
         sInd = mySettingsOrder(smdaTA.pointerSettings);
         smdaTA.mm.getXYZ;
         xyz = smdaTA.mm.pos;
-        offset = smdaTA.itinerary.position_xyz(pInd,3)-xyz(3);
+        if strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Status'),'On')
+            currentPFS = str2double(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Position'));
+            offset = smdaTA.itinerary.position_continuous_focus_offset(pInd) - currentPFS;
+        else
+            offset = smdaTA.itinerary.position_xyz(pInd,3)-xyz(3);
+        end
         if offset <0
             smdaTA.itinerary.settings_z_stack_lower_offset(sInd) = 0;
         else
@@ -1032,7 +1038,12 @@ set(f,'Visible','on');
         sInd = mySettingsOrder(smdaTA.pointerSettings);
         smdaTA.mm.getXYZ;
         xyz = smdaTA.mm.pos;
-        offset = xyz(3)-smdaTA.itinerary.position_xyz(pInd,3);
+        if strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Status'),'On')
+            currentPFS = str2double(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Position'));
+            offset = currentPFS - smdaTA.itinerary.position_continuous_focus_offset(pInd);
+        else
+            offset = xyz(3)-smdaTA.itinerary.position_xyz(pInd,3);
+        end
         if offset <0
             smdaTA.itinerary.settings_z_stack_upper_offset(sInd) = 0;
         else
