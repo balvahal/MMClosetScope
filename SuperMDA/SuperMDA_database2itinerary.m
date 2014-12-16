@@ -116,13 +116,13 @@ jsonStrings{n} = micrographIOT_array2json('settings_timepoints',settings_timepoi
 settings_z_origin_offset = zeros(max(setNum),1);
 jsonStrings{n} = micrographIOT_array2json('settings_z_origin_offset',settings_z_origin_offset); n = n + 1;
 
-settings_z_stack_lower_offset = zeros(max(setNum,1));
+settings_z_stack_lower_offset = zeros(max(setNum),1);
 jsonStrings{n} = micrographIOT_array2json('settings_z_stack_lower_offset',settings_z_stack_lower_offset); n = n + 1;
 
-settings_z_stack_upper_offset = zeros(max(setNum,1));
+settings_z_stack_upper_offset = zeros(max(setNum),1);
 jsonStrings{n} = micrographIOT_array2json('settings_z_stack_upper_offset',settings_z_stack_upper_offset); n = n + 1;
 
-settings_z_step_size = ones(max(setNum,1))*0.3;
+settings_z_step_size = ones(max(setNum),1)*0.3;
 jsonStrings{n} = micrographIOT_array2json('settings_z_step_size',settings_z_step_size); n = n + 1;
 %%
 % navigation indices
