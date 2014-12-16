@@ -161,7 +161,7 @@ jsonStrings{n} = micrographIOT_array2json('ind_next_settings',ind_nextX); n = n 
 jsonStrings{n} = micrographIOT_array2json('duration',0); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('fundamental_period',6000); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('clock_relative',0); n = n + 1;
-jsonStrings{n} = micrographIOT_array2json('number_of_timepoints',1);
+jsonStrings{n} = micrographIOT_array2json('number_of_timepoints',max(smda.timepoint));
 %%
 %
 myjson = micrographIOT_jsonStrings2Object(jsonStrings);
