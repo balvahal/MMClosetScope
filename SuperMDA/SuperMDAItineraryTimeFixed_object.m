@@ -213,6 +213,9 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %% The constructor method
         %
         function obj = SuperMDAItineraryTimeFixed_object(mm)
+            if nargin == 0
+                return
+            end
             if ~isdir(obj.output_directory)
                 mkdir(obj.output_directory)
             end
