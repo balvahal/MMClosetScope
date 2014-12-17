@@ -52,7 +52,7 @@ writetable(mytable,fullfile(moviePath,'thumb_database.txt'),'Delimiter','\t');
 %
 jsonStrings = {};
 n = 1;
-jsonStrings{n} = micrographIOT_array2json('thumbSize',thumbsize); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('thumbSize',thumbSize); n = n + 1;
 mydate = datestr(now,31);
 jsonStrings{n} = micrographIOT_string2json('date',mydate);
 myjson = micrographIOT_jsonStrings2Object(jsonStrings);
