@@ -2,8 +2,8 @@
 % The thumbnail image size is chosen hueristically. The thumbnails are
 % desired to make viewing them fast while manually annotating or tracking
 % the dataset. In our lab the image sizes are either *2048 x 2048* or
-% *1344 x 1024*. A good compromise between detail and size for these two image
-% sizes are *512 x 512* and *336 x 256*.
+% *1024 x 1344*. A good compromise between detail and size for these two image
+% sizes are *512 x 512* and *256 x 336 *.
 %
 % In addition to the size the bit-depth will also be reduced from 16-bit to
 % 8-bit.
@@ -25,7 +25,7 @@ mycell = cell(height(smda),1);
 for i = 1:height(smda)
     %%% read the image
     %
-    I = imread(fullfile(moviePath,'PROCESSED_DATA',smda.filename(i)));
+    I = imread(fullfile(moviePath,'PROCESSED_DATA',smda.filename{i}));
     %%% scale the image
     %
     I = imresize(I,thumbSize);
@@ -35,6 +35,7 @@ for i = 1:height(smda)
     %%% create filename
     %
     mycell{i} = regexprep(smda.filename(i),'\..*','.png');
+    mycell{i} = regexprep(mycell{i},'\s','');
     %%% save the new image
     %
     imwrite(I,fullfile(moviePath,'.thumb',mycell{i}),'png');
