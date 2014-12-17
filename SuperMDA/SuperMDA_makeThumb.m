@@ -43,4 +43,27 @@ end
 %
 mytable = cell2table(mycell,'VariableNames',{'filename'});
 writetable(mytable,fullfile(moviePath,'thumb_database.txt'),'Delimiter','\t');
+%% Save a badge to the _moviePath_
+%
+jsonStrings = {};
+n = 1;
+jsonStrings{n} = micrographIOT_array2json('thumbSize',thumbsize); n = n + 1;
+mydate = datestr(now,31);
+jsonStrings{n} = micrographIOT_string2json('date',mydate);
+myjson = micrographIOT_jsonStrings2Object(jsonStrings);
+fid = fopen(fullfile(moviePath,'BADGE_thumb.txt'),'w');
+if fid == -1
+    error('cGPSFF:badfile','Cannot open the file, preventing the export of the background subtraction badge badge.');
+end
+fprintf(fid,myjson);
+fclose(fid);
+%%%
+%
+myjson = micrographIOT_autoIndentJson(fullfile(moviePath,'BADGE_thumb.txt'));
+fid = fopen(fullfile(moviePath,'BADGE_thumb.txt'),'w');
+if fid == -1
+    error('cGPSFF:badfile','Cannot open the file, preventing the export of the background subtraction badge.');
+end
+fprintf(fid,myjson);
+fclose(fid);
 end
