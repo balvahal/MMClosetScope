@@ -1,0 +1,46 @@
+%%
+% The thumbnail image size is chosen hueristically. The thumbnails are
+% desired to make viewing them fast while manually annotating or tracking
+% the dataset. In our lab the image sizes are either *2048 x 2048* or
+% *1344 x 1024*. A good compromise between detail and size for these two image
+% sizes are *512 x 512* and *336 x 256*.
+%
+% In addition to the size the bit-depth will also be reduced from 16-bit to
+% 8-bit.
+function [] = SuperMDA_makeThumb(moviePath,thumbSize)
+p = inputParser;
+addRequired(p, 'moviePath', @(x) isdir(x));
+addRequired(p, 'thumbsize', @(x) numel(x)==2 & isnumeric(x));
+parse(p,moviePath,thumbSize);
+
+if ~isdir(fullfile(moviePath,'.thumb'))
+    mkdir(fullfile(moviePath,'.thumb'));
+end
+%% load the database file
+%
+smda = readtable(fullfile(moviePath,'smda_database.txt'),'Delimiter','\t');
+mycell = cell(height(smda),1);
+%% create a thumbnail for each image
+%
+for i = 1:height(smda)
+    %%% read the image
+    %
+    I = imread(fullfile(moviePath,'PROCESSED_DATA',smda.filename(i)));
+    %%% scale the image
+    %
+    I = imresize(I,thumbSize);
+    %%% convert image to uint8
+    %
+    I = gray2ind(I,256);
+    %%% create filename
+    %
+    mycell{i} = regexprep(smda.filename(i),'\..*','.png');
+    %%% save the new image
+    %
+    imwrite(I,fullfile(moviePath,'.thumb',mycell{i}),'png');
+end
+%% create filename database for the thumbnails
+%
+mytable = cell2table(mycell,'VariableNames',{'filename'});
+writetable(mytable,fullfile(moviePath,'thumb_database.txt'),'Delimiter','\t');
+end
