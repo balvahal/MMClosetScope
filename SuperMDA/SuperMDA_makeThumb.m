@@ -22,7 +22,7 @@ smda = readtable(fullfile(moviePath,'smda_database.txt'),'Delimiter','\t');
 mycell = cell(height(smda),1);
 %% create a thumbnail for each image
 %
-for i = 1:height(smda)
+parfor i = 1:height(smda)
     %%% read the image
     %
     I = imread(fullfile(moviePath,'PROCESSED_DATA',smda.filename{i}));
