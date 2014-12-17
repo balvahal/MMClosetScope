@@ -22,10 +22,11 @@ smda = readtable(fullfile(moviePath,'smda_database.txt'),'Delimiter','\t');
 mycell = cell(height(smda),1);
 %% create a thumbnail for each image
 %
+filename = smda.filename;
 parfor i = 1:height(smda)
     %%% read the image
     %
-    I = imread(fullfile(moviePath,'PROCESSED_DATA',smda.filename{i}));
+    I = imread(fullfile(moviePath,'PROCESSED_DATA',filename{i}));
     %%% scale the image
     %
     I = imresize(I,thumbSize);
@@ -34,7 +35,7 @@ parfor i = 1:height(smda)
     I = gray2ind(I,256);
     %%% create filename
     %
-    mycell{i} = regexprep(smda.filename{i},'\..*','.png');
+    mycell{i} = regexprep(filename{i},'\..*','.png');
     mycell{i} = regexprep(mycell{i},'\s','');
     %%% save the new image
     %
