@@ -34,7 +34,7 @@ for i = 1:height(smda)
     I = gray2ind(I,256);
     %%% create filename
     %
-    mycell{i} = regexprep(smda.filename(i),'\..*','.png');
+    mycell{i} = regexprep(smda.filename{i},'\..*','.png');
     mycell{i} = regexprep(mycell{i},'\s','');
     %%% save the new image
     %
@@ -43,6 +43,8 @@ end
 %% create filename database for the thumbnails
 %
 mytable = cell2table(mycell,'VariableNames',{'filename'});
+mytable2 = smda(:,{'group_number','position_number','settings_number','timepoint','z_order'});
+mytable = horzcat(mytable,mytable2);
 writetable(mytable,fullfile(moviePath,'thumb_database.txt'),'Delimiter','\t');
 %% Save a badge to the _moviePath_
 %
