@@ -39,6 +39,7 @@ for i = 1:height(smda)
     %%% save the new image
     %
     imwrite(I,fullfile(moviePath,'.thumb',mycell{i}),'png');
+    disp(mycell{i});
 end
 %% create filename database for the thumbnails
 %
