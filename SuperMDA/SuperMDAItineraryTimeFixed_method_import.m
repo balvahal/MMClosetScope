@@ -19,6 +19,8 @@ if iscell(data.output_directory)
 else
     smdaITF.output_directory = data.output_directory;
 end
+smdaITF.imageHeightNoBin = data.imageHeightNoBin;
+smdaITF.imageWidthNoBin = data.imageWidthNoBin;
 %%
 % group
 if iscell(data.group_function_after)

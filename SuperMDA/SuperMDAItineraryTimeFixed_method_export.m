@@ -12,6 +12,8 @@ jsonStrings{n} = micrographIOT_2dmatrix2json('gps',smdaITF.gps); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('gps_logical',smdaITF.gps_logical); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('orderVector',smdaITF.orderVector); n = n + 1;
 jsonStrings{n} = micrographIOT_cellStringArray2json('output_directory',strsplit(smdaITF.output_directory,filesep)); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('imageHeightNoBin',smdaITF.imageHeightNoBin); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('imageWidthNoBin',smdaITF.imageWidthNoBin);  n = n + 1;
 %%
 % group
 jsonStrings{n} = micrographIOT_cellStringArray2json('group_function_after',smdaITF.group_function_after); n = n + 1;

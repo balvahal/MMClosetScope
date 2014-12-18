@@ -30,6 +30,12 @@ orderVector = 1:length(gps_logical);
 jsonStrings{n} = micrographIOT_array2json('orderVector',orderVector); n = n + 1;
 
 jsonStrings{n} = micrographIOT_cellStringArray2json('output_directory',strsplit(moviePath,filesep)); n = n + 1;
+
+myI = imread(fullfile(moviePath,'RAW_DATA',smda.filename(1)));
+myBinning = smda.binning(1);
+jsonStrings{n} = micrographIOT_array2json('imageHeightNoBin',size(myI,1)*myBinning); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('imageWidthNoBin',size(myI,2)*myBinning);  n = n + 1;
+
 %%
 % group
 groupNum = transpose(unique(gps(:,1)));

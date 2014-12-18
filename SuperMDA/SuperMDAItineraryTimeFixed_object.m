@@ -46,6 +46,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         orderVector;
         output_directory = fullfile(pwd,'SuperMDA');
         png_path;
+        imageHeightNoBin
+        imageWidthNoBin
         
         %%% Group
         %
@@ -227,7 +229,9 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.gps_logical = true;
             obj.mm = mm;
             obj.orderVector = 1;
-            
+            mm.core.setProperty(mm.CameraDevice,'Binning','1x1');
+            obj.imageHeightNoBin = mm.core.getImageHeight;
+            obj.imageWidthNoBin = mm.core.getImageWidth;
             %% initialize the prototype_group
             %            
             obj.group_function_after{1} = 'SuperMDAItineraryTimeFixed_group_function_after';
