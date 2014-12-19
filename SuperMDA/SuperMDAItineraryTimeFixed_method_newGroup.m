@@ -24,7 +24,7 @@ if p.Results.gNum ==1
     % but provide a comfortable starting point for further modification.
     %
     % find a gInd and pInd to use as a template
-    gInd = smdaITF.indOfGroup;
+    gInd = smdaITF.ind_group;
     gInd = gInd(1);
     pInd = smdaITF.indOfPosition(gInd);
     pInd = pInd(1);
@@ -72,7 +72,7 @@ if p.Results.gNum ==1
     smdaITF.find_ind_last_group(smdaITF.ind_next_group);
     smdaITF.find_ind_next('group');
     smdaITF.find_ind_next('position');
-    
+    smdaITF.refreshIndAndOrder;
 else
     for i = 1:p.Results.gNum
         smdaITF.newGroup;

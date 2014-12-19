@@ -7,7 +7,7 @@ function smdaITF = SuperMDAItineraryTimeFixed_method_newPositionNewSettings(smda
 % parse the input
 p = inputParser;
 addRequired(p, 'smdaITF', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-addRequired(p, 'gInd', @(x) ismember(x,smdaITF.indOfGroup));
+addRequired(p, 'gInd', @(x) ismember(x,smdaITF.ind_group));
 addOptional(p, 'pNum',1, @(x) mod(x,1)==0);
 parse(p,smdaITF,gInd,varargin{:});
 mm = smdaITF.mm;

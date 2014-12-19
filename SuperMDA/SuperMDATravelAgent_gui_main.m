@@ -548,7 +548,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonGroupFunctionAfter_Callback(~,~)
-        myGroupInd = smdaTA.itinerary.indOfGroup;
+        myGroupInd = smdaTA.itinerary.ind_group;
         mypwd = pwd;
         cd(smdaTA.itinerary.output_directory);
         [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-after');
@@ -563,7 +563,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonGroupFunctionBefore_Callback(~,~)
-        myGroupInd = smdaTA.itinerary.indOfGroup;
+        myGroupInd = smdaTA.itinerary.ind_group;
         mypwd = pwd;
         cd(smdaTA.itinerary.output_directory);
         [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-before');

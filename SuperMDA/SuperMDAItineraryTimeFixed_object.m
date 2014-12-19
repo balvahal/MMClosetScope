@@ -1,7 +1,20 @@
-%% The SuperMDAItinerary
+%% The SuperMDAItineraryTimeFixed_object
+%   ___                    __  __ ___   _   
+%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\  
+%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \ 
+%  |___/\_,_| .__/\___|_| |_|  |_|___/_/ \_\
+%   ___ _   |_|                             
+%  |_ _| |_(_)_ _  ___ _ _ __ _ _ _ _  _    
+%   | ||  _| | ' \/ -_) '_/ _` | '_| || |   
+%  |___|\__|_|_||_\___|_| \__,_|_|  \_, |   
+%   _____ _           ___ _         |__/    
+%  |_   _(_)_ __  ___| __(_)_ _____ __| |   
+%    | | | | '  \/ -_) _|| \ \ / -_) _` |   
+%    |_| |_|_|_|_\___|_| |_/_\_\___\__,_|   
+%                                           
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
-% position consists of 1 or more settings.
+% position consists of 1 or more settings. Hi.
 classdef SuperMDAItineraryTimeFixed_object < handle
     %%
     % * channel_names: the names of the channels group in the current
@@ -26,6 +39,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % |TravelAgent| enforces the numbers within the group_order vector to
     % be sequential (though not necessarily in order).
     %% Properties
+    %   ___                       _   _
+    %  | _ \_ _ ___ _ __  ___ _ _| |_(_)___ ___
+    %  |  _/ '_/ _ \ '_ \/ -_) '_|  _| / -_|_-<
+    %  |_| |_| \___/ .__/\___|_|  \__|_\___/__/
+    %              |_|
+    %
     properties
         %%% General
         %
@@ -172,6 +191,11 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         number_of_timepoints = 1;
     end
     %% Methods
+    %   __  __     _   _            _
+    %  |  \/  |___| |_| |_  ___  __| |___
+    %  | |\/| / -_)  _| ' \/ _ \/ _` (_-<
+    %  |_|  |_\___|\__|_||_\___/\__,_/__/
+    %
     % In general each method was created to help construct a valid,
     % self-consistent itinerary. An itinerary can be constructed without
     % the use of any of these methods, but there are no guaruntees that a
@@ -210,9 +234,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % * orderVectorRemove
     % * organize
     % * refreshIndAndOrder
-    
     methods
-        %% The constructor method
+        %% The first method is the constructor
         %
         function obj = SuperMDAItineraryTimeFixed_object(mm)
             if nargin == 0
@@ -233,7 +256,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.imageHeightNoBin = mm.core.getImageHeight;
             obj.imageWidthNoBin = mm.core.getImageWidth;
             %% initialize the prototype_group
-            %            
+            %
             obj.group_function_after{1} = 'SuperMDAItineraryTimeFixed_group_function_after';
             obj.group_function_before{1} = 'SuperMDAItineraryTimeFixed_group_function_before';
             obj.group_label{1} = 'group1';
@@ -275,6 +298,24 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.order_position = 1;
             obj.order_settings = 1;
         end
+        %% Group: methods
+        %    ___
+        %   / __|_ _ ___ _  _ _ __
+        %  | (_ | '_/ _ \ || | '_ \
+        %   \___|_| \___/\_,_| .__/
+        %                    |_|
+        %% Position: methods
+        %   ___        _ _   _
+        %  | _ \___ __(_) |_(_)___ _ _
+        %  |  _/ _ (_-< |  _| / _ \ ' \
+        %  |_| \___/__/_|\__|_\___/_||_|
+        %
+        %% Settings: methods
+        %   ___      _   _   _
+        %  / __| ___| |_| |_(_)_ _  __ _ ___
+        %  \__ \/ -_)  _|  _| | ' \/ _` (_-<
+        %  |___/\___|\__|\__|_|_||_\__, /__/
+        %                          |___/
         %%
         %
         function obj = addPosition2Group(obj,gInd,pInd,varargin)
@@ -422,7 +463,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 [~,myInd] = ismember([gInd,myPOrder(end),mySOrder(end)],obj.gps,'rows');
                 obj.ind_last_group(gInd) = find(obj.orderVector == myInd,1,'first');
             else
-                gInd = obj.indOfGroup;
+                gInd = obj.ind_group;
                 for i = 1:length(gInd)
                     myPOrder = obj.orderOfPosition(gInd(i));
                     mySOrder = obj.orderOfSettings(gInd(i),myPOrder(end));
@@ -628,7 +669,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         function n = orderOfGroup(obj)
             myGpsGroup = obj.gps(:,1);
             myGpsGroupOrder = myGpsGroup(obj.orderVector);
-            groupInds = obj.indOfGroup;
+            groupInds = obj.ind_group;
             indicesOfFirstAppearance = zeros(size(groupInds));
             for i = 1:length(indicesOfFirstAppearance)
                 indicesOfFirstAppearance(i) = find(myGpsGroupOrder == groupInds(i),1,'first');

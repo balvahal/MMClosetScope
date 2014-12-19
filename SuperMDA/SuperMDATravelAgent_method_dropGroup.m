@@ -6,7 +6,7 @@
 function obj = SuperMDATravelAgent_method_dropGroup(obj,dropInd)
 p = inputParser;
 addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
-addRequired(p, 'dropInd', @(x) isrow(x) && all(ismember(x,obj.itinerary.indOfGroup)));
+addRequired(p, 'dropInd', @(x) isrow(x) && all(ismember(x,obj.itinerary.ind_group)));
 parse(p,obj,dropInd);
 for i = 1:length(dropInd)
     obj.itinerary.dropGroup(dropInd(i));

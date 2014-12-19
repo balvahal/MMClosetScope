@@ -3,7 +3,7 @@ function smdaITF = SuperMDAItineraryTimeFixed_method_addPosition2Group(smdaITF,g
 % parse the input
 p = inputParser;
 addRequired(p, 'smdaITF', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-addRequired(p, 'gInd', @(x) ismember(x,smdaITF.indOfGroup));
+addRequired(p, 'gInd', @(x) ismember(x,smdaITF.ind_group));
 addRequired(p, 'pInd', @(x) ismember(x,1:length(smdaITF.position_logical)));
 addOptional(p, 'sNum',1, @(x) mod(x,1)==0);
 parse(p,smdaITF,gInd,pInd,varargin{:});

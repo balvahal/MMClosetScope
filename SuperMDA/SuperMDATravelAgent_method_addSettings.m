@@ -7,7 +7,7 @@ function smdaTA = SuperMDATravelAgent_method_addSettings(smdaTA,gInd,varargin)
 % parse the input
 p = inputParser;
 addRequired(p, 'smdaTA', @(x) isa(x,'SuperMDATravelAgent_object'));
-addRequired(p, 'gInd', @(x) ismember(x,smdaTA.itinerary.indOfGroup));
+addRequired(p, 'gInd', @(x) ismember(x,smdaTA.itinerary.ind_group));
 addOptional(p, 'sNum',1, @(x) mod(x,1)==0);
 parse(p,smdaTA,gInd,varargin{:});
 smdaITF = smdaTA.itinerary;

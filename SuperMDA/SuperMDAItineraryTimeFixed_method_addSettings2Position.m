@@ -7,7 +7,7 @@ function smdaITF = SuperMDAItineraryTimeFixed_method_addSettings2Position(smdaIT
 % parse the input
 p = inputParser;
 addRequired(p, 'smdaITF', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-addRequired(p, 'gInd', @(x) ismember(x,smdaITF.indOfGroup));
+addRequired(p, 'gInd', @(x) ismember(x,smdaITF.ind_group));
 addRequired(p, 'pInd', @(x) ismember(x,smdaITF.indOfPosition(gInd)));
 addRequired(p, 'sInd', @(x) ismember(x,1:length(smdaITF.settings_logical)));
 addOptional(p, 'sNum',1, @(x) mod(x,1)==0);
