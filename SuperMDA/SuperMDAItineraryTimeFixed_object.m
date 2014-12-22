@@ -252,7 +252,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.gps_logical = true;
             obj.mm = mm;
             obj.orderVector = 1;
-            mm.core.setProperty(mm.CameraDevice,'Binning','1x1');
+            mm.binningfun(mm,1);
             obj.imageHeightNoBin = mm.core.getImageHeight;
             obj.imageWidthNoBin = mm.core.getImageWidth;
             %% initialize the prototype_group
