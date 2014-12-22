@@ -669,7 +669,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         function n = orderOfGroup(obj)
             myGpsGroup = obj.gps(:,1);
             myGpsGroupOrder = myGpsGroup(obj.orderVector);
-            groupInds = obj.ind_group;
+            groupInds = transpose(obj.ind_group);
             indicesOfFirstAppearance = zeros(size(groupInds));
             for i = 1:length(indicesOfFirstAppearance)
                 indicesOfFirstAppearance(i) = find(myGpsGroupOrder == groupInds(i),1,'first');

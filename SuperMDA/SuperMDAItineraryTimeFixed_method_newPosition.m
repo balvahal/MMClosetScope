@@ -44,7 +44,7 @@ if p.Results.pNum == 1
     % the groups that follow the group specified by gInd must also have
     % their ind_last_group updated since all positions in these groups have
     % been shifted by this new "upstream" position.
-    myGroupOrder = smdaITF.orderOfGroup;
+    myGroupOrder = smdaITF.order_group;
     indGroupOrder = find(myGroupOrder == gInd,1,'first'); % the order index of the group gInd
     if indGroupOrder ~= length(myGroupOrder)
         for i = (indGroupOrder+1):length(myGroupOrder)

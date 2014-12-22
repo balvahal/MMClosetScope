@@ -4,6 +4,11 @@
 % _orderVector_ will be strictly increasing. Unassigned groups, positions,
 % and settings will be removed.
 %
+% In otherwords, use the GPS _orderVector_ to rearrange the other
+% information within the itinerary in the order of acquisition. Afterwards,
+% update the _orderVector_ to reflect this change, which means it will be a
+% simple sequence of natural numbers.
+%
 % The strategy will be to organize the GPS by the _orderVector_ and then
 % use the logical vectors to remove the unused rows.
 function [smdaITF] = SuperMDAItineraryTimeFixed_method_organize(smdaITF)
@@ -15,20 +20,20 @@ myGPS = smdaITF.gps(smdaITF.orderVector,:);
 %% Rearrange group
 %
 myGPS2 = myGPS;
-for i = 1:length(smdaITF.orderOfGroup);
+for i = 1:length(smdaITF.order_group);
     myLogical = myGPS(:,1) == smdaITF.order_group(i);
     myGPS2(myLogical,1) = i;
 end
-smdaITF.group_function_after = smdaITF.group_function_after(smdaITF.orderOfGroup);
-smdaITF.group_function_before = smdaITF.group_function_before(smdaITF.orderOfGroup);
-smdaITF.group_label = smdaITF.group_label(smdaITF.orderOfGroup);
-smdaITF.group_logical = smdaITF.group_logical(smdaITF.orderOfGroup);
+smdaITF.group_function_after = smdaITF.group_function_after(smdaITF.order_group);
+smdaITF.group_function_before = smdaITF.group_function_before(smdaITF.order_group);
+smdaITF.group_label = smdaITF.group_label(smdaITF.order_group);
+smdaITF.group_logical = smdaITF.group_logical(smdaITF.order_group);
 
 %% Rearrange position
 %
 superOrderPosition = zeros(sum(smdaITF.position_logical),1);
 positionCounter = 1;
-for i = smdaITF.orderOfGroup
+for i = smdaITF.order_group
     superOrderPosition(positionCounter:positionCounter-1+smdaITF.number_position(i)) = ...
         smdaITF.order_position{i,:};
     positionCounter = positionCounter+smdaITF.number_position(i);

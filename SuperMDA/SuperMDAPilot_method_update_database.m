@@ -10,7 +10,7 @@ p = smdaP.gps_current(2); %position
 s = smdaP.gps_current(3); %settings
 z = smdaP.database_z_number;
 smdaP.mm.getXYZ;
-myGroupOrder = smdaP.itinerary.orderOfGroup;
+myGroupOrder = smdaP.itinerary.order_group;
 myPositionOrder = smdaP.itinerary.orderOfPosition(g);
 mySettingsOrder = smdaP.itinerary.orderOfSettings(g,p);
 varNames = {'channel_name',...

@@ -502,7 +502,7 @@ set(f,'Visible','on');
         fillmeinArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
         fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
         % use the fillmeinArray to rearrange the groups
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         myGroupOrder = myGroupOrder(fillmeinArray);
         % use the new group order to rearrange the orderVector
         groupGPS = smdaTA.itinerary.gps(:,1);
@@ -535,7 +535,7 @@ set(f,'Visible','on');
         elseif length(smdaTA.pointerGroup) == smdaTA.itinerary.numberOfGroup
             smdaTA.pointerGroup(1) = [];
         end
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInds = myGroupOrder(smdaTA.pointerGroup);
         for i = 1:length(gInds)
             smdaTA.dropGroup(gInds(i));
@@ -584,19 +584,20 @@ set(f,'Visible','on');
         if min(smdaTA.pointerGroup) == 1
             return
         end
-        currentOrder = 1:smdaTA.itinerary.numberOfGroup; % what the table looks like now
+        currentOrder = 1:smdaTA.itinerary.number_group; % what the table looks like now
         movingGroup = smdaTA.pointerGroup-1; % where the selected rows want to go
         reactingGroup = setdiff(currentOrder,smdaTA.pointerGroup); % the rows that are not moving
-        fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
-        fillmeinArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
-        fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
-        % use the fillmeinArray to rearrange the groups
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
-        myGroupOrder = myGroupOrder(fillmeinArray);
+        newOrderArray = zeros(1,length(currentOrder)); % a vector to store the new order
+        newOrderArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
+        newOrderArray(newOrderArray==0) = reactingGroup; % the remaining rows are moved
+        % use the newOrderArray to rearrange the groups
+        smdaTA.itinerary.order_group = smdaTA.itinerary.order_group(newOrderArray);
+        myGroupOrder = smdaTA.itinerary.order_group;
+        myGroupOrder = myGroupOrder(newOrderArray);
         % use the new group order to rearrange the orderVector
         groupGPS = smdaTA.itinerary.gps(:,1);
         groupGPS = groupGPS(smdaTA.itinerary.gps_logical);
-        newInds = zeros(2,smdaTA.itinerary.numberOfGroup);
+        newInds = zeros(2,smdaTA.itinerary.number_group);
         newInds(1,1) = 1;
         newInds(2,1) = sum(groupGPS == myGroupOrder(1));
         for i = 2:length(newInds)
@@ -619,7 +620,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonPositionAdd_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         smdaTA.addPosition(gInd);
         smdaTA.pointerPosition = smdaTA.itinerary.numberOfPosition(gInd);
@@ -631,7 +632,7 @@ set(f,'Visible','on');
         %%
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved down 1.
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         if max(smdaTA.pointerPosition) == smdaTA.itinerary.numberOfPosition(gInd)
             return
@@ -679,7 +680,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonPositionDrop_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         if smdaTA.itinerary.numberOfPosition(gInd)==1
             return
@@ -697,7 +698,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSetAllZ_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         myPInd = smdaTA.itinerary.indOfPosition(gInd);
         smdaTA.itinerary.position_continuous_focus_offset(myPInd) = str2double(smdaTA.mm.core.getProperty(smdaTA.mm.AutoFocusDevice,'Position'));
@@ -708,7 +709,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonPositionFunctionAfter_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         mypwd = pwd;
         myPositionInd = smdaTA.itinerary.indOfPosition(gInd);
@@ -725,7 +726,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonPositionFunctionBefore_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         mypwd = pwd;
         myPositionInd = smdaTA.itinerary.indOfPosition(gInd);
@@ -742,7 +743,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonPositionMove_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.orderOfPosition(gInd);
         pInd = pInd(smdaTA.pointerPosition(1));
@@ -780,7 +781,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonPositionSet_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.orderOfPosition(gInd);
         pInd = pInd(smdaTA.pointerPosition(1));
@@ -795,7 +796,7 @@ set(f,'Visible','on');
         %%
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved up 1.
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         if min(smdaTA.pointerPosition) == 1
             return
@@ -877,7 +878,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSettingsAdd_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);
@@ -893,7 +894,7 @@ set(f,'Visible','on');
         %%
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved down 1.
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);
@@ -928,7 +929,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSettingsDrop_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);
@@ -948,7 +949,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSettingsFunction_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);
@@ -971,7 +972,7 @@ set(f,'Visible','on');
         % What follows below might have a more elegant solution.
         % essentially all selected rows are moved up 1. This will only work
         % if all positions have the same settings
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(smdaTA.pointerPosition(1));
@@ -1006,7 +1007,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSettingsZLower_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(smdaTA.pointerPosition(1));
@@ -1030,7 +1031,7 @@ set(f,'Visible','on');
 %%
 %
     function pushbuttonSettingsZUpper_Callback(~,~)
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(smdaTA.pointerPosition(1));
@@ -1057,7 +1058,7 @@ set(f,'Visible','on');
         %%
         % |smdaTA.pointerGroup| should always be a singleton in this case
         myCol = eventdata.Indices(2);
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         myRow = myGroupOrder(eventdata.Indices(1));
         switch myCol
             case 1 %label change
@@ -1101,7 +1102,7 @@ set(f,'Visible','on');
         %%
         % |smdaTA.pointerPosition| should always be a singleton in this
         % case
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         myCol = eventdata.Indices(2);
         myPositionOrder = smdaTA.itinerary.orderOfPosition(gInd);
@@ -1144,7 +1145,7 @@ set(f,'Visible','on');
         %
         % The pointer of the TravelAgent should always point to a valid
         % position from the the position_order in a given group.
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         if isempty(eventdata.Indices)
             % if nothing is selected, which triggers after deleting data,
@@ -1165,7 +1166,7 @@ set(f,'Visible','on');
         %%
         % |smdaTA.pointerSettings| should always be a singleton in this
         % case
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);
@@ -1204,7 +1205,7 @@ set(f,'Visible','on');
         % tables, which edit the itinerary directly, the settings table
         % will modify the the prototype, which will then be pushed to all
         % positions in a group.
-        myGroupOrder = smdaTA.itinerary.orderOfGroup;
+        myGroupOrder = smdaTA.itinerary.order_group;
         gInd = myGroupOrder(smdaTA.pointerGroup(1));
         pInd = smdaTA.itinerary.indOfPosition(gInd);
         pInd = pInd(1);

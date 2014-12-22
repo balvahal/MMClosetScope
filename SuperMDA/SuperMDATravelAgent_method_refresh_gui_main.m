@@ -19,7 +19,7 @@ set(handles.editOutputDirectory,'String',smdaTA.itinerary.output_directory);
 tableGroupData = cell(smdaTA.itinerary.numberOfGroup,...
     length(get(handles.tableGroup,'ColumnName')));
 n=1;
-for i = smdaTA.itinerary.orderOfGroup
+for i = smdaTA.itinerary.order_group
         tableGroupData{n,1} = smdaTA.itinerary.group_label{i};
         tableGroupData{n,2} = i;
         tableGroupData{n,3} = smdaTA.itinerary.numberOfPosition(i);
@@ -33,7 +33,7 @@ set(handles.tableGroup,'Data',tableGroupData);
 %% Position Table
 % Show the data in the itinerary |position_order| property for a given
 % group
-myGroupOrder = smdaTA.itinerary.orderOfGroup;
+myGroupOrder = smdaTA.itinerary.order_group;
 gInd = myGroupOrder(smdaTA.pointerGroup(1));
 myPositionOrder = smdaTA.itinerary.orderOfPosition(gInd);
 tablePositionData = cell(length(myPositionOrder),...
