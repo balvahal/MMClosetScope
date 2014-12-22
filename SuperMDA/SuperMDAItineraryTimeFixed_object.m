@@ -745,8 +745,13 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %%
         %
-        function obj = organize(obj)
-            SuperMDAItineraryTimeFixed_method_organize(obj);
+        function obj = orgItinViaGPS(obj)
+            SuperMDAItineraryTimeFixed_method_orgItinViaGPS(obj);
+        end
+        %%
+        %
+        function obj = gpsFromItinOrder(obj)
+            SuperMDAItineraryTimeFixed_method_gpsFromItinOrder(obj);
         end
         %%
         %

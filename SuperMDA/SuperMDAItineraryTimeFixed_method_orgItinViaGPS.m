@@ -11,7 +11,7 @@
 %
 % The strategy will be to organize the GPS by the _orderVector_ and then
 % use the logical vectors to remove the unused rows.
-function [smdaITF] = SuperMDAItineraryTimeFixed_method_organize(smdaITF)
+function [smdaITF] = SuperMDAItineraryTimeFixed_method_orgItinViaGPS(smdaITF)
 smdaITF.refreshIndAndOrder;
 %% Sort the _gps_ by the orderVector
 %

@@ -7,8 +7,7 @@ if smdaP.running_bool
     display('SuperMDA is already running!');
     return
 end
-
-smdaP.itinerary.organize;
+smdaP.itinerary.orgItinViaGPS;
 smdaP.itinerary.export;
 %% Establish folder tree that will store images
 %
