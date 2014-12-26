@@ -191,6 +191,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % logical error may not be present. By using these methods to construct
     % an itinerary there will be no doubt about its logic and validity.
     %
+    % * connectGPS
+    % * gpsFromOrder
+    % * newNumberOfTimepoints
+    % * newFundamentalPeriod
+    % * newDuration
+    %
     % *GROUP*
     %
     % * newGroup
@@ -198,9 +204,17 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % * find_pointer_next_group
     %
     % *POSITION*
+    %
     % * newPosition
     % * dropPosition
     % * find_pointer_next_position
+    %
+    % *SETTINGS*
+    %
+    % * newSettings
+    % * dropSettings
+    % * find_pointer_next_settings
+    % * mirrorSettings
     
     methods
         %% The first method is the constructor
@@ -279,7 +293,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.order_position = 1;
             obj.order_settings = 1;
         end
-        %%
+        %% connectGPS
         %
         function obj = connectGPS(obj,varargin)
             %%%
@@ -362,6 +376,73 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                     error('smdaITF:conGPS','The input parameters were an invalid combination.');
             end
         end
+        %% gpsFromOrder
+        %
+        function obj = gpsFromOrder(obj)
+            newGPS = zeros(sum(obj.number_settings),3);
+            grpOrder = obj.order_group;
+            mycount = 0;
+            for i = grpOrder
+                posOrder = obj.order_position{i};
+                for j = posOrder
+                    setOrder = obj.order_settings{j};
+                    for k = setOrder
+                        mycount = mycount + 1;
+                        newGPS(mycount,:) = [i,j,k];
+                    end
+                end
+            end
+            obj.gps = newGPS;
+            obj.orderVector = 1:size(newGPS,1);
+            obj.gps_logical = true(size(newGPS,1),1);
+        end
+        %% Method to change the number of timepoints
+        %
+        function obj = newNumberOfTimepoints(obj,mynum)
+            %%%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be a positive integer
+            if mynum < 1
+                return
+            end
+            %%%
+            % update other dependent parameters
+            obj.number_of_timepoints = round(mynum);
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% Method to change the fundamental period (units in seconds)
+        %
+        function obj = newFundamentalPeriod(obj,mynum)
+            %%%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be greater than zero
+            if mynum <= 0
+                return
+            end
+            %%%
+            % update other dependent parameters
+            obj.fundamental_period = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% Method to change the duration
+        %
+        function obj = newDuration(obj,mynum)
+            %%%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must zero of greater
+            if mynum < 0
+                return
+            end
+            %%%
+            % update other dependent parameters
+            obj.duration = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
         %% Group: methods
         %    ___
         %   / __|_ _ ___ _  _ _ __
@@ -394,6 +475,9 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             %%% update order, indices, and pointers
             %
             obj.find_pointer_next_group;
+            obj.number_group = obj.number_group + 1;
+            obj.ind_group = sort(horzcat(obj.ind_group,g));
+            obj.order_group(end+1) = g;
         end
         %% dropGroup
         % a group and all the positions and settings therin shall be
@@ -475,7 +559,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % parse the input
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            addOptional(q, 'pNum',0, @(x) mod(x,1)==0);
             parse(q,obj,varargin{:});
             
             %%% create new group
@@ -548,6 +632,35 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             else
                 obj.pointer_next_settings = numel(obj.settings_logical) + 1;
             end
+        end
+        %%
+        % Take all the settings for a given position, p, and mirror
+        % these settings across all positions
+        function obj = mirrorSettings(obj,p,varargin)
+                        %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
+            %%%
+            %
+            mySettings = obj.order_settings{p};
+            myGPS = zeros(sum(obj.position_logical)*length(mySettings),3);
+            counter = 0;
+            for i = obj.order_group
+                for j = obj.order_position{i}
+                    for k = mySettings
+                        counter = counter + 1;
+                        myGPS(counter,:) = [i,j,k];
+                    end
+                end
+            end
+            obj.gps = myGPS;
+            obj.gps_logical = ones(1,size(myGPS,1));
+            obj.orderVector = 1:size(myGPS,1);
+            obj.ind_next_gps = size(myGPS,1)+1;
         end
     end
 end
