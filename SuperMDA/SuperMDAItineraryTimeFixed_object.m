@@ -1,17 +1,17 @@
 %% The SuperMDAItineraryTimeFixed_object
-%   ___                    __  __ ___   _   
-%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\  
-%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \ 
+%   ___                    __  __ ___   _
+%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\
+%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \
 %  |___/\_,_| .__/\___|_| |_|  |_|___/_/ \_\
-%   ___ _   |_|                             
-%  |_ _| |_(_)_ _  ___ _ _ __ _ _ _ _  _    
-%   | ||  _| | ' \/ -_) '_/ _` | '_| || |   
-%  |___|\__|_|_||_\___|_| \__,_|_|  \_, |   
-%   _____ _           ___ _         |__/    
-%  |_   _(_)_ __  ___| __(_)_ _____ __| |   
-%    | | | | '  \/ -_) _|| \ \ / -_) _` |   
-%    |_| |_|_|_|_\___|_| |_/_\_\___\__,_|   
-%                                           
+%   ___ _   |_|
+%  |_ _| |_(_)_ _  ___ _ _ __ _ _ _ _  _
+%   | ||  _| | ' \/ -_) '_/ _` | '_| || |
+%  |___|\__|_|_||_\___|_| \__,_|_|  \_, |
+%   _____ _           ___ _         |__/
+%  |_   _(_)_ __  ___| __(_)_ _____ __| |
+%    | | | | '  \/ -_) _|| \ \ / -_) _` |
+%    |_| |_|_|_|_\___|_| |_/_\_\___\__,_|
+%
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
 % position consists of 1 or more settings. Hi.
@@ -107,6 +107,15 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         order_position; % as many rows as groups. each row with the order of positions within that group.
         order_settings; % as many rows as positions. each row has the order of settings at that position.
         
+        %%% Pointers
+        %
+        pointer_first_group; % as many rows as groups. each row holds the gps row where the group begins
+        pointer_last_group; % as many rows as groups. each row holds the gps row where the group ends
+        pointer_next_gps;
+        pointer_next_group;
+        pointer_next_position;
+        pointer_next_settings;
+        
         %%% Position
         %
         % * position_continuous_focus_offset
@@ -182,23 +191,39 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % logical error may not be present. By using these methods to construct
     % an itinerary there will be no doubt about its logic and validity.
     %
-% * dropGroup
+    % *GROUP*
+    %
+    % * addGroup
+    % * dropGroup
+    % * find_pointer_next_group
+    %
+    % *POSITION*
+    % * addPosition
+    % * dropPosition
+    % * find_pointer_next_position
+    
     methods
         %% The first method is the constructor
-%    ___             _               _           
-%   / __|___ _ _  __| |_ _ _ _  _ __| |_ ___ _ _ 
-%  | (__/ _ \ ' \(_-<  _| '_| || / _|  _/ _ \ '_|
-%   \___\___/_||_/__/\__|_|  \_,_\__|\__\___/_|  
-%                                                
+        %    ___             _               _
+        %   / __|___ _ _  __| |_ _ _ _  _ __| |_ ___ _ _
+        %  | (__/ _ \ ' \(_-<  _| '_| || / _|  _/ _ \ '_|
+        %   \___\___/_||_/__/\__|_|  \_,_\__|\__\___/_|
+        %
         function obj = SuperMDAItineraryTimeFixed_object(mm)
+            %%%
+            % if micro-manager is unavailable, then do not follow through
+            % with initialization. Itineraries can still be imported, but
+            % some methods may throw errors.
             if nargin == 0
                 return
             end
+            %%%
+            %
             if ~isdir(obj.output_directory)
                 mkdir(obj.output_directory)
             end
             if ~isa(mm,'Core_MicroManagerHandle')
-                error('smdaITF:input','The input was not a Core_MicroManagerHandle_object');
+                error('obj:input','The input was not a Core_MicroManagerHandle_object');
             end
             obj.channel_names = mm.Channel;
             obj.gps = [1,1,1];
@@ -245,6 +270,9 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.ind_next_group = 2;
             obj.ind_next_position = 2;
             obj.ind_next_settings = 2;
+            obj.pointer_next_group = 2;
+            obj.pointer_next_position = 2;
+            obj.pointer_next_settings = 2;
             obj.ind_position = 1;
             obj.ind_settings = 1;
             obj.order_group = 1;
@@ -257,60 +285,151 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %  | (_ | '_/ _ \ || | '_ \
         %   \___|_| \___/\_,_| .__/
         %                    |_|
-                %% dropGroup
+        %% addGroup
+        % A single group is created.
+        %
+        % * pNum: add _pNum_ new positions to this group
+        % * sNum: each added position will share _sNum_ new settings
+        function obj = addGroup(obj,varargin)
+            %%%
+            % parse the input
+            p = inputParser;
+            addRequired(p, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(p, 'pNum',0, @(x) mod(x,1)==0);
+            addOptional(p, 'sNum',0, @(x) mod(x,1)==0);
+            parse(p,obj,varargin{:});
+            
+            %%% create new group
+            % Each group property needs a new row. Use the first group as a template
+            % for the newest group.
+            g = obj.pointer_next_group;
+            obj.group_function_after(g) = obj.group_function_after{1};
+            obj.group_function_before(g) = obj.group_function_before{1};
+            obj.group_label(g) = sprintf('group%d',g);
+            obj.group_logical(g) = true;
+            
+            %%% update order, indices, and pointers
+            %
+            obj.find_pointer_next_group;
+        end
+        %% dropGroup
         % a group and all the positions and settings therin shall be
         % "forgotten". Positions and settings unique to that group are
         % removed.
         %
-        % *gInd: the index of the group to be dropped.
-        function obj = dropGroup(obj,gInd)
+        % *g: the index of the group to be dropped.
+        function obj = dropGroup(obj,g)
             %%%
             % determine if this is the only group
             if obj.number_group == 1
                 % if there is only a single group do not remove it
-                warning('smdaITF:oneGrp','There is only a single group, so it will not be dropped.');
+                warning('obj:oneGrp','There is only a single group, so it will not be dropped.');
                 return;
             end
             %%%
             % Find the positions and settings unique to the group
-            myPInd = obj.ind_position{gInd};
+            myPInd = obj.ind_position{g};
             myPIndOthers = unique(...
                 horzcat(...
                 obj.ind_position{...
-                obj.ind_group(obj.ind_group ~= gInd)}));
-                        myPIndUniq2Grp = setdiff(myPInd,...
-                            intersect(myPInd,myPIndOthers));
+                obj.ind_group(obj.ind_group ~= g)}));
+            myPIndUniq2Grp = setdiff(myPInd,...
+                intersect(myPInd,myPIndOthers));
             mySInd = unique(horzcat(obj.ind_settings{myPInd}));
             mySIndOthers = unique(...
                 horzcat(...
                 obj.ind_settings{...
                 myPIndOthers}));
             mySIndUniq2Pos = setdiff(mySInd,...
-                            intersect(mySInd,mySIndOthers));
+                intersect(mySInd,mySIndOthers));
             %%%
             % remove the group and its unique positions and settings from
             % the logical arrays
-            
+            obj.group_logical(g) = false;
+            obj.position_logical(myPIndUniq2Grp) = false;
+            obj.settings_logical(mySIndUniq2Pos) = false;
             %%%
             % remove the group and its unique positions and settings from
             % the ind and order arrays
-            
+            obj.ind_group(obj.ind_group == g) = [];
+            obj.ind_position{g} = [];
+            obj.ind_settings{myPIndUniq2Grp} = [];
+            obj.order_group(obj.order_group == g) = [];
+            obj.order_position{g} = [];
+            obj.order_settings{myPIndUniq2Grp} = [];
             %%%
-            % update the number arrays
-            obj.group_logical(gInd) = false;
-            obj.find_ind_next('group');
-            % update the gps to reflect these changes
-            myGpsGroup = obj.gps(:,1);
-            obj.gps_logical(myGpsGroup == gInd) = false;
-            myGpsRows = find(myGpsGroup == gInd);
-            if ~isempty(myGpsRows)
-                for i = 1:length(myGpsRows)
-                    obj.orderVectorRemove(myGpsRows(i));
-                end
+            % update the numbers and pointers
+            obj.number_group = numel(obj.ind_group);
+            obj.number_position(g) = 0;
+            for i = myPIndUniq2Grp
+                obj.number_settings(i) = 0;
             end
-            obj.position_logical(myPInd) = false;
-            obj.settings_logical(mySInd) = false;
-            obj.find_ind_next('gps');
-            obj.find_ind_next('position');
-            obj.find_ind_next('settings');
+            obj.find_pointer_next_group;
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
         end
+        %% find_pointer_next_group
+        %
+        function obj = find_pointer_next_group(obj)
+            if any(~obj.group_logical)
+                obj.pointer_next_group = find(~obj.group_logical,1,'first');
+            else
+                obj.pointer_next_group = numel(obj.group_logical) + 1;
+            end
+        end
+        %% Position: methods
+        %   ___        _ _   _
+        %  | _ \___ __(_) |_(_)___ _ _
+        %  |  _/ _ (_-< |  _| / _ \ ' \
+        %  |_| \___/__/_|\__|_\___/_||_|
+        %
+                %% addPosition
+        % A single position is created.
+        %
+        % * sNum: this position will have _sNum_ new settings
+        function obj = addPosition(obj,varargin)
+            %%%
+            % parse the input
+            p = inputParser;
+            addRequired(p, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(p, 'pNum',0, @(x) mod(x,1)==0);
+            addOptional(p, 'sNum',0, @(x) mod(x,1)==0);
+            parse(p,obj,varargin{:});
+            
+            %%% create new group
+            % Each group property needs a new row. Use the first group as a template
+            % for the newest group.
+            p = obj.pointer_next_position;
+            % add the new position properties reflecting the current objective
+            % position
+            obj.position_continuous_focus_offset(p) = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_bool(p) = true;
+            obj.position_function_after{p} = obj.position_function_after{1};
+            obj.position_function_before{p} = obj.position_function_before{1};
+            obj.position_label{p} = sprintf('position%d',p);
+            obj.position_logical(p) = true;
+            obj.position_xyz(p,:) = obj.mm.getXYZ;
+            %%% update order, indices, and pointers
+            %
+            obj.find_pointer_next_position;
+        end
+        %%
+        %
+        function obj = find_pointer_next_position(obj)
+            if any(~obj.position_logical)
+                obj.pointer_next_position = find(~obj.position_logical,1,'first');
+            else
+                obj.pointer_next_position = numel(obj.position_logical) + 1;
+            end
+        end
+        %%
+        %
+        function obj = find_pointer_next_settings(obj)
+            if any(~obj.settings_logical)
+                obj.pointer_next_settings = find(~obj.settings_logical,1,'first');
+            else
+                obj.pointer_next_settings = numel(obj.settings_logical) + 1;
+            end
+        end
+    end
+end
