@@ -193,12 +193,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     %
     % *GROUP*
     %
-    % * addGroup
+    % * newGroup
     % * dropGroup
     % * find_pointer_next_group
     %
     % *POSITION*
-    % * addPosition
+    % * newPosition
     % * dropPosition
     % * find_pointer_next_position
     
@@ -279,25 +279,108 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.order_position = 1;
             obj.order_settings = 1;
         end
+        %%
+        %
+        function obj = connectGPS(obj,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addParameter(q, 'g',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 'p',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 's',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            parse(q,obj,varargin{:});
+            g = q.Results.g;
+            p = q.Results.p;
+            s = q.Results.s;
+            decisionString = '000'; %'gps'
+            %%%
+            % inputs should refer to existing groups, positions, and
+            % settings.
+            existingG = 1:numel(obj.group_logical);
+            existingG = existingG(obj.group_logical);
+            if all(ismember(g,existingG))
+                decisionString(1) = '1';
+                if iscolumn(g)
+                    g = transpose(g);
+                end
+            end
+            existingP = 1:numel(obj.position_logical);
+            existingP = existingP(obj.position_logical);
+            if all(ismember(p,existingP))
+                decisionString(2) = '1';
+                if iscolumn(p)
+                    p = transpose(p);
+                end
+            end
+            existingS = 1:numel(obj.settings_logical);
+            existingS = existingS(obj.settings_logical);
+            if all(ismember(s,existingS))
+                decisionString(3) = '1';
+                if iscolumn(s)
+                    s = transpose(s);
+                end
+            end
+            decisionNumber = bin2dec(decisionString);
+            
+            %%% Cases to consider
+            % There 3 of the 8 parameter choices are valid considerations
+            % and the rest will throw and error.
+            %
+            % * case 6, '110', group and position: The positions in the _p_
+            % array will be added to specified groups _g_.
+            % * case 3, '011', position and settings: The settings in the
+            % _s_ array will be added to specified positions _p_.
+            % * case 7, '111', group and position and settings: The
+            % settings in _s_ will be added to the positions in _p_. Then
+            % the positions in _p_ will be added to the groups in _g_.
+            switch decisionNumber
+                case 3
+                    for i = p
+                        s2add = setdiff(s,obj.ind_settings{p});
+                        obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
+                        obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
+                    end
+                case 6
+                    for i = g
+                        p2add = setdiff(p,obj.ind_position{g});
+                        obj.order_position{g} = horzcat(obj.order_position{g},p2add);
+                        obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
+                    end
+                case 7
+                    for i = p
+                        s2add = setdiff(s,obj.ind_settings{p});
+                        obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
+                        obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
+                    end
+                    for i = g
+                        p2add = setdiff(p,obj.ind_position{g});
+                        obj.order_position{g} = horzcat(obj.order_position{g},p2add);
+                        obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
+                    end
+                otherwise
+                    error('smdaITF:conGPS','The input parameters were an invalid combination.');
+            end
+        end
         %% Group: methods
         %    ___
         %   / __|_ _ ___ _  _ _ __
         %  | (_ | '_/ _ \ || | '_ \
         %   \___|_| \___/\_,_| .__/
         %                    |_|
-        %% addGroup
+        %% newGroup
         % A single group is created.
         %
         % * pNum: add _pNum_ new positions to this group
         % * sNum: each added position will share _sNum_ new settings
-        function obj = addGroup(obj,varargin)
+        function obj = newGroup(obj,varargin)
             %%%
             % parse the input
-            p = inputParser;
-            addRequired(p, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addOptional(p, 'pNum',0, @(x) mod(x,1)==0);
-            addOptional(p, 'sNum',0, @(x) mod(x,1)==0);
-            parse(p,obj,varargin{:});
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'pNum',0, @(x) mod(x,1)==0);
+            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
             
             %%% create new group
             % Each group property needs a new row. Use the first group as a template
@@ -383,18 +466,17 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %  |  _/ _ (_-< |  _| / _ \ ' \
         %  |_| \___/__/_|\__|_\___/_||_|
         %
-                %% addPosition
+        %% newPosition
         % A single position is created.
         %
         % * sNum: this position will have _sNum_ new settings
-        function obj = addPosition(obj,varargin)
+        function obj = newPosition(obj,varargin)
             %%%
             % parse the input
-            p = inputParser;
-            addRequired(p, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addOptional(p, 'pNum',0, @(x) mod(x,1)==0);
-            addOptional(p, 'sNum',0, @(x) mod(x,1)==0);
-            parse(p,obj,varargin{:});
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
             
             %%% create new group
             % Each group property needs a new row. Use the first group as a template
@@ -421,6 +503,42 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             else
                 obj.pointer_next_position = numel(obj.position_logical) + 1;
             end
+        end
+        %% Settings: methods
+        %   ___      _   _   _
+        %  / __| ___| |_| |_(_)_ _  __ _ ___
+        %  \__ \/ -_)  _|  _| | ' \/ _` (_-<
+        %  |___/\___|\__|\__|_|_||_\__, /__/
+        %                          |___/
+        %% newSettings
+        %
+        function obj = newSettings(obj,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
+            
+            %%% create new group
+            % Each group property needs a new row. Use the first group as a template
+            % for the newest group.
+            s = obj.pointer_next_settings;
+            obj.settings_binning(s) = obj.settings_binning(1);
+            obj.settings_channel(s) = obj.settings_channel(1);
+            obj.settings_exposure(s) = obj.settings_exposure(1);
+            obj.settings_function{s} = obj.settings_function{1};
+            obj.settings_logical(s) = true;
+            obj.settings_period_multiplier(s) = obj.settings_period_multiplier(1);
+            obj.settings_timepoints(s) = obj.settings_timepoints(1);
+            obj.settings_z_origin_offset(s) = obj.settings_z_origin_offset(1);
+            obj.settings_z_stack_lower_offset(s) = obj.settings_z_stack_lower_offset(1);
+            obj.settings_z_stack_upper_offset(s) = obj.settings_z_stack_upper_offset(1);
+            obj.settings_z_step_size(s) = obj.settings_z_step_size(1);
+            
+            %%% update order, indices, and pointers
+            %
+            obj.find_pointer_next_settings;
         end
         %%
         %
