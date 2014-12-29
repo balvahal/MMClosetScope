@@ -1,6 +1,21 @@
 %%
 %
+%   ___                    __  __ ___   _
+%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\
+%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \
+%  |___/\_,_| .__/\___|_| |_|  |_|___/_/ \_\     _
+%  |_   _| _|_| ___ _____| |   /_\  __ _ ___ _ _| |_
+%    | || '_/ _` \ V / -_) |  / _ \/ _` / -_) ' \  _|
+%    |_||_| \__,_|\_/\___|_| /_/ \_\__, \___|_||_\__|
+%                                  |___/
 classdef SuperMDATravelAgent_object2 < handle
+    %% Properties
+    %   ___                       _   _
+    %  | _ \_ _ ___ _ __  ___ _ _| |_(_)___ ___
+    %  |  _/ '_/ _ \ '_ \/ -_) '_|  _| / -_|_-<
+    %  |_| |_| \___/ .__/\___|_|  \__|_\___/__/
+    %              |_|
+    %
     properties
         itinerary;
         gui_main;
@@ -10,10 +25,19 @@ classdef SuperMDATravelAgent_object2 < handle
         pointerSettings = 1;
         uot_conversion = 1;
     end
-    %%
+    %% Methods
+    %   __  __     _   _            _
+    %  |  \/  |___| |_| |_  ___  __| |___
+    %  | |\/| / -_)  _| ' \/ _ \/ _` (_-<
+    %  |_|  |_\___|\__|_||_\___/\__,_/__/
     %
     methods
-        %% The constructor method
+        %% The first method is the constructor
+        %    ___             _               _
+        %   / __|___ _ _  __| |_ _ _ _  _ __| |_ ___ _ _
+        %  | (__/ _ \ ' \(_-<  _| '_| || / _|  _/ _ \ '_|
+        %   \___\___/_||_/__/\__|_|  \_,_\__|\__\___/_|
+        %
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
         function obj = SuperMDATravelAgent_object2(smdaITF,mm)
@@ -32,7 +56,12 @@ classdef SuperMDATravelAgent_object2 < handle
             %   / __| | | |_ _|  / __|_ _ ___ __ _| |_(_)___ _ _
             %  | (_ | |_| || |  | (__| '_/ -_) _` |  _| / _ \ ' \
             %   \___|\___/|___|  \___|_| \___\__,_|\__|_\___/_||_|
-            %
+            %   / _|___ _ _
+            %  |  _/ _ \ '_|  __  __      _
+            %  |_| \___/_(_) |  \/  |__ _(_)_ _
+            %  / _` | || | | | |\/| / _` | | ' \
+            %  \__, |\_,_|_|_|_|  |_\__,_|_|_||_|
+            %  |___/      |___|
             % Create the figure
             %
             myunits = get(0,'units');
@@ -85,7 +114,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana',...
                 'String',num2str(obj.itinerary.fundamental_period),...
                 'Position',[region1(1)+2, region1(2)+6.5385, buttonSize(1),buttonSize(2)],...
-                'Callback',{@editFundamentalPeriod_Callback});
+                'Callback',{@obj.editFundamentalPeriod_Callback});
             
             uicontrol('Style','text','Units','characters','String','Fundamental Period',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion1,...
@@ -95,7 +124,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana',...
                 'String',num2str(obj.itinerary.duration),...
                 'Position',[region1(1)+24, region1(2)+0.7692, buttonSize(1),buttonSize(2)],...
-                'Callback',{@editDuration_Callback});
+                'Callback',{@obj.editDuration_Callback});
             
             uicontrol('Style','text','Units','characters','String','Duration',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion1,...
@@ -105,7 +134,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana',...
                 'String',num2str(obj.itinerary.number_of_timepoints),...
                 'Position',[region1(1)+24, region1(2)+6.5385, buttonSize(1),buttonSize(2)],...
-                'Callback',{@editNumberOfTimepoints_Callback});
+                'Callback',{@obj.editNumberOfTimepoints_Callback});
             
             uicontrol('Style','text','Units','characters','String','Number of Timepoints',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion1,...
@@ -116,7 +145,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',12,'FontName','Verdana','HorizontalAlignment','left',...
                 'String',num2str(obj.itinerary.output_directory),...
                 'Position',[region1(1)+46, region1(2)+0.7692, buttonSize(1)*3.5,buttonSize(2)],...
-                'Callback',{@editOutputDirectory_Callback});
+                'Callback',{@obj.editOutputDirectory_Callback});
             
             uicontrol('Style','text','Units','characters','String','Output Directory',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion1,...
@@ -126,14 +155,14 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion1,...
                 'String','...',...
                 'Position',[region1(1)+48+buttonSize(1)*3.5, region1(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonOutputDirectory_Callback});
+                'Callback',{@obj.pushbuttonOutputDirectory_Callback});
             %%% Save or load current SuperMDAItinerary
             %
             hpushbuttonSave = uicontrol('Style','pushbutton','Units','characters',...
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion1,...
                 'String','Save',...
                 'Position',[region1(1)+46, region1(2)+6.5385, buttonSize(1),buttonSize(2)],...
-                'Callback',{@pushbuttonSave_Callback});
+                'Callback',{@obj.pushbuttonSave_Callback});
             
             uicontrol('Style','text','Units','characters','String','Save an Itinerary',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion1,...
@@ -143,7 +172,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion1,...
                 'String','Load',...
                 'Position',[region1(1)+68, region1(2)+6.5385, buttonSize(1),buttonSize(2)],...
-                'Callback',{@pushbuttonLoad_Callback});
+                'Callback',{@obj.pushbuttonLoad_Callback});
             
             uicontrol('Style','text','Units','characters','String','Load an Itinerary',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion1,...
@@ -163,8 +192,8 @@ classdef SuperMDATravelAgent_object2 < handle
                 'ColumnFormat',{'char','numeric','numeric','char','char'},...
                 'ColumnWidth',{30*ppChar(3) 'auto' 'auto' 30*ppChar(3) 30*ppChar(3)},...
                 'FontSize',8,'FontName','Verdana',...
-                'CellEditCallback',@tableGroup_CellEditCallback,...
-                'CellSelectionCallback',@tableGroup_CellSelectionCallback,...
+                'CellEditCallback',@obj.tableGroup_CellEditCallback,...
+                'CellSelectionCallback',@obj.tableGroup_CellSelectionCallback,...
                 'Position',[region2(1)+2, region2(2)+0.7692, 91.6, 13.0769]);
             %%% add or drop a group
             %
@@ -172,7 +201,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
                 'String','Add',...
                 'Position',[fwidth - 4 - buttonSize(1)*1.25, region2(2)+7.6923, buttonSize(1)*.75,buttonSize(2)],...
-                'Callback',{@pushbuttonGroupAdd_Callback});
+                'Callback',{@obj.pushbuttonGroupAdd_Callback});
             
             uicontrol('Style','text','Units','characters','String','Add a group',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
@@ -182,7 +211,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
                 'String','Drop',...
                 'Position',[fwidth - 4 - buttonSize(1)*1.25, region2(2)+0.7692, buttonSize(1)*.75,buttonSize(2)],...
-                'Callback',{@pushbuttonGroupDrop_Callback});
+                'Callback',{@obj.pushbuttonGroupDrop_Callback});
             
             uicontrol('Style','text','Units','characters','String','Drop a group',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
@@ -197,7 +226,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
                 'String','...',...
                 'Position',[fwidth - 2 - buttonSize(1)*0.5, region2(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonGroupFunctionBefore_Callback});
+                'Callback',{@obj.pushbuttonGroupFunctionBefore_Callback});
             
             uicontrol('Style','text','Units','characters','String',sprintf('Group\nFunction\nAfter'),...
                 'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
@@ -207,7 +236,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
                 'String','...',...
                 'Position',[fwidth - 2 - buttonSize(1)*0.5, region2(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonGroupFunctionAfter_Callback});
+                'Callback',{@obj.pushbuttonGroupFunctionAfter_Callback});
             %%% Change group order
             %
             uicontrol('Style','text','Units','characters','String',sprintf('Move\nGroup\nDown'),...
@@ -218,7 +247,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
                 'String','Dn',...
                 'Position',[fwidth - 6 - buttonSize(1)*1.75, region2(2)+0.7692, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonGroupDown_Callback});
+                'Callback',{@obj.pushbuttonGroupDown_Callback});
             
             uicontrol('Style','text','Units','characters','String',sprintf('Move\nGroup\nUp'),...
                 'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion2,...
@@ -228,7 +257,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion2,...
                 'String','Up',...
                 'Position',[fwidth - 6 - buttonSize(1)*1.75, region2(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonGroupUp_Callback});
+                'Callback',{@obj.pushbuttonGroupUp_Callback});
             %% Assemble Region 3
             %   ___          _            ____
             %  | _ \___ __ _(_)___ _ _   |__ /
@@ -465,6 +494,7 @@ classdef SuperMDATravelAgent_object2 < handle
             handles.pushbuttonPositionMove = hpushbuttonPositionMove;
             handles.pushbuttonPositionSet = hpushbuttonPositionSet;
             handles.pushbuttonPositionUp = hpushbuttonPositionUp;
+            handles.pushbuttonSetAllZ = hpushbuttonSetAllZ;
             handles.pushbuttonSettingsAdd = hpushbuttonSettingsAdd;
             handles.pushbuttonSettingsDown = hpushbuttonSettingsDown;
             handles.pushbuttonSettingsDrop = hpushbuttonSettingsDrop;
@@ -483,7 +513,23 @@ classdef SuperMDATravelAgent_object2 < handle
             obj.gui_main = f;
             obj.refresh_gui_main;
         end
-        %%
+        %% Callbacks for gui_main
+        %    ___      _ _ _             _
+        %   / __|__ _| | | |__  __ _ __| |__ ___
+        %  | (__/ _` | | | '_ \/ _` / _| / /(_-<
+        %   \___\__,_|_|_|_.__/\__,_\__|_\_\/__/
+        %             _   __  __      _
+        %   __ _ _  _(_) |  \/  |__ _(_)_ _
+        %  / _` | || | | | |\/| / _` | | ' \
+        %  \__, |\_,_|_|_|_|  |_\__,_|_|_||_|
+        %  |___/      |___|
+        %% Callbacks for Region 1
+        %   ___          _            _
+        %  | _ \___ __ _(_)___ _ _   / |
+        %  |   / -_) _` | / _ \ ' \  | |
+        %  |_|_\___\__, |_\___/_||_| |_|
+        %          |___/
+        %% popupmenuUnitsOfTime_Callback
         %
         function obj = popupmenuUnitsOfTime_Callback(obj,~,~)
             handles = guidata(obj.gui_main);
@@ -491,6 +537,234 @@ classdef SuperMDATravelAgent_object2 < handle
             obj.uot_conversion = seconds2array(handles.popupmenuUnitsOfTime.Value);
             obj.refresh_gui_main;
         end
+        %% editFundamentalPeriod_Callback
+        %
+        function obj = editFundamentalPeriod_Callback(obj,~,~)
+            handles = guidata(obj.gui_main);
+            myValue = str2double(handles.editFundamentalPeriod.String)*smdaTA.uot_conversion;
+            smdaTA.itinerary.newFundamentalPeriod(myValue);
+            smdaTA.refresh_gui_main;
+        end
+        %% editDuration_Callback
+        %
+        function obj = editDuration_Callback(obj,~,~)
+            handles = guidata(obj.gui_main);
+            myValue = str2double(handles.editDuration.String)*smdaTA.uot_conversion;
+            smdaTA.itinerary.newDuration(myValue);
+            smdaTA.refresh_gui_main;
+        end
+        %% editNumberOfTimepoints_Callback
+        %
+        function obj = editNumberOfTimepoints_Callback(obj,~,~)
+            handles = guidata(obj.gui_main);
+            myValue = str2double(handles.editNumberOfTimepoints.String);
+            smdaTA.itinerary.newNumberOfTimepoints(myValue);
+            smdaTA.refresh_gui_main;
+        end
+        %% editOutputDirectory_Callback
+        %
+        function obj = editOutputDirectory_Callback(obj,~,~)
+            handles = guidata(obj.gui_main);
+            folder_name = handles.editOutputDirectory.String;
+            if exist(folder_name,'dir')
+                smdaTA.itinerary.output_directory = folder_name;
+            else
+                str = sprintf('''%s'' is not a directory',folder_name);
+                disp(str);
+            end
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonOutputDirectory_Callback
+        %
+        function obj = pushbuttonOutputDirectory_Callback(obj,~,~)
+            folder_name = uigetdir;
+            if folder_name==0
+                return
+            elseif exist(folder_name,'dir')
+                smdaTA.itinerary.output_directory = folder_name;
+            else
+                str = sprintf('''%s'' is not a directory',folder_name);
+                disp(str);
+            end
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonSave_Callback
+        %
+        function obj = pushbuttonSave_Callback(obj,~,~)
+            smdaTA.itinerary.export;
+        end
+        %%
+        %
+        function obj = pushbuttonLoad_Callback(obj,~,~)
+            uiwait(warndlg('The current SuperMDA will be erased!','Load a SuperMDA','modal'));
+            mypwd = pwd;
+            cd(smdaTA.itinerary.output_directory);
+            [filename,pathname] = uigetfile({'*.mat'},'Load a SuperMDAItinerary');
+            cd(mypwd);
+            if exist(fullfile(pathname,filename),'file')
+                smdaTA.itinerary.import(fullfile(pathname,filename));
+            else
+                disp('The SuperMDAItinerary file selected was invalid.');
+            end
+            smdaTA.refresh_gui_main;
+        end
+        %% Callbacks for Region 2
+        %   ___          _            ___
+        %  | _ \___ __ _(_)___ _ _   |_  )
+        %  |   / -_) _` | / _ \ ' \   / /
+        %  |_|_\___\__, |_\___/_||_| /___|
+        %          |___/
+        %% tableGroup_CellEditCallback
+        %
+        function obj = tableGroup_CellEditCallback(obj,~,eventdata)
+            %%
+            % |smdaTA.pointerGroup| should always be a singleton in this case
+            myCol = eventdata.Indices(2);
+            myGroupOrder = smdaTA.itinerary.order_group;
+            myRow = myGroupOrder(eventdata.Indices(1));
+            switch myCol
+                case 1 %label change
+                    if isempty(eventdata.NewData) || any(regexp(eventdata.NewData,'\W'))
+                        return
+                    else
+                        smdaTA.itinerary.group_label{myRow} = eventdata.NewData;
+                    end
+            end
+            smdaTA.refresh_gui_main;
+        end
+        %% tableGroup_CellSelectionCallback
+        %
+        function obj = tableGroup_CellSelectionCallback(obj,~,eventdata)
+            %%
+            % The main purpose of this function is to keep the information
+            % displayed in the table consistent with the Itinerary object.
+            % Changes to the object either through the command line or the gui
+            % can affect the information that is displayed in the gui and this
+            % function will keep the gui information consistent with the
+            % Itinerary information.
+            %
+            % The pointer of the TravelAgent should always point to a valid
+            % group from the the group_order.
+            if isempty(eventdata.Indices)
+                % if nothing is selected, which triggers after deleting data,
+                % make sure the pointer is still valid
+                if any(smdaTA.pointerGroup > smdaTA.itinerary.numberOfGroup)
+                    % move pointer to last entry
+                    smdaTA.pointerGroup = smdaTA.itinerary.numberOfGroup;
+                end
+                return
+            else
+                smdaTA.pointerGroup = sort(unique(eventdata.Indices(:,1)));
+            end
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonGroupAdd_Callback
+        %
+        function obj = pushbuttonGroupAdd_Callback(obj,~,~)
+            obj.itinerary.newGroup;
+            obj.pointerGroup = obj.itinerary.number_group;
+            obj.refresh_gui_main;
+        end
+        %% pushbuttonGroupDrop_Callback
+        %
+        function obj = pushbuttonGroupDrop_Callback(obj,~,~)
+            if smdaTA.itinerary.number_group == 1
+                return
+            elseif length(smdaTA.pointerGroup) == smdaTA.itinerary.number_group
+                smdaTA.pointerGroup(1) = [];
+            end
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInds = myGroupOrder(smdaTA.pointerGroup);
+            for i = 1:length(gInds)
+                smdaTA.itinerary.dropGroup(gInds(i));
+            end
+            smdaTA.pointerGroup = smdaTA.itinerary.numberOfGroup;
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonGroupFunctionBefore_Callback
+        %
+        function obj = pushbuttonGroupFunctionBefore_Callback(obj,~,~)
+            myGroupInd = smdaTA.itinerary.ind_group;
+            mypwd = pwd;
+            cd(smdaTA.itinerary.output_directory);
+            [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-before');
+            if exist(fullfile(pathname,filename),'file')
+                [smdaTA.itinerary.group_function_before{myGroupInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+            else
+                disp('The group-function-before selection was invalid.');
+            end
+            cd(mypwd);
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonGroupFunctionAfter_Callback
+        %
+        function obj = pushbuttonGroupFunctionAfter_Callback(obj,~,~)
+            myGroupInd = smdaTA.itinerary.ind_group;
+            mypwd = pwd;
+            cd(smdaTA.itinerary.output_directory);
+            [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-after');
+            if exist(fullfile(pathname,filename),'file')
+                [smdaTA.itinerary.group_function_after{myGroupInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+            else
+                disp('The group-function-after selection was invalid.');
+            end
+            cd(mypwd);
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonGroupDown_Callback
+        %
+        function obj = pushbuttonGroupDown_Callback(obj,~,~)
+            %%
+            % What follows below might have a more elegant solution.
+            % essentially all selected rows are moved down 1.
+            if max(smdaTA.pointerGroup) == smdaTA.itinerary.number_group
+                return
+            end
+            currentOrder = 1:smdaTA.itinerary.number_group; % what the table looks like now
+            movingGroup = smdaTA.pointerGroup+1; % where the selected rows want to go
+            reactingGroup = setdiff(currentOrder,smdaTA.pointerGroup); % the rows that are not moving
+            fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+            fillmeinArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
+            fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
+            % use the fillmeinArray to rearrange the groups
+            smdaTA.itinerary.order_group = smdaTA.itinerary.order_group(fillmeinArray);
+            %
+            smdaTA.pointerGroup = movingGroup;
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonGroupUp_Callback
+        %
+        function obj = pushbuttonGroupUp_Callback(obj,~,~)
+            %%
+            % What follows below might have a more elegant solution.
+            % essentially all selected rows are moved up 1.
+            if min(smdaTA.pointerGroup) == 1
+                return
+            end
+            currentOrder = 1:smdaTA.itinerary.number_group; % what the table looks like now
+            movingGroup = smdaTA.pointerGroup-1; % where the selected rows want to go
+            reactingGroup = setdiff(currentOrder,smdaTA.pointerGroup); % the rows that are not moving
+            newOrderArray = zeros(1,length(currentOrder)); % a vector to store the new order
+            newOrderArray(movingGroup) = smdaTA.pointerGroup; % the selected rows are moved
+            newOrderArray(newOrderArray==0) = reactingGroup; % the remaining rows are moved
+            % use the newOrderArray to rearrange the groups
+            smdaTA.itinerary.order_group = smdaTA.itinerary.order_group(newOrderArray);
+            %
+            smdaTA.pointerGroup = movingGroup;
+            smdaTA.refresh_gui_main;
+        end
+        %% Callbacks for Region 3
+        %   ___          _            ____
+        %  | _ \___ __ _(_)___ _ _   |__ /
+        %  |   / -_) _` | / _ \ ' \   |_ \
+        %  |_|_\___\__, |_\___/_||_| |___/
+        %          |___/
+        %%
+        %    ___                       _   __  __     _   _            _
+        %   / __|___ _ _  ___ _ _ __ _| | |  \/  |___| |_| |_  ___  __| |___
+        %  | (_ / -_) ' \/ -_) '_/ _` | | | |\/| / -_)  _| ' \/ _ \/ _` (_-<
+        %   \___\___|_||_\___|_| \__,_|_| |_|  |_\___|\__|_||_\___/\__,_/__/
+        %
         %%
         %
         function obj = refresh_gui_main(obj)
