@@ -396,8 +396,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.orderVector = 1:size(newGPS,1);
             obj.gps_logical = true(size(newGPS,1),1);
         end
-        %% Method to change the number of timepoints
-        %
+        %% newNumberOfTimepoints
+        % Method to change the number of timepoints
         function obj = newNumberOfTimepoints(obj,mynum)
             %%%
             % check to see that number of timepoints is a reasonable number
@@ -411,8 +411,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
         end
-        %% Method to change the fundamental period (units in seconds)
-        %
+        %% newFundamentalPeriod
+        % a method to change the fundamental period (units in seconds)
         function obj = newFundamentalPeriod(obj,mynum)
             %%%
             % check to see that number of timepoints is a reasonable number
@@ -427,8 +427,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
         end
-        %% Method to change the duration
-        %
+        %% newDuration
+        % a methond to change the duration
         function obj = newDuration(obj,mynum)
             %%%
             % check to see that number of timepoints is a reasonable number
@@ -484,7 +484,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % "forgotten". Positions and settings unique to that group are
         % removed.
         %
-        % *g: the index of the group to be dropped.
+        % * g: the index of the group to be dropped.
         function obj = dropGroup(obj,g)
             %%%
             % determine if this is the only group
@@ -579,6 +579,61 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             %
             obj.find_pointer_next_position;
         end
+        %% dropPosition
+        % a position and settings therin shall be "forgotten". Settings
+        % unique to that position are removed.
+        %
+        % * p: the index of the group to be dropped.
+        function obj = dropPosition(obj,p)
+            %%%
+            % parse the input
+            existingP = 1:numel(obj.position_logical);
+            existingP = existingP(obj.position_logical);
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'p',0, @(x) ismember(x,existingP));
+            parse(q,p);
+            %%%
+            % Find the settings unique to the position
+            p = q.Results.p;
+            myPIndOthers = setdiff(p,existingP);
+            mySInd = unique(horzcat(obj.ind_settings{p}));
+            mySIndOthers = unique(...
+                horzcat(...
+                obj.ind_settings{...
+                myPIndOthers}));
+            mySIndUniq2Pos = setdiff(mySInd,...
+                intersect(mySInd,mySIndOthers));
+            %%%
+            % remove the group and its unique positions and settings from
+            % the logical arrays
+            obj.position_logical(p) = false;
+            obj.settings_logical(mySIndUniq2Pos) = false;
+            %%%
+            % find the group that contains the position
+            myGInd4PosLogical = cellfun(@(x) ismember(p,x),obj.ind_position);
+            myGInd4Pos = 1:numel(obj.group_logical);
+            myGInd4Pos = myGInd4Pos(myGInd4PosLogical);
+            %%%
+            % remove the position and its unique settings from the ind and
+            % order arrays
+            for i = myGInd4Pos
+                obj.ind_position{i} = obj.ind_position{i}(obj.ind_position{i} ~= p);
+                obj.order_position{i} = obj.order_position{i}(obj.order_position{i} ~= p);
+            end
+            obj.ind_settings{myPIndUniq2Grp} = [];
+            obj.order_settings{myPIndUniq2Grp} = [];
+            %%%
+            % update the numbers and pointers
+            for i = myGInd4Pos
+                obj.number_position(i) = numel(obj.ind_position{i});
+            end
+            for i = myPIndUniq2Grp
+                obj.number_settings(i) = 0;
+            end
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
+        end
         %%
         %
         function obj = find_pointer_next_position(obj)
@@ -637,7 +692,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % Take all the settings for a given position, p, and mirror
         % these settings across all positions
         function obj = mirrorSettings(obj,p,varargin)
-                        %%%
+            %%%
             % parse the input
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
