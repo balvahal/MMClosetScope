@@ -196,6 +196,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % * newNumberOfTimepoints
     % * newFundamentalPeriod
     % * newDuration
+    % * dropEmpty
     %
     % *GROUP*
     %
@@ -428,7 +429,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
         end
         %% newDuration
-        % a methond to change the duration
+        % a method to change the duration
         function obj = newDuration(obj,mynum)
             %%%
             % check to see that number of timepoints is a reasonable number
@@ -442,6 +443,62 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% dropEmpty
+        % The following conditions will be considered empty and will
+        % therefore be dropped:
+        %
+        % * A group that has no positions
+        % * A position that has no settings
+        % * A position that is not in any group
+        % * A settings that is not in any position
+        function obj = dropEmpty(obj)
+            %%% A group that has no positions
+            % the number arrays will show if a group or position is empty
+            myGInd = 1:numel(obj.group_logical);
+            myGInd = myGInd(obj.number_position == 0);
+            obj.group_logical(myGInd) = false;
+            myGIndLogical = ismember(obj.ind_group,myGInd);
+            obj.ind_group(myGIndLogical) = [];
+            myGIndLogical = ismember(obj.order_group,myGInd);
+            obj.order_group(myGIndLogical) = [];
+            %%% A position that has no settings
+            %
+            myPInd = 1:numel(obj.position_logical);
+            myPInd = myPInd(obj.number_settings == 0);
+            obj.position_logical(myPInd) = false;
+            for i = obj.ind_group
+                myPIndLogical = ismember(obj.ind_position{i},myPInd);
+                obj.ind_position{i}(myPIndLogical) = [];
+                myPIndLogical = ismember(obj.order_position{i},myPInd);
+                obj.order_position{i}(myPIndLogical) = [];
+            end
+            %%% A position that is not in any group
+            %
+            allPosition = unique(...
+                horzcat(obj.ind_position{...
+                obj.ind_group})); %from order and ind
+            obj.position_logical = false(numel(obj.position_logical),1);
+            obj.position_logical(allPosition) = true;
+            %%% A settings that is not in any position
+            %
+            allSettings = unique(...
+                horzcat(obj.ind_settings{...
+                allPosition})); %from order and ind
+            obj.settings_logical = false(numel(obj.settings_logical),1);
+            obj.settings_logical(allSettings) = true;
+            %%%
+            % update the pointers and numbers
+            obj.find_pointer_next_group;
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
+            obj.number_group = numel(obj.ind_group);
+            for i = 1:numel(obj.group_logical)
+                obj.number_position(i) = numel(obj.ind_position{i});
+            end
+            for i = 1:numel(obj.position_logical)
+            obj.number_settings(i) = numel(obj.ind_settings{i});
+            end
         end
         %% Group: methods
         %    ___
@@ -487,12 +544,14 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % * g: the index of the group to be dropped.
         function obj = dropGroup(obj,g)
             %%%
-            % determine if this is the only group
-            if obj.number_group == 1
-                % if there is only a single group do not remove it
-                warning('obj:oneGrp','There is only a single group, so it will not be dropped.');
-                return;
-            end
+            % parse the input
+            existingG = 1:numel(obj.group_logical);
+            existingG = existingG(obj.group_logical);
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'g',0, @(x) ismember(x,existingG));
+            parse(q,g);
+            g = q.Results.g;
             %%%
             % Find the positions and settings unique to the group
             myPInd = obj.ind_position{g};
