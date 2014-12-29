@@ -583,7 +583,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % a position and settings therin shall be "forgotten". Settings
         % unique to that position are removed.
         %
-        % * p: the index of the group to be dropped.
+        % * p: the index of the position to be dropped.
         function obj = dropPosition(obj,p)
             %%%
             % parse the input
@@ -605,12 +605,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             mySIndUniq2Pos = setdiff(mySInd,...
                 intersect(mySInd,mySIndOthers));
             %%%
-            % remove the group and its unique positions and settings from
-            % the logical arrays
+            % remove the position and its unique settings from the logical
+            % arrays
             obj.position_logical(p) = false;
             obj.settings_logical(mySIndUniq2Pos) = false;
             %%%
-            % find the group that contains the position
+            % find the group(s) that contains the position
             myGInd4PosLogical = cellfun(@(x) ismember(p,x),obj.ind_position);
             myGInd4Pos = 1:numel(obj.group_logical);
             myGInd4Pos = myGInd4Pos(myGInd4PosLogical);
@@ -621,14 +621,14 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 obj.ind_position{i} = obj.ind_position{i}(obj.ind_position{i} ~= p);
                 obj.order_position{i} = obj.order_position{i}(obj.order_position{i} ~= p);
             end
-            obj.ind_settings{myPIndUniq2Grp} = [];
-            obj.order_settings{myPIndUniq2Grp} = [];
+            obj.ind_settings{p} = [];
+            obj.order_settings{p} = [];
             %%%
             % update the numbers and pointers
             for i = myGInd4Pos
                 obj.number_position(i) = numel(obj.ind_position{i});
             end
-            for i = myPIndUniq2Grp
+            for i = p
                 obj.number_settings(i) = 0;
             end
             obj.find_pointer_next_position;
@@ -659,9 +659,9 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
             parse(q,obj,varargin{:});
             
-            %%% create new group
-            % Each group property needs a new row. Use the first group as a template
-            % for the newest group.
+            %%% create new settings
+            % Each settings property needs a new row. Use the first
+            % settings as a template for the newest settings.
             s = obj.pointer_next_settings;
             obj.settings_binning(s) = obj.settings_binning(1);
             obj.settings_channel(s) = obj.settings_channel(1);
@@ -677,6 +677,40 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             
             %%% update order, indices, and pointers
             %
+            obj.find_pointer_next_settings;
+        end
+        %% dropSettings
+        % a settings shall be "forgotten".
+        %
+        % * s: the index of the settings to be dropped.
+        function obj = dropSettings(obj,s)
+            %%%
+            % parse the input
+            existingS = 1:numel(obj.settings_logical);
+            existingS = existingS(obj.settings_logical);
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 's',0, @(x) ismember(x,existingS));
+            parse(q,s);
+            %%%
+            % remove the settings from the logical arrays
+            obj.settings_logical(s) = false;
+            %%%
+            % find the position(s) that contains the settings
+            myPInd4SetLogical = cellfun(@(x) ismember(s,x),obj.ind_position);
+            myPInd4Set = 1:numel(obj.group_logical);
+            myPInd4Set = myPInd4Set(myPInd4SetLogical);
+            %%%
+            % remove settings from the ind and order arrays
+            for i = myPInd4Set
+                obj.ind_settings{i} = obj.ind_settings{i}(obj.ind_settings{i} ~= s);
+                obj.order_settings{i} = obj.order_settings{i}(obj.order_settings{i} ~= s);
+            end
+            %%%
+            % update the numbers and pointers
+            for i = myPInd4Set
+                obj.number_settings(i) = numel(obj.ind_settings{i});
+            end
             obj.find_pointer_next_settings;
         end
         %%
