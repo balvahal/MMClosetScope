@@ -33,7 +33,7 @@ function n = allNumelCell(A)
         if iscell(A{i})
             n = n + numel(A{i});
         else
-            n = n + 1; %n = n + numel(A{i});
+            n = n + 1;
         end
     end
 end
