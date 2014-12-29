@@ -16,14 +16,17 @@ classdef SuperMDATravelAgent_object < handle
         %% The constructor method
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
-        function obj = SuperMDATravelAgent_object(smdaITF)
-            if ~isa(smdaITF,'SuperMDAItineraryTimeFixed_object')
-                error('smdaTA:input','The input is not a SuperMDAItineraryTimeFixed_object');
-            end
+        function obj = SuperMDATravelAgent_object(smdaITF,mm)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'smdaITF', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'mm', @(x) isa(x,'Core_MicroManagerHandle'));
+            parse(q,smdaITF,mm);
             %% Initialzing the SuperMDA object
             %
-            obj.itinerary = smdaITF;
-            obj.mm = smdaITF.mm;
+            obj.itinerary = q.Results.smdaITF;
+            obj.mm = q.Results.mm;
             %% Create a simple gui to enable pausing and stopping
             %
             obj.gui_main = SuperMDATravelAgent_gui_main(obj);
