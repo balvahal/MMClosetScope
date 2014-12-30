@@ -876,17 +876,20 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % Each group property needs a new row. Use the first group as a template
             % for the newest group.
             g = obj.pointer_next_group;
-            obj.group_function_after(g) = obj.group_function_after{1};
-            obj.group_function_before(g) = obj.group_function_before{1};
-            obj.group_label(g) = sprintf('group%d',g);
+            obj.group_function_after{g} = obj.group_function_after{1};
+            obj.group_function_before{g} = obj.group_function_before{1};
+            obj.group_label{g} = sprintf('group%d',g);
             obj.group_logical(g) = true;
             
             %%% update order, indices, and pointers
             %
             obj.find_pointer_next_group;
             obj.number_group = obj.number_group + 1;
+            obj.number_position(g) = 0;
             obj.ind_group = sort(horzcat(obj.ind_group,g));
             obj.order_group(end+1) = g;
+            obj.ind_position{g} = [];
+            obj.order_position{g} = [];
         end
         %% dropGroup
         % a group and all the positions and settings therin shall be
@@ -988,7 +991,10 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.position_xyz(p,:) = obj.mm.getXYZ;
             %%% update order, indices, and pointers
             %
+            obj.number_settings(p) = 0;
             obj.find_pointer_next_position;
+            obj.ind_settings{p} = [];
+            obj.order_settings{p} = [];
         end
         %% dropPosition
         % a position and settings therin shall be "forgotten". Settings
