@@ -273,8 +273,8 @@ classdef SuperMDATravelAgent_object2 < handle
                 'ColumnFormat',{'char','numeric','numeric','numeric','numeric',{'yes','no'},'numeric','char','char','numeric'},...
                 'ColumnWidth',{30*ppChar(3) 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 30*ppChar(3) 30*ppChar(3) 'auto'},...
                 'FontSize',8,'FontName','Verdana',...
-                'CellEditCallback',@tablePosition_CellEditCallback,...
-                'CellSelectionCallback',@tablePosition_CellSelectionCallback,...
+                'CellEditCallback',{@obj.tablePosition_CellEditCallback},...
+                'CellSelectionCallback',{@obj.tablePosition_CellSelectionCallback},...
                 'Position',[region3(1)+2, region3(2)+0.7692, 91.6, 28.1538]);
             %%% add or drop positions
             %
@@ -282,7 +282,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','Add',...
                 'Position',[fwidth - 4 - buttonSize(1)*1.25, region3(2)+14.0769+7.6923, buttonSize(1)*.75,buttonSize(2)],...
-                'Callback',{@pushbuttonPositionAdd_Callback});
+                'Callback',{@obj.pushbuttonPositionAdd_Callback});
             
             uicontrol('Style','text','Units','characters','String','Add a position',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -292,7 +292,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','Drop',...
                 'Position',[fwidth - 4 - buttonSize(1)*1.25, region3(2)+14.0769+0.7692, buttonSize(1)*.75,buttonSize(2)],...
-                'Callback',{@pushbuttonPositionDrop_Callback});
+                'Callback',{@obj.pushbuttonPositionDrop_Callback});
             
             uicontrol('Style','text','Units','characters','String','Drop a position',...
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -307,7 +307,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','Dn',...
                 'Position',[fwidth - 6 - buttonSize(1)*1.75, region3(2)+14.0769+0.7692, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonPositionDown_Callback});
+                'Callback',{@obj.pushbuttonPositionDown_Callback});
             
             uicontrol('Style','text','Units','characters','String',sprintf('Move\nPosition\nUp'),...
                 'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -317,14 +317,14 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','Up',...
                 'Position',[fwidth - 6 - buttonSize(1)*1.75, region3(2)+14.0769+7.6923, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonPositionUp_Callback});
+                'Callback',{@obj.pushbuttonPositionUp_Callback});
             %%% move to a position
             %
             hpushbuttonPositionMove = uicontrol('Style','pushbutton','Units','characters',...
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','Move',...
                 'Position',[fwidth - 6 - buttonSize(1)*1.75, region3(2)+7.6923, buttonSize(1),buttonSize(2)],...
-                'Callback',{@pushbuttonPositionMove_Callback});
+                'Callback',{@obj.pushbuttonPositionMove_Callback});
             
             uicontrol('Style','text','Units','characters','String',sprintf('Move the stage\nto the\nselected position'),...
                 'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -335,7 +335,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',14,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','Set',...
                 'Position',[fwidth - 6 - buttonSize(1)*1.75, region3(2)+0.7692, buttonSize(1),buttonSize(2)],...
-                'Callback',{@pushbuttonPositionSet_Callback});
+                'Callback',{@obj.pushbuttonPositionSet_Callback});
             
             uicontrol('Style','text','Units','characters','String',sprintf('Set the position\nto the current\nstage position'),...
                 'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -346,7 +346,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',10,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String',sprintf('Set All Z'),...
                 'Position',[fwidth - 2 - buttonSize(1)*.75, region3(2)+7.6923, buttonSize(1)*.75,buttonSize(2)],...
-                'Callback',{@pushbuttonSetAllZ_Callback});
+                'Callback',{@obj.pushbuttonSetAllZ_Callback});
             
             uicontrol('Style','text','Units','characters','String',sprintf('Add a grid\nof positions'),...
                 'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -361,7 +361,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','...',...
                 'Position',[fwidth - 2 - buttonSize(1)*0.5, region3(2)+14.0769+0.7692, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonPositionFunctionBefore_Callback});
+                'Callback',{@obj.pushbuttonPositionFunctionBefore_Callback});
             
             uicontrol('Style','text','Units','characters','String',sprintf('Position\nFunction\nAfter'),...
                 'FontSize',7,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion3,...
@@ -371,7 +371,7 @@ classdef SuperMDATravelAgent_object2 < handle
                 'FontSize',20,'FontName','Verdana','BackgroundColor',buttonBackgroundColorRegion3,...
                 'String','...',...
                 'Position',[fwidth - 2 - buttonSize(1)*0.5, region3(2)+14.0769+7.6923, buttonSize(1)*.5,buttonSize(2)],...
-                'Callback',{@pushbuttonPositionFunctionAfter_Callback});
+                'Callback',{@obj.pushbuttonPositionFunctionAfter_Callback});
             %% Assemble Region 4
             %   ___          _            _ _
             %  | _ \___ __ _(_)___ _ _   | | |
@@ -758,6 +758,245 @@ classdef SuperMDATravelAgent_object2 < handle
         %  | _ \___ __ _(_)___ _ _   |__ /
         %  |   / -_) _` | / _ \ ' \   |_ \
         %  |_|_\___\__, |_\___/_||_| |___/
+        %          |___/
+        %% tablePosition_CellEditCallback
+        %
+        function obj = tablePosition_CellEditCallback(obj,~,eventdata)
+            %%
+            % |smdaTA.pointerPosition| should always be a singleton in this
+            % case
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            myCol = eventdata.Indices(2);
+            myPositionOrder = smdaTA.itinerary.order_position{gInd};
+            myRow = myPositionOrder(eventdata.Indices(1));
+            switch myCol
+                case 1 %label change
+                    if isempty(eventdata.NewData) || any(regexp(eventdata.NewData,'\W'))
+                        return
+                    else
+                        smdaTA.itinerary.position_label{myRow} = eventdata.NewData;
+                    end
+                case 3 %X
+                    smdaTA.itinerary.position_xyz(myRow,1) = eventdata.NewData;
+                case 4 %Y
+                    smdaTA.itinerary.position_xyz(myRow,2) = eventdata.NewData;
+                case 5 %Z
+                    smdaTA.itinerary.position_xyz(myRow,3) = eventdata.NewData;
+                case 6 %PFS
+                    if strcmp(eventdata.NewData,'yes')
+                        smdaTA.itinerary.position_continuous_focus_bool(myRow) = true;
+                    else
+                        smdaTA.itinerary.position_continuous_focus_bool(myRow) = false;
+                    end
+                    smdaTA.itinerary.position_continuous_focus_bool(myPositionOrder) = smdaTA.itinerary.position_continuous_focus_bool(myRow);
+                case 7 %PFS offset
+                    smdaTA.itinerary.position_continuous_focus_offset(myRow) = eventdata.NewData;
+            end
+            smdaTA.refresh_gui_main;
+        end
+        %% tablePosition_CellSelectionCallback
+        %
+        function obj = tablePosition_CellSelectionCallback(obj,~,eventdata)
+            %%
+            % The main purpose of this function is to keep the information
+            % displayed in the table consistent with the Itinerary object.
+            % Changes to the object either through the command line or the gui
+            % can affect the information that is displayed in the gui and this
+            % function will keep the gui information consistent with the
+            % Itinerary information.
+            %
+            % The pointer of the TravelAgent should always point to a valid
+            % position from the the position_order in a given group.
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            if isempty(eventdata.Indices)
+                % if nothing is selected, which triggers after deleting data,
+                % make sure the pointer is still valid
+                if any(smdaTA.pointerPosition > smdaTA.itinerary.number_position(gInd))
+                    % move pointer to last entry
+                    smdaTA.pointerPosition = smdaTA.itinerary.number_position(gInd);
+                end
+                return
+            else
+                smdaTA.pointerPosition = sort(unique(eventdata.Indices(:,1)));
+            end
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonPositionAdd_Callback
+        %
+        function obj = pushbuttonPositionAdd_Callback(obj,~,~)
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            pInd = smdaTA.itinerary.newPosition;
+            smdaTA.itinerary.connectGPS('g',gInd,'p',pInd);
+            smdaTA.pointerPosition = smdaTA.itinerary.number_position(gInd);
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonPositionDrop_Callback
+        %
+        function obj = pushbuttonPositionDrop_Callback(obj,~,~)
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            if smdaTA.itinerary.number_position(gInd)==1
+                return
+            elseif length(smdaTA.pointerPosition) == smdaTA.itinerary.number_position(gInd)
+                smdaTA.pointerPosition(1) = [];
+            end
+            myPositionInd = smdaTA.itinerary.order_position{gInd};
+            for i = 1:length(smdaTA.pointerPosition)
+                smdaTA.itinerary.dropPosition(myPositionInd(smdaTA.pointerPosition(i)));
+            end
+            smdaTA.pointerPosition = smdaTA.itinerary.number_position(gInd);
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonPositionDown_Callback
+        %
+        function obj = pushbuttonPositionDown_Callback(obj,~,~)
+            %%
+            % What follows below might have a more elegant solution.
+            % essentially all selected rows are moved down 1.
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            if max(smdaTA.pointerPosition) == smdaTA.itinerary.number_position(gInd)
+                return
+            end
+            currentOrder = 1:smdaTA.itinerary.number_position(gInd); % what the table looks like now
+            movingPosition = smdaTA.pointerPosition+1; % where the selected rows want to go
+            reactingPosition = setdiff(currentOrder,smdaTA.pointerPosition); % the rows that are not moving
+            fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+            fillmeinArray(movingPosition) = smdaTA.pointerPosition; % the selected rows are moved
+            fillmeinArray(fillmeinArray==0) = reactingPosition; % the remaining rows are moved
+            % use the fillmeinArray to rearrange the positions
+            smdaTA.itinerary.order_position{gInd} = smdaTA.itinerary.order_position{gInd}(fillmeinArray);
+            %
+            smdaTA.pointerPosition = movingPosition;
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonPositionUp_Callback
+        %
+        function obj = pushbuttonPositionUp_Callback(obj,~,~)
+            %%
+            % What follows below might have a more elegant solution.
+            % essentially all selected rows are moved up 1.
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            if min(smdaTA.pointerPosition) == 1
+                return
+            end
+            currentOrder = 1:smdaTA.itinerary.numberOfPosition(gInd); % what the table looks like now
+            movingPosition = smdaTA.pointerPosition-1; % where the selected rows want to go
+            reactingPosition = setdiff(currentOrder,smdaTA.pointerPosition); % the rows that are not moving
+            fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
+            fillmeinArray(movingPosition) = smdaTA.pointerPosition; % the selected rows are moved
+            fillmeinArray(fillmeinArray==0) = reactingPosition; % the remaining rows are moved
+            % use the fillmeinArray to rearrange the positions
+            smdaTA.itinerary.order_position{gInd} = smdaTA.itinerary.order_position{gInd}(fillmeinArray);
+            %
+            smdaTA.pointerPosition = movingPosition;
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonPositionMove_Callback
+        %
+        function obj = pushbuttonPositionMove_Callback(obj,~,~)
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            pInd = smdaTA.itinerary.order_position{gInd};
+            pInd = pInd(smdaTA.pointerPosition(1));
+            xyz = smdaTA.itinerary.position_xyz(pInd,:);
+            if smdaTA.itinerary.position_continuous_focus_bool(pInd)
+                %% PFS lock-on will be attempted
+                %
+                smdaTA.mm.setXYZ(xyz(1:2)); % setting the z through the focus device will disable the PFS. Therefore, the stage is moved in the XY direction before assessing the status of the PFS system.
+                smdaTA.mm.core.waitForDevice(smdaTA.mm.xyStageDevice);
+                if strcmp(smdaTA.mm.core.getProperty(smdaTA.mm.AutoFocusStatusDevice,'State'),'Off')
+                    %%
+                    % If the PFS is |OFF|, then the scope is moved to an
+                    % absolute z that will give the system the best chance of
+                    % locking onto the correct z.
+                    smdaTA.mm.setXYZ(xyz(3),'direction','z');
+                    smdaTA.mm.core.waitForDevice(smdaTA.mm.FocusDevice);
+                    smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.position_continuous_focus_offset(pInd));
+                    smdaTA.mm.core.fullFocus(); % PFS will return to |OFF|
+                else
+                    %%
+                    % If the PFS system is already on, then changing the offset
+                    % will adjust the z-position. fullFocus() will have the
+                    % system wait until the new z-position has been reached.
+                    smdaTA.mm.core.setProperty(smdaTA.mm.AutoFocusDevice,'Position',smdaTA.itinerary.position_continuous_focus_offset(pInd));
+                    smdaTA.mm.core.fullFocus(); % PFS will remain |ON|
+                end
+            else
+                %% PFS will not be utilized
+                %
+                smdaTA.mm.setXYZ(xyz);
+                smdaTA.mm.core.waitForDevice(smdaTA.mm.FocusDevice);
+                smdaTA.mm.core.waitForDevice(smdaTA.mm.xyStageDevice);
+            end
+        end
+        %% pushbuttonPositionSet_Callback
+        %
+        function obj = pushbuttonPositionSet_Callback(obj,~,~)
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            pInd = smdaTA.itinerary.order_position{gInd};
+            pInd = pInd(smdaTA.pointerPosition(1));
+            smdaTA.mm.getXYZ;
+            smdaTA.itinerary.position_xyz(pInd,:) = smdaTA.mm.pos;
+            smdaTA.itinerary.position_continuous_focus_offset(pInd) = str2double(smdaTA.mm.core.getProperty(smdaTA.mm.AutoFocusDevice,'Position'));
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonSetAllZ_Callback
+        %
+        function obj = pushbuttonSetAllZ_Callback(obj,~,~)
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            myPInd = smdaTA.itinerary.ind_position{gInd};
+            smdaTA.itinerary.position_continuous_focus_offset(myPInd) = str2double(smdaTA.mm.core.getProperty(smdaTA.mm.AutoFocusDevice,'Position'));
+            xyz = smdaTA.mm.getXYZ;
+            smdaTA.itinerary.position_xyz(myPInd,3) = xyz(3);
+            fprintf('positions in group %d have Z postions updated!\n',gInd);
+        end
+        %% pushbuttonPositionFunctionBefore_Callback
+        %
+        function obj = pushbuttonPositionFunctionBefore_Callback(obj,~,~)
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            mypwd = pwd;
+            myPositionInd = smdaTA.itinerary.ind_position{gInd};
+            cd(smdaTA.itinerary.output_directory);
+            [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-before');
+            if exist(fullfile(pathname,filename),'file')
+                [smdaTA.itinerary.position_function_before{myPositionInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+            else
+                disp('The position-function-before selection was invalid.');
+            end
+            cd(mypwd);
+            smdaTA.refresh_gui_main;
+        end
+        %% pushbuttonPositionFunctionAfter_Callback
+        %
+        function obj = pushbuttonPositionFunctionAfter_Callback(obj,~,~)
+            myGroupOrder = smdaTA.itinerary.order_group;
+            gInd = myGroupOrder(smdaTA.pointerGroup(1));
+            mypwd = pwd;
+            myPositionInd = smdaTA.itinerary.ind_position{gInd};
+            cd(smdaTA.itinerary.output_directory);
+            [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-after');
+            if exist(fullfile(pathname,filename),'file')
+                [smdaTA.itinerary.position_function_after{myPositionInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+            else
+                disp('The position-function-before selection was invalid.');
+            end
+            cd(mypwd);
+            smdaTA.refresh_gui_main;
+        end
+        
+        %% Callbacks for Region 4
+        %   ___          _            _ _
+        %  | _ \___ __ _(_)___ _ _   | | |
+        %  |   / -_) _` | / _ \ ' \  |_  _|
+        %  |_|_\___\__, |_\___/_||_|   |_|
         %          |___/
         %%
         %    ___                       _   __  __     _   _            _

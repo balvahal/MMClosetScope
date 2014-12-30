@@ -353,23 +353,27 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                         s2add = setdiff(s,obj.ind_settings{p});
                         obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
                         obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
+                        obj.number_settings(p) = obj.number_settings(p) + 1;
                     end
                 case 6
                     for i = g
                         p2add = setdiff(p,obj.ind_position{g});
                         obj.order_position{g} = horzcat(obj.order_position{g},p2add);
                         obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
+                        obj.number_position(g) = obj.number_position(g) + 1;
                     end
                 case 7
                     for i = p
                         s2add = setdiff(s,obj.ind_settings{p});
                         obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
                         obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
+                        obj.number_settings(p) = obj.number_settings(p) + 1;
                     end
                     for i = g
                         p2add = setdiff(p,obj.ind_position{g});
                         obj.order_position{g} = horzcat(obj.order_position{g},p2add);
                         obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
+                        obj.number_position(g) = obj.number_position(g) + 1;
                     end
                 otherwise
                     error('smdaITF:conGPS','The input parameters were an invalid combination.');
@@ -859,7 +863,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %
         % * pNum: add _pNum_ new positions to this group
         % * sNum: each added position will share _sNum_ new settings
-        function obj = newGroup(obj,varargin)
+        function g = newGroup(obj,varargin)
             %%%
             % parse the input
             q = inputParser;
@@ -961,7 +965,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % A single position is created.
         %
         % * sNum: this position will have _sNum_ new settings
-        function obj = newPosition(obj,varargin)
+        function p = newPosition(obj,varargin)
             %%%
             % parse the input
             q = inputParser;
@@ -1058,7 +1062,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %                          |___/
         %% newSettings
         %
-        function obj = newSettings(obj,varargin)
+        function s = newSettings(obj,varargin)
             %%%
             % parse the input
             q = inputParser;
