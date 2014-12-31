@@ -691,7 +691,7 @@ classdef SuperMDATravelAgent_object < handle
             for i = 1:length(gInds)
                 obj.ity.dropGroup(gInds(i));
             end
-            obj.pointerGroup = obj.ity.numberOfGroup;
+            obj.pointerGroup = obj.ity.number_group;
             obj.refresh_gui_main;
         end
         %% pushbuttonGroupFunctionBefore_Callback
@@ -1229,6 +1229,20 @@ classdef SuperMDATravelAgent_object < handle
         %  | (_ / -_) ' \/ -_) '_/ _` | | | |\/| / -_)  _| ' \/ _ \/ _` (_-<
         %   \___\___|_||_\___|_| \__,_|_| |_|  |_\___|\__|_||_\___/\__,_/__/
         %
+        %%
+        %
+        function obj = createOrdinalLabels(obj,varargin)
+            p = inputParser;
+            addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
+            parse(p,obj,varargin{:});
+            for i = obj.ity.ind_group
+                counter = 1;
+                for j = obj.ity.order_position{i}
+                    obj.ity.position_label{j} = sprintf('position%d',counter);
+                    counter = counter + 1;
+                end
+            end
+        end
         %%
         %
         function obj = refresh_gui_main(obj)

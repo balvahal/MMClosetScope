@@ -47,7 +47,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         png_path; %?
         imageHeightNoBin
         imageWidthNoBin
-                
+        
         %%% Indices
         %
         % * ind_first_group
@@ -387,7 +387,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             %% organize and clean up the object
             % to ensure self-consistency
             obj.dropEmpty;
-            obj.gpsFromOrder;
+            obj.organizeByOrder
             %% convert data into JSON
             %
             jsonStrings = {};
@@ -904,8 +904,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             existingG = existingG(obj.group_logical);
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addRequired(q, 'g',0, @(x) ismember(x,existingG));
-            parse(q,g);
+            addRequired(q, 'g', @(x) ismember(x,existingG));
+            parse(q,obj,g);
             g = q.Results.g;
             %%%
             % Find the positions and settings unique to the group
@@ -934,10 +934,10 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % the ind and order arrays
             obj.ind_group(obj.ind_group == g) = [];
             obj.ind_position{g} = [];
-            obj.ind_settings{myPIndUniq2Grp} = [];
+            [obj.ind_settings{myPIndUniq2Grp}] = deal([]);
             obj.order_group(obj.order_group == g) = [];
             obj.order_position{g} = [];
-            obj.order_settings{myPIndUniq2Grp} = [];
+            [obj.order_settings{myPIndUniq2Grp}] = deal([]);
             %%%
             % update the numbers and pointers
             obj.number_group = numel(obj.ind_group);
@@ -1008,12 +1008,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             existingP = existingP(obj.position_logical);
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addRequired(q, 'p',0, @(x) ismember(x,existingP));
-            parse(q,p);
+            addRequired(q, 'p', @(x) ismember(x,existingP));
+            parse(q,obj,p);
             %%%
             % Find the settings unique to the position
             p = q.Results.p;
-            myPIndOthers = setdiff(p,existingP);
+            myPIndOthers = setdiff(existingP,p);
             mySInd = unique(horzcat(obj.ind_settings{p}));
             mySIndOthers = unique(...
                 horzcat(...
@@ -1107,8 +1107,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             existingS = existingS(obj.settings_logical);
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addRequired(q, 's',0, @(x) ismember(x,existingS));
-            parse(q,s);
+            addRequired(q, 's', @(x) ismember(x,existingS));
+            parse(q,obj,s);
             %%%
             % remove the settings from the logical arrays
             obj.settings_logical(s) = false;

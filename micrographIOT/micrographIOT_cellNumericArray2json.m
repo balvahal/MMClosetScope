@@ -11,16 +11,24 @@ elseif ~isrow(myarray) && ~iscolumn(myarray)
 elseif allNumelCell(myarray) ~= numel(myarray)
     error('mIOTcna2json:nestedCell','The cell input had nested cell elements, so no action was taken');
 end
-myjson = sprintf('"%s": [\n',myarrayname); %#ok<*AGROW>
+myjson = sprintf('"%s": [\n[',myarrayname); %#ok<*AGROW>
 if iscell(myarray)
     for i = 1:(length(myarray)-1)
         myarrayloop = myarray{i};
-        myjson = horzcat(myjson,sprintf('%d,',myarrayloop(i,1:end-1)));
-        myjson = horzcat(myjson,sprintf('%d],\n[',myarrayloop(i,end)));
+        if numel(myarrayloop) == 1
+            myjson = horzcat(myjson,sprintf('%d],\n[',myarrayloop));
+        else
+            myjson = horzcat(myjson,sprintf('%d,',myarrayloop(1:end-1)));
+            myjson = horzcat(myjson,sprintf('%d],\n[',myarrayloop(end)));
+        end
     end
     myarrayloop = myarray{end};
-    myjson = horzcat(myjson,sprintf('%d,',myarrayloop(end,1:end-1)));
-    myjson = horzcat(myjson,sprintf('%d]\n]',myarrayloop(end,end)));
+    if numel(myarrayloop) == 1
+        myjson = horzcat(myjson,sprintf('%d]\n]',myarrayloop));
+    else
+        myjson = horzcat(myjson,sprintf('%d,',myarrayloop(1:end-1)));
+        myjson = horzcat(myjson,sprintf('%d]\n]',myarrayloop(end)));
+    end
 end
 end
 
