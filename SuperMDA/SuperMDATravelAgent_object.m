@@ -1,5 +1,4 @@
 %%
-%
 %   ___                    __  __ ___   _
 %  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\
 %  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \
@@ -524,11 +523,11 @@ classdef SuperMDATravelAgent_object < handle
         %  \__, |\_,_|_|_|_|  |_\__,_|_|_||_|
         %  |___/      |___|
         %%
-%
-    function obj = fDeleteFcn(obj,~,~)
-        %do nothing. This means only the master object can close this
-        %window.
-    end
+        %
+        function obj = fDeleteFcn(obj,~,~)
+            %do nothing. This means only the master object can close this
+            %window.
+        end
         %% Callbacks for Region 1
         %   ___          _            _
         %  | _ \___ __ _(_)___ _ _   / |
@@ -654,9 +653,9 @@ classdef SuperMDATravelAgent_object < handle
             if isempty(eventdata.Indices)
                 % if nothing is selected, which triggers after deleting data,
                 % make sure the pointer is still valid
-                if any(obj.pointerGroup > obj.ity.numberOfGroup)
+                if any(obj.pointerGroup > obj.ity.number_group)
                     % move pointer to last entry
-                    obj.pointerGroup = obj.ity.numberOfGroup;
+                    obj.pointerGroup = obj.ity.number_group;
                 end
                 return
             else
@@ -667,8 +666,10 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonGroupAdd_Callback
         %
         function obj = pushbuttonGroupAdd_Callback(obj,~,~)
-            obj.ity.newGroup;
+            gInd = obj.ity.newGroup;
             obj.pointerGroup = obj.ity.number_group;
+            pInd = obj.ity.newPosition;
+            obj.ity.connectGPS('g',gInd,'p',pInd,'s',obj.ity.order_settings{1});
             obj.refresh_gui_main;
         end
         %% pushbuttonGroupDrop_Callback
@@ -834,8 +835,9 @@ classdef SuperMDATravelAgent_object < handle
         function obj = pushbuttonPositionAdd_Callback(obj,~,~)
             myGroupOrder = obj.ity.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
+            pFirst = obj.ity.order_position{gInd}(1);
             pInd = obj.ity.newPosition;
-            obj.ity.connectGPS('g',gInd,'p',pInd);
+            obj.ity.connectGPS('g',gInd,'p',pInd,'s',obj.ity.order_settings{pFirst});
             obj.pointerPosition = obj.ity.number_position(gInd);
             obj.refresh_gui_main;
         end
@@ -1070,11 +1072,10 @@ classdef SuperMDATravelAgent_object < handle
         function obj = pushbuttonSettingsAdd_Callback(obj,~,~)
             myGroupOrder = obj.ity.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
-            pInd = pInd(1);
+            pFirst = obj.ity.order_position{gInd}(1);
             sInd = obj.ity.newSettings;
-            obj.ity.connectGPS('p',pInd,'s',sInd);
-            obj.pointerSettings = obj.ity.number_settings(pInd);
+            obj.ity.connectGPS('p',pFirst,'s',sInd);
+            obj.pointerSettings = obj.ity.number_settings(pFirst);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsDrop_Callback
@@ -1261,55 +1262,58 @@ classdef SuperMDATravelAgent_object < handle
             if isempty(myPositionOrder)
                 set(handles.tablePosition,'Data',cell(1,10));
             else
-            tablePositionData = cell(length(myPositionOrder),...
-                length(get(handles.tablePosition,'ColumnName')));
-            n=1;
-            for i = myPositionOrder
-                tablePositionData{n,1} = obj.ity.position_label{i};
-                tablePositionData{n,2} = i;
-                tablePositionData{n,3} = obj.ity.position_xyz(i,1);
-                tablePositionData{n,4} = obj.ity.position_xyz(i,2);
-                tablePositionData{n,5} = obj.ity.position_xyz(i,3);
-                if obj.ity.position_continuous_focus_bool(i)
-                    tablePositionData{n,6} = 'yes';
-                else
-                    tablePositionData{n,6} = 'no';
+                tablePositionData = cell(length(myPositionOrder),...
+                    length(get(handles.tablePosition,'ColumnName')));
+                n=1;
+                for i = myPositionOrder
+                    tablePositionData{n,1} = obj.ity.position_label{i};
+                    tablePositionData{n,2} = i;
+                    tablePositionData{n,3} = obj.ity.position_xyz(i,1);
+                    tablePositionData{n,4} = obj.ity.position_xyz(i,2);
+                    tablePositionData{n,5} = obj.ity.position_xyz(i,3);
+                    if obj.ity.position_continuous_focus_bool(i)
+                        tablePositionData{n,6} = 'yes';
+                    else
+                        tablePositionData{n,6} = 'no';
+                    end
+                    tablePositionData{n,7} = obj.ity.position_continuous_focus_offset(i);
+                    tablePositionData{n,8} = obj.ity.position_function_before{i};
+                    tablePositionData{n,9} = obj.ity.position_function_after{i};
+                    tablePositionData{n,10} = obj.ity.number_settings(i);
+                    n = n + 1;
                 end
-                tablePositionData{n,7} = obj.ity.position_continuous_focus_offset(i);
-                tablePositionData{n,8} = obj.ity.position_function_before{i};
-                tablePositionData{n,9} = obj.ity.position_function_after{i};
-                tablePositionData{n,10} = obj.ity.number_settings(i);
-                n = n + 1;
-            end
-            set(handles.tablePosition,'Data',tablePositionData);
+                set(handles.tablePosition,'Data',tablePositionData);
             end
             %% Region 4
             %
             %% Settings Table
             % Show the prototype_settings
-            pInd = obj.ity.ind_position{gInd};
-            pInd = pInd(1);
+            pInd = obj.ity.order_position{gInd}(1);
             mySettingsOrder = obj.ity.order_settings{pInd};
-            tableSettingsData = cell(length(mySettingsOrder),...
-                length(get(handles.tableSettings,'ColumnName')));
-            n=1;
-            for i = mySettingsOrder
-                tableSettingsData{n,1} = obj.mm.Channel{obj.ity.settings_channel(i)};
-                tableSettingsData{n,2} = obj.ity.settings_exposure(i);
-                tableSettingsData{n,3} = obj.ity.settings_binning(i);
-                tableSettingsData{n,4} = obj.ity.settings_z_step_size(i);
-                tableSettingsData{n,5} = obj.ity.settings_z_stack_upper_offset(i);
-                tableSettingsData{n,6} = obj.ity.settings_z_stack_lower_offset(i);
-                tableSettingsData{n,7} = length(obj.ity.settings_z_stack_lower_offset(i)...
-                    :obj.ity.settings_z_step_size(i)...
-                    :obj.ity.settings_z_stack_upper_offset(i));
-                tableSettingsData{n,8} = obj.ity.settings_z_origin_offset(i);
-                tableSettingsData{n,9} = obj.ity.settings_period_multiplier(i);
-                tableSettingsData{n,10} = obj.ity.settings_function{i};
-                tableSettingsData{n,11} = i;
-                n = n + 1;
+            if isempty(mySettingsOrder)
+                set(handles.tableSettings,'Data',cell(1,11));
+            else
+                tableSettingsData = cell(length(mySettingsOrder),...
+                    length(get(handles.tableSettings,'ColumnName')));
+                n=1;
+                for i = mySettingsOrder
+                    tableSettingsData{n,1} = obj.mm.Channel{obj.ity.settings_channel(i)};
+                    tableSettingsData{n,2} = obj.ity.settings_exposure(i);
+                    tableSettingsData{n,3} = obj.ity.settings_binning(i);
+                    tableSettingsData{n,4} = obj.ity.settings_z_step_size(i);
+                    tableSettingsData{n,5} = obj.ity.settings_z_stack_upper_offset(i);
+                    tableSettingsData{n,6} = obj.ity.settings_z_stack_lower_offset(i);
+                    tableSettingsData{n,7} = length(obj.ity.settings_z_stack_lower_offset(i)...
+                        :obj.ity.settings_z_step_size(i)...
+                        :obj.ity.settings_z_stack_upper_offset(i));
+                    tableSettingsData{n,8} = obj.ity.settings_z_origin_offset(i);
+                    tableSettingsData{n,9} = obj.ity.settings_period_multiplier(i);
+                    tableSettingsData{n,10} = obj.ity.settings_function{i};
+                    tableSettingsData{n,11} = i;
+                    n = n + 1;
+                end
+                set(handles.tableSettings,'Data',tableSettingsData);
             end
-            set(handles.tableSettings,'Data',tableSettingsData);
         end
         %% delete (make sure its child objects are also deleted)
         % for a clean delete

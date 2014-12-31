@@ -340,10 +340,10 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % There 3 of the 8 parameter choices are valid considerations
             % and the rest will throw and error.
             %
-            % * case 6, '110', group and position: The positions in the _p_
-            % array will be added to specified groups _g_.
             % * case 3, '011', position and settings: The settings in the
             % _s_ array will be added to specified positions _p_.
+            % * case 6, '110', group and position: The positions in the _p_
+            % array will be added to specified groups _g_.
             % * case 7, '111', group and position and settings: The
             % settings in _s_ will be added to the positions in _p_. Then
             % the positions in _p_ will be added to the groups in _g_.
@@ -353,27 +353,27 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                         s2add = setdiff(s,obj.ind_settings{p});
                         obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
                         obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
-                        obj.number_settings(p) = obj.number_settings(p) + 1;
+                        obj.number_settings(p) = obj.number_settings(p) + numel(s2add);
                     end
                 case 6
                     for i = g
                         p2add = setdiff(p,obj.ind_position{g});
                         obj.order_position{g} = horzcat(obj.order_position{g},p2add);
                         obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
-                        obj.number_position(g) = obj.number_position(g) + 1;
+                        obj.number_position(g) = obj.number_position(g) + numel(p2add);
                     end
                 case 7
                     for i = p
                         s2add = setdiff(s,obj.ind_settings{p});
                         obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
                         obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
-                        obj.number_settings(p) = obj.number_settings(p) + 1;
+                        obj.number_settings(p) = obj.number_settings(p) + numel(s2add);
                     end
                     for i = g
                         p2add = setdiff(p,obj.ind_position{g});
                         obj.order_position{g} = horzcat(obj.order_position{g},p2add);
                         obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
-                        obj.number_position(g) = obj.number_position(g) + 1;
+                        obj.number_position(g) = obj.number_position(g) + numel(p2add);
                     end
                 otherwise
                     error('smdaITF:conGPS','The input parameters were an invalid combination.');
