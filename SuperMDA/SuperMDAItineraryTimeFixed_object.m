@@ -57,9 +57,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % * ind_position
         % * ind_settings
         
-        ind_first_group; % as many rows as groups. each row holds the gps row where the group begins
-        ind_last_group; % as many rows as groups. each row holds the gps row where the group ends
-        ind_next_gps;
         ind_group; % a single row with the indices of the groups
         ind_position; % as many rows as groups. each row with the indices of positions within that group.
         ind_settings; % as many rows as positions. each row has the indices of settings at that position.
@@ -91,8 +88,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         
         %%% Pointers
         %
-        pointer_first_group; % as many rows as groups. each row holds the gps row where the group begins
-        pointer_last_group; % as many rows as groups. each row holds the gps row where the group ends
         pointer_next_gps;
         pointer_next_group;
         pointer_next_position;
@@ -276,13 +271,10 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_z_step_size = 0.3;
             %% initialize the indices and order
             % the next group, position, and settings
-            obj.ind_first_group = 1;
-            obj.ind_last_group = 1;
-            obj.ind_group = 1;
-            obj.ind_next_gps = 2;
             obj.pointer_next_group = 2;
             obj.pointer_next_position = 2;
             obj.pointer_next_settings = 2;
+            obj.ind_group = 1;
             obj.ind_position = {1};
             obj.ind_settings = {1};
             obj.order_group = 1;
@@ -403,9 +395,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             jsonStrings{n} = micrographIOT_array2json('imageWidthNoBin',obj.imageWidthNoBin);  n = n + 1;
             %%%
             % navigation indices and pointers
-            jsonStrings{n} = micrographIOT_array2json('ind_first_group',obj.ind_first_group); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('ind_last_group',obj.ind_last_group); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('ind_next_gps',obj.ind_next_gps); n = n + 1;
             jsonStrings{n} = micrographIOT_array2json('ind_group',obj.ind_group); n = n + 1;
             jsonStrings{n} = micrographIOT_cellNumericArray2json('ind_position',obj.ind_position); n = n + 1;
             jsonStrings{n} = micrographIOT_cellNumericArray2json('ind_settings',obj.ind_settings); n = n + 1;
@@ -778,13 +767,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             gpsGrp = 1:numel(obj.group_logical);
             obj.ind_group = gpsGrp(obj.group_logical);
             obj.number_group = sum(obj.group_logical);
-            %%% ind_next_gps
-            %
-            if any(~obj.gps_logical)
-                obj.ind_next_gps = find(~obj.gps_logical,1,'first');
-            else
-                obj.ind_next_gps = length(obj.gps_logical) + 1;
-            end
             %%% pointers
             %
             obj.find_pointer_next_group;
@@ -838,18 +820,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                     gpsSet = gpsOrder(gpsPosLogical & gpsSetLogical,3);
                     obj.order_settings{j} = transpose(unique(gpsSet,'stable'));
                 end
-            end
-            %%% ind_first_group
-            %
-            obj.ind_first_group = zeros(length(obj.group_logical),1);
-            for i = obj.ind_group
-                obj.ind_first_group(i) = find(gpsGrp(:,1) == i,1,'first');
-            end
-            %%% ind_last_group
-            %
-            obj.ind_last_group = zeros(length(obj.group_logical),1);
-            for i = obj.ind_group
-                obj.ind_last_group(i) = find(gpsGrp(:,1) == i,1,'last');
             end
         end
         %% Group: methods
