@@ -350,27 +350,27 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             switch decisionNumber
                 case 3
                     for i = p
-                        s2add = setdiff(s,obj.ind_settings{p});
+                        s2add = setdiff(s,obj.order_settings{p},'stable');
                         obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
                         obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
                         obj.number_settings(p) = obj.number_settings(p) + numel(s2add);
                     end
                 case 6
                     for i = g
-                        p2add = setdiff(p,obj.ind_position{g});
+                        p2add = setdiff(p,obj.order_position{g},'stable');
                         obj.order_position{g} = horzcat(obj.order_position{g},p2add);
                         obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
                         obj.number_position(g) = obj.number_position(g) + numel(p2add);
                     end
                 case 7
                     for i = p
-                        s2add = setdiff(s,obj.ind_settings{p});
+                        s2add = setdiff(s,obj.order_settings{p},'stable');
                         obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
                         obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
                         obj.number_settings(p) = obj.number_settings(p) + numel(s2add);
                     end
                     for i = g
-                        p2add = setdiff(p,obj.ind_position{g});
+                        p2add = setdiff(p,obj.order_position{g},'stable');
                         obj.order_position{g} = horzcat(obj.order_position{g},p2add);
                         obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
                         obj.number_position(g) = obj.number_position(g) + numel(p2add);
@@ -1147,26 +1147,23 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % parse the input
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
-            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            addOptional(q, 'g',0, @(x) mod(x,1)==0);
             parse(q,obj,varargin{:});
+            g = q.Results.g;
+            if g == 0
+                g = obj.order_group;
+            end
             %%%
             %
-            mySettings = obj.order_settings{p};
-            myGPS = zeros(sum(obj.position_logical)*length(mySettings),3);
-            counter = 0;
-            for i = obj.order_group
-                for j = obj.order_position{i}
-                    for k = mySettings
-                        counter = counter + 1;
-                        myGPS(counter,:) = [i,j,k];
-                    end
-                end
+            mySettingsOrder = obj.order_settings{p};
+            mySettingsInd = obj.ind_settings{p};
+            mySettingsNum = obj.number_settings(p);
+            for i = g
+                p = obj.order_position{g};
+                [obj.order_settings{p}] = deal(mySettingsOrder);
+                [obj.ind_settings{p}] = deal(mySettingsInd);
+                [obj.number_settings(p)] = deal(mySettingsNum);
             end
-            obj.gps = myGPS;
-            obj.gps_logical = ones(1,size(myGPS,1));
-            obj.orderVector = 1:size(myGPS,1);
-            obj.ind_next_gps = size(myGPS,1)+1;
         end
     end
 end

@@ -661,6 +661,12 @@ classdef SuperMDATravelAgent_object < handle
             else
                 obj.pointerGroup = sort(unique(eventdata.Indices(:,1)));
             end
+            myGroupOrder = obj.ity.order_group;
+            gInd = myGroupOrder(obj.pointerGroup(1));
+            if any(obj.pointerPosition > obj.ity.number_position(gInd))
+                % move pointer to first entry
+                obj.pointerPosition = 1;
+            end
             obj.refresh_gui_main;
         end
         %% pushbuttonGroupAdd_Callback
@@ -1075,6 +1081,7 @@ classdef SuperMDATravelAgent_object < handle
             pFirst = obj.ity.order_position{gInd}(1);
             sInd = obj.ity.newSettings;
             obj.ity.connectGPS('p',pFirst,'s',sInd);
+            obj.ity.mirrorSettings(pFirst,gInd);
             obj.pointerSettings = obj.ity.number_settings(pFirst);
             obj.refresh_gui_main;
         end
@@ -1138,8 +1145,8 @@ classdef SuperMDATravelAgent_object < handle
             fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
             % use the fillmeinArray to rearrange the settings
             obj.ity.order_settings{pInd} = obj.ity.order_settings{pInd}(fillmeinArray);
-            %
             obj.pointerSettings = movingSettings;
+            obj.ity.mirrorSettings(pInd,gInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsUp_Callback
@@ -1165,6 +1172,7 @@ classdef SuperMDATravelAgent_object < handle
             % use the fillmeinArray to rearrange the settings
             obj.ity.order_settings{pInd} = obj.ity.order_settings{pInd}(fillmeinArray);
             obj.pointerSettings = movingSettings;
+            obj.ity.mirrorSettings(pInd,gInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsZLower_Callback
