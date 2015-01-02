@@ -523,9 +523,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.group_logical = logical(data.group_logical);
             %%%
             % navigation indices
-            obj.ind_first_group = data.ind_first_group;
-            obj.ind_last_group = data.ind_last_group;
-            obj.ind_next_gps = data.ind_next_gps;
             obj.pointer_next_group = data.pointer_next_group;
             obj.pointer_next_position = data.pointer_next_position;
             obj.pointer_next_settings = data.pointer_next_settings;

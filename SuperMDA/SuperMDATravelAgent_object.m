@@ -1337,8 +1337,9 @@ classdef SuperMDATravelAgent_object < handle
                 set(handles.tableSettings,'Data',tableSettingsData);
             end
         end
-        %% delete (make sure its child objects are also deleted)
-        % for a clean delete
+        %% delete
+        % for a clean delete make sure the objects that are stored as
+        % properties are also deleted.
         function delete(obj)
             delete(obj.gui_main);
         end
