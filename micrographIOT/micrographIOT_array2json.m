@@ -4,6 +4,9 @@ function [myjson] = micrographIOT_array2json(myarrayname,myarray)
 if numel(myarray) == 1
     myjson = sprintf('"%s": %d',myarrayname,myarray);
     return
+elseif numel(myarray) == 0
+    myjson = sprintf('"%s": 0',myarrayname);
+    return
 elseif ~isrow(myarray) && ~iscolumn(myarray)
     error('mIOTary2json:twoDimOrMore','The array has more than one dimension, so no action was taken');
 end
