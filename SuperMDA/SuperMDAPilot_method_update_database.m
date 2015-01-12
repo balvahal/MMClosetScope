@@ -11,8 +11,8 @@ s = smdaP.gps_current(3); %settings
 z = smdaP.database_z_number;
 smdaP.mm.getXYZ;
 myGroupOrder = smdaP.itinerary.order_group;
-myPositionOrder = smdaP.itinerary.orderOfPosition(g);
-mySettingsOrder = smdaP.itinerary.orderOfSettings(g,p);
+myPositionOrder = smdaP.itinerary.order_position{g};
+mySettingsOrder = smdaP.itinerary.order_settings{p};
 varNames = {'channel_name',...
     'filename',...
     'group_label',...
