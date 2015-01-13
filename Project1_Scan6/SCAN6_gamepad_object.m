@@ -15,7 +15,8 @@ classdef SCAN6_gamepad_object < Gamepad_Logitech_F310
         %%
         % scan6 project specifics
         smdaITF
-        ITFpointer = 0;
+        pInd = 1;
+        gInd = 1;
         scan6
         %% Microscope relevant properties
         % The left joystick will control movement of the stage. Two
@@ -93,6 +94,7 @@ classdef SCAN6_gamepad_object < Gamepad_Logitech_F310
             %%
             % define functions for the controller
             obj.function_button_x = @SCAN6_gamepad_x; %1
+            obj.function_button_a = @SCAN6_gamepad_a; %2
             obj.function_button_y = @SCAN6_gamepad_y; %4
             obj.function_button_lb = @SCAN6_gamepad_lb; %5
             obj.function_button_rb = @SCAN6_gamepad_rb; %6

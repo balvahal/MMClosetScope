@@ -2,49 +2,37 @@ function gamepad = SCAN6_gamepad_rb(gamepad)
 if gamepad.button_rb == gamepad.button_rb_old
     return
 elseif gamepad.button_rb == 1
-    if gamepad.ITFpointer == 0
-        gamepad.ITFpointer = 1;
-    end
-    %%
-    % determine which functions to execute
-    flag_group_before = false;
-    flag_position_before = false;
-    flag_group_after = false;
-    flag_position_after = false;
-    
-    gpsInOrder = gamepad.smdaITF.gps(gamepad.smdaITF.orderVector,:);
-    smdaI = gamepad.smdaITF;
-    mmhandle = gamepad.microscope;
-    gps_current = gpsInOrder(gamepad.ITFpointer,:);
-    myTempPointer = gamepad.ITFpointer;
-    while true
-       if myTempPointer == length(smdaI.orderVector)
-            myTempPointer = 1;
-        else
-            myTempPointer = myTempPointer + 1;
-        end
-        if gpsInOrder(gamepad.ITFpointer,1) == gpsInOrder(myTempPointer,1)
-            if myTempPointer == gamepad.ITFpointer
-                %there is only one group
-                return
-            else
-                continue
-            end
-        else
-            gps_next = gpsInOrder(myTempPointer,:);
-            gamepad.ITFpointer = myTempPointer;
-            break
-        end
-    end
-    flagcheck_before;
-    flagcheck_after;
-    flag_group_before = true;
-    %%
-    % execute the functions
-    gps_execute;
-    return
     %%
     %
+    groupOrder = gamepad.smdaITF.order_group;
+    placeInOrder = find(groupOrder == gamepad.gInd,1,'first');
+    
+    if isempty(placeInOrder)
+        warning('gamepad:rb','Group index does not exist.')
+        return
+    elseif placeInOrder == numel(groupOrder)
+        placeInOrder = 1;
+        gamepad.gInd = groupOrder(placeInOrder);
+        gamepad.pInd = gamepad.smdaITF.order_position{gamepad.gInd}(1);
+    else
+        placeInOrder = placeInOrder + 1;
+        gamepad.gInd = groupOrder(placeInOrder);
+        gamepad.pInd = gamepad.smdaITF.order_position{gamepad.gInd}(1);
+    end
+    %% lower objective
+    gamepad.microscope.getXYZ;
+    currentZ = gamepad.microscope.pos(3) - 500;
+    if currentZ < 1000
+        currentZ = 1000;
+    end
+    gamepad.microscope.setXYZ(1000,'direction','z');
+    gamepad.microscope.core.waitForDevice(gamepad.microscope.FocusDevice);
+    %% find and travel to next position
+    pos_next = gamepad.smdaITF.position_xyz(gamepad.pInd,:);
+    gamepad.microscope.setXYZ(pos_next(1:2));
+    gamepad.microscope.core.waitForDevice(gamepad.microscope.xyStageDevice);
+    gamepad.microscope.setXYZ(currentZ,'direction','z');
+    gamepad.microscope.core.waitForDevice(gamepad.microscope.FocusDevice);
 else
     return
 end
