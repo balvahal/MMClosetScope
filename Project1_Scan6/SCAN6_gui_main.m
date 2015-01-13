@@ -265,7 +265,11 @@ set(f,'Visible','on');
         smdaITF2 = SuperMDAItineraryTimeFixed_object(scan6.mm);
         settingsInds = scan6.smdaI.ind_settings{1};
         numberOfpositions = length(settingsInds)*20; % 20 exposures
-        smdaITF2.newPositionNewSettings(gInd,numberOfpositions-1);
+        for i = 2:numberOfpositions
+            pInd = smdaITF2.newPosition;
+            sInd = smdaITF2.newSettings;
+            smdaITF2.connectGPS('g',gInd,'p',pInd,'s',sInd);
+        end
         exposureArray = [0,25,50,75,100,150,200,250,300,400,...
             500,600,700,800,900,1000,1300,1600,1900,2200];
         for i = 1:length(settingsInds)
