@@ -1102,7 +1102,6 @@ classdef SuperMDATravelAgent_object < handle
                 obj.ity.dropSettings(mySettingsInd(obj.pointerSettings(i)));
             end
             obj.pointerSettings = obj.ity.number_settings(pInd);
-            obj.ity.find_ind_last_group(gInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsFunction_Callback

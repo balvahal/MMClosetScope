@@ -1078,8 +1078,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_logical(s) = false;
             %%%
             % find the position(s) that contains the settings
-            myPInd4SetLogical = cellfun(@(x) ismember(s,x),obj.ind_position);
-            myPInd4Set = 1:numel(obj.group_logical);
+            myPInd4SetLogical = cellfun(@(x) ismember(s,x),obj.ind_settings);
+            myPInd4Set = 1:numel(obj.position_logical);
             myPInd4Set = myPInd4Set(myPInd4SetLogical);
             %%%
             % remove settings from the ind and order arrays
