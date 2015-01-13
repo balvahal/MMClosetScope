@@ -11,5 +11,5 @@
 %
 mm = Core_MicroManagerHandle;
 smdaITF = SuperMDAItineraryTimeFixed_object(mm);
-smdaTA = SuperMDATravelAgent_object(smdaITF);
+smdaTA = SuperMDATravelAgent_object(smdaITF,mm);
 scan6 = SCAN6_object(mm,smdaITF,smdaTA);

@@ -47,7 +47,7 @@ classdef SCAN6_object < handle
                 obj.timer_scan6 = timer('ExecutionMode','fixedRate','BusyMode','drop','Period',.04,'TimerFcn',@(~,~) obj.timer_scan6Fcn);
                 start(obj.timer_scan6);
                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-                mytable = readtable(fullfile(mfilepath,sprintf('settings_%s.txt'),obj.mm.computerName));
+                mytable = readtable(fullfile(mfilepath,sprintf('settings_%s.txt',obj.mm.computerName)));
                 obj.center(1,:) = mytable.center_x;
                     obj.center(2,:) = mytable.center_y;
                     obj.radius(:) = mytable.radius;
@@ -155,7 +155,7 @@ classdef SCAN6_object < handle
 %                     end
                 end
             end
-        end
+        
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
         %         function obj = refresh_gui_main(obj)

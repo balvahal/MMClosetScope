@@ -6,13 +6,12 @@ if scan6.mapRefreshCounter > 25 %1 second b/c period is 1/25 of a second.
     mm = scan6.mm;
     imageHeight = mm.core.getPixelSizeUm*mm.core.getImageHeight;
     imageWidth = mm.core.getPixelSizeUm*mm.core.getImageWidth;
-    
-    mm.getXYZ;
-    x = mm.pos(1);
-    if x == 0
+    try
         mm.getXYZ;
-        x = mm.pos(1);
+    catch
+        return
     end
+    x = mm.pos(1);
     y = mm.pos(2);
     handles = guidata(scan6.gui_axes);
     set(handles.rectangleCurrentPosition,'Position',[x-imageWidth/2,y-imageHeight/2,imageWidth,imageHeight]);
