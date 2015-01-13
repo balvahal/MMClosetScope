@@ -1,13 +1,13 @@
 %%
 %
 function [gamepad] = SCAN6_gamepad_y(gamepad)
-    if gamepad.button_y == gamepad.button_x_old
+    if gamepad.button_y == gamepad.button_y_old
         return
     elseif gamepad.button_y == 1
         mm = gamepad.microscope;
         smdaI = gamepad.smdaITF;
         myGInd = smdaI.gps(smdaI.orderVector(gamepad.ITFpointer),1);
-        myPInd = smdaI.indOfPosition(myGInd);
+        myPInd = smdaI.ind_position{myGInd};
         smdaI.position_continuous_focus_offset(myPInd) = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
         xyz = mm.getXYZ;
         smdaI.position_xyz(myPInd,3) = xyz(3);

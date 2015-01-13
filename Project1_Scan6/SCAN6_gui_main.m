@@ -537,9 +537,11 @@ set(f,'Visible','on');
         radius = scan6.radius(logicalList);
         z = scan6.z(logicalList);
         if length(numberOfPositions) > 1 %assumes 1st group is there by default and should not count towards additional groups
-            numberOfGroups = scan6.smdaI.numberOfGroup;
+            numberOfGroups = scan6.smdaI.number_group;
             if numberOfGroups < length(numberOfPositions)
-                scan6.smdaTA.addGroup(length(numberOfPositions)-numberOfGroups);
+                for i = 1:(length(numberOfPositions)-numberOfGroups)
+                scan6.smdaTA.pushbuttonGroupAdd_Callback;
+                end
             end
         end
         for i = 1:length(numberOfPositions)

@@ -50,10 +50,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         
         %%% Indices
         %
-        % * ind_first_group
         % * ind_group
-        % * ind_last_group
-        % * ind_next_gps
         % * ind_position
         % * ind_settings
         
