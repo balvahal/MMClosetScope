@@ -35,8 +35,6 @@ classdef SuperMDAPilotContinuousCapture_object < handle
         flag_group_after = false;
         flag_position_before = false;
         flag_position_after = false;
-        twitter;
-        twitterBool = true;
     end
     %%
     %
@@ -48,7 +46,7 @@ classdef SuperMDAPilotContinuousCapture_object < handle
     methods
         %% The constructor method
         % The first argument is always mm
-        function obj = SuperMDAPilotContinuousCapture_object(sdmaI)
+        function obj = SuperMDAPilotContinuousCapture_object(smdaI)
             %%%
             % parse the input
             q = inputParser;
@@ -56,17 +54,13 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             parse(q,smdaI);
             %% Initialzing the SuperMDA object
             %
-            obj.itinerary = sdmaI;
-            obj.mm = sdmaI.mm;
+            obj.itinerary = smdaI;
+            obj.mm = smdaI.mm;
             %%
             %
-            obj.gui_lastImage = SuperMDAPilot_gui_lastImage(obj);
             obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
             if ~isdir(obj.itinerary.output_directory)
                 mkdir(obj.itinerary.output_directory);
-            end
-            if obj.twitterBool
-                obj.twitter = twitty;
             end
             %% Create the figure
             %
@@ -77,18 +71,18 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             Char_SS = get(0,'screensize');
             ppChar = Pix_SS./Char_SS;
             set(0,'units',myunits);
-            fwidth = 450/ppChar(3);
-            fheight = 300/ppChar(4);
+            fwidth = 91;
+            fheight = 35;
             fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
             fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
             obj.gui_pause_stop_resume = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
                 'CloseRequestFcn',{@obj.PSR_fDeleteFcn},'Name','Pause Stop Resume');
             %% Construct the components
             % The pause, stop, and resume buttons
-            hwidth = 100/ppChar(3);
-            hheight = 70/ppChar(4);
-            hx = 20/ppChar(3);
-            hygap = (fheight - 3*hheight)/5;
+            hwidth = 20;
+            hheight = 5.3846;
+            hx = 4;
+            hygap = (fheight - 4*hheight)/5;
             hy = fheight - (hygap + hheight);
             PSR_pushbuttonPause = uicontrol('Parent',obj.gui_pause_stop_resume,'Style','pushbutton','Units','characters',...
                 'FontSize',14,'FontName','Verdana','BackgroundColor',[255 214 95]/255,...
@@ -110,15 +104,15 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             hy = hy - (hygap + hheight);
             PSR_pushbuttonFinishAcq = uicontrol('Parent',obj.gui_pause_stop_resume,'Style','pushbutton','Units','characters',...
                 'FontSize',14,'FontName','Verdana','BackgroundColor',[37 124 224]/255,...
-                'String','Finish Acq.','Position',[hx hy hwidth hheight],...
+                'String',sprintf('Finish'),'Position',[hx hy hwidth hheight],...
                 'Callback',{@obj.PSR_pushbuttonFinishAcq_Callback});
             
             align([PSR_pushbuttonPause,PSR_pushbuttonResume,PSR_pushbuttonStop,PSR_pushbuttonFinishAcq],'Center','None');
             %%
             % A text box showing the time until the next acquisition
-            hwidth = 250/ppChar(3);
-            hheight = 100/ppChar(4);
-            hx = (fwidth - (20/ppChar(3) + 100/ppChar(3) + hwidth))/2 + 20/ppChar(3) + 100/ppChar(3);
+            hwidth = 50;
+            hheight = 7.6923;
+            hx = (fwidth - (4 + 20 + hwidth))/2 + 4 + 20;
             hygap = (fheight - hheight)/2;
             hy = fheight - (hygap + hheight);
             PSR_textTime = uicontrol('Style','text','String','No Acquisition',...
@@ -273,6 +267,7 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             obj.clock_absolute = now + obj.itinerary.clock_relative/86400;
             obj.running_bool = true;
             while now < obj.clock_absolute(end)
+                pause(1);
                 tic
                 obj.oneLoop
                 obj.t = obj.t + 1;
@@ -295,10 +290,13 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             obj.running_bool = false;
             obj.gps_previous = [0,0,0]; %reset the gps_previous pointer
             handles = guidata(obj.gui_pause_stop_resume);
-            set(handles.textTime,'String','No Acquisition');
+            set(handles.PSR_textTime,'String','No Acquisition');
             drawnow;
             obj.pause_bool = false;
             disp('All Done!')
+            if obj.mm.twitterBool
+                obj.mm.twitter.updateStatus(sprintf('The %s microscope has completed a super multi-dimensional acquisition! It has %d timepoints.',obj.mm.computerName,obj.t));
+            end
         end
         %% pause acquisition
         %
@@ -344,7 +342,7 @@ classdef SuperMDAPilotContinuousCapture_object < handle
                 g = obj.gps_current(1);
                 p = obj.gps_current(2);
                 s = obj.gps_current(3);
-                set(handles_gui_pause_stop_resume.textTime,'String',sprintf('G:%d P:%d S:%d',g,p,s));
+                set(handles_gui_pause_stop_resume.PSR_textTime,'String',sprintf('G:%d P:%d S:%d',g,p,s));
                 drawnow;
                 flagcheck_before;
                 flagcheck_after(smdaI.gps(smdaI.orderVector(i+1),:),obj.gps_current);
@@ -353,7 +351,7 @@ classdef SuperMDAPilotContinuousCapture_object < handle
                 drawnow;
                 while obj.pause_bool
                     pause(1);
-                    set(handles_gui_pause_stop_resume.textTime,'String','PAUSED');
+                    set(handles_gui_pause_stop_resume.PSR_textTime,'String','PAUSED');
                     drawnow;
                     if obj.running_bool == false
                         break;
@@ -376,15 +374,15 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             g = obj.gps_current(1);
             p = obj.gps_current(2);
             s = obj.gps_current(3);
-            set(handles_gui_pause_stop_resume.textTime,'String',sprintf('G:%d P:%d S:%d',g,p,s));
+            set(handles_gui_pause_stop_resume.PSR_textTime,'String',sprintf('G:%d P:%d S:%d',g,p,s));
             drawnow;
             flagcheck_before;
             flagcheck_after([0,0,0],obj.gps_current);
             gps_execute;
             obj.gps_previous = obj.gps_current;
             obj.gps_current = [0,0,0];
-            if obj.twitterBool
-                obj.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s scope.',obj.t,obj.mm.computerName));
+            if obj.mm.twitterBool
+                obj.mm.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s microscope.',obj.t,obj.mm.computerName));
             end
             %%
             % functions with the logic to determine which function to execute
@@ -448,8 +446,8 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             Iheight = Isize(1);
             Iwidth = Isize(2);
             handles = guidata(obj.gui_lastImage);
-            set(handles.axesLastImage,'XLim',[1,Iwidth]);
-            set(handles.axesLastImage,'YLim',[1,Iheight]);
+            set(handles.LIT_axesLastImage,'XLim',[1,Iwidth]);
+            set(handles.LIT_axesLastImage,'YLim',[1,Iheight]);
             I2 = reshape(I,[],1);
             I2 = sort(I2);
             I = (I-I2(round(0.1*length(I2))))*(255/I2(round(0.99*length(I2))));
