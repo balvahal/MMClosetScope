@@ -52,7 +52,9 @@ flagcheck_after([0,0,0],smdaP.gps_current);
 gps_execute;
 smdaP.gps_previous = smdaP.gps_current;
 smdaP.gps_current = [0,0,0];
-
+if smdaP.twitterBool
+    smdaP.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s scope.)',smdaP.t,smdaP.mm.computerName));
+end
 %%
 % functions with the logic to determine which function to execute
     function flagcheck_before

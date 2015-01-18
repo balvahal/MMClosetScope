@@ -35,6 +35,8 @@ classdef SuperMDAPilot_object < handle
         flag_group_after = false;
         flag_position_before = false;
         flag_position_after = false;
+        twitter;
+        twitterBool = true;
     end
     %%
     %
@@ -63,6 +65,9 @@ classdef SuperMDAPilot_object < handle
                 obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
                 if ~isdir(obj.itinerary.output_directory)
                     mkdir(obj.itinerary.output_directory);
+                end
+                if obj.twitterBool
+                  obj.twitter = twitty;
                 end
             end
         end

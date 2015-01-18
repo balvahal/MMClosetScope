@@ -5,6 +5,7 @@ end
 
 %% Download files from the MATLAB FILE EXCHANGE
 % # JSONlab - a toolbox to encode/decode JSON files in MATLAB/Octave
+% # json_parser - the preferred JSON parser of twitty
 % # twitty - Interface-class to access the Twitter REST API v1.1.
 %%% JSONlab
 %
@@ -22,5 +23,14 @@ url = 'http://www.mathworks.com/matlabcentral/fileexchange/submissions/34837/v/6
 websave(filename,url);
 unzip(fullfile(mfilepath,'matlab_file_exchange','twitty.zip'),...
     fullfile(mfilepath,'matlab_file_exchange','twitty')...
+    );
+delete(filename);
+%%% json_parser
+%
+filename = fullfile(mfilepath,'matlab_file_exchange','json_parser.zip');
+url = 'http://www.mathworks.com/matlabcentral/fileexchange/submissions/20565/v/3/download/zip';
+websave(filename,url);
+unzip(fullfile(mfilepath,'matlab_file_exchange','json_parser.zip'),...
+    fullfile(mfilepath,'matlab_file_exchange','json_parser')...
     );
 delete(filename);

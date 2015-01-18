@@ -18,6 +18,8 @@ classdef Core_MicroManagerHandle < handle
         zLimits
         stageport
         binningfun
+        twitter;
+        twitterBool = true;
     end
     properties (SetObservable)
         I
@@ -178,80 +180,85 @@ classdef Core_MicroManagerHandle < handle
             
             obj.computerName = obj.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
             if exist(sprintf('Core_microscopeFcn_%s',obj.computerName),'file')
-            microscopeFcn = str2func(sprintf('Core_microscopeFcn_%s',obj.computerName));
+                microscopeFcn = str2func(sprintf('Core_microscopeFcn_%s',obj.computerName));
             else
                 microscopeFcn = @Core_microscopeFcn_NOSCOPE;
             end
             obj = microscopeFcn(obj);
-%             if strcmp(obj.computerName,'LAHAVSCOPE0001')
-%                 %%
-%                 % Closet Scope
-%                 obj.xyStageDevice = obj.core.getXYStageDevice;
-%                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
-%                 obj.FocusDevice = obj.core.getFocusDevice;
-%                 obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
-%                 obj.AutoFocusDevice = obj.core.getFocusDevice;
-%                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
-%                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
-%                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
-%                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-%                 mytable = readtable(fullfile(mfilepath,'settings_LAHAVSCOPE0001.txt'));
-%                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
-%                 obj.zLimits = [mytable.zmin,mytable.zmax];
-%                 obj.calibrationAngle = mytable.calibrationAngle;
-%                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',100); % 'MaxSpeed' range of [0,100].
-%                 obj.stageport = 'COM1';
-%             elseif strcmp(obj.computerName,'LAHAVSCOPE002')
-%                 %%
-%                 % Curtain Scope
-%                 obj.xyStageDevice = obj.core.getXYStageDevice;
-%                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
-%                 obj.FocusDevice = obj.core.getFocusDevice;
-%                 obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
-%                 obj.AutoFocusDevice = obj.core.getFocusDevice;
-%                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
-%                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
-%                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
-%                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-%                 mytable = readtable(fullfile(mfilepath,'settings_LAHAVSCOPE002.txt'));
-%                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
-%                 obj.zLimits = [mytable.zmin,mytable.zmax];
-%                 obj.calibrationAngle = mytable.calibrationAngle;
-%                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',50); %There was concern of slippage and slowing the scope down was thought to be a solution to prevent this. 'MaxSpeed' range of [0,100].
-%                 obj.stageport = 'COM3';
-%             elseif strcmp(obj.computerName,'KISHONYWAB111A')
-%                 %%
-%                 % Kishony Scope
-%                 
-%                 obj.xyStageDevice = obj.core.getXYStageDevice;
-%                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
-%                 obj.FocusDevice = obj.core.getFocusDevice;
-%                 obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
-%                 obj.AutoFocusDevice = obj.core.getFocusDevice;
-%                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
-%                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
-%                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
-%                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-%                 mytable = readtable(fullfile(mfilepath,'settings_KISHONYWAB111A.txt'));
-%                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
-%                 obj.zLimits = [mytable.zmin,mytable.zmax];
-%                 obj.calibrationAngle = mytable.calibrationAngle;
-%                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
-%                 obj.stageport = 'COM2';
-%             else
-%                 obj.xyStageDevice = obj.core.getXYStageDevice;
-%                 obj.FocusDevice = obj.core.getFocusDevice;
-%                 obj.AutoFocusDevice = obj.core.getFocusDevice;
-%                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
-%                 obj.zLimits = [0,10000];
-%                 obj.xyStageLimits = [0,150000,0,100000];
-%                 obj.calibrationAngle = 2;
-%                 obj.stageport = 'COM1';
-%             end
+            %             if strcmp(obj.computerName,'LAHAVSCOPE0001')
+            %                 %%
+            %                 % Closet Scope
+            %                 obj.xyStageDevice = obj.core.getXYStageDevice;
+            %                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
+            %                 obj.FocusDevice = obj.core.getFocusDevice;
+            %                 obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
+            %                 obj.AutoFocusDevice = obj.core.getFocusDevice;
+            %                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
+            %                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
+            %                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
+            %                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
+            %                 mytable = readtable(fullfile(mfilepath,'settings_LAHAVSCOPE0001.txt'));
+            %                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
+            %                 obj.zLimits = [mytable.zmin,mytable.zmax];
+            %                 obj.calibrationAngle = mytable.calibrationAngle;
+            %                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',100); % 'MaxSpeed' range of [0,100].
+            %                 obj.stageport = 'COM1';
+            %             elseif strcmp(obj.computerName,'LAHAVSCOPE002')
+            %                 %%
+            %                 % Curtain Scope
+            %                 obj.xyStageDevice = obj.core.getXYStageDevice;
+            %                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
+            %                 obj.FocusDevice = obj.core.getFocusDevice;
+            %                 obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
+            %                 obj.AutoFocusDevice = obj.core.getFocusDevice;
+            %                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
+            %                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
+            %                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
+            %                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
+            %                 mytable = readtable(fullfile(mfilepath,'settings_LAHAVSCOPE002.txt'));
+            %                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
+            %                 obj.zLimits = [mytable.zmin,mytable.zmax];
+            %                 obj.calibrationAngle = mytable.calibrationAngle;
+            %                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',50); %There was concern of slippage and slowing the scope down was thought to be a solution to prevent this. 'MaxSpeed' range of [0,100].
+            %                 obj.stageport = 'COM3';
+            %             elseif strcmp(obj.computerName,'KISHONYWAB111A')
+            %                 %%
+            %                 % Kishony Scope
+            %
+            %                 obj.xyStageDevice = obj.core.getXYStageDevice;
+            %                 obj.core.setFocusDevice('TIZDrive'); %this is specific to the Nikon TI that we use
+            %                 obj.FocusDevice = obj.core.getFocusDevice;
+            %                 obj.core.setFocusDevice('TIPFSOffset'); %this is specific to the Nikon TI that we use
+            %                 obj.AutoFocusDevice = obj.core.getFocusDevice;
+            %                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
+            %                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorX',1);
+            %                 obj.core.setProperty(obj.xyStageDevice,'TransposeMirrorY',1);
+            %                 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
+            %                 mytable = readtable(fullfile(mfilepath,'settings_KISHONYWAB111A.txt'));
+            %                 obj.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
+            %                 obj.zLimits = [mytable.zmin,mytable.zmax];
+            %                 obj.calibrationAngle = mytable.calibrationAngle;
+            %                 obj.core.setProperty(obj.xyStageDevice,'MaxSpeed',70); % 'MaxSpeed' range of [0,100].
+            %                 obj.stageport = 'COM2';
+            %             else
+            %                 obj.xyStageDevice = obj.core.getXYStageDevice;
+            %                 obj.FocusDevice = obj.core.getFocusDevice;
+            %                 obj.AutoFocusDevice = obj.core.getFocusDevice;
+            %                 obj.AutoFocusStatusDevice = obj.core.getAutoFocusDevice;
+            %                 obj.zLimits = [0,10000];
+            %                 obj.xyStageLimits = [0,150000,0,100000];
+            %                 obj.calibrationAngle = 2;
+            %                 obj.stageport = 'COM1';
+            %             end
             %%
             % update stage position initialize image "buffer".
             obj.pos = obj.getXYZ;
             obj.I = zeros(obj.core.getImageHeight,obj.core.getImageWidth);
+            %% twitter
+            %
+            if obj.twitterBool
+                obj.twitter = twitty;
+            end
         end
         %% Methods
         % These methods are meant to make life a little easier by having
@@ -262,7 +269,14 @@ classdef Core_MicroManagerHandle < handle
         %% Get x, y, and z position of microscope
         %
         function [pos] = getXYZ(obj)
-            pos = Core_method_getXYZ(obj);
+            try
+                pos = Core_method_getXYZ(obj);
+            catch
+                if obj.twitterBool
+                    obj.twitter.updateStatus(sprintf('Error in reading XYZ from the %s microscope.',obj.computerName));
+                end
+                pos = Core_method_getXYZ(obj);
+            end
         end
         %% Get x, y, and z position of microscope
         %
@@ -275,10 +289,21 @@ classdef Core_MicroManagerHandle < handle
             % exist.
             %
             % Note that setting the Z will turn off PFS.
-            if isempty(varargin)
-                Core_method_setXYZ(obj,pos);
-            else
-                Core_method_setXYZ(obj,pos,varargin{:});
+            try
+                if isempty(varargin)
+                    Core_method_setXYZ(obj,pos);
+                else
+                    Core_method_setXYZ(obj,pos,varargin{:});
+                end
+            catch
+                if obj.twitterBool
+                    obj.twitter.updateStatus(sprintf('Error in sending XYZ to the %s microscope.',obj.computerName));
+                end
+                if isempty(varargin)
+                    Core_method_setXYZ(obj,pos);
+                else
+                    Core_method_setXYZ(obj,pos,varargin{:});
+                end
             end
         end
         %% Get x, y, and z position of microscope
@@ -290,10 +315,21 @@ classdef Core_MicroManagerHandle < handle
             % following if statement unpacks the varargin, so that the
             % m-file sees the data as if this "middle-method" did not
             % exist.
-            if isempty(varargin)
-                I = Core_method_snapImage(obj);
-            else
-                I = Core_method_snapImage(obj,varargin{:});
+            try
+                if isempty(varargin)
+                    I = Core_method_snapImage(obj);
+                else
+                    I = Core_method_snapImage(obj,varargin{:});
+                end
+            catch
+                if obj.twitterBool
+                    obj.twitter.updateStatus(sprintf('Error in capturing an image on the %s microscope.',obj.computerName));
+                end
+                if isempty(varargin)
+                    I = Core_method_snapImage(obj);
+                else
+                    I = Core_method_snapImage(obj,varargin{:});
+                end
             end
         end
         %% Calibrate Sensor Alignment
