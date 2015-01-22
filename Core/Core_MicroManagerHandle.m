@@ -256,8 +256,11 @@ classdef Core_MicroManagerHandle < handle
             obj.I = zeros(obj.core.getImageHeight,obj.core.getImageWidth);
             %% twitter
             %
-            if obj.twitterBool
-                obj.twitter = twitty;
+            obj.twitter = twitty;
+            try
+                obj.twitter.accountVerifyCredentials;
+            catch
+                obj.twitterBool = false;
             end
         end
         %% Methods

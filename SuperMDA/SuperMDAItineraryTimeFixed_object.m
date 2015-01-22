@@ -482,7 +482,9 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         function [obj] = import(obj,filename)
             %%
             %
-            data = loadjson(filename);
+            json = fileread(filename);
+            data = parse_json(json);
+            data = data{1}; %the data struct comes wrapped in a cell.
             if iscell(data.channel_names)
                 % there is more than 1 channel
                 obj.channel_names = data.channel_names;
@@ -490,9 +492,17 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 % there is only 1 channel
                 obj.channel_names = {data.channel_names};
             end
-            obj.gps = data.gps;
-            obj.gps_logical = logical(data.gps_logical);
-            obj.orderVector = data.orderVector;
+            obj.gps = transpose(reshape(cell2mat(cellfun(@cell2mat,data.gps,'UniformOutput',false)),3,[]));
+            if iscell(data.gps_logical)
+                obj.gps_logical = logical(cell2mat(data.gps_logical));
+            else
+                obj.gps_logical = logical(data.gps_logical);
+            end
+            if iscell(data.orderVector)
+                obj.orderVector = cell2mat(data.orderVector);
+            else
+                obj.orderVector = data.orderVector;
+            end
             if iscell(data.output_directory)
                 obj.output_directory = fullfile(data.output_directory{:});
             else
@@ -517,7 +527,11 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             else
                 obj.group_label = {data.group_label};
             end
-            obj.group_logical = logical(data.group_logical);
+            if iscell(data.group_logical)
+                obj.group_logical = logical(cell2mat(data.group_logical));
+            else
+                obj.group_logical = logical(data.group_logical);
+            end
             %%%
             % navigation indices
             obj.pointer_next_group = data.pointer_next_group;
@@ -525,8 +539,16 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.pointer_next_settings = data.pointer_next_settings;
             %%%
             % position
-            obj.position_continuous_focus_offset = data.position_continuous_focus_offset;
-            obj.position_continuous_focus_bool = logical(data.position_continuous_focus_bool);
+            if iscell(data.position_continuous_focus_offset)
+                obj.position_continuous_focus_offset = cell2mat(data.position_continuous_focus_offset);
+            else
+                obj.position_continuous_focus_offset = data.position_continuous_focus_offset;
+            end
+            if iscell(data.position_continuous_focus_bool)
+                obj.position_continuous_focus_bool = logical(cell2mat(data.position_continuous_focus_bool));
+            else
+                obj.position_continuous_focus_bool = logical(data.position_continuous_focus_bool);
+            end
             if iscell(data.position_function_after)
                 obj.position_function_after = data.position_function_after;
             else
@@ -542,25 +564,69 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             else
                 obj.position_label = {data.position_label};
             end
-            obj.position_logical = logical(data.position_logical);
-            obj.position_xyz = data.position_xyz;
+            if iscell(data.position_logical)
+                obj.position_logical = logical(cell2mat(data.position_logical));
+            else
+                obj.position_logical = logical(data.position_logical);
+            end
+            obj.position_xyz = transpose(reshape(cell2mat(cellfun(@cell2mat,data.position_xyz,'UniformOutput',false)),3,[]));
             %%%
             % settings
-            obj.settings_binning = data.settings_binning;
-            obj.settings_channel = data.settings_channel;
-            obj.settings_exposure = data.settings_exposure;
+            if iscell(data.settings_binning)
+                obj.settings_binning = cell2mat(data.settings_binning);
+            else
+                obj.settings_binning = data.settings_binning;
+            end
+            if iscell(data.settings_channel)
+                obj.settings_channel = cell2mat(data.settings_channel);
+            else
+                obj.settings_channel = data.settings_channel;
+            end
+            if iscell(data.settings_exposure)
+                obj.settings_exposure = cell2mat(data.settings_exposure);
+            else
+                obj.settings_exposure = data.settings_exposure;
+            end
             if iscell(data.settings_function)
                 obj.settings_function = data.settings_function;
             else
                 obj.settings_function = {data.settings_function};
             end
-            obj.settings_logical = logical(data.settings_logical);
-            obj.settings_period_multiplier = data.settings_period_multiplier;
-            obj.settings_timepoints = data.settings_timepoints;
-            obj.settings_z_origin_offset = data.settings_z_origin_offset;
-            obj.settings_z_stack_lower_offset = data.settings_z_stack_lower_offset;
-            obj.settings_z_stack_upper_offset = data.settings_z_stack_upper_offset;
-            obj.settings_z_step_size = data.settings_z_step_size;
+            if iscell(data.settings_logical)
+                obj.settings_logical = logical(cell2mat(data.settings_logical));
+            else
+                obj.settings_logical = logical(data.settings_logical);
+            end
+            if iscell(data.settings_period_multiplier)
+                obj.settings_period_multiplier = cell2mat(data.settings_period_multiplier);
+            else
+                obj.settings_period_multiplier = data.settings_period_multiplier;
+            end
+            if iscell(data.settings_timepoints)
+                obj.settings_timepoints = cell2mat(data.settings_timepoints);
+            else
+                obj.settings_timepoints = data.settings_timepoints;
+            end
+            if iscell(data.settings_z_origin_offset)
+                obj.settings_z_origin_offset = cell2mat(data.settings_z_origin_offset);
+            else
+                obj.settings_z_origin_offset = data.settings_z_origin_offset;
+            end
+            if iscell(data.settings_z_stack_lower_offset)
+                obj.settings_z_stack_lower_offset = cell2mat(data.settings_z_stack_lower_offset);
+            else
+                obj.settings_z_stack_lower_offset = data.settings_z_stack_lower_offset;
+            end
+            if iscell(data.settings_z_stack_upper_offset)
+                obj.settings_z_stack_upper_offset = cell2mat(data.settings_z_stack_upper_offset);
+            else
+                obj.settings_z_stack_upper_offset = data.settings_z_stack_upper_offset;
+            end
+            if iscell(data.settings_z_step_size)
+                obj.settings_z_step_size = cell2mat(data.settings_z_step_size);
+            else
+                obj.settings_z_step_size = data.settings_z_step_size;
+            end
             %%%
             %
             obj.newDuration(data.duration);
