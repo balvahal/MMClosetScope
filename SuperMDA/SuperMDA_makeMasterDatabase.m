@@ -12,12 +12,12 @@ mydir = dir(fullfile(path,'RAW_DATA'));
 % find all of the text files
 mydir = mydir(cellfun(@(x) ~isempty(regexp(x,'.txt$','start')),{mydir(:).name}));
 mylength = length(mydir);
-mytable = cell(length(mydir),1);
+mytable = table;
 for i = 1:length(mydir)
-    mytable{i} = readtable(fullfile(path,'RAW_DATA',mydir(i).name),'Delimiter','\t');
+    mytable2 = readtable(fullfile(path,'RAW_DATA',mydir(i).name),'Delimiter','\t');
+    mytable = vertcat(mytable,mytable2);
     fprintf('%2.2f: %s\r\n',i/mylength*100,mydir(i).name);
 end
-mytable = vertcat(mytable{:});
 mytable = sortrows(mytable,{'group_number','position_number','settings_number','timepoint','z_order'},{'ascend','ascend','ascend','ascend','ascend'});
 databasefilename = fullfile(path,'smda_database.txt');
 writetable(mytable,databasefilename,'Delimiter','tab');
