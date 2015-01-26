@@ -1,43 +1,21 @@
 %% The SuperMDAItineraryTimeFixed_object
-%   ___                    __  __ ___   _   
-%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\  
-%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \ 
+%   ___                    __  __ ___   _
+%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\
+%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \
 %  |___/\_,_| .__/\___|_| |_|  |_|___/_/ \_\
-%   ___ _   |_|                             
-%  |_ _| |_(_)_ _  ___ _ _ __ _ _ _ _  _    
-%   | ||  _| | ' \/ -_) '_/ _` | '_| || |   
-%  |___|\__|_|_||_\___|_| \__,_|_|  \_, |   
-%   _____ _           ___ _         |__/    
-%  |_   _(_)_ __  ___| __(_)_ _____ __| |   
-%    | | | | '  \/ -_) _|| \ \ / -_) _` |   
-%    |_| |_|_|_|_\___|_| |_/_\_\___\__,_|   
-%                                           
+%   ___ _   |_|
+%  |_ _| |_(_)_ _  ___ _ _ __ _ _ _ _  _
+%   | ||  _| | ' \/ -_) '_/ _` | '_| || |
+%  |___|\__|_|_||_\___|_| \__,_|_|  \_, |
+%   _____ _           ___ _         |__/
+%  |_   _(_)_ __  ___| __(_)_ _____ __| |
+%    | | | | '  \/ -_) _|| \ \ / -_) _` |
+%    |_| |_|_|_|_\___|_| |_/_\_\___\__,_|
+%
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
 % position consists of 1 or more settings. Hi.
 classdef SuperMDAItineraryTimeFixed_object < handle
-    %%
-    % * channel_names: the names of the channels group in the current
-    % session of uManager.
-    % * gps: a matrix that contains the groups, positions, and settings
-    % information. As the SuperMDA processes through orderVector it will
-    % keep track of which index is changing and execute a function based on
-    % this change.
-    % * orderVector: a vector with the number of rows of the GPS matrix. It
-    % contains the sequence of natural numbers from 1 to the number of
-    % rows. The SuperMDA will follow the numbers in the orderVector as they
-    % increase and the row that contains the current number corresponds to
-    % the next row in the GPS to be executed.
-    % * filename_prefix: the string that is placed at the front of the
-    % image filename.
-    % * fundamental_period: the shortest period that images are taken in
-    % seconds.
-    % * output_directory: The directory where the output images are stored.
-    % * group_order: The group_order exists to deal with the issue of
-    % pre-allocation. Performance suffers without pre-allocation. Groups
-    % are only active if their index exists in the group_order. The
-    % |TravelAgent| enforces the numbers within the group_order vector to
-    % be sequential (though not necessarily in order).
     %% Properties
     %   ___                       _   _
     %  | _ \_ _ ___ _ __  ___ _ _| |_(_)___ ___
@@ -56,49 +34,27 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % * orderVector
         % * output_directory
         % * png_path
+        % * imageHeightNoBin
+        % * imageWidthNoBin
         
         channel_names;
-        database_filenamePNG;
+        database_filenamePNG; %?
         gps;
         gps_logical;
         mm;
         orderVector;
         output_directory = fullfile(pwd,'SuperMDA');
-        png_path;
+        png_path; %?
         imageHeightNoBin
         imageWidthNoBin
         
-        %%% Group
-        %
-        % * group_function_after
-        % * group_function_before
-        % * group_label
-        % * group_logical
-        
-        group_function_after;
-        group_function_before;
-        group_label;
-        group_logical;
-        
         %%% Indices
         %
-        % * ind_first_group
         % * ind_group
-        % * ind_last_group
-        % * ind_next_gps
-        % * ind_next_group
-        % * ind_next_position
-        % * ind_next_settings
         % * ind_position
         % * ind_settings
         
-        ind_first_group; % as many rows as groups. each row holds the gps row where the group begins
         ind_group; % a single row with the indices of the groups
-        ind_last_group; % as many rows as groups. each row holds the gps row where the group ends
-        ind_next_gps;
-        ind_next_group;
-        ind_next_position;
-        ind_next_settings;
         ind_position; % as many rows as groups. each row with the indices of positions within that group.
         ind_settings; % as many rows as positions. each row has the indices of settings at that position.
         
@@ -126,6 +82,25 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         order_group; % a single row with the order of the groups
         order_position; % as many rows as groups. each row with the order of positions within that group.
         order_settings; % as many rows as positions. each row has the order of settings at that position.
+        
+        %%% Pointers
+        %
+        pointer_next_gps;
+        pointer_next_group;
+        pointer_next_position;
+        pointer_next_settings;
+        
+        %%% Group
+        %
+        % * group_function_after
+        % * group_function_before
+        % * group_label
+        % * group_logical
+        
+        group_function_after;
+        group_function_before;
+        group_label;
+        group_logical;
         
         %%% Position
         %
@@ -202,50 +177,58 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     % logical error may not be present. By using these methods to construct
     % an itinerary there will be no doubt about its logic and validity.
     %
-    % * addPosition2Group
-    % * addSettings2Position
-    % * addSettings2AllPosition
-    % * dropGroup
-    % * dropPosition
-    % * dropSettings
+    % * connectGPS
     % * export
-    % * find_ind_last_group
-    % * find_ind_next
+    % * gpsFromOrder
     % * import
-    % * indOfGroup
-    % * indOfPosition
-    % * indOfSettings
-    % * mirrorSettings
-    % * newDuration
-    % * newFundamentalPeriod
-    % * newGroup
+    % * organizeByOrder
     % * newNumberOfTimepoints
-    % * newPosition
-    % * newPositionNewSettings
-    % * newSettings
-    % * numberOfGroup
-    % * numberOfPosition
-    % * numberOfSettings
-    % * orderOfGroup
-    % * orderOfPosition
-    % * orderOfSettings
-    % * orderVectorInsert
-    % * orderVectorMove
-    % * orderVectorRemove
-    % * organize
+    % * newFundamentalPeriod
+    % * newDuration
+    % * dropEmpty
     % * refreshIndAndOrder
+    %
+    % *GROUP*
+    %
+    % * newGroup
+    % * dropGroup
+    % * find_pointer_next_group
+    %
+    % *POSITION*
+    %
+    % * newPosition
+    % * dropPosition
+    % * find_pointer_next_position
+    %
+    % *SETTINGS*
+    %
+    % * newSettings
+    % * dropSettings
+    % * find_pointer_next_settings
+    % * mirrorSettings
+    
     methods
         %% The first method is the constructor
+        %    ___             _               _
+        %   / __|___ _ _  __| |_ _ _ _  _ __| |_ ___ _ _
+        %  | (__/ _ \ ' \(_-<  _| '_| || / _|  _/ _ \ '_|
+        %   \___\___/_||_/__/\__|_|  \_,_\__|\__\___/_|
         %
         function obj = SuperMDAItineraryTimeFixed_object(mm)
+            %%%
+            % if micro-manager is unavailable, then do not follow through
+            % with initialization. Itineraries can still be imported, but
+            % some methods may throw errors.
             if nargin == 0
                 return
             end
+            %%%
+            %
             if ~isdir(obj.output_directory)
                 mkdir(obj.output_directory)
             end
             if ~isa(mm,'Core_MicroManagerHandle')
-                error('smdaITF:input','The input was not a Core_MicroManagerHandle_object');
+                error('obj:input','The input was not a Core_MicroManagerHandle_object');
             end
             obj.channel_names = mm.Channel;
             obj.gps = [1,1,1];
@@ -285,18 +268,619 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_z_step_size = 0.3;
             %% initialize the indices and order
             % the next group, position, and settings
-            obj.ind_first_group = 1;
-            obj.ind_last_group = 1;
+            obj.pointer_next_group = 2;
+            obj.pointer_next_position = 2;
+            obj.pointer_next_settings = 2;
             obj.ind_group = 1;
-            obj.ind_next_gps = 2;
-            obj.ind_next_group = 2;
-            obj.ind_next_position = 2;
-            obj.ind_next_settings = 2;
-            obj.ind_position = 1;
-            obj.ind_settings = 1;
+            obj.ind_position = {1};
+            obj.ind_settings = {1};
             obj.order_group = 1;
-            obj.order_position = 1;
-            obj.order_settings = 1;
+            obj.order_position = {1};
+            obj.order_settings = {1};
+            obj.number_group = 1;
+            obj.number_position = 1;
+            obj.number_settings = 1;
+        end
+        %% connectGPS
+        %
+        function obj = connectGPS(obj,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addParameter(q, 'g',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 'p',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 's',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            parse(q,obj,varargin{:});
+            g = q.Results.g;
+            p = q.Results.p;
+            s = q.Results.s;
+            decisionString = '000'; %'gps'
+            %%%
+            % inputs should refer to existing groups, positions, and
+            % settings.
+            existingG = 1:numel(obj.group_logical);
+            existingG = existingG(obj.group_logical);
+            if all(ismember(g,existingG))
+                decisionString(1) = '1';
+                if iscolumn(g)
+                    g = transpose(g);
+                end
+            end
+            existingP = 1:numel(obj.position_logical);
+            existingP = existingP(obj.position_logical);
+            if all(ismember(p,existingP))
+                decisionString(2) = '1';
+                if iscolumn(p)
+                    p = transpose(p);
+                end
+            end
+            existingS = 1:numel(obj.settings_logical);
+            existingS = existingS(obj.settings_logical);
+            if all(ismember(s,existingS))
+                decisionString(3) = '1';
+                if iscolumn(s)
+                    s = transpose(s);
+                end
+            end
+            decisionNumber = bin2dec(decisionString);
+            
+            %%% Cases to consider
+            % There 3 of the 8 parameter choices are valid considerations
+            % and the rest will throw and error.
+            %
+            % * case 3, '011', position and settings: The settings in the
+            % _s_ array will be added to specified positions _p_.
+            % * case 6, '110', group and position: The positions in the _p_
+            % array will be added to specified groups _g_.
+            % * case 7, '111', group and position and settings: The
+            % settings in _s_ will be added to the positions in _p_. Then
+            % the positions in _p_ will be added to the groups in _g_.
+            switch decisionNumber
+                case 3
+                    for i = p
+                        s2add = setdiff(s,obj.order_settings{p},'stable');
+                        obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
+                        obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
+                        obj.number_settings(p) = obj.number_settings(p) + numel(s2add);
+                    end
+                case 6
+                    for i = g
+                        p2add = setdiff(p,obj.order_position{g},'stable');
+                        obj.order_position{g} = horzcat(obj.order_position{g},p2add);
+                        obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
+                        obj.number_position(g) = obj.number_position(g) + numel(p2add);
+                    end
+                case 7
+                    for i = p
+                        s2add = setdiff(s,obj.order_settings{p},'stable');
+                        obj.order_settings{p} = horzcat(obj.order_settings{p},s2add);
+                        obj.ind_settings{p} = sort(horzcat(obj.ind_settings{p},s2add));
+                        obj.number_settings(p) = obj.number_settings(p) + numel(s2add);
+                    end
+                    for i = g
+                        p2add = setdiff(p,obj.order_position{g},'stable');
+                        obj.order_position{g} = horzcat(obj.order_position{g},p2add);
+                        obj.ind_position{g} = sort(horzcat(obj.ind_position{g},p2add));
+                        obj.number_position(g) = obj.number_position(g) + numel(p2add);
+                    end
+                otherwise
+                    error('smdaITF:conGPS','The input parameters were an invalid combination.');
+            end
+        end
+        %% export
+        % The object is saved in the JSON format. JSON is easier to read
+        % and edit in a text editor. I think it is a very nice storage
+        % format.
+        function obj = export(obj)
+            %% organize and clean up the object
+            % to ensure self-consistency
+            obj.dropEmpty;
+            obj.organizeByOrder
+            %% convert data into JSON
+            %
+            jsonStrings = {};
+            n = 1;
+            %%%
+            %
+            jsonStrings{n} = micrographIOT_cellStringArray2json('channel_names',obj.channel_names); n = n + 1;
+            jsonStrings{n} = micrographIOT_2dmatrix2json('gps',obj.gps); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('gps_logical',obj.gps_logical); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('orderVector',obj.orderVector); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellStringArray2json('output_directory',strsplit(obj.output_directory,filesep)); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('imageHeightNoBin',obj.imageHeightNoBin); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('imageWidthNoBin',obj.imageWidthNoBin);  n = n + 1;
+            %%%
+            % navigation indices and pointers
+            jsonStrings{n} = micrographIOT_array2json('ind_group',obj.ind_group); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellNumericArray2json('ind_position',obj.ind_position); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellNumericArray2json('ind_settings',obj.ind_settings); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('number_group',obj.number_group); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('number_position',obj.number_position); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('number_settings',obj.number_settings); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('order_group',obj.order_group); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellNumericArray2json('order_position',obj.order_position); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellNumericArray2json('order_settings',obj.order_settings); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('pointer_next_group',obj.pointer_next_group); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('pointer_next_position',obj.pointer_next_position); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('pointer_next_settings',obj.pointer_next_settings); n = n + 1;
+            %%%
+            % group
+            jsonStrings{n} = micrographIOT_cellStringArray2json('group_function_after',obj.group_function_after); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellStringArray2json('group_function_before',obj.group_function_before); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellStringArray2json('group_label',obj.group_label); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('group_logical',obj.group_logical); n = n + 1;
+            %%%
+            % position
+            jsonStrings{n} = micrographIOT_array2json('position_continuous_focus_offset',obj.position_continuous_focus_offset); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('position_continuous_focus_bool',obj.position_continuous_focus_bool); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellStringArray2json('position_function_after',obj.position_function_after); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellStringArray2json('position_function_before',obj.position_function_before); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellStringArray2json('position_label',obj.position_label); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('position_logical',obj.position_logical); n = n + 1;
+            jsonStrings{n} = micrographIOT_2dmatrix2json('position_xyz',obj.position_xyz); n = n + 1;
+            %%%
+            % settings
+            jsonStrings{n} = micrographIOT_array2json('settings_binning',obj.settings_binning); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_channel',obj.settings_channel); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_exposure',obj.settings_exposure); n = n + 1;
+            jsonStrings{n} = micrographIOT_cellStringArray2json('settings_function',obj.settings_function); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_logical',obj.settings_logical); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_period_multiplier',obj.settings_period_multiplier); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_timepoints',obj.settings_timepoints); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_z_origin_offset',obj.settings_z_origin_offset); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_z_stack_lower_offset',obj.settings_z_stack_lower_offset); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_z_stack_upper_offset',obj.settings_z_stack_upper_offset); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('settings_z_step_size',obj.settings_z_step_size); n = n + 1;
+            %%%
+            % time
+            jsonStrings{n} = micrographIOT_array2json('duration',obj.duration); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('fundamental_period',obj.fundamental_period); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('clock_relative',obj.clock_relative); n = n + 1;
+            jsonStrings{n} = micrographIOT_array2json('number_of_timepoints',obj.number_of_timepoints);
+            %% export the JSON data to a text file
+            %
+            myjson = micrographIOT_jsonStrings2Object(jsonStrings);
+            fid = fopen(fullfile(obj.output_directory,'smdaITF.txt'),'w');
+            if fid == -1
+                error('smdaITF:badfile','Cannot open the file, preventing the export of the smdaITF.');
+            end
+            fprintf(fid,myjson);
+            fclose(fid);
+            %%%
+            %
+            myjson = micrographIOT_autoIndentJson(fullfile(obj.output_directory,'smdaITF.txt'));
+            fid = fopen(fullfile(obj.output_directory,'smdaITF.txt'),'w');
+            if fid == -1
+                error('smdaITF:badfile','Cannot open the file, preventing the export of the smdaITF.');
+            end
+            fprintf(fid,myjson);
+            fclose(fid);
+        end
+        %% gpsFromOrder
+        %
+        function obj = gpsFromOrder(obj)
+            newGPS = zeros(sum(obj.number_settings),3);
+            grpOrder = obj.order_group;
+            mycount = 0;
+            for i = grpOrder
+                posOrder = obj.order_position{i};
+                for j = posOrder
+                    setOrder = obj.order_settings{j};
+                    for k = setOrder
+                        mycount = mycount + 1;
+                        newGPS(mycount,:) = [i,j,k];
+                    end
+                end
+            end
+            obj.gps = newGPS;
+            obj.orderVector = 1:size(newGPS,1);
+            obj.gps_logical = true(size(newGPS,1),1);
+        end
+        %%
+        %
+        function [obj] = import(obj,filename)
+            %%
+            %
+            json = fileread(filename);
+            data = parse_json(json);
+            data = data{1}; %the data struct comes wrapped in a cell.
+            if iscell(data.channel_names)
+                % there is more than 1 channel
+                obj.channel_names = data.channel_names;
+            else
+                % there is only 1 channel
+                obj.channel_names = {data.channel_names};
+            end
+            obj.gps = transpose(reshape(cell2mat(cellfun(@cell2mat,data.gps,'UniformOutput',false)),3,[]));
+            if iscell(data.gps_logical)
+                obj.gps_logical = logical(cell2mat(data.gps_logical));
+            else
+                obj.gps_logical = logical(data.gps_logical);
+            end
+            if iscell(data.orderVector)
+                obj.orderVector = cell2mat(data.orderVector);
+            else
+                obj.orderVector = data.orderVector;
+            end
+            if iscell(data.output_directory)
+                obj.output_directory = fullfile(data.output_directory{:});
+            else
+                obj.output_directory = data.output_directory;
+            end
+            obj.imageHeightNoBin = data.imageHeightNoBin;
+            obj.imageWidthNoBin = data.imageWidthNoBin;
+            %%%
+            % group
+            if iscell(data.group_function_after)
+                obj.group_function_after = data.group_function_after;
+            else
+                obj.group_function_after = {data.group_function_after};
+            end
+            if iscell(data.group_function_before)
+                obj.group_function_before = data.group_function_before;
+            else
+                obj.group_function_before = {data.group_function_before};
+            end
+            if iscell(data.group_label)
+                obj.group_label = data.group_label;
+            else
+                obj.group_label = {data.group_label};
+            end
+            if iscell(data.group_logical)
+                obj.group_logical = logical(cell2mat(data.group_logical));
+            else
+                obj.group_logical = logical(data.group_logical);
+            end
+            %%%
+            % navigation indices
+            obj.pointer_next_group = data.pointer_next_group;
+            obj.pointer_next_position = data.pointer_next_position;
+            obj.pointer_next_settings = data.pointer_next_settings;
+            %%%
+            % position
+            if iscell(data.position_continuous_focus_offset)
+                obj.position_continuous_focus_offset = cell2mat(data.position_continuous_focus_offset);
+            else
+                obj.position_continuous_focus_offset = data.position_continuous_focus_offset;
+            end
+            if iscell(data.position_continuous_focus_bool)
+                obj.position_continuous_focus_bool = logical(cell2mat(data.position_continuous_focus_bool));
+            else
+                obj.position_continuous_focus_bool = logical(data.position_continuous_focus_bool);
+            end
+            if iscell(data.position_function_after)
+                obj.position_function_after = data.position_function_after;
+            else
+                obj.position_function_after = {data.position_function_after};
+            end
+            if iscell(data.position_function_before)
+                obj.position_function_before = data.position_function_before;
+            else
+                obj.position_function_before = {data.position_function_before};
+            end
+            if iscell(data.position_label)
+                obj.position_label = data.position_label;
+            else
+                obj.position_label = {data.position_label};
+            end
+            if iscell(data.position_logical)
+                obj.position_logical = logical(cell2mat(data.position_logical));
+            else
+                obj.position_logical = logical(data.position_logical);
+            end
+            obj.position_xyz = transpose(reshape(cell2mat(cellfun(@cell2mat,data.position_xyz,'UniformOutput',false)),3,[]));
+            %%%
+            % settings
+            if iscell(data.settings_binning)
+                obj.settings_binning = cell2mat(data.settings_binning);
+            else
+                obj.settings_binning = data.settings_binning;
+            end
+            if iscell(data.settings_channel)
+                obj.settings_channel = cell2mat(data.settings_channel);
+            else
+                obj.settings_channel = data.settings_channel;
+            end
+            if iscell(data.settings_exposure)
+                obj.settings_exposure = cell2mat(data.settings_exposure);
+            else
+                obj.settings_exposure = data.settings_exposure;
+            end
+            if iscell(data.settings_function)
+                obj.settings_function = data.settings_function;
+            else
+                obj.settings_function = {data.settings_function};
+            end
+            if iscell(data.settings_logical)
+                obj.settings_logical = logical(cell2mat(data.settings_logical));
+            else
+                obj.settings_logical = logical(data.settings_logical);
+            end
+            if iscell(data.settings_period_multiplier)
+                obj.settings_period_multiplier = cell2mat(data.settings_period_multiplier);
+            else
+                obj.settings_period_multiplier = data.settings_period_multiplier;
+            end
+            if iscell(data.settings_timepoints)
+                obj.settings_timepoints = cell2mat(data.settings_timepoints);
+            else
+                obj.settings_timepoints = data.settings_timepoints;
+            end
+            if iscell(data.settings_z_origin_offset)
+                obj.settings_z_origin_offset = cell2mat(data.settings_z_origin_offset);
+            else
+                obj.settings_z_origin_offset = data.settings_z_origin_offset;
+            end
+            if iscell(data.settings_z_stack_lower_offset)
+                obj.settings_z_stack_lower_offset = cell2mat(data.settings_z_stack_lower_offset);
+            else
+                obj.settings_z_stack_lower_offset = data.settings_z_stack_lower_offset;
+            end
+            if iscell(data.settings_z_stack_upper_offset)
+                obj.settings_z_stack_upper_offset = cell2mat(data.settings_z_stack_upper_offset);
+            else
+                obj.settings_z_stack_upper_offset = data.settings_z_stack_upper_offset;
+            end
+            if iscell(data.settings_z_step_size)
+                obj.settings_z_step_size = cell2mat(data.settings_z_step_size);
+            else
+                obj.settings_z_step_size = data.settings_z_step_size;
+            end
+            %%%
+            %
+            obj.newDuration(data.duration);
+            obj.newFundamentalPeriod(data.fundamental_period);
+            obj.newNumberOfTimepoints(data.number_of_timepoints);
+            %%
+            %
+            obj.refreshIndAndOrder;
+        end
+        %%
+        % To organize the itinerary is to have the order of the groups, positions,
+        % and settings reflect the order of acquisition. After organization the
+        % _orderVector_ will be strictly increasing. Unassigned groups, positions,
+        % and settings will be removed.
+        %
+        % In otherwords, use the GPS _orderVector_ to rearrange the other
+        % information within the itinerary in the order of acquisition. Afterwards,
+        % update the _orderVector_ to reflect this change, which means it will be a
+        % simple sequence of natural numbers.
+        %
+        % The strategy will be to organize the GPS by the _orderVector_ and then
+        % use the logical vectors to remove the unused rows.
+        function [obj] = organizeByOrder(obj)
+            obj.gpsFromOrder;
+            obj.refreshIndAndOrder;
+            %% Sort the _gps_ by the orderVector
+            %
+            myGPS = obj.gps(obj.orderVector,:);
+            
+            %% Rearrange group
+            %
+            myGPS2 = myGPS;
+            for i = 1:length(obj.order_group);
+                myLogical = myGPS(:,1) == obj.order_group(i);
+                myGPS2(myLogical,1) = i;
+            end
+            obj.group_function_after = obj.group_function_after(obj.order_group);
+            obj.group_function_before = obj.group_function_before(obj.order_group);
+            obj.group_label = obj.group_label(obj.order_group);
+            obj.group_logical = obj.group_logical(obj.order_group);
+            
+            %% Rearrange position
+            %
+            superOrderPosition = zeros(sum(obj.position_logical),1);
+            positionCounter = 1;
+            for i = obj.order_group
+                superOrderPosition(positionCounter:positionCounter-1+obj.number_position(i)) = ...
+                    obj.order_position{i,:};
+                positionCounter = positionCounter+obj.number_position(i);
+            end
+            for i = 1:length(superOrderPosition)
+                myLogical = myGPS(:,2) == superOrderPosition(i);
+                myGPS2(myLogical,2) = i;
+            end
+            obj.position_continuous_focus_offset = obj.position_continuous_focus_offset(superOrderPosition);
+            obj.position_continuous_focus_bool = obj.position_continuous_focus_bool(superOrderPosition);
+            obj.position_function_after = obj.position_function_after(superOrderPosition);
+            obj.position_function_before = obj.position_function_before(superOrderPosition);
+            obj.position_label = obj.position_label(superOrderPosition);
+            obj.position_logical = obj.position_logical(superOrderPosition);
+            obj.position_xyz = obj.position_xyz(superOrderPosition,:);
+            %% Rearrange settings
+            %
+            superOrderSettings = obj.order_settings(superOrderPosition);
+            superOrderSettings = horzcat(superOrderSettings{:});
+            superOrderSettings = unique(superOrderSettings,'stable');
+            for i = 1:length(superOrderSettings)
+                myLogical = myGPS(:,3) == superOrderSettings(i);
+                myGPS2(myLogical,3) = i;
+            end
+            obj.settings_binning = obj.settings_binning(superOrderSettings);
+            obj.settings_channel = obj.settings_channel(superOrderSettings);
+            obj.settings_exposure = obj.settings_exposure(superOrderSettings);
+            obj.settings_function = obj.settings_function(superOrderSettings);
+            obj.settings_logical = obj.settings_logical(superOrderSettings);
+            obj.settings_period_multiplier = obj.settings_period_multiplier(superOrderSettings);
+            obj.settings_timepoints = obj.settings_timepoints(superOrderSettings);
+            obj.settings_z_origin_offset = obj.settings_z_origin_offset(superOrderSettings);
+            obj.settings_z_stack_lower_offset = obj.settings_z_stack_lower_offset(superOrderSettings);
+            obj.settings_z_stack_upper_offset = obj.settings_z_stack_upper_offset(superOrderSettings);
+            obj.settings_z_step_size = obj.settings_z_step_size(superOrderSettings);
+            %% update GPS
+            %
+            obj.gps = myGPS2;
+            obj.orderVector = 1:size(myGPS2,1);
+            %%
+            %
+            obj.refreshIndAndOrder;
+        end
+        %% newNumberOfTimepoints
+        % Method to change the number of timepoints
+        function obj = newNumberOfTimepoints(obj,mynum)
+            %%%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be a positive integer
+            if mynum < 1
+                return
+            end
+            %%%
+            % update other dependent parameters
+            obj.number_of_timepoints = round(mynum);
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% newFundamentalPeriod
+        % a method to change the fundamental period (units in seconds)
+        function obj = newFundamentalPeriod(obj,mynum)
+            %%%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must be greater than zero
+            if mynum <= 0
+                return
+            end
+            %%%
+            % update other dependent parameters
+            obj.fundamental_period = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% newDuration
+        % a method to change the duration
+        function obj = newDuration(obj,mynum)
+            %%%
+            % check to see that number of timepoints is a reasonable number
+            % , i.e. it must zero of greater
+            if mynum < 0
+                return
+            end
+            %%%
+            % update other dependent parameters
+            obj.duration = mynum;
+            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
+            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
+            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+        end
+        %% dropEmpty
+        % The following conditions will be considered empty and will
+        % therefore be dropped:
+        %
+        % * A group that has no positions
+        % * A position that has no settings
+        % * A position that is not in any group
+        % * A settings that is not in any position
+        function obj = dropEmpty(obj)
+            %%% A group that has no positions
+            % the number arrays will show if a group or position is empty
+            myGInd = 1:numel(obj.group_logical);
+            myGInd = myGInd(obj.number_position == 0);
+            obj.group_logical(myGInd) = false;
+            myGIndLogical = ismember(obj.ind_group,myGInd);
+            obj.ind_group(myGIndLogical) = [];
+            myGIndLogical = ismember(obj.order_group,myGInd);
+            obj.order_group(myGIndLogical) = [];
+            %%% A position that has no settings
+            %
+            myPInd = 1:numel(obj.position_logical);
+            myPInd = myPInd(obj.number_settings == 0);
+            obj.position_logical(myPInd) = false;
+            for i = obj.ind_group
+                myPIndLogical = ismember(obj.ind_position{i},myPInd);
+                obj.ind_position{i}(myPIndLogical) = [];
+                myPIndLogical = ismember(obj.order_position{i},myPInd);
+                obj.order_position{i}(myPIndLogical) = [];
+            end
+            %%% A position that is not in any group
+            %
+            allPosition = unique(...
+                horzcat(obj.ind_position{...
+                obj.ind_group})); %from order and ind
+            obj.position_logical = false(numel(obj.position_logical),1);
+            obj.position_logical(allPosition) = true;
+            %%% A settings that is not in any position
+            %
+            allSettings = unique(...
+                horzcat(obj.ind_settings{...
+                allPosition})); %from order and ind
+            obj.settings_logical = false(numel(obj.settings_logical),1);
+            obj.settings_logical(allSettings) = true;
+            %%%
+            % update the pointers and numbers
+            obj.find_pointer_next_group;
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
+            obj.number_group = numel(obj.ind_group);
+            for i = 1:numel(obj.group_logical)
+                obj.number_position(i) = numel(obj.ind_position{i});
+            end
+            for i = 1:numel(obj.position_logical)
+                obj.number_settings(i) = numel(obj.ind_settings{i});
+            end
+        end
+        %% refresh
+        %
+        function [obj] = refreshIndAndOrder(obj)
+            %%% ind_group and number_group
+            %
+            gpsGrp = 1:numel(obj.group_logical);
+            obj.ind_group = gpsGrp(obj.group_logical);
+            obj.number_group = sum(obj.group_logical);
+            %%% pointers
+            %
+            obj.find_pointer_next_group;
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
+            %%% ind_position and number_position
+            %
+            obj.ind_position = cell(length(obj.group_logical),1);
+            obj.number_position = zeros(length(obj.group_logical),1);
+            for i = obj.ind_group
+                gpsPosLogical = obj.gps(:,1) == i;
+                gpsPos = obj.gps(gpsPosLogical,2);
+                obj.ind_position{i} = transpose(unique(gpsPos,'sorted'));
+                obj.number_position(i) = numel(obj.ind_position{i});
+            end
+            %%% ind_settings and number_settings
+            %
+            obj.ind_settings = cell(length(obj.position_logical),1);
+            obj.number_settings = zeros(length(obj.position_logical),1);
+            for i = obj.ind_group
+                posInd = obj.ind_position{i};
+                gpsPosLogical = obj.gps(:,1) == i;
+                for j = posInd
+                    gpsSetLogical = obj.gps(:,2) == j;
+                    gpsSet = obj.gps(gpsPosLogical & gpsSetLogical,3);
+                    obj.ind_settings{j} = transpose(unique(gpsSet,'sorted'));
+                    obj.number_settings(j) = numel(obj.ind_settings{j});
+                end
+            end
+            %%% order_group
+            %
+            gpsOrder = obj.gps(obj.orderVector,:);
+            gpsGrp = gpsOrder(:,1);
+            obj.order_group = transpose(unique(gpsGrp,'stable'));
+            %%% order_position
+            %
+            obj.order_position = cell(length(obj.group_logical),1);
+            for i = obj.ind_group
+                gpsPosLogical = gpsOrder(:,1) == i;
+                gpsPos = gpsOrder(gpsPosLogical,2);
+                obj.order_position{i} = transpose(unique(gpsPos,'stable'));
+            end
+            %%% order_settings
+            %
+            obj.order_settings = cell(length(obj.position_logical),1);
+            for i = obj.ind_group
+                posInd = obj.ind_position{i};
+                gpsPosLogical = gpsOrder(:,1) == i;
+                for j = posInd
+                    gpsSetLogical = gpsOrder(:,2) == j;
+                    gpsSet = gpsOrder(gpsPosLogical & gpsSetLogical,3);
+                    obj.order_settings{j} = transpose(unique(gpsSet,'stable'));
+                end
+            end
         end
         %% Group: methods
         %    ___
@@ -304,459 +888,312 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         %  | (_ | '_/ _ \ || | '_ \
         %   \___|_| \___/\_,_| .__/
         %                    |_|
+        %% newGroup
+        % A single group is created.
+        %
+        % * pNum: add _pNum_ new positions to this group
+        % * sNum: each added position will share _sNum_ new settings
+        function g = newGroup(obj,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'pNum',0, @(x) mod(x,1)==0);
+            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
+            
+            %%% create new group
+            % Each group property needs a new row. Use the first group as a template
+            % for the newest group.
+            g = obj.pointer_next_group;
+            obj.group_function_after{g} = obj.group_function_after{1};
+            obj.group_function_before{g} = obj.group_function_before{1};
+            obj.group_label{g} = sprintf('group%d',g);
+            obj.group_logical(g) = true;
+            
+            %%% update order, indices, and pointers
+            %
+            obj.find_pointer_next_group;
+            obj.number_group = obj.number_group + 1;
+            obj.number_position(g) = 0;
+            obj.ind_group = sort(horzcat(obj.ind_group,g));
+            obj.order_group(end+1) = g;
+            obj.ind_position{g} = [];
+            obj.order_position{g} = [];
+        end
+        %% dropGroup
+        % a group and all the positions and settings therin shall be
+        % "forgotten". Positions and settings unique to that group are
+        % removed.
+        %
+        % * g: the index of the group to be dropped.
+        function obj = dropGroup(obj,g)
+            %%%
+            % parse the input
+            existingG = 1:numel(obj.group_logical);
+            existingG = existingG(obj.group_logical);
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'g', @(x) ismember(x,existingG));
+            parse(q,obj,g);
+            g = q.Results.g;
+            %%%
+            % Find the positions and settings unique to the group
+            myPInd = obj.ind_position{g};
+            myPIndOthers = unique(...
+                horzcat(...
+                obj.ind_position{...
+                obj.ind_group(obj.ind_group ~= g)}));
+            myPIndUniq2Grp = setdiff(myPInd,...
+                intersect(myPInd,myPIndOthers));
+            mySInd = unique(horzcat(obj.ind_settings{myPInd}));
+            mySIndOthers = unique(...
+                horzcat(...
+                obj.ind_settings{...
+                myPIndOthers}));
+            mySIndUniq2Pos = setdiff(mySInd,...
+                intersect(mySInd,mySIndOthers));
+            %%%
+            % remove the group and its unique positions and settings from
+            % the logical arrays
+            obj.group_logical(g) = false;
+            obj.position_logical(myPIndUniq2Grp) = false;
+            obj.settings_logical(mySIndUniq2Pos) = false;
+            %%%
+            % remove the group and its unique positions and settings from
+            % the ind and order arrays
+            obj.ind_group(obj.ind_group == g) = [];
+            obj.ind_position{g} = [];
+            [obj.ind_settings{myPIndUniq2Grp}] = deal([]);
+            obj.order_group(obj.order_group == g) = [];
+            obj.order_position{g} = [];
+            [obj.order_settings{myPIndUniq2Grp}] = deal([]);
+            %%%
+            % update the numbers and pointers
+            obj.number_group = numel(obj.ind_group);
+            obj.number_position(g) = 0;
+            for i = myPIndUniq2Grp
+                obj.number_settings(i) = 0;
+            end
+            obj.find_pointer_next_group;
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
+        end
+        %% find_pointer_next_group
+        %
+        function obj = find_pointer_next_group(obj)
+            if any(~obj.group_logical)
+                obj.pointer_next_group = find(~obj.group_logical,1,'first');
+            else
+                obj.pointer_next_group = numel(obj.group_logical) + 1;
+            end
+        end
         %% Position: methods
         %   ___        _ _   _
         %  | _ \___ __(_) |_(_)___ _ _
         %  |  _/ _ (_-< |  _| / _ \ ' \
         %  |_| \___/__/_|\__|_\___/_||_|
         %
+        %% newPosition
+        % A single position is created.
+        %
+        % * sNum: this position will have _sNum_ new settings
+        function p = newPosition(obj,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'pNum',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
+            
+            %%% create new group
+            % Each group property needs a new row. Use the first group as a template
+            % for the newest group.
+            p = obj.pointer_next_position;
+            % add the new position properties reflecting the current objective
+            % position
+            obj.position_continuous_focus_offset(p) = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_bool(p) = true;
+            obj.position_function_after{p} = obj.position_function_after{1};
+            obj.position_function_before{p} = obj.position_function_before{1};
+            obj.position_label{p} = sprintf('position%d',p);
+            obj.position_logical(p) = true;
+            obj.position_xyz(p,:) = obj.mm.getXYZ;
+            %%% update order, indices, and pointers
+            %
+            obj.number_settings(p) = 0;
+            obj.find_pointer_next_position;
+            obj.ind_settings{p} = [];
+            obj.order_settings{p} = [];
+        end
+        %% dropPosition
+        % a position and settings therin shall be "forgotten". Settings
+        % unique to that position are removed.
+        %
+        % * p: the index of the position to be dropped.
+        function obj = dropPosition(obj,p)
+            %%%
+            % parse the input
+            existingP = 1:numel(obj.position_logical);
+            existingP = existingP(obj.position_logical);
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'p', @(x) ismember(x,existingP));
+            parse(q,obj,p);
+            %%%
+            % Find the settings unique to the position
+            p = q.Results.p;
+            myPIndOthers = setdiff(existingP,p);
+            mySInd = unique(horzcat(obj.ind_settings{p}));
+            mySIndOthers = unique(...
+                horzcat(...
+                obj.ind_settings{...
+                myPIndOthers}));
+            mySIndUniq2Pos = setdiff(mySInd,...
+                intersect(mySInd,mySIndOthers));
+            %%%
+            % remove the position and its unique settings from the logical
+            % arrays
+            obj.position_logical(p) = false;
+            obj.settings_logical(mySIndUniq2Pos) = false;
+            %%%
+            % find the group(s) that contains the position
+            myGInd4PosLogical = cellfun(@(x) ismember(p,x),obj.ind_position);
+            myGInd4Pos = 1:numel(obj.group_logical);
+            myGInd4Pos = myGInd4Pos(myGInd4PosLogical);
+            %%%
+            % remove the position and its unique settings from the ind and
+            % order arrays
+            for i = myGInd4Pos
+                obj.ind_position{i} = obj.ind_position{i}(obj.ind_position{i} ~= p);
+                obj.order_position{i} = obj.order_position{i}(obj.order_position{i} ~= p);
+            end
+            obj.ind_settings{p} = [];
+            obj.order_settings{p} = [];
+            %%%
+            % update the numbers and pointers
+            for i = myGInd4Pos
+                obj.number_position(i) = numel(obj.ind_position{i});
+            end
+            for i = p
+                obj.number_settings(i) = 0;
+            end
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
+        end
+        %%
+        %
+        function obj = find_pointer_next_position(obj)
+            if any(~obj.position_logical)
+                obj.pointer_next_position = find(~obj.position_logical,1,'first');
+            else
+                obj.pointer_next_position = numel(obj.position_logical) + 1;
+            end
+        end
         %% Settings: methods
         %   ___      _   _   _
         %  / __| ___| |_| |_(_)_ _  __ _ ___
         %  \__ \/ -_)  _|  _| | ' \/ _` (_-<
         %  |___/\___|\__|\__|_|_||_\__, /__/
         %                          |___/
-        %%
+        %% newSettings
         %
-        function obj = addPosition2Group(obj,gInd,pInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_addPosition2Group(obj,gInd,pInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_addPosition2Group(obj,gInd,pInd,varargin{:});
-            end
-        end
-        %%
-        %
-        function obj = addSettings2Position(obj,gInd,pInd,sInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_addSettings2Position(obj,gInd,pInd,sInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_addSettings2Position(obj,gInd,pInd,sInd,varargin{:});
-            end
-        end
-        %%
-        %
-        function obj = addSettings2AllPosition(obj,gInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_addSettings2AllPosition(obj,gInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_addSettings2AllPosition(obj,gInd,varargin{:});
-            end
-        end
-        %%
-        % a group and all the positions and settings therin shall be
-        % "forgotten". It is assumed that groups do not share positions or
-        % settings.
-        function obj = dropGroup(obj,gInd)
-            % determine if this is the only group
-            if obj.numberOfGroup == 1
-                % if there is only a single group do not remove it
-                return;
-            end
-            % the drop action is reflected in the corresponding logical
-            % vector
-            myPInd = obj.indOfPosition(gInd);
-            mySInd = obj.indOfSettings(gInd);
-            obj.group_logical(gInd) = false;
-            obj.find_ind_next('group');
-            % update the gps to reflect these changes
-            myGpsGroup = obj.gps(:,1);
-            obj.gps_logical(myGpsGroup == gInd) = false;
-            myGpsRows = find(myGpsGroup == gInd);
-            if ~isempty(myGpsRows)
-                for i = 1:length(myGpsRows)
-                    obj.orderVectorRemove(myGpsRows(i));
-                end
-            end
-            obj.position_logical(myPInd) = false;
-            obj.settings_logical(mySInd) = false;
-            obj.find_ind_next('gps');
-            obj.find_ind_next('position');
-            obj.find_ind_next('settings');
-        end
-        %%
-        % if the settings in the position that is dropped is unique to that
-        % position, those settings are removed. The last position in a
-        % group cannot be removed.
-        function obj = dropPosition(obj,pInd)
-            % determine if this is the only position in the group
-            myInd = find(obj.gps(:,2) == pInd,1,'first');
-            gInd = obj.gps(myInd,1);
-            myPInd = obj.indOfPosition(gInd);
-            if numel(myPInd) == 1
-                return;
-            end
-            % the drop action is reflected in the corresponding logical
-            % vector
-            mySIndPosition = obj.indOfSettings(gInd,pInd); %this must be obtained before the position is removed
-            obj.position_logical(pInd) = false;
-            obj.find_ind_next('position');
-            % update the gps to reflect these changes
-            myGpsPosition = obj.gps(:,2);
-            obj.gps_logical(myGpsPosition == pInd) = false;
-            myGpsRows = find(myGpsPosition == pInd);
-            if ~isempty(myGpsRows)
-                for i = 1:length(myGpsRows)
-                    obj.orderVectorRemove(myGpsRows(i));
-                end
-            end
-            obj.find_ind_next('gps');
-            % if the settings are unique to that position, delete them
-            mySIndGroup = obj.indOfSettings(gInd);
-            for i = mySIndPosition
-                if ~ismember(i,mySIndGroup)
-                    %then there were settings unique to that position that
-                    %must be "forgotten"
-                    obj.settings_logical(i) = false;
-                end
-            end
-            obj.find_ind_next('settings');
-        end
-        %%
-        % remove this settings from every position of the group where the
-        % settings is located. If there is only one settings in the group
-        % do not delete it.
-        function obj = dropSettings(obj,sInd)
-            % determine if this is the only position in the group
-            myInd = find(obj.gps(:,3) == sInd,1,'first');
-            gInd = obj.gps(myInd,1);
-            mySInd = obj.indOfSettings(gInd);
-            if numel(mySInd) == 1
-                return;
-            end
-            myPIndBefore = obj.indOfPosition(gInd);
-            % the drop action is reflected in the corresponding logical
-            % vector
-            obj.settings_logical(sInd) = false;
-            obj.find_ind_next('settings');
-            % update the gps to reflect these changes
-            myGpsSettings = obj.gps(:,3);
-            obj.gps_logical(myGpsSettings == sInd) = false;
-            myGpsRows = find(myGpsSettings == sInd);
-            if ~isempty(myGpsRows)
-                for i = 1:length(myGpsRows)
-                    obj.orderVectorRemove(myGpsRows(i));
-                end
-            end
-            obj.find_ind_next('gps');
-            % if any positions were removed outright this must be reflected
-            % in the position_logical
-            myPIndAfter = obj.indOfPosition(gInd);
-            myRemovedPosition = myPIndBefore(~ismember(myPIndBefore,myPIndAfter));
-            if ~isempty(myRemovedPosition)
-                obj.position_logical(myRemovedPosition) = false;
-                obj.find_ind_next('position');
-            end
-        end
-        %%
-        %
-        function obj = export(obj)
-            SuperMDAItineraryTimeFixed_method_export(obj);
-        end
-        %%
-        %
-        function obj = find_ind_last_group(obj,varargin)
-            if numel(varargin) == 1
-                gInd = varargin{1};
-                myPOrder = obj.orderOfPosition(gInd);
-                mySOrder = obj.orderOfSettings(gInd,myPOrder(end));
-                [~,myInd] = ismember([gInd,myPOrder(end),mySOrder(end)],obj.gps,'rows');
-                obj.ind_last_group(gInd) = find(obj.orderVector == myInd,1,'first');
-            else
-                gInd = obj.ind_group;
-                for i = 1:length(gInd)
-                    myPOrder = obj.orderOfPosition(gInd(i));
-                    mySOrder = obj.orderOfSettings(gInd(i),myPOrder(end));
-                    [~,myInd] = ismember([gInd(i),myPOrder(end),mySOrder(end)],obj.gps,'rows');
-                    obj.ind_last_group(gInd(i)) = find(obj.orderVector == myInd,1,'first');
-                end
-            end
-        end
-        %%
-        %
-        function obj = find_ind_next(obj,mystr)
-            p = inputParser;
-            addRequired(p,mystr,@(x) any(strcmp(x,{'gps','group','position','settings'})));
-            parse(p,mystr);
+        function s = newSettings(obj,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
             
-            switch mystr
-                case 'gps'
-                    if any(~obj.gps_logical)
-                        obj.ind_next_gps = find(~obj.gps_logical,1,'first');
-                    else
-                        obj.ind_next_gps = length(obj.gps_logical) + 1;
-                    end
-                case 'group'
-                    if any(~obj.group_logical)
-                        obj.ind_next_group = find(~obj.group_logical,1,'first');
-                    else
-                        obj.ind_next_group = length(obj.group_logical) + 1;
-                    end
-                case 'position'
-                    if any(~obj.position_logical)
-                        obj.ind_next_position = find(~obj.position_logical,1,'first');
-                    else
-                        obj.ind_next_position = length(obj.position_logical) + 1;
-                    end
-                case 'settings'
-                    if any(~obj.settings_logical)
-                        obj.ind_next_settings = find(~obj.settings_logical,1,'first');
-                    else
-                        obj.ind_next_settings = length(obj.settings_logical) + 1;
-                    end
+            %%% create new settings
+            % Each settings property needs a new row. Use the first
+            % settings as a template for the newest settings.
+            s = obj.pointer_next_settings;
+            obj.settings_binning(s) = obj.settings_binning(1);
+            obj.settings_channel(s) = obj.settings_channel(1);
+            obj.settings_exposure(s) = obj.settings_exposure(1);
+            obj.settings_function{s} = obj.settings_function{1};
+            obj.settings_logical(s) = true;
+            obj.settings_period_multiplier(s) = obj.settings_period_multiplier(1);
+            obj.settings_timepoints(s) = obj.settings_timepoints(1);
+            obj.settings_z_origin_offset(s) = obj.settings_z_origin_offset(1);
+            obj.settings_z_stack_lower_offset(s) = obj.settings_z_stack_lower_offset(1);
+            obj.settings_z_stack_upper_offset(s) = obj.settings_z_stack_upper_offset(1);
+            obj.settings_z_step_size(s) = obj.settings_z_step_size(1);
+            
+            %%% update order, indices, and pointers
+            %
+            obj.find_pointer_next_settings;
+        end
+        %% dropSettings
+        % a settings shall be "forgotten".
+        %
+        % * s: the index of the settings to be dropped.
+        function obj = dropSettings(obj,s)
+            %%%
+            % parse the input
+            existingS = 1:numel(obj.settings_logical);
+            existingS = existingS(obj.settings_logical);
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 's', @(x) ismember(x,existingS));
+            parse(q,obj,s);
+            %%%
+            % remove the settings from the logical arrays
+            obj.settings_logical(s) = false;
+            %%%
+            % find the position(s) that contains the settings
+            myPInd4SetLogical = cellfun(@(x) ismember(s,x),obj.ind_settings);
+            myPInd4Set = 1:numel(obj.position_logical);
+            myPInd4Set = myPInd4Set(myPInd4SetLogical);
+            %%%
+            % remove settings from the ind and order arrays
+            for i = myPInd4Set
+                obj.ind_settings{i} = obj.ind_settings{i}(obj.ind_settings{i} ~= s);
+                obj.order_settings{i} = obj.order_settings{i}(obj.order_settings{i} ~= s);
             end
+            %%%
+            % update the numbers and pointers
+            for i = myPInd4Set
+                obj.number_settings(i) = numel(obj.ind_settings{i});
+            end
+            obj.find_pointer_next_settings;
         end
         %%
         %
-        function obj = import(obj,filename)
-            SuperMDAItineraryTimeFixed_method_import(obj,filename);
-        end
-        %%
-        % returns the inds of "active" groups
-        function n = indOfGroup(obj)
-            n = transpose(1:length(obj.group_logical)); %outputs a column
-            n = n(obj.group_logical);
-        end
-        %%
-        % returns the positions found in a group
-        function n = indOfPosition(obj,gNum)
-            myGpsPosition = obj.gps(:,2);
-            myPositionsInGNum = myGpsPosition((obj.gps(:,1) == gNum) & transpose(obj.gps_logical));
-            n = unique(myPositionsInGNum); %outputs a column
-        end
-        %%
-        % returns all the settings found in a group if the group number is
-        % input. returns all the settings for a position if the group and
-        % position number are input
-        function n = indOfSettings(obj,varargin)
-            if numel(varargin) == 2
-                gNum = varargin{1};
-                pNum = varargin{2};
-                myGpsSettings = obj.gps(:,3);
-                n = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum) & transpose(obj.gps_logical)); %outputs a column
+        function obj = find_pointer_next_settings(obj)
+            if any(~obj.settings_logical)
+                obj.pointer_next_settings = find(~obj.settings_logical,1,'first');
             else
-                gNum = varargin{1};
-                myGpsSettings = obj.gps(:,3);
-                mySettingsInGNum = myGpsSettings((obj.gps(:,1) == gNum) & transpose(obj.gps_logical));
-                n = unique(mySettingsInGNum); %outputs a column
+                obj.pointer_next_settings = numel(obj.settings_logical) + 1;
             end
         end
         %%
-        % Take all the settings for a given position, _sInd_, and mirror
+        % Take all the settings for a given position, p, and mirror
         % these settings across all positions
-        function obj = mirrorSettings(obj,sInd)
-            mySettings = obj.order_settings{sInd};
-            myGPS = zeros(sum(obj.position_logical)*length(mySettings),3);
-            counter = 0;
-            for i = obj.order_group
-                for j = obj.order_position{i}
-                    for k = mySettings
-                        counter = counter + 1;
-                        myGPS(counter,:) = [i,j,k];
-                    end
-                end
+        function obj = mirrorSettings(obj,p,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addOptional(q, 'g',0, @(x) mod(x,1)==0);
+            parse(q,obj,varargin{:});
+            g = q.Results.g;
+            if g == 0
+                g = obj.order_group;
             end
-            obj.gps = myGPS;
-            obj.gps_logical = ones(1,size(myGPS,1));
-            obj.orderVector = 1:size(myGPS,1);
-            obj.ind_next_gps = size(myGPS,1)+1;
-        end
-        %% Method to change the duration
-        %
-        function obj = newDuration(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must zero of greater
-            if mynum < 0
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.duration = mynum;
-            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-        end
-        %% Method to change the fundamental period (units in seconds)
-        %
-        function obj = newFundamentalPeriod(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must be greater than zero
-            if mynum <= 0
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.fundamental_period = mynum;
-            obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-        end
-        %%
-        % a group has been designed such that no two groups will share any
-        % positions or settings.
-        function obj = newGroup(obj,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_newGroup(obj,varargin{:});
+            %%%
+            %
+            mySettingsOrder = obj.order_settings{p};
+            mySettingsInd = obj.ind_settings{p};
+            mySettingsNum = obj.number_settings(p);
+            for i = g
+                p = obj.order_position{g};
+                [obj.order_settings{p}] = deal(mySettingsOrder);
+                [obj.ind_settings{p}] = deal(mySettingsInd);
+                [obj.number_settings(p)] = deal(mySettingsNum);
             end
         end
-        %% Method to change the number of timepoints
-        %
-        function obj = newNumberOfTimepoints(obj,mynum)
-            %%
-            % check to see that number of timepoints is a reasonable number
-            % , i.e. it must be a positive integer
-            if mynum < 1
-                return
-            end
-            %%
-            % update other dependent parameters
-            obj.number_of_timepoints = round(mynum);
-            obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
-            obj.clock_relative = 0:obj.fundamental_period:obj.duration;
-        end
-        %%
-        %
-        function obj = newPosition(obj,gInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_newPosition(obj,gInd,varargin{:});
-            end
-        end
-        %%
-        %
-        function obj = newPositionNewSettings(obj,gInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_newPositionNewSettings(obj,gInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_newPositionNewSettings(obj,gInd,varargin{:});
-            end
-        end
-        %%
-        %
-        function obj = newSettings(obj,gInd,pInd,varargin)
-            if isempty(varargin)
-                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd);
-            else
-                obj = SuperMDAItineraryTimeFixed_method_newSettings(obj,gInd,pInd,varargin{:});
-            end
-        end
-        %%
-        % computes the number of groups in the itinerary
-        function n = numberOfGroup(obj)
-            n = sum(obj.group_logical);
-        end
-        %%
-        % computes the number of positions in a give group
-        function n = numberOfPosition(obj,gNum)
-            myGpsPosition = obj.gps(:,2);
-            myPositionsInGNum = myGpsPosition(obj.gps(:,1) == gNum);
-            n = sum(obj.position_logical((unique(myPositionsInGNum))));
-        end
-        %%
-        % computes the number of settings in a given position and group
-        function n = numberOfSettings(obj,gNum,pNum)
-            myGpsSettings = obj.gps(:,3);
-            mySettingsInGNumPNum = myGpsSettings((obj.gps(:,1) == gNum) & (obj.gps(:,2) == pNum));
-            n = sum(obj.settings_logical((mySettingsInGNumPNum)));
-        end
-        %%
-        %
-        function n = orderOfGroup(obj)
-            myGpsGroup = obj.gps(:,1);
-            myGpsGroupOrder = myGpsGroup(obj.orderVector);
-            groupInds = transpose(obj.ind_group);
-            indicesOfFirstAppearance = zeros(size(groupInds));
-            for i = 1:length(indicesOfFirstAppearance)
-                indicesOfFirstAppearance(i) = find(myGpsGroupOrder == groupInds(i),1,'first');
-            end
-            n = sortrows(horzcat(groupInds,indicesOfFirstAppearance),2);
-            n = transpose(n(:,1)); %outputs a row
-        end
-        %%
-        %
-        function n = orderOfPosition(obj,gNum)
-            myGpsPosition = obj.gps(:,2);
-            myGpsPositionOrder = myGpsPosition(obj.orderVector);
-            positionInds = obj.indOfPosition(gNum);
-            indicesOfFirstAppearance = zeros(size(positionInds));
-            for i = 1:length(indicesOfFirstAppearance)
-                indicesOfFirstAppearance(i) = find(myGpsPositionOrder == positionInds(i),1,'first');
-            end
-            n = sortrows(horzcat(positionInds,indicesOfFirstAppearance),2);
-            n = transpose(n(:,1)); %outputs a row
-        end
-        %%
-        %
-        function n = orderOfSettings(obj,gNum,pNum)
-            myGpsSettings = obj.gps(:,3);
-            myGpsSettingsOrder = myGpsSettings(obj.orderVector);
-            settingsInds = obj.indOfSettings(gNum,pNum);
-            indicesOfFirstAppearance = zeros(size(settingsInds));
-            for i = 1:length(indicesOfFirstAppearance)
-                indicesOfFirstAppearance(i) = find(myGpsSettingsOrder == settingsInds(i),1,'first');
-            end
-            n = sortrows(horzcat(settingsInds,indicesOfFirstAppearance),2);
-            n = transpose(n(:,1)); %outputs a row
-        end
-        %%
-        %
-        function obj = orderVectorInsert(obj,varargin)
-            p = inputParser;
-            addOptional(p, 'OVrow',length(obj.orderVector)+1, @(x) ismember(x,(1:length(obj.orderVector)+1)));
-            parse(p,varargin{:});
-            obj.orderVector(end+1) = obj.ind_next_gps;
-            if p.Results.OVrow ~= length(obj.orderVector)+1
-                obj.orderVectorMove(p.Results.OVrow,obj.ind_next_gps);
-            end
-        end
-        %%
-        %
-        function obj = orderVectorMove(obj,OVrow,GPSrow)
-            %find the current position of the GPSrow
-            myInd = find(obj.orderVector == GPSrow,1,'first');
-            if myInd == OVrow
-                return
-            elseif myInd > OVrow
-                %create the array that will rearrange the orderVector
-                moveArray = 1:length(obj.orderVector);
-                moveArray2Move = moveArray(OVrow:end);
-                moveArray2Move(myInd-OVrow+1) = [];
-                moveArray(OVrow) = myInd;
-                moveArray((OVrow+1):end) = moveArray2Move;
-            else
-                moveArray = 1:length(obj.orderVector);
-                moveArray2Move = moveArray(1:OVrow);
-                moveArray2Move(myInd) = [];
-                moveArray(OVrow) = myInd;
-                moveArray(1:(OVrow-1)) = moveArray2Move;
-            end
-            obj.orderVector = obj.orderVector(moveArray);
-        end
-        %%
-        %
-        function obj = orderVectorRemove(obj,GPSrow)
-            myInd = find(obj.orderVector == GPSrow,1,'first');
-            obj.orderVector(myInd) = [];
-        end
-        %%
-        %
-        function obj = organize(obj)
-            SuperMDAItineraryTimeFixed_method_organize(obj);
-        end
-        %%
-        %
-        function obj = refreshIndAndOrder(obj)
-            SuperMDAItineraryTimeFixed_method_refreshIndAndOrder(obj);
-        end
-    end
-    %%
-    %
-    methods (Static)
-        
     end
 end

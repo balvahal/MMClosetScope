@@ -175,3 +175,5 @@ pip-log.txt
 ## Node.js and Bower
 #############
 bower_components/
+
+matlab_file_exchange/

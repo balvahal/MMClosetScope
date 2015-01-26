@@ -109,7 +109,6 @@ set(f,'Visible','on');
         if strcmp(choice,'No')
             return;
         end
-        smdaP.itinerary.clock_absolute(end) = now;
-        smdaP.t = length(smdaP.itinerary.clock_absolute);
+        smdaPilot.clock_absolute(end) = now;
     end
 end

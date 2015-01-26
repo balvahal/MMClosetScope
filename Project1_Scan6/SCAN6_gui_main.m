@@ -263,9 +263,13 @@ set(f,'Visible','on');
         
         gInd = 1;
         smdaITF2 = SuperMDAItineraryTimeFixed_object(scan6.mm);
-        settingsInds = scan6.smdaI.indOfSettings(gInd);
+        settingsInds = scan6.smdaI.ind_settings{1};
         numberOfpositions = length(settingsInds)*20; % 20 exposures
-        smdaITF2.newPositionNewSettings(gInd,numberOfpositions-1);
+        for i = 2:numberOfpositions
+            pInd = smdaITF2.newPosition;
+            sInd = smdaITF2.newSettings;
+            smdaITF2.connectGPS('g',gInd,'p',pInd,'s',sInd);
+        end
         exposureArray = [0,25,50,75,100,150,200,250,300,400,...
             500,600,700,800,900,1000,1300,1600,1900,2200];
         for i = 1:length(settingsInds)
@@ -537,9 +541,11 @@ set(f,'Visible','on');
         radius = scan6.radius(logicalList);
         z = scan6.z(logicalList);
         if length(numberOfPositions) > 1 %assumes 1st group is there by default and should not count towards additional groups
-            numberOfGroups = scan6.smdaI.numberOfGroup;
+            numberOfGroups = scan6.smdaI.number_group;
             if numberOfGroups < length(numberOfPositions)
-                scan6.smdaTA.addGroup(length(numberOfPositions)-numberOfGroups);
+                for i = 1:(length(numberOfPositions)-numberOfGroups)
+                scan6.smdaTA.pushbuttonGroupAdd_Callback;
+                end
             end
         end
         for i = 1:length(numberOfPositions)

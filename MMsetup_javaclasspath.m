@@ -25,6 +25,7 @@ fid = fopen(fullfile(prefdir,'MMjavaclasspath.txt'),'w');
 fprintf(fid,'<before>\r\n');
 cellfun(@(x) fprintf(fid,'%s\r\n',x), fileListJar);
 fclose(fid);
+end
 %% nested directory listing ala gnovice from stackoverflow
 % inputs and outputs are self-explanatory
 function fileList = getAllFiles(dirName)
@@ -41,4 +42,5 @@ validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
 for iDir = find(validIndex)                  % Loop over valid subdirectories
     nextDir = fullfile(dirName,subDirs{iDir});    % Get the subdirectory path
     fileList = vertcat(fileList, getAllFiles(nextDir));  % Recursively call getAllFiles
+end
 end
