@@ -528,7 +528,13 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             %%
             %
             metadataFilename = sprintf('g%d_s%d_w%d_t%d_z%d.txt',g,p,s,obj.t,z);
-            fileID = fopen(fullfile(obj.itinerary.png_path,metadataFilename),'w');
+            try
+                fileID = fopen(fullfile(obj.itinerary.png_path,metadataFilename),'w');
+            catch
+                pause(1);
+                warning('smdaP:metadata','%s may not have been written to disk',metadataFilename);
+                fileID = fopen(fullfile(obj.itinerary.png_path,metadataFilename),'w');
+            end
             formatSpecHeader = strcat(...
                 '%s\t',... %channel_name
                 '%s\t',... %filename
