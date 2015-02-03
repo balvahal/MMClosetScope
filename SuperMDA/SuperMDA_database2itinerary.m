@@ -164,6 +164,11 @@ end
 jsonStrings{n} = micrographIOT_array2json('ind_next_settings',ind_nextX); n = n + 1;
 %%
 %
+jsonStrings{n} = micrographIOT_array2json('pointer_next_group',0); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('pointer_next_position',6000); n = n + 1;
+jsonStrings{n} = micrographIOT_array2json('pointer_next_settings',0); n = n + 1;
+%%
+%
 jsonStrings{n} = micrographIOT_array2json('duration',0); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('fundamental_period',6000); n = n + 1;
 jsonStrings{n} = micrographIOT_array2json('clock_relative',0); n = n + 1;

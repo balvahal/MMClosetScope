@@ -1318,7 +1318,7 @@ classdef SuperMDATravelAgent_object < handle
                     length(get(handles.tableSettings,'ColumnName')));
                 n=1;
                 for i = mySettingsOrder
-                    tableSettingsData{n,1} = obj.mm.Channel{obj.ity.settings_channel(i)};
+                    tableSettingsData{n,1} = obj.ity.channel_names{obj.ity.settings_channel(i)};
                     tableSettingsData{n,2} = obj.ity.settings_exposure(i);
                     tableSettingsData{n,3} = obj.ity.settings_binning(i);
                     tableSettingsData{n,4} = obj.ity.settings_z_step_size(i);

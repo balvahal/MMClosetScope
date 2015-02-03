@@ -3,15 +3,16 @@
 % desired to make viewing them fast while manually annotating or tracking
 % the dataset. In our lab the image sizes are either *2048 x 2048* or
 % *1024 x 1344*. A good compromise between detail and size for these two image
-% sizes are *512 x 512* and *256 x 336 *.
+% sizes are *512 x 512* and *256 x 336*.
 %
 % In addition to the size the bit-depth will also be reduced from 16-bit to
 % 8-bit.
-function [] = SuperMDA_makeThumb(moviePath,thumbSize)
+function [] = SuperMDA_makeThumb(moviePath,thumbSize, varargin)
 p = inputParser;
 addRequired(p, 'moviePath', @(x) isdir(x));
 addRequired(p, 'thumbsize', @(x) numel(x)==2 & isnumeric(x));
-parse(p,moviePath,thumbSize);
+addOptional(p, 'bitdepth', 16, @(x) isnumeric(x));
+parse(p,moviePath,thumbSize, varargin{:});
 
 if ~isdir(fullfile(moviePath,'.thumb'))
     mkdir(fullfile(moviePath,'.thumb'));
@@ -23,6 +24,17 @@ mycell = cell(height(smda),1);
 %% create a thumbnail for each image
 %
 filename = smda.filename;
+I = imread(fullfile(moviePath,'PROCESSED_DATA',filename{1}));
+iType = class(I);
+switch iType
+    case 'uint16'
+        bitdiff = 16 - p.Results.bitdepth;
+        if bitdiff > 0
+            myfun = @(x) bitshift(x,bitdiff);
+        end
+    otherwise
+        myfun = @(x) x;
+end
 parfor i = 1:height(smda)
     %%% read the image
     %
@@ -32,6 +44,7 @@ parfor i = 1:height(smda)
     I = imresize(I,thumbSize);
     %%% convert image to uint8
     %
+    I = myfun(I);
     I = gray2ind(I,256);
     %%% create filename
     %
