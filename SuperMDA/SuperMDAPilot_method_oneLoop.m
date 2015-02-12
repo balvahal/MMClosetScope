@@ -53,7 +53,11 @@ gps_execute;
 smdaP.gps_previous = smdaP.gps_current;
 smdaP.gps_current = [0,0,0];
 if smdaP.twitterBool
+    try
     smdaP.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s scope.)',smdaP.t,smdaP.mm.computerName));
+    catch
+        disp('Twitter Error!');
+    end
 end
 %%
 % functions with the logic to determine which function to execute

@@ -302,7 +302,7 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             disp('All Done!')
             if obj.mm.twitterBool
                 try
-                    obj.mm.twitter.updateStatus(sprintf('The %s microscope has completed a super multi-dimensional acquisition! It has %d timepoints.',obj.mm.computerName,obj.t));
+                    obj.mm.twitter.updateStatus(sprintf('The %s microscope has completed a super MDA! It has %d timepoints.',obj.mm.computerName,obj.t));
                 catch
                     disp('Twitter Error!')
                 end
