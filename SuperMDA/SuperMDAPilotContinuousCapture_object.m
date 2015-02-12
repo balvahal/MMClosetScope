@@ -260,10 +260,16 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             obj.t = 1;
             obj.runtime_imagecounter = 0;
             obj.gps_previous = [0,0,0];
+            if obj.itinerary.duration == 0
+                obj.running_bool = true;
+                obj.oneLoop
+                obj.stop_acquisition;
+                return
+            end
             %% Configure the absolute clock
             % Convert the obj.itinerary.clock_relative unit of time (seconds) to
             % the MATLAB unit of time (days) for the serial date numbers, i.e. the
-            % number of days that have passed since January 1, 0000.
+            % number of days that have passed since January 1, 0000.            
             obj.clock_absolute = now + obj.itinerary.clock_relative/86400;
             obj.running_bool = true;
             while now < obj.clock_absolute(end)
@@ -295,7 +301,11 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             obj.pause_bool = false;
             disp('All Done!')
             if obj.mm.twitterBool
-                obj.mm.twitter.updateStatus(sprintf('The %s microscope has completed a super multi-dimensional acquisition! It has %d timepoints.',obj.mm.computerName,obj.t));
+                try
+                    obj.mm.twitter.updateStatus(sprintf('The %s microscope has completed a super multi-dimensional acquisition! It has %d timepoints.',obj.mm.computerName,obj.t));
+                catch
+                    disp('Twitter Error!')
+                end
             end
         end
         %% pause acquisition
@@ -382,7 +392,11 @@ classdef SuperMDAPilotContinuousCapture_object < handle
             obj.gps_previous = obj.gps_current;
             obj.gps_current = [0,0,0];
             if obj.mm.twitterBool
-                obj.mm.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s microscope.',obj.t,obj.mm.computerName));
+                try
+                    obj.mm.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s microscope.',obj.t,obj.mm.computerName));
+                catch
+                    disp('Twitter Error!');
+                end
             end
             %%
             % functions with the logic to determine which function to execute
