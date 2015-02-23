@@ -54,7 +54,7 @@ smdaP.gps_previous = smdaP.gps_current;
 smdaP.gps_current = [0,0,0];
 if smdaP.twitterBool
     try
-    smdaP.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s scope.)',smdaP.t,smdaP.mm.computerName));
+        smdaP.twitter.updateStatus(sprintf('Timepoint %d has been acquired by the %s scope.)',smdaP.t,smdaP.mm.computerName));
     catch
         disp('Twitter Error!');
     end
@@ -91,6 +91,7 @@ end
             smdaP.flag_position_before = false;
         end
         
+        pause(5)
         myfun = str2func(smdaI.settings_function{s});
         myfun(smdaP);
         
