@@ -31,6 +31,8 @@ switch iType
         bitdiff = 16 - p.Results.bitdepth;
         if bitdiff > 0
             myfun = @(x) bitshift(x,bitdiff);
+        else
+            myfun = @(x) x;
         end
     otherwise
         myfun = @(x) x;

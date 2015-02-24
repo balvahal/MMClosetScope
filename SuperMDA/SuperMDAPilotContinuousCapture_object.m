@@ -430,7 +430,6 @@ classdef SuperMDAPilotContinuousCapture_object < handle
                     obj.flag_position_before = false;
                 end
                 
-                pause(2);
                 myfun = str2func(smdaI.settings_function{s});
                 myfun(obj);
                 
