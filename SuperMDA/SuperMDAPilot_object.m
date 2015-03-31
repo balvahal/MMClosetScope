@@ -47,7 +47,7 @@ classdef SuperMDAPilot_object < handle
     methods
         %% The constructor method
         % The first argument is always mm
-        function obj = SuperMDAPilot_object(smdaI)
+        function obj = SuperMDAPilot_object(sdmaI)
             %%%
             % parse the input
             q = inputParser;
@@ -55,8 +55,8 @@ classdef SuperMDAPilot_object < handle
             parse(q,smdaI);
             %% Initialzing the SuperMDA object
             %
-            obj.itinerary = smdaI;
-            obj.mm = smdaI.mm;
+            obj.itinerary = sdmaI;
+            obj.mm = sdmaI.mm;
             obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
             if ~isdir(obj.itinerary.output_directory)
                 mkdir(obj.itinerary.output_directory);
