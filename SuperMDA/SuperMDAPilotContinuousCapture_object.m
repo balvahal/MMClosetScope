@@ -35,6 +35,7 @@ classdef SuperMDAPilotContinuousCapture_object < handle
         flag_group_after = false;
         flag_position_before = false;
         flag_position_after = false;
+        uservar1
     end
     %%
     %

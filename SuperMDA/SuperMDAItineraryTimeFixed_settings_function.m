@@ -41,6 +41,7 @@ if smdaPilot.itinerary.settings_z_stack_upper_offset(k) - smdaPilot.itinerary.se
     %% Update the database
     %
     smdaPilot.update_database;
+    smdaPilot.mm.core.waitForSystem();
     end
 else
     %% Snap and Image if there is no z-stack
@@ -52,6 +53,7 @@ else
     %% Update the database
     %
     smdaPilot.update_database;
+    smdaPilot.mm.core.waitForSystem();
 end
 %%
 %

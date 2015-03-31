@@ -17,18 +17,6 @@ end
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)});
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.settings_exposure(k));
 smdaPilot.mm.binningfun(mm,smdaPilot.itinerary.settings_binning(k));
-% if strcmp(smdaPilot.mm.computerName,'KISHONYWAB111A')||strcmp(smdaPilot.mm.computerName,'LAHAVSCOPE002')||strcmp(smdaPilot.mm.computerName,'LAHAVSCOPE0001')
-%     switch smdaPilot.itinerary.settings_binning(k)
-%         case 1
-%             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
-%         case 2
-%             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','2x2');
-%         case 4
-%             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','4x4');
-%         otherwise
-%             smdaPilot.mm.core.setProperty(smdaPilot.mm.CameraDevice,'Binning','1x1');
-%     end
-% end
 smdaPilot.mm.core.waitForSystem();
 %% Jose's loop for a 2x2 grid
 %
@@ -51,4 +39,5 @@ for m=1:length(grid.positions)
     %% Update the database
     %
     smdaPilot.update_database;
+    smdaPilot.mm.core.waitForSystem();
 end
