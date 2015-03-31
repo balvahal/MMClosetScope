@@ -74,7 +74,7 @@ classdef SuperMDAPilot_object < handle
             fheight = 35;
             fx = Char_SS(3) - (Char_SS(3)*.1 + fwidth);
             fy = Char_SS(4) - (Char_SS(4)*.1 + fheight);
-            f = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
+            obj.gui_pause_stop_resume = figure('Visible','off','Units','characters','MenuBar','none','Position',[fx fy fwidth fheight],...
                 'CloseRequestFcn',{@obj.PSR_fDeleteFcn},'Name','Pause Stop Resume');
             %% Construct the components
             % The pause, stop, and resume buttons
@@ -103,7 +103,7 @@ classdef SuperMDAPilot_object < handle
             hy = hy - (hygap + hheight);
             PSR_pushbuttonFinishAcq = uicontrol('Style','pushbutton','Units','characters',...
                 'FontSize',14,'FontName','Verdana','BackgroundColor',[37 124 224]/255,...
-                'String','Finish Acq.','Position',[hx hy hwidth hheight],...
+                'String','Finish','Position',[hx hy hwidth hheight],...
                 'Callback',{@obj.PSR_pushbuttonFinishAcq_Callback});
             
             align([PSR_pushbuttonPause,PSR_pushbuttonResume,PSR_pushbuttonStop,PSR_pushbuttonFinishAcq],'Center','None');
@@ -128,7 +128,7 @@ classdef SuperMDAPilot_object < handle
             guidata(obj.gui_pause_stop_resume,PSR_handles);
             %%
             % make the gui visible
-            set(f,'Visible','on');
+            set(obj.gui_pause_stop_resume,'Visible','on');
             %%
             %
             myunits = get(0,'units');
@@ -227,12 +227,13 @@ classdef SuperMDAPilot_object < handle
         function obj = PSR_pushbuttonFinishAcq_Callback(obj,~,~)
             str = sprintf('The current acquisition will be stopped after a running acquisition ends. You cannot unmake this decision.\n\nDo you wish to proceed?');
             choice = questdlg(str, ...
-                'Warning! Do you wish to proceed, nothing will happen?', ...
+                'Warning! Do you wish to proceed?', ...
                 'Yes','No','No');
             % Handle response
             if strcmp(choice,'No')
                 return;
             end
+            obj.clock_absolute(obj.t:end) = now;
         end
         %% start acquisition
         %
@@ -307,7 +308,7 @@ classdef SuperMDAPilot_object < handle
                     while now < obj.clock_absolute(obj.t)
                         pause(1)
                         myWait = obj.clock_absolute(obj.t)-now;
-                        set(handles_gui_pause_stop_resume.textTime,'String',sprintf('HH:MM:SS\n%s',datestr(myWait,13)));
+                        set(handles_gui_pause_stop_resume.PSR_textTime,'String',sprintf('HH:MM:SS\n%s',datestr(myWait,13)));
                         drawnow;
                         if obj.running_bool == false
                             %%%
@@ -327,7 +328,7 @@ classdef SuperMDAPilot_object < handle
                                 % skipped.
                                 obj.t = find(obj.clock_absolute > now,1,'first');
                             end
-                            set(handles_gui_pause_stop_resume.textTime,'String','PAUSED');
+                            set(handles_gui_pause_stop_resume.PSR_textTime,'String','PAUSED');
                             drawnow;
                             if obj.running_bool == false
                                 obj.stop_acquisition;
@@ -353,7 +354,7 @@ classdef SuperMDAPilot_object < handle
             obj.running_bool = false;
             obj.gps_previous = [0,0,0]; %reset the gps_previous pointer
             handles = guidata(obj.gui_pause_stop_resume);
-            set(handles.textTime,'String','No Acquisition');
+            set(handles.PSR_textTime,'String','No Acquisition');
             drawnow;
             obj.pause_bool = false;
             disp('All Done!')
@@ -506,7 +507,7 @@ classdef SuperMDAPilot_object < handle
         %
         function obj = snap(obj)
             obj.mm.snapImage;
-            SuperMDAPilot_method_updateLastImage(obj);
+            obj.updateGuiLastImage;
             obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
         %% delete (make sure its child objects are also deleted)
