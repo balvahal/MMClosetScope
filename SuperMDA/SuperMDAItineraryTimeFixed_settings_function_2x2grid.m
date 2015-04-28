@@ -35,7 +35,21 @@ for m=1:length(grid.positions)
     %         fid =
     %         fopen(fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'w');
     %         fwrite(fid,smdaPilot.mm.I,'uint16'); fclose(fid);
-    imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff');
+    smdaPilot.mm.core.waitForSystem();
+    try
+        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff','Compression','none','WriteMode','overwrite');
+    catch
+        if obj.twitterBool
+            try
+                obj.twitter.updateStatus(sprintf('Error in writing image to disk from the %s microscope.',obj.computerName));
+            catch
+                disp('Twitter Error!');
+            end
+        end
+        smdaPilot.snap;
+        smdaPilot.mm.core.waitForSystem();
+        imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff','Compression','none','WriteMode','overwrite');
+    end
     %% Update the database
     %
     smdaPilot.update_database;
