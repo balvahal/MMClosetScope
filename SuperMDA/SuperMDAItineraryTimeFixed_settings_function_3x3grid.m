@@ -18,7 +18,14 @@ smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilo
 smdaPilot.mm.core.setExposure(smdaPilot.mm.CameraDevice,smdaPilot.itinerary.settings_exposure(k));
 smdaPilot.mm.binningfun(mm,smdaPilot.itinerary.settings_binning(k));
 smdaPilot.mm.core.waitForSystem();
-%% Jose's loop for a 2x2 grid
+%% Z origin offset
+%
+currentZ = smdaPilot.mm.pos(3);
+currentPFS = smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Position');
+if smdaPilot.itinerary.settings_z_origin_offset(k) ~= 0
+    move_z(smdaPilot.itinerary.settings_z_origin_offset(k));
+end
+%% Adrian's loop for a 3x3 grid with z-stack
 %
 [grid] = SuperMDA_grid_maker(smdaPilot.mm,'centroid',smdaPilot.itinerary.position_xyz(j,:),'number_of_columns',3,'number_of_rows',3,'overlap',0.15);
 %% Set PFS
@@ -51,13 +58,12 @@ for m=1:length(grid.positions)
                 smdaPilot.snap;
                 smdaPilot.mm.core.waitForSystem();
                 imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff','Compression','none','WriteMode','overwrite');
-            end
-            %% Update the database
-            %
-            smdaPilot.update_database;
-            smdaPilot.mm.core.waitForSystem();
-            
+            end            
         end
+        %% Update the database
+        %
+        smdaPilot.update_database;
+        smdaPilot.mm.core.waitForSystem();
     else
         smdaPilot.database_z_number = 1;
         smdaPilot.snap;
