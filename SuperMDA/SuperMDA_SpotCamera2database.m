@@ -55,6 +55,7 @@ for i = 1:length(mytimes)
     switch mycase
         case 1
             mytokens = regexp(mynames{i},'Image(?<p>\d+)\.tif','names');
+            mytokens.p = str2double(mytokens.p);
     end
     
             position_label = sprintf('Pos%d',mytokens.p);
