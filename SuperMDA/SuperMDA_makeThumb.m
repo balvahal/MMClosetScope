@@ -14,8 +14,8 @@ addRequired(p, 'thumbsize', @(x) numel(x)==2 & isnumeric(x));
 addOptional(p, 'bitdepth', 16, @(x) isnumeric(x));
 parse(p,moviePath,thumbSize, varargin{:});
 
-if ~isdir(fullfile(moviePath,'.thumb'))
-    mkdir(fullfile(moviePath,'.thumb'));
+if ~isdir(fullfile(moviePath,'thumb'))
+    mkdir(fullfile(moviePath,'thumb'));
 end
 %% load the database file
 %
@@ -54,7 +54,7 @@ parfor i = 1:height(smda)
     mycell{i} = regexprep(mycell{i},'\s','');
     %%% save the new image
     %
-    imwrite(I,fullfile(moviePath,'.thumb',mycell{i}),'png');
+    imwrite(I,fullfile(moviePath,'thumb',mycell{i}),'png');
     disp(mycell{i});
 end
 %% create filename database for the thumbnails
