@@ -21,14 +21,34 @@ if smdaPilot.itinerary.position_continuous_focus_bool(j)
         smdaPilot.mm.setXYZ(xyz(3),'direction','z');
         smdaPilot.mm.core.waitForDevice(smdaPilot.mm.FocusDevice);
         smdaPilot.mm.core.setProperty(smdaPilot.mm.AutoFocusDevice,'Position',smdaPilot.itinerary.position_continuous_focus_offset(j));
-        smdaPilot.mm.core.fullFocus(); % PFS will return to |OFF|
+        try
+            smdaPilot.mm.core.fullFocus(); % PFS will return to |OFF|
+        catch
+            if smdaPilot.mm.twitterBool
+                try
+                    smdaPilot.mm.twitter.updateStatus(sprintf('Error in perfect focus from the %s microscope.',smdaPilot.mm.computerName));
+                catch
+                    disp('Twitter Error!');
+                end
+            end
+        end
     else
         %%
         % If the PFS system is already on, then changing the offset will
         % adjust the z-position. fullFocus() will have the system wait
         % until the new z-position has been reached.
         smdaPilot.mm.core.setProperty(smdaPilot.mm.AutoFocusDevice,'Position',smdaPilot.itinerary.position_continuous_focus_offset(j));
-        smdaPilot.mm.core.fullFocus(); % PFS will remain |ON|
+        try
+            smdaPilot.mm.core.fullFocus(); % PFS will remain |ON|
+        catch
+            if smdaPilot.mm.twitterBool
+                try
+                    smdaPilot.mm.twitter.updateStatus(sprintf('Error in perfect focus from the %s microscope.',smdaPilot.mm.computerName));
+                catch
+                    disp('Twitter Error!');
+                end
+            end
+        end
     end
     %%
     % Account for vertical stage drift by updating the z position

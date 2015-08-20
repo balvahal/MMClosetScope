@@ -83,7 +83,11 @@ classdef SCAN6_object < handle
         %%
         %
         function obj = timer_scan6Fcn(obj)
-            SCAN6_timer_function(obj);
+%             try
+                SCAN6_timer_function(obj);
+%             catch ME
+%                 disp('timer bug detected.');
+%             end
         end
         %% delete (make sure its child objects are also deleted)
         % for a clean delete
