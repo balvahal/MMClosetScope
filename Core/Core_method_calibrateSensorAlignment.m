@@ -154,8 +154,12 @@ writetable(mytable,fullfile(mfilepath,mystr));
         c = normxcorr2(pattern,mov);
         [~, imax] = max(abs(c(:)));
         [ypeak, xpeak] = ind2sub(size(c),imax);
-        corr_offset = abs([(xpeak-size(pattern,2)+1-innerLeft),...
-            (ypeak-size(pattern,1)+1-innerTop)]);
+        % the problem is here... this should not be absolute value
+        corr_offset = [(xpeak-size(pattern,2)+1-innerLeft),...
+            (ypeak-size(pattern,1)+1-innerTop)];
+        if corr_offset(1) < 0
+            corr_offset(2) = -corr_offset(2);
+        end
     end
 end
 
