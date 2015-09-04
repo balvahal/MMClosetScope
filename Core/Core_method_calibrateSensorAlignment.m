@@ -158,6 +158,7 @@ writetable(mytable,fullfile(mfilepath,mystr));
         corr_offset = [(xpeak-size(pattern,2)+1-innerLeft),...
             (ypeak-size(pattern,1)+1-innerTop)];
         if corr_offset(1) < 0
+            corr_offset(1) = -corr_offset(1);
             corr_offset(2) = -corr_offset(2);
         end
     end
