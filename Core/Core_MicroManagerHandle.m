@@ -19,7 +19,7 @@ classdef Core_MicroManagerHandle < handle
         stageport
         binningfun
         twitter;
-        twitterBool = true;
+        twitterBool = false;
     end
     properties (SetObservable)
         I
@@ -154,7 +154,7 @@ classdef Core_MicroManagerHandle < handle
             groups = obj.core.getAvailableConfigGroups.toArray; %the output is a java.lang.String[]
             groups = cell(groups);
             if ~any(strcmp('Channel',groups))
-                error('CoreInit:noChannel','The group ''Channel'' could not be found.');
+                error('CoreInit:noChannel','The group ''Channel'' could not be found. Please make sure ''Channel'' is created before starting MM through MATLAB.');
             end
             %%
             % The *Presets* or *Configs* for the *Channel* group are
