@@ -32,10 +32,10 @@ classdef Core_MicroManagerHandle < handle
             %%
             % Load uM and assign general uM objects to obj properties
             hmsg = msgbox('Click ''OK'' after the micromanager configuration file has been loaded.','Wait For Configuration');
-            import org.micromanager.MMStudio;
-            obj.gui = MMStudio(false);
+            import org.micromanager.internal.MMStudio;
+            obj.gui = MMStudio(0);
             uiwait(hmsg); %the uM gui must load the correct configuration and relys upon user input. MATLAB will wait until the user confirms that uM loaded properly.
-            obj.core = obj.gui.getMMCore;
+            obj.core = obj.gui.getCMMCore;
             obj.mda = obj.gui.getAcquisitionEngine();
             %%
             % Change a few settings
@@ -179,8 +179,10 @@ classdef Core_MicroManagerHandle < handle
             % computer hostname as a unique identifier.
             
             obj.computerName = obj.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-            if exist(sprintf('Core_microscopeFcn_%s',obj.computerName),'file')
-                microscopeFcn = str2func(sprintf('Core_microscopeFcn_%s',obj.computerName));
+            customFileName = sprintf('Core_microscopeFcn_%s',obj.computerName);
+            customFileName = regexprep(customFileName,'-','');
+            if exist(customFileName,'file')
+                microscopeFcn = str2func(customFileName);
             else
                 microscopeFcn = @Core_microscopeFcn_NOSCOPE;
             end

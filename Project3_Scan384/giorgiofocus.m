@@ -1,0 +1,10 @@
+function Score = spatial_var(FluorImage)
+RawImage = double(imread(FluorImage));
+ThresImage = RawImage-imopen(RawImage,strel('disk',50));
+thImage = stdfilt(ThresImage);
+thImage2 = imclose(thImage,strel('disk',3));
+thImage2 = thImage2>100;
+thImage2 = imclose(thImage2,strel('disk',5));
+thImage2 = imfill(thImage2,'holes');
+thImage2 = bwareaopen(thImage2,1000);
+ThresImage = thImage2;
