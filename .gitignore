@@ -177,3 +177,8 @@ pip-log.txt
 bower_components/
 
 matlab_file_exchange/
+
+#############
+## twitter keys and tokens
+#############
+Core/twitter.txt
