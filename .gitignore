@@ -179,6 +179,11 @@ bower_components/
 matlab_file_exchange/
 
 #############
+## HTML Help Files
+#############
+Core/html/
+
+#############
 ## twitter keys and tokens
 #############
 Core/twitter.txt
