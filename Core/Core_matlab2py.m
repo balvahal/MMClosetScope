@@ -18,6 +18,9 @@ pythonData = recursiveFunMatlab2Py(matlabData);
 %% matlabConversion
 % <matlab:doc('handling-data-returned-from-python') data from Python>
     function pyData = matlabConversion(matlabData)
+        if isempty(matlabData)
+            matlabData = '';
+        end
         matlabType = class(matlabData);
         switch matlabType
             case 'char'
@@ -26,7 +29,10 @@ pythonData = recursiveFunMatlab2Py(matlabData);
                 else
                     pyData = py.str(transpose(matlabData));
                 end
-            case {'double','single','int8','uint8','int16','uint16','int32','uint32','int64','uint64'}
+            case {'double','single','int8','uint8','int16','uint16','int32','uint32','int64','uint64','logical'}
+                if islogical(matlabData)
+                    matlabData = double(matlabData);
+                end
                 mysize = size(matlabData);
                 if numel(mysize) > 2
                     % More than 2 dimensions can be translated by nestings
@@ -114,18 +120,8 @@ pythonData = recursiveFunMatlab2Py(matlabData);
         mynum = numel(matlabData);
         switch matlabType
             case 'cell'
-                if mynum == 1
-                    if iscell(matlabData{1}) || isstruct(matlabData{1})
-                        matlabData{1} = recursiveFunMatlab2Py(matlabData{1});
-                    end
-                else
-                    logicalIsCell = cellfun(@iscell,matlabData);
-                    logicalIsStruct = cellfun(@isstruct,matlabData);
-                    if any(logicalIsCell(:)) || any(logicalIsStruct(:))
-                        for i = 1:mynum
-                            matlabData{i} = recursiveFunMatlab2Py(matlabData{i});
-                        end
-                    end
+                for i = 1:mynum
+                    matlabData{i} = recursiveFunMatlab2Py(matlabData{i});
                 end
             case 'struct'
                 for i = 1:mynum

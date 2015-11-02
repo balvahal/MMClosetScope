@@ -38,13 +38,13 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % * imageWidthNoBin
         
         channel_names;
-        database_filenamePNG; %?
+        database_filenamePNG = ''; %?
         gps;
         gps_logical;
         mm;
         orderVector;
         output_directory = fullfile(pwd,'SuperMDA');
-        png_path; %?
+        png_path = ''; %?
         imageHeightNoBin
         imageWidthNoBin
         
@@ -370,92 +370,19 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         end
         %% export
         % The object is saved in the JSON format. JSON is easier to read
-        % and edit in a text editor. I think it is a very nice storage
-        % format.
+        % and edit in a text editor.
         function obj = export(obj)
             %% organize and clean up the object
             % to ensure self-consistency
             obj.dropEmpty;
-            obj.organizeByOrder
-            %% convert data into JSON
-            %
-            jsonStrings = {};
-            n = 1;
-            %%%
-            %
-            jsonStrings{n} = micrographIOT_cellStringArray2json('channel_names',obj.channel_names); n = n + 1;
-            jsonStrings{n} = micrographIOT_2dmatrix2json('gps',obj.gps); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('gps_logical',obj.gps_logical); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('orderVector',obj.orderVector); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellStringArray2json('output_directory',strsplit(obj.output_directory,filesep)); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('imageHeightNoBin',obj.imageHeightNoBin); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('imageWidthNoBin',obj.imageWidthNoBin);  n = n + 1;
-            %%%
-            % navigation indices and pointers
-            jsonStrings{n} = micrographIOT_array2json('ind_group',obj.ind_group); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellNumericArray2json('ind_position',obj.ind_position); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellNumericArray2json('ind_settings',obj.ind_settings); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('number_group',obj.number_group); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('number_position',obj.number_position); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('number_settings',obj.number_settings); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('order_group',obj.order_group); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellNumericArray2json('order_position',obj.order_position); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellNumericArray2json('order_settings',obj.order_settings); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('pointer_next_group',obj.pointer_next_group); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('pointer_next_position',obj.pointer_next_position); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('pointer_next_settings',obj.pointer_next_settings); n = n + 1;
-            %%%
-            % group
-            jsonStrings{n} = micrographIOT_cellStringArray2json('group_function_after',obj.group_function_after); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellStringArray2json('group_function_before',obj.group_function_before); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellStringArray2json('group_label',obj.group_label); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('group_logical',obj.group_logical); n = n + 1;
-            %%%
-            % position
-            jsonStrings{n} = micrographIOT_array2json('position_continuous_focus_offset',obj.position_continuous_focus_offset); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('position_continuous_focus_bool',obj.position_continuous_focus_bool); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellStringArray2json('position_function_after',obj.position_function_after); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellStringArray2json('position_function_before',obj.position_function_before); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellStringArray2json('position_label',obj.position_label); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('position_logical',obj.position_logical); n = n + 1;
-            jsonStrings{n} = micrographIOT_2dmatrix2json('position_xyz',obj.position_xyz); n = n + 1;
-            %%%
-            % settings
-            jsonStrings{n} = micrographIOT_array2json('settings_binning',obj.settings_binning); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_channel',obj.settings_channel); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_exposure',obj.settings_exposure); n = n + 1;
-            jsonStrings{n} = micrographIOT_cellStringArray2json('settings_function',obj.settings_function); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_logical',obj.settings_logical); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_period_multiplier',obj.settings_period_multiplier); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_timepoints',obj.settings_timepoints); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_z_origin_offset',obj.settings_z_origin_offset); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_z_stack_lower_offset',obj.settings_z_stack_lower_offset); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_z_stack_upper_offset',obj.settings_z_stack_upper_offset); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('settings_z_step_size',obj.settings_z_step_size); n = n + 1;
-            %%%
-            % time
-            jsonStrings{n} = micrographIOT_array2json('duration',obj.duration); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('fundamental_period',obj.fundamental_period); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('clock_relative',obj.clock_relative); n = n + 1;
-            jsonStrings{n} = micrographIOT_array2json('number_of_timepoints',obj.number_of_timepoints);
-            %% export the JSON data to a text file
-            %
-            myjson = micrographIOT_jsonStrings2Object(jsonStrings);
-            fid = fopen(fullfile(obj.output_directory,'smdaITF.txt'),'w');
-            if fid == -1
-                error('smdaITF:badfile','Cannot open the file, preventing the export of the smdaITF.');
+            obj.organizeByOrder            
+            fieldnamesExclusionList = {'mm'};
+            myfields = fieldnames(obj);
+            myfields(ismember(myfields,fieldnamesExclusionList)) = [];
+            for i = 1:numel(myfields)
+                myexportStruct.(myfields{i}) = obj.(myfields{i});
             end
-            fprintf(fid,myjson);
-            fclose(fid);
-            %%%
-            %
-            myjson = micrographIOT_autoIndentJson(fullfile(obj.output_directory,'smdaITF.txt'));
-            fid = fopen(fullfile(obj.output_directory,'smdaITF.txt'),'w');
-            if fid == -1
-                error('smdaITF:badfile','Cannot open the file, preventing the export of the smdaITF.');
-            end
-            fprintf(fid,myjson);
-            fclose(fid);
+            Core_jsonparser.export_json(myexportStruct,fullfile(obj.output_directory,'smdaITF.txt'));
         end
         %% gpsFromOrder
         %
@@ -482,156 +409,11 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         function [obj] = import(obj,filename)
             %%
             %
-            json = fileread(filename);
-            data = parse_json(json);
-            data = data{1}; %the data struct comes wrapped in a cell.
-            if iscell(data.channel_names)
-                % there is more than 1 channel
-                obj.channel_names = data.channel_names;
-            else
-                % there is only 1 channel
-                obj.channel_names = {data.channel_names};
+            myimportStruct = Core_jsonparser.import_json(filename);
+            myfields = fieldnames(myimportStruct);
+            for i = 1:numel(myfields)
+                obj.(myfields{i}) = myimportStruct.(myfields{i});
             end
-            obj.gps = transpose(reshape(cell2mat(cellfun(@cell2mat,data.gps,'UniformOutput',false)),3,[]));
-            if iscell(data.gps_logical)
-                obj.gps_logical = logical(cell2mat(data.gps_logical));
-            else
-                obj.gps_logical = logical(data.gps_logical);
-            end
-            if iscell(data.orderVector)
-                obj.orderVector = cell2mat(data.orderVector);
-            else
-                obj.orderVector = data.orderVector;
-            end
-            if iscell(data.output_directory)
-                obj.output_directory = fullfile(data.output_directory{:});
-            else
-                obj.output_directory = data.output_directory;
-            end
-            obj.imageHeightNoBin = data.imageHeightNoBin;
-            obj.imageWidthNoBin = data.imageWidthNoBin;
-            %%%
-            % group
-            if iscell(data.group_function_after)
-                obj.group_function_after = data.group_function_after;
-            else
-                obj.group_function_after = {data.group_function_after};
-            end
-            if iscell(data.group_function_before)
-                obj.group_function_before = data.group_function_before;
-            else
-                obj.group_function_before = {data.group_function_before};
-            end
-            if iscell(data.group_label)
-                obj.group_label = data.group_label;
-            else
-                obj.group_label = {data.group_label};
-            end
-            if iscell(data.group_logical)
-                obj.group_logical = logical(cell2mat(data.group_logical));
-            else
-                obj.group_logical = logical(data.group_logical);
-            end
-            %%%
-            % navigation indices
-            obj.pointer_next_group = data.pointer_next_group;
-            obj.pointer_next_position = data.pointer_next_position;
-            obj.pointer_next_settings = data.pointer_next_settings;
-            %%%
-            % position
-            if iscell(data.position_continuous_focus_offset)
-                obj.position_continuous_focus_offset = cell2mat(data.position_continuous_focus_offset);
-            else
-                obj.position_continuous_focus_offset = data.position_continuous_focus_offset;
-            end
-            if iscell(data.position_continuous_focus_bool)
-                obj.position_continuous_focus_bool = logical(cell2mat(data.position_continuous_focus_bool));
-            else
-                obj.position_continuous_focus_bool = logical(data.position_continuous_focus_bool);
-            end
-            if iscell(data.position_function_after)
-                obj.position_function_after = data.position_function_after;
-            else
-                obj.position_function_after = {data.position_function_after};
-            end
-            if iscell(data.position_function_before)
-                obj.position_function_before = data.position_function_before;
-            else
-                obj.position_function_before = {data.position_function_before};
-            end
-            if iscell(data.position_label)
-                obj.position_label = data.position_label;
-            else
-                obj.position_label = {data.position_label};
-            end
-            if iscell(data.position_logical)
-                obj.position_logical = logical(cell2mat(data.position_logical));
-            else
-                obj.position_logical = logical(data.position_logical);
-            end
-            obj.position_xyz = transpose(reshape(cell2mat(cellfun(@cell2mat,data.position_xyz,'UniformOutput',false)),3,[]));
-            %%%
-            % settings
-            if iscell(data.settings_binning)
-                obj.settings_binning = cell2mat(data.settings_binning);
-            else
-                obj.settings_binning = data.settings_binning;
-            end
-            if iscell(data.settings_channel)
-                obj.settings_channel = cell2mat(data.settings_channel);
-            else
-                obj.settings_channel = data.settings_channel;
-            end
-            if iscell(data.settings_exposure)
-                obj.settings_exposure = cell2mat(data.settings_exposure);
-            else
-                obj.settings_exposure = data.settings_exposure;
-            end
-            if iscell(data.settings_function)
-                obj.settings_function = data.settings_function;
-            else
-                obj.settings_function = {data.settings_function};
-            end
-            if iscell(data.settings_logical)
-                obj.settings_logical = logical(cell2mat(data.settings_logical));
-            else
-                obj.settings_logical = logical(data.settings_logical);
-            end
-            if iscell(data.settings_period_multiplier)
-                obj.settings_period_multiplier = cell2mat(data.settings_period_multiplier);
-            else
-                obj.settings_period_multiplier = data.settings_period_multiplier;
-            end
-            if iscell(data.settings_timepoints)
-                obj.settings_timepoints = cell2mat(data.settings_timepoints);
-            else
-                obj.settings_timepoints = data.settings_timepoints;
-            end
-            if iscell(data.settings_z_origin_offset)
-                obj.settings_z_origin_offset = cell2mat(data.settings_z_origin_offset);
-            else
-                obj.settings_z_origin_offset = data.settings_z_origin_offset;
-            end
-            if iscell(data.settings_z_stack_lower_offset)
-                obj.settings_z_stack_lower_offset = cell2mat(data.settings_z_stack_lower_offset);
-            else
-                obj.settings_z_stack_lower_offset = data.settings_z_stack_lower_offset;
-            end
-            if iscell(data.settings_z_stack_upper_offset)
-                obj.settings_z_stack_upper_offset = cell2mat(data.settings_z_stack_upper_offset);
-            else
-                obj.settings_z_stack_upper_offset = data.settings_z_stack_upper_offset;
-            end
-            if iscell(data.settings_z_step_size)
-                obj.settings_z_step_size = cell2mat(data.settings_z_step_size);
-            else
-                obj.settings_z_step_size = data.settings_z_step_size;
-            end
-            %%%
-            %
-            obj.newDuration(data.duration);
-            obj.newFundamentalPeriod(data.fundamental_period);
-            obj.newNumberOfTimepoints(data.number_of_timepoints);
             %%
             %
             obj.refreshIndAndOrder;

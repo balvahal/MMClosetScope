@@ -25,6 +25,7 @@ classdef Core_twitter < handle
     properties
         active = false;
         tweepyAPI
+        verifyBool = false;
     end
     
     methods
@@ -65,16 +66,12 @@ classdef Core_twitter < handle
             auth = py.tweepy.OAuthHandler(twitterCredentials.ConsumerKey{1},twitterCredentials.ConsumerSecret{1});
             auth.set_access_token(twitterCredentials.AccessToken{1},twitterCredentials.AccessTokenSecret{1});
             obj.tweepyAPI = py.tweepy.API(auth);
-            try
-                obj.tweepyAPI.verify_credentials;
-                disp('User''s Twitter account has been authenticated.');
-            catch
-                warning('crtwt:notvalid','Twitter could not authenticate the app, because one or more tokens/keys are incorrect.');
-                return
+            obj.verify_credentials;
+            if obj.verifyBool
+                obj.active = true;
+            else
+                obj.active = false;
             end
-            %%%
-            % If all the above happens note that this object is "active"
-            obj.active = true;
         end
         %% update_status
         % Change the Twitter status.
@@ -87,6 +84,19 @@ classdef Core_twitter < handle
             catch
                 disp('Twitter status failed to update. The message may be too long, or the message may be a repeat.');
             end
+        end
+        %% verify_credentials
+        %
+        function verifyBool = verify_credentials(obj)
+            try
+                obj.tweepyAPI.verify_credentials;
+                disp('User''s Twitter account has been authenticated.');
+                verifyBool = true;
+            catch
+                warning('crtwt:notvalid','Twitter could not authenticate the app, because one or more tokens/keys are incorrect.');
+                verifyBool = false;
+            end
+            obj.verifyBool = verifyBool;
         end
     end
 end

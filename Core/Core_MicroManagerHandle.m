@@ -193,12 +193,7 @@ classdef Core_MicroManagerHandle < handle
             obj.I = zeros(obj.core.getImageHeight,obj.core.getImageWidth);
             %% twitter
             %
-            obj.twitter = twitty;
-            try
-                obj.twitter.accountVerifyCredentials;
-            catch
-                obj.twitterBool = false;
-            end
+            obj.twitter = Core_twitter;
         end
         %% Methods
         % These methods are meant to make life a little easier by having
