@@ -1,0 +1,160 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Estimate the center and radius of circle with &gt;2 points on the perimeter</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-03"><meta name="DC.source" content="SCAN6config_estimateCircle.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Estimate the center and radius of circle with &gt;2 points on the perimeter</h1><!--introduction--><p>The center of a circle and its radius can be estimated using at least 3 points on the perimeter.</p><p>Why was this function created? Aligning the center of a dish with an objective can be challenging by eye. It is easier to identify the perimeter at the plastic-glass interface of a Mattek dish through and objective and then calculating the circle center from this information.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#2">Outputs</a></li><li><a href="#4">Proofread the data points</a></li><li><a href="#5">Calculate the estimate for the center and radius</a></li></ul></div><h2>Inputs<a name="1"></a></h2><div><ul><li>perimdata = an array of paired coordinates that is n x 2.</li></ul></div><h2>Outputs<a name="2"></a></h2><div><ul><li>xc = the center x coordinate</li><li>yc = the center y coordinate</li><li>r = the radius of the circle</li></ul></div><pre class="codeinput"><span class="keyword">function</span> [xc,yc,r] = SCAN6config_estimateCircle(perimdata)
+</pre><pre class="codeinput"><span class="keyword">if</span> size(perimdata,1)&lt;3
+    warning(<span class="string">'SCAN6cng_estCir:NotEnoughPts'</span>,<span class="string">'The input array of (x,y) coordinates did not contain enough data points to make an estimate.'</span>);
+    [xc,yc,r] = deal(NaN);
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+x0 = perimdata(1,1);
+y0 = perimdata(1,2);
+xn = perimdata(2:end,1);
+yn = perimdata(2:end,2);
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in SCAN6config_estimateCircle (line 16)
+if size(perimdata,1)&lt;3
+</pre><h2>Proofread the data points<a name="4"></a></h2><div><ul><li>data points should not be identical with the first value.</li><li>there is a singularity if the y-value of the first point is the same as the y-value of an nth point. This must also be avoided.</li><li>the "coeffx" should not be too large and bias the estimate</li></ul></div><pre class="codeinput">testnumx = xn-x0;
+testnumy = yn-y0;
+testsumchk = testnumx+testnumy ~= 0;
+<span class="keyword">if</span> ~all(testsumchk)
+    warning(<span class="string">'SCAN6cng_estCir:firstValRedundant'</span>,<span class="string">'The first pair of points in the input array of (x,y) coordinates is identical to another pair of points in the array.'</span>);
+    [xc,yc,r] = deal(NaN);
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+<span class="keyword">if</span> ~all(testnumy)
+    warning(<span class="string">'SCAN6cng_estCir:firstValYRedundant'</span>,<span class="string">'The first y-value in the input array of (x,y) coordinates is identical to another y-value in the array.'</span>);
+    [xc,yc,r] = deal(NaN);
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><h2>Calculate the estimate for the center and radius<a name="5"></a></h2><p><img vspace="5" hspace="5" src="estimateCircle.png" alt=""> </p><pre class="codeinput">B = sum(perimdata(2:end,:).^2,2)-sum(perimdata(1,:).^2,2);
+A = 2*(perimdata(2:end,:)-repmat(perimdata(1,:),size(perimdata,1)-1,1));
+mylstsq = A\B;
+xc = mylstsq(1);
+yc = mylstsq(2);
+r = (perimdata(:,1)-xc).^2 + (perimdata(:,2)-yc).^2;
+r = sqrt(mean(r));
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Estimate the center and radius of circle with >2 points on the perimeter
+% The center of a circle and its radius can be estimated using at least 3
+% points on the perimeter. 
+%
+% Why was this function created? Aligning the center of a dish with an
+% objective can be challenging by eye. It is easier to identify the
+% perimeter at the plastic-glass interface of a Mattek dish through and
+% objective and then calculating the circle center from this information.
+%% Inputs
+% * perimdata = an array of paired coordinates that is n x 2.
+%% Outputs
+% * xc = the center x coordinate
+% * yc = the center y coordinate
+% * r = the radius of the circle
+function [xc,yc,r] = SCAN6config_estimateCircle(perimdata)
+if size(perimdata,1)<3
+    warning('SCAN6cng_estCir:NotEnoughPts','The input array of (x,y) coordinates did not contain enough data points to make an estimate.');
+    [xc,yc,r] = deal(NaN);
+    return
+end
+x0 = perimdata(1,1); 
+y0 = perimdata(1,2);
+xn = perimdata(2:end,1);
+yn = perimdata(2:end,2);
+%% Proofread the data points
+% * data points should not be identical with the first value.
+% * there is a singularity if the y-value of the first point is the same as
+% the y-value of an nth point. This must also be avoided.
+% * the "coeffx" should not be too large and bias the estimate
+testnumx = xn-x0;
+testnumy = yn-y0;
+testsumchk = testnumx+testnumy ~= 0;
+if ~all(testsumchk)
+    warning('SCAN6cng_estCir:firstValRedundant','The first pair of points in the input array of (x,y) coordinates is identical to another pair of points in the array.');
+    [xc,yc,r] = deal(NaN);
+    return
+end
+if ~all(testnumy)
+    warning('SCAN6cng_estCir:firstValYRedundant','The first y-value in the input array of (x,y) coordinates is identical to another y-value in the array.');
+    [xc,yc,r] = deal(NaN);
+    return
+end
+%% Calculate the estimate for the center and radius
+%
+% <<estimateCircle.png>>
+%
+B = sum(perimdata(2:end,:).^2,2)-sum(perimdata(1,:).^2,2);
+A = 2*(perimdata(2:end,:)-repmat(perimdata(1,:),size(perimdata,1)-1,1));
+mylstsq = A\B;
+xc = mylstsq(1);
+yc = mylstsq(2);
+r = (perimdata(:,1)-xc).^2 + (perimdata(:,2)-yc).^2;
+r = sqrt(mean(r));
+
+##### SOURCE END #####
+--></body></html>
