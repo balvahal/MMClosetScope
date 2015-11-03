@@ -207,12 +207,8 @@ classdef Core_MicroManagerHandle < handle
             try
                 pos = Core_method_getXYZ(obj);
             catch
-                if obj.twitterBool
-                    try
-                    obj.twitter.updateStatus(sprintf('Error in reading XYZ from the %s microscope.',obj.computerName));
-                    catch
-                       disp('Twitter Error!'); 
-                    end
+                if obj.twitter.active
+                    obj.twitter.update_status(sprintf('Error in reading XYZ from the %s microscope.',obj.computerName));
                 end
                 pos = Core_method_getXYZ(obj);
             end
@@ -235,8 +231,8 @@ classdef Core_MicroManagerHandle < handle
                     Core_method_setXYZ(obj,pos,varargin{:});
                 end
             catch
-                if obj.twitterBool
-                    obj.twitter.updateStatus(sprintf('Error in sending XYZ to the %s microscope.',obj.computerName));
+                if obj.twitter.active
+                    obj.twitter.update_status(sprintf('Error in sending XYZ to the %s microscope.',obj.computerName));
                 end
                 if isempty(varargin)
                     Core_method_setXYZ(obj,pos);
@@ -261,12 +257,8 @@ classdef Core_MicroManagerHandle < handle
                     I = Core_method_snapImage(obj,varargin{:});
                 end
             catch
-                if obj.twitterBool
-                    try
-                    obj.twitter.updateStatus(sprintf('Error in capturing an image on the %s microscope.',obj.computerName));
-                    catch
-                        disp('Twitter Error!');
-                    end
+                if obj.twitter.active
+                    obj.twitter.update_status(sprintf('Error in capturing an image on the %s microscope.',obj.computerName));
                 end
                 if isempty(varargin)
                     I = Core_method_snapImage(obj);
