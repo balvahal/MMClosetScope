@@ -147,7 +147,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     end
     %% Properties (private)
     %
-    properties (SetAccess = private)
+    properties (SetAccess = protected)
         %%% Time
         % The time related properties were made private, because they are
         % co-dependent, e.g. changing the _duration_ will change the
