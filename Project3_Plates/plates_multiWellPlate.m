@@ -19,6 +19,8 @@ classdef plates_multiWellPlate < handle
         y_vector
         plate_height
         plate_width
+        well_width
+        well_height
     end
     
     properties (Hidden = true)
@@ -36,16 +38,26 @@ classdef plates_multiWellPlate < handle
         %%
         %
         function obj = registration(obj)
+            obj.registrationBool = false;
             if obj.guiBool
                 myoutput = plates_registration(obj.mm);
                 if isempty(myoutput)
-                    obj.registrationBool = false;
                     return
                 end
+                obj.ULC = myoutput.ULC;
+                obj.URC = myoutput.URC;
+                obj.LLC = myoutput.LLC;
+                obj.rownum = myoutput.rownum;
+                obj.colnum = myoutput.colnum;
             else
-                myoutput = obj.vectors(obj.ULC,obj.URC,obj.LLC);
+                myoutput = obj.vectors(obj.ULC,obj.URC,obj.LLC,obj.rownum,obj.colnum);
             end
-            
+            obj.x_vector = myoutput.x_vector;
+            obj.y_vector = myoutput.y_vector;
+            obj.plate_height = myoutput.plate_height;
+            obj.plate_width = myoutput.plate_width;
+            obj.well_width = myoutput.well_width;
+            obj.well_height = myoutput.well_height;
             obj.registrationBool = true;
         end
         %%
@@ -72,7 +84,7 @@ classdef plates_multiWellPlate < handle
         % * ULC = upper left corner (x,y,z)
         % * URC = upper right corner (x,y,z)
         % * LLC = lower left corner (x,y,z)
-        function myoutput = vectors(ULC, URC, LLC)
+        function myoutput = vectors(ULC, URC, LLC, rownum, colnum)
             %%
             % Use three points to define a plane that represents the
             % multi-well plate. The ULC is the origin. With reference to
@@ -91,7 +103,9 @@ classdef plates_multiWellPlate < handle
             % These vectors will define a plane with a normal vector of
             % |cross(x_vector,y_vector)|.
             %
-            
+            % Calculate the distance between well-centers in both x and y
+            myoutput.well_width = myoutput.plate_width/colnum;
+            myoutput.well_height = myoutput.plate_height/rownum;
         end
     end
 end

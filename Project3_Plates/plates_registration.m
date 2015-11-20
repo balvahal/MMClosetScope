@@ -9,38 +9,42 @@
 % * LLC = lower left corner (x,y,z)
 function myoutput = plates_registration(mm)
 %%
-% 
-str = sprintf('Move the microscope to the center of the upper-left-corner well.\n\nWhen ready press ''Next''.');
+%
+myoutput.rownum = input('How many rows are in the multi-well plate?\n');
+myoutput.colnum = input('How many columns are in the multi-well plate?\n');
+
+str = sprintf('Move the microscope to the center of the UPPER-LEFT-CORNER well.\n\nWhen ready press ''Next''.');
 choice = questdlg(str, ...
     'upper-left-corner', ...
     'Next','Cancel','Cancel');
 % Handle response
 if strcmp(choice,'Cancel')
+    myoutput = [];
     return;
 end
-ULC = mm.getXYZ;
+myoutput.ULC = mm.getXYZ;
 
-str = sprintf('Move the microscope to the center of the upper-right-corner well.\n\nWhen ready press ''Next''.');
+str = sprintf('Move the microscope to the center of the UPPER-RIGHT-CORNER well.\n\nWhen ready press ''Next''.');
 choice = questdlg(str, ...
     'upper-right-corner', ...
     'Next','Cancel','Cancel');
 % Handle response
 if strcmp(choice,'Cancel')
+    myoutput = [];
     return;
 end
-URC = mm.getXYZ;
+myoutput.URC = mm.getXYZ;
 
-str = sprintf('Move the microscope to the center of the lower-left-corner well.\n\nWhen ready press ''Next''.');
+str = sprintf('Move the microscope to the center of the LOWER-LEFT-CORNER well.\n\nWhen ready press ''Next''.');
 choice = questdlg(str, ...
     'lower-left-corner', ...
     'Next','Cancel','Cancel');
 % Handle response
 if strcmp(choice,'Cancel')
+    myoutput = [];
     return;
 end
-LLC = mm.getXYZ;
+myoutput.LLC = mm.getXYZ;
 
-myoutput = plates_multiWellPlate.vectors(ULC,URC,LLC);
-
-
+myoutput = plates_multiWellPlate.vectors(ULC,URC,LLC,rownum,colnum);
 end
