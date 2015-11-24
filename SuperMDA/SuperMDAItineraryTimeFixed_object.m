@@ -369,8 +369,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
         end
         %% export
-        % The object is saved in the JSON format. JSON is easier to read
-        % and edit in a text editor.
+        % The object is saved in the JSON format. JSON is easy to read and
+        % edit in a text editor.
         function obj = export(obj)
             %% organize and clean up the object
             % to ensure self-consistency
@@ -977,5 +977,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
                 [obj.number_settings(p)] = deal(mySettingsNum);
             end
         end
+        %% Grid: methods
+        %    ___     _    _
+        %   / __|_ _(_)__| |
+        %  | (_ | '_| / _` |
+        %   \___|_| |_\__,_|
+        %
+        
     end
 end

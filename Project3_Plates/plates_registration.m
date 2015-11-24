@@ -23,6 +23,7 @@ if strcmp(choice,'Cancel')
     return;
 end
 myoutput.ULC = mm.getXYZ;
+disp(myoutput.ULC);
 
 str = sprintf('Move the microscope to the center of the UPPER-RIGHT-CORNER well.\n\nWhen ready press ''Next''.');
 choice = questdlg(str, ...
@@ -34,6 +35,7 @@ if strcmp(choice,'Cancel')
     return;
 end
 myoutput.URC = mm.getXYZ;
+disp(myoutput.URC);
 
 str = sprintf('Move the microscope to the center of the LOWER-LEFT-CORNER well.\n\nWhen ready press ''Next''.');
 choice = questdlg(str, ...
@@ -45,6 +47,7 @@ if strcmp(choice,'Cancel')
     return;
 end
 myoutput.LLC = mm.getXYZ;
+disp(myoutput.LLC);
 
-myoutput = plates_multiWellPlate.vectors(ULC,URC,LLC,rownum,colnum);
+myoutput = plates_multiWellPlate.vectors(myoutput.ULC,myoutput.URC,myoutput.LLC,myoutput.rownum,myoutput.colnum);
 end

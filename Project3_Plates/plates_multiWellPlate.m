@@ -4,14 +4,18 @@ classdef plates_multiWellPlate < handle
     %%
     %
     properties
-        ULC
+        ULC % the center of the upper_left_corner well
         URC
         LLC
         mm
-        colnum
-        rownum
+        colnum = 1;
+        rownum = 1;
         registrationBool = false;
         guiBool = true;
+        platename = 'plate';
+        image_overlap = 0;
+        image_number = 1;
+        image_overlap_units = 'um';
     end
     
     properties (SetAccess = protected)
@@ -63,12 +67,41 @@ classdef plates_multiWellPlate < handle
         %%
         %
         function obj = save(obj,mypath)
-            
+            if isempty(mypath)
+                mypath = userpath;
+            elseif ~isdir(mypath)
+                mkdir(mypath)
+            end     
+            fieldnamesExclusionList = {'mm'};
+            myfields = fieldnames(obj);
+            myfields(ismember(myfields,fieldnamesExclusionList)) = [];
+            for i = 1:numel(myfields)
+                myexportStruct.(myfields{i}) = obj.(myfields{i});
+            end
+            Core_jsonparser.export_json(myexportStruct,fullfile(mypath,sprintf('%s.json',obj.platename)));
         end
         %%
         %
         function obj = load(obj,mypath)
-            
+            myimportStruct = Core_jsonparser.import_json(mypath);
+            myfields = fieldnames(myimportStruct);
+            for i = 1:numel(myfields)
+                obj.(myfields{i}) = myimportStruct.(myfields{i});
+            end
+        end
+        %%
+        %
+        function obj = makePlateGrid(obj)
+            mygrid = SuperMDAGridMaker_object(obj.mm);
+            mypositions = cell(obj.rownum,obj.colnum);
+            for m = 1:obj.rownum
+                for n = 1:obj.colnum
+                    mygrid.centroid = obj.ULC + obj.x_vector*(n-1)*obj.well_width + obj.y_vector*(m-1)*obj.well_height;
+                    mygrid.number_of_images = obj.image_number;
+                    mygrid.overlap_units = obj.image_overlap_units;
+                    mygrid.overlap = obj.image_overlap;
+                end
+            end
         end
     end
     
@@ -84,7 +117,18 @@ classdef plates_multiWellPlate < handle
         % * ULC = upper left corner (x,y,z)
         % * URC = upper right corner (x,y,z)
         % * LLC = lower left corner (x,y,z)
+        %
+        % Having a static method to handle the math defining a plane that
+        % represents a plate adds some redundancy and complexity to the
+        % code handling the plate registration. I think the cost is
+        % justified, because it helps separate the code for
+        % user-interaction from the code that does the number crunching.
         function myoutput = vectors(ULC, URC, LLC, rownum, colnum)
+            myoutput.ULC = ULC;
+            myoutput.URC = URC;
+            myoutput.LLC = LLC;
+            myoutput.rownum = rownum;
+            myoutput.colnum = colnum;
             %%
             % Use three points to define a plane that represents the
             % multi-well plate. The ULC is the origin. With reference to
@@ -92,7 +136,7 @@ classdef plates_multiWellPlate < handle
             % x-movement is from left to right. Positive y-movement is from
             % top to bottom.
             %
-            % The vectors will be have a unity magnitude.
+            % The vectors will have a unity magnitude.
             x_vector = URC - ULC;
             myoutput.plate_width = sqrt(sum(x_vector.^2));
             myoutput.x_vector = x_vector/myoutput.plate_width;
@@ -106,6 +150,11 @@ classdef plates_multiWellPlate < handle
             % Calculate the distance between well-centers in both x and y
             myoutput.well_width = myoutput.plate_width/colnum;
             myoutput.well_height = myoutput.plate_height/rownum;
+            %%%
+            % Give warning if the output vectors are not well defined.
+            if any(isnan(myoutput.x_vector)) || any(isnan(myoutput.y_vector))
+                warning('vectors:plates','The parameters used to define the plate has created an undefined vector(s). Please double check your paramters.');
+            end
         end
     end
 end
