@@ -14,7 +14,7 @@
 %
 % The SuperMDA allows multiple multi-dimensional-acquisitions to be run
 % simulataneously. Each group consists of 1 or more positions. Each
-% position consists of 1 or more settings. Hi.
+% position consists of 1 or more settings.
 classdef SuperMDAItineraryTimeFixed_object < handle
     %% Properties
     %   ___                       _   _
@@ -416,6 +416,10 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
             %%
             %
+            obj.group_logical = logical(obj.group_logical);
+            obj.position_logical = logical(obj.position_logical);
+            obj.settings_logical = logical(obj.settings_logical);
+            obj.gps_logical = logical(obj.gps_logical);
             obj.refreshIndAndOrder;
         end
         %%

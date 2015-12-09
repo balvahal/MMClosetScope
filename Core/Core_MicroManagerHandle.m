@@ -269,8 +269,8 @@ classdef Core_MicroManagerHandle < handle
         end
         %% Calibrate Sensor Alignment
         % The XY axis of the stage is typically rotated relative to the XY
-        % axis of the camera's image sensor. This becomes clear when the an
-        % uncalibrated scopes collects tiled images. The borders of the
+        % axis of the camera's image sensor. This becomes clear when an
+        % uncalibrated scope collects tiled images. The borders of the
         % image will not align and consecutive images will appear to be
         % shifted in both the X and Y direction instead of just one or the
         % other. This relative rotation can be measured directly and used

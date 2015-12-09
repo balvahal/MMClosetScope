@@ -117,46 +117,46 @@ classdef SuperMDAGridMaker_object < handle
         function obj = overlap2pixels(obj)
             %%%
             % Verify _overlap_units_ are valid
-            if ~any(strcmp(x,{'px', 'um', 'fraction'}))
+            if ~any(strcmp(obj.overlap_units,{'px', 'um', 'fraction'}))
                 error('gdmkr:badUnits','The overlap_units are not valid. Choose ''px'', ''um'', or ''fraction''.');
             end
             if strcmp(obj.overlap_units,'fraction')
-                if strcmp(p.Results.overlap_x,'undefined') %if 1_1
-                    obj.overlap_x = round(p.Results.overlap*obj.pixWidth);
+                if isempty(obj.overlap_x) %if 1_1
+                    obj.overlap_x = round(obj.overlap*obj.pixWidth);
                 else
-                    obj.overlap_x = round(p.Results.overlap_x*obj.pixWidth);
+                    obj.overlap_x = round(obj.overlap_x*obj.pixWidth);
                 end
-                if strcmp(p.Results.overlap_y,'undefined') %if 1_2
-                    obj.overlap_y = round(p.Results.overlap*obj.pixHeight);
+                if isempty(obj.overlap_y) %if 1_2
+                    obj.overlap_y = round(obj.overlap*obj.pixHeight);
                 else
-                    obj.overlap_y = round(p.Results.overlap_y*obj.pixHeight);
+                    obj.overlap_y = round(obj.overlap_y*obj.pixHeight);
                 end
-            elseif strcmp(p.Results.overlap_units,'um') %if 1
-                obj.overlap = round(p.Results.overlap/obj.mmhandle.core.getPixelSizeUm);
-                if strcmp(p.Results.overlap_x,'undefined') %if 1_1
+            elseif strcmp(obj.overlap_units,'um') %if 1
+                obj.overlap = round(obj.overlap/obj.mmhandle.core.getPixelSizeUm);
+                if isempty(obj.overlap_x) %if 1_1
                     obj.overlap_x = obj.overlap;
                 else
-                    obj.overlap_x = round(p.Results.overlap_x/obj.mmhandle.core.getPixelSizeUm);
+                    obj.overlap_x = round(obj.overlap_x/obj.mmhandle.core.getPixelSizeUm);
                 end
-                if strcmp(p.Results.overlap_y,'undefined') %if 1_2
+                if isempty(obj.overlap_y) %if 1_2
                     obj.overlap_y = obj.overlap;
                 else
-                    obj.overlap_y = round(p.Results.overlap_y/obj.mmhandle.core.getPixelSizeUm);
+                    obj.overlap_y = round(obj.overlap_y/obj.mmhandle.core.getPixelSizeUm);
                 end
                 %%%
                 % If the units are pixels then no conversion is made and
                 % _overlap_x_ and _overlap_y_ are assessed.
-            elseif strcmp(p.Results.overlap_units,'px') %if 2
-                obj.overlap = round(p.Results.overlap);
-                if strcmp(p.Results.overlap_x,'undefined') %if 2_1
+            elseif strcmp(obj.overlap_units,'px') %if 2
+                obj.overlap = round(obj.overlap);
+                if isempty(obj.overlap_x) %if 2_1
                     obj.overlap_x = obj.overlap;
                 else
-                    obj.overlap_x = round(p.Results.overlap_x);
+                    obj.overlap_x = round(obj.overlap_x);
                 end
-                if strcmp(p.Results.overlap_y,'undefined') %if 2_2
+                if isempty(obj.overlap_y) %if 2_2
                     obj.overlap_y = obj.overlap;
                 else
-                    obj.overlap_y = round(p.Results.overlap_y);
+                    obj.overlap_y = round(obj.overlap_y);
                 end
             end
         end
@@ -166,7 +166,7 @@ classdef SuperMDAGridMaker_object < handle
         % any two points one must be above and to the left. This function
         % makes sure these points are labeled correctly.
         function obj = cornerCheck(obj)
-            if isnumeric(obj.upper_left_corner,'undefined') && isnumeric(obj.lower_right_corner,'undefined')
+            if ~isempty(obj.upper_left_corner) && ~isempty(obj.lower_right_corner)
                 point1 = obj.upper_left_corner;
                 point2 = obj.lower_right_corner;
                 if obj.upper_left_corner(1)>obj.lower_right_corner(1) && obj.upper_left_corner(2)>obj.lower_right_corner(2)

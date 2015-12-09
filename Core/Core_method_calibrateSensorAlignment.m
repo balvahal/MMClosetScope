@@ -1,7 +1,7 @@
 %% Core_method_calibrateSensorAlignment
 % # Ask user to focus on some cells or other objects of high contrast in
 % the center of the field of view. A brightfield image is suggested.
-% # Using a square in the center
+% # Uses a square in the center
 
 function [mm] = Core_method_calibrateSensorAlignment(mm)
 % Construct a questdlg with three options
