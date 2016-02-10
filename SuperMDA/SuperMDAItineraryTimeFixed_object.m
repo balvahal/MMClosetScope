@@ -30,7 +30,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % * database_filenamePNG
         % * gps
         % * gps_logical
-        % * mm
         % * orderVector
         % * output_directory
         % * png_path
@@ -38,13 +37,10 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % * imageWidthNoBin
         
         channel_names;
-        database_filenamePNG = ''; %?
         gps;
         gps_logical;
-        mm;
         orderVector;
         output_directory = fullfile(pwd,'SuperMDA');
-        png_path = ''; %?
         imageHeightNoBin
         imageWidthNoBin
         
@@ -149,7 +145,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     %
     properties (SetAccess = protected)
         %%% Time
-        % The time related properties were made private, because they are
+        % The time related properties are protected, because they are
         % co-dependent, e.g. changing the _duration_ will change the
         % _number_of_timepoints_. Special methods were created to change
         % the time properties while also updating the co-dependent
@@ -168,14 +164,20 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     %% Methods
     %   __  __     _   _            _
     %  |  \/  |___| |_| |_  ___  __| |___
-    %  | |\/| / -_)  _| ' \/ _ \/ _` (_-<
+    %  | |\/| / -_)  _| ' \/ _ \/ _` (_-< 
     %  |_|  |_\___|\__|_||_\___/\__,_/__/
     %
     % In general each method was created to help construct a valid,
     % self-consistent itinerary. An itinerary can be constructed without
-    % the use of any of these methods, but there are no guaruntees that a
-    % logical error may not be present. By using these methods to construct
+    % the use of any of these methods, but there are no guaruntees that it
+    % will be free of logical errors. By using these methods to construct
     % an itinerary there will be no doubt about its logic and validity.
+    %
+    % *CONSTRUCTOR*
+    %
+    % * SuperMDAItineraryTimeFixed_object
+    %
+    % *GENERAL*
     %
     % * connectGPS
     % * export
@@ -233,18 +235,17 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.channel_names = mm.Channel;
             obj.gps = [1,1,1];
             obj.gps_logical = true;
-            obj.mm = mm;
             obj.orderVector = 1;
             mm.binningfun(mm,1);
             obj.imageHeightNoBin = mm.core.getImageHeight;
             obj.imageWidthNoBin = mm.core.getImageWidth;
-            %% initialize the prototype_group
+            %%% initialize the prototype_group
             %
             obj.group_function_after{1} = 'SuperMDAItineraryTimeFixed_group_function_after';
             obj.group_function_before{1} = 'SuperMDAItineraryTimeFixed_group_function_before';
             obj.group_label{1} = 'group1';
             obj.group_logical = true;
-            %% initialize the prototype_position
+            %%% initialize the prototype_position
             %
             obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
             obj.position_continuous_focus_bool = true;
@@ -253,7 +254,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.position_label{1} = 'position1';
             obj.position_logical = true;
             obj.position_xyz = mm.getXYZ; %This is a customizable array
-            %% initialize the prototype_settings
+            %%% initialize the prototype_settings
             %
             obj.settings_binning = 1;
             obj.settings_channel = 1;
@@ -266,7 +267,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             obj.settings_z_stack_lower_offset = 0;
             obj.settings_z_stack_upper_offset = 0;
             obj.settings_z_step_size = 0.3;
-            %% initialize the indices and order
+            %%% initialize the indices and order
             % the next group, position, and settings
             obj.pointer_next_group = 2;
             obj.pointer_next_position = 2;
@@ -326,8 +327,8 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             decisionNumber = bin2dec(decisionString);
             
             %%% Cases to consider
-            % There 3 of the 8 parameter choices are valid considerations
-            % and the rest will throw and error.
+            % 3 of the 8 parameter choices are valid considerations and the
+            % rest will throw an error.
             %
             % * case 3, '011', position and settings: The settings in the
             % _s_ array will be added to specified positions _p_.
@@ -784,12 +785,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         % A single position is created.
         %
         % * sNum: this position will have _sNum_ new settings
-        function p = newPosition(obj,varargin)
+        function p = newPosition(obj,mm,varargin)
             %%%
             % parse the input
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addOptional(q, 'pNum',0, @(x) mod(x,1)==0);
+            addRequired(q, 'mm', @(x) isa(x,'Core_MicroManagerHandle'));
             parse(q,obj,varargin{:});
             
             %%% create new group
@@ -798,13 +799,13 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             p = obj.pointer_next_position;
             % add the new position properties reflecting the current objective
             % position
-            obj.position_continuous_focus_offset(p) = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_offset(p) = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
             obj.position_continuous_focus_bool(p) = true;
             obj.position_function_after{p} = obj.position_function_after{1};
             obj.position_function_before{p} = obj.position_function_before{1};
             obj.position_label{p} = sprintf('position%d',p);
             obj.position_logical(p) = true;
-            obj.position_xyz(p,:) = obj.mm.getXYZ;
+            obj.position_xyz(p,:) = mm.getXYZ;
             %%% update order, indices, and pointers
             %
             obj.number_settings(p) = 0;

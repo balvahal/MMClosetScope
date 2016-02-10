@@ -1,6 +1,6 @@
 %%
 %
-classdef Core_MicroManagerHandle < handle
+classdef microscope_class < handle
     properties
         gui
         core
@@ -28,7 +28,10 @@ classdef Core_MicroManagerHandle < handle
     methods
         %% The constructor
         % This function will fire when the object is created
-        function obj = Core_MicroManagerHandle()
+        function obj = microscope_class()
+            %% twitter
+            %
+            obj.twitter = core_twitter;
             %%
             % Load uM and assign general uM objects to obj properties
             hmsg = msgbox('Click ''OK'' after the micromanager configuration file has been loaded.','Wait For Configuration');
@@ -178,22 +181,18 @@ classdef Core_MicroManagerHandle < handle
             % settings are assigned below to a given microscope using the
             % computer hostname as a unique identifier.
             
-            obj.computerName = obj.core.getHostName.toCharArray'; %the hostname is used as a unique identifier
-            customFileName = sprintf('Core_microscopeFcn_%s',obj.computerName);
-            customFileName = regexprep(customFileName,'-','');
+            obj.computerName = regexprep(obj.core.getHostName.toCharArray','-',''); %the hostname is used as a unique identifier
+            customFileName = sprintf('microscope_config_%s',obj.computerName);
             if exist(customFileName,'file')
                 microscopeFcn = str2func(customFileName);
             else
-                microscopeFcn = @Core_microscopeFcn_NOSCOPE;
+                microscopeFcn = @microscope_config_NOSCOPE;
             end
             obj = microscopeFcn(obj);
             %%
             % update stage position initialize image "buffer".
             obj.pos = obj.getXYZ;
             obj.I = zeros(obj.core.getImageHeight,obj.core.getImageWidth);
-            %% twitter
-            %
-            obj.twitter = Core_twitter;
         end
         %% Methods
         % These methods are meant to make life a little easier by having
@@ -205,12 +204,13 @@ classdef Core_MicroManagerHandle < handle
         %
         function [pos] = getXYZ(obj)
             try
-                pos = Core_method_getXYZ(obj);
+                pos = microscope_getXYZ(obj);
             catch
                 if obj.twitter.active
-                    obj.twitter.update_status(sprintf('Error in reading XYZ from the %s microscope.',obj.computerName));
+                    obj.twitter.update_status(sprintf('Error in reading XYZ from the %s microscope. %s',obj.computerName,datetime('now','Format','hh:mm:ss a')));
                 end
-                pos = Core_method_getXYZ(obj);
+                fprintf('Error in reading XYZ from the %s microscope. %s\n',obj.computerName,datetime('now','Format','hh:mm:ss a'));
+                pos = microscope_getXYZ(obj);
             end
         end
         %% Get x, y, and z position of microscope
@@ -226,18 +226,19 @@ classdef Core_MicroManagerHandle < handle
             % Note that setting the Z will turn off PFS.
             try
                 if isempty(varargin)
-                    Core_method_setXYZ(obj,pos);
+                    microscope_setXYZ(obj,pos);
                 else
-                    Core_method_setXYZ(obj,pos,varargin{:});
+                    microscope_setXYZ(obj,pos,varargin{:});
                 end
             catch
                 if obj.twitter.active
-                    obj.twitter.update_status(sprintf('Error in sending XYZ to the %s microscope.',obj.computerName));
+                    obj.twitter.update_status(sprintf('Error in sending XYZ to the %s microscope. %s',obj.computerName,datetime('now','Format','hh:mm:ss a')));
                 end
+                fprintf('Error in sending XYZ to the %s microscope. %s\n',obj.computerName,datetime('now','Format','hh:mm:ss a'));
                 if isempty(varargin)
-                    Core_method_setXYZ(obj,pos);
+                    microscope_setXYZ(obj,pos);
                 else
-                    Core_method_setXYZ(obj,pos,varargin{:});
+                    microscope_setXYZ(obj,pos,varargin{:});
                 end
             end
         end
@@ -252,18 +253,19 @@ classdef Core_MicroManagerHandle < handle
             % exist.
             try
                 if isempty(varargin)
-                    I = Core_method_snapImage(obj);
+                    I = microscope_snapImage(obj);
                 else
-                    I = Core_method_snapImage(obj,varargin{:});
+                    I = microscope_snapImage(obj,varargin{:});
                 end
             catch
                 if obj.twitter.active
-                    obj.twitter.update_status(sprintf('Error in capturing an image on the %s microscope.',obj.computerName));
+                    obj.twitter.update_status(sprintf('Error in capturing an image on the %s microscope. %s',obj.computerName,datetime('now','Format','hh:mm:ss a')));
                 end
+                fprintf('Error in capturing an image on the %s microscope. %s\n',obj.computerName,datetime('now','Format','hh:mm:ss a'));
                 if isempty(varargin)
-                    I = Core_method_snapImage(obj);
+                    I = microscope_snapImage(obj);
                 else
-                    I = Core_method_snapImage(obj,varargin{:});
+                    I = microscope_snapImage(obj,varargin{:});
                 end
             end
         end
@@ -277,7 +279,7 @@ classdef Core_MicroManagerHandle < handle
         % to plan out stage movement in a way that takes this information
         % into account.
         function [obj] = calibrateSensorAlignment(obj)
-            Core_method_calibrateSensorAlignment(obj);
+            microscope_calibrateSensorAlignment(obj);
         end
     end
     %     methods (Static) end

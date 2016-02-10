@@ -25,8 +25,9 @@ if smdaPilot.itinerary.position_continuous_focus_bool(j)
             smdaPilot.mm.core.fullFocus(); % PFS will return to |OFF|
         catch
             if smdaPilot.mm.twitter.active
-                    smdaPilot.mm.twitter.update_status(sprintf('Error in perfect focus from the %s microscope.',smdaPilot.mm.computerName));
+                smdaPilot.mm.twitter.update_status(sprintf('Error in perfect focus from the %s microscope. %s', smdaPilot.mm.computerName, datetime('now','Format','hh:mm:ss a')));                
             end
+            fprintf('Error in perfect focus from the %s microscope. %s\n',smdaPilot.mm.computerName, datetime('now','Format','hh:mm:ss a'));
         end
     else
         %%
@@ -38,8 +39,9 @@ if smdaPilot.itinerary.position_continuous_focus_bool(j)
             smdaPilot.mm.core.fullFocus(); % PFS will remain |ON|
         catch
             if smdaPilot.mm.twitter.active
-                    smdaPilot.mm.twitter.update_status(sprintf('Error in perfect focus from the %s microscope.',smdaPilot.mm.computerName));
+                smdaPilot.mm.twitter.update_status(sprintf('Error in perfect focus from the %s microscope. %s',smdaPilot.mm.computerName, datetime('now','Format','hh:mm:ss a')));                
             end
+            fprintf('Error in perfect focus from the %s microscope. %s\n',smdaPilot.mm.computerName, datetime('now','Format','hh:mm:ss a'));
         end
     end
     %%

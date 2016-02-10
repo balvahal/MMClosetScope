@@ -42,8 +42,9 @@ if smdaPilot.itinerary.settings_z_stack_upper_offset(k) - smdaPilot.itinerary.se
             imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff','Compression','none','WriteMode','overwrite');
         catch
             if obj.twitter.active
-                    obj.twitter.update_status(sprintf('Error in writing image to disk from the %s microscope.',obj.computerName));
+                    obj.twitter.update_status(sprintf('Error in writing image to disk from the %s microscope. %s',obj.computerName, datetime('now','Format','hh:mm:ss a')));                    
             end
+            fprintf('Error in writing image to disk from the %s microscope. %s\n',obj.computerName, datetime('now','Format','hh:mm:ss a'));
             smdaPilot.snap;
             smdaPilot.mm.core.waitForSystem();
             imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff','Compression','none','WriteMode','overwrite');
@@ -64,8 +65,9 @@ else
         imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff','Compression','none','WriteMode','overwrite');
     catch
         if obj.twitter.active
-                obj.twitter.update_status(sprintf('Error in writing image to disk from the %s microscope.',obj.computerName));
+                obj.twitter.update_status(sprintf('Error in writing image to disk from the %s microscope. %s',obj.computerName, datetime('now','Format','hh:mm:ss a')));                
         end
+        fprintf('Error in writing image to disk from the %s microscope. %s',obj.computerName, datetime('now','Format','hh:mm:ss a'));
         smdaPilot.snap;
         smdaPilot.mm.core.waitForSystem();
         imwrite(smdaPilot.mm.I,fullfile(smdaPilot.itinerary.png_path,smdaPilot.itinerary.database_filenamePNG),'tiff','Compression','none','WriteMode','overwrite');

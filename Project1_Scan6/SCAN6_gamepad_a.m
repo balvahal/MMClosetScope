@@ -5,7 +5,7 @@ function [gamepad] = SCAN6_gamepad_a(gamepad)
         return
     elseif gamepad.button_a == 1
             pFirst = gamepad.smdaITF.order_position{gamepad.gInd}(1);
-            gamepad.pInd = gamepad.smdaITF.newPosition;
+            gamepad.pInd = gamepad.smdaITF.newPosition(gamepad.microscope);
             gamepad.smdaITF.connectGPS('g',gamepad.gInd,'p',gamepad.pInd,'s',gamepad.smdaITF.order_settings{pFirst});
             fprintf('new position, %d, added to group %d.\n',gamepad.pInd,gamepad.gInd);
         return

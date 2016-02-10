@@ -266,7 +266,7 @@ set(f,'Visible','on');
         settingsInds = scan6.smdaI.ind_settings{1};
         numberOfpositions = length(settingsInds)*20; % 20 exposures
         for i = 2:numberOfpositions
-            pInd = smdaITF2.newPosition;
+            pInd = smdaITF2.newPosition(scan6.mm);
             sInd = smdaITF2.newSettings;
             smdaITF2.connectGPS('g',gInd,'p',pInd,'s',sInd);
         end

@@ -20,7 +20,7 @@
 % * *export_json*: Export MATLAB data to a JSON file. The first input is
 % the MATLAB data. The second input is the path to the file that will
 % become the JSON file, e.g. |C:\someFolder\anotherFolder\myJSON.txt|
-classdef Core_jsonparser < handle
+classdef core_jsonparser < handle
     %%
     %
     properties
@@ -30,7 +30,7 @@ classdef Core_jsonparser < handle
     methods
         %% The constructor
         %
-        function obj = Core_jsonparser()
+        function obj = core_jsonparser()
             %%%
             % Is Python installed?
             [~,~,pyIs] = pyversion;
@@ -56,14 +56,14 @@ classdef Core_jsonparser < handle
             myjsonFile.close;
             %%%
             % convert Python into MATLAB
-            matlabData = Core_py2matlab(pyData);
+            matlabData = core_py2matlab(pyData);
         end
         %% export_json
         % Export a JSON file from MATLAB
         function [] = export_json(matlabData,mypath)
             %%%
             % convert MATLAB into Python
-            pyData = Core_matlab2py(matlabData);
+            pyData = core_matlab2py(matlabData);
             %%%
             % export JSON file
             pyFile = py.open(mypath,'w');

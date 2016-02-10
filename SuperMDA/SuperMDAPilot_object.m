@@ -359,7 +359,7 @@ classdef SuperMDAPilot_object < handle
             obj.pause_bool = false;
             disp('All Done!')
             if obj.mm.twitter.active
-                    obj.mm.twitter.update_status(sprintf('The %s microscope has completed a super MDA! It has %d timepoints.',obj.mm.computerName,obj.t));
+                    obj.mm.twitter.update_status(sprintf('The %s microscope has completed a super MDA! It has %d timepoints. %s', obj.mm.computerName, obj.t, datetime('now','Format','hh:mm:ss a')));
             end
         end
         %% pause acquisition
@@ -446,7 +446,7 @@ classdef SuperMDAPilot_object < handle
             obj.gps_previous = obj.gps_current;
             obj.gps_current = [0,0,0];
             if obj.mm.twitter.active
-                    obj.mm.twitter.update_status(sprintf('Timepoint %d has been acquired by the %s microscope.',obj.t,obj.mm.computerName));
+                    obj.mm.twitter.update_status(sprintf('Timepoint %d has been acquired by the %s microscope. %s', obj.t, obj.mm.computerName, datetime('now','Format','hh:mm:ss a')));
             end
             %%
             % functions with the logic to determine which function to execute

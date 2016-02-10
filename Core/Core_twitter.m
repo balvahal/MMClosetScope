@@ -19,7 +19,7 @@
 % file is a comma-separated-value table. Make sure the permissions include
 % _Write_ when the codes are generated.
 
-classdef Core_twitter < handle
+classdef core_twitter < handle
     %%
     % 
     properties
@@ -31,7 +31,7 @@ classdef Core_twitter < handle
     methods
         %% The constructor
         % 
-        function obj = Core_twitter()
+        function obj = core_twitter()
             [mfilepath,~,~] = fileparts(mfilename('fullpath'));
             %%%
             % Is Python installed?

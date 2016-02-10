@@ -32,10 +32,10 @@
 % greater than the limits mentioned above assuming the origin is chosen to
 % be within the accessible regions of the hardware.
 %% Inputs
-% mmhandle
+% microscope
 %% Outputs
-% mmhandle
-function [mmhandle] = Core_special_findThenSetAbsoluteOrigin(mmhandle)
+% microscope
+function [microscope] = microscope_findThenSetAbsoluteOriginXY(microscope)
 % Construct a questdlg with three options
 str = sprintf('Remove anything that could obstruct the objective, including any stage plates, to ensure safe exploration of the microscope movement limitations.\n\nDo you wish to proceed?');
 choice = questdlg(str, ...
@@ -55,67 +55,33 @@ if strcmp(choice,'No')
     return;
 end
 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-my_comp_name = mmhandle.core.getHostName.toCharArray';
-mystr = sprintf('settings_%s.txt',my_comp_name);
+mystr = sprintf('settings_%s.txt',microscope.computerName);
 if exist(fullfile(mfilepath,mystr),'file')
-    mytable = readtable(fullfile(mfilepath,mystr));
+    myjson = readtable(fullfile(mfilepath,mystr));
 else
-    mytable = table;
+    myjson = table;
 end
-%% Z: Move the objective to its upper and lower limit
-% The FocusDevice that controls the Z movement does not update its position
-% until after the objective reaches its final position.
-%
-% There is something broken about sending the TIZDrive to positions it
-% cannot reach, which makes the waitForDevice() command not function
-% properly. Therefore, the code that employs this strategy has been
-% removed. An alternative is to have a dialog with the user to manually set
-% the objective to highest and lowest position and then poll the microscope
-% for its position value at each point.
-
-% mmhandle.setXYZ(mmhandle.pos + [0,0,100000]);
-% mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-% mypos = mmhandle.getXYZ;
-mytable.zmax = 9500;
-
-% mmhandle.setXYZ(mypos + [0,0,-100000]);
-% mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-% mypos = mmhandle.getXYZ;
-mytable.zmin = 0;
-
+%% Z: Move the objective to its lowest level to avoid obstructions
+% 
+mypos = microscope.getXYZ;
+microscope.setXYZ([mypos(1:2),1000]);
+microscope.core.waitForDevice(microscope.FocusDevice);
 %% XY: Move the stage to its upper-left most corner
-% mmhandle.core.waitForDevice(mmhandle.xyStageDevice); cannot be used here
-% because it times out after 5 seconds and the stage takes longer than 5
-% seconds to traverse its full range across the diagonal or X-axis.
-mmhandle.setXYZ([-1000000,-1000000]);
-mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
-% myflag = true;
-% while myflag
-%     if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-%         myflag = false;
-%     end
-% end
-mmhandle.core.setOriginXY(mmhandle.xyStageDevice);
-mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
-mytable.xlim1 = mypos(1);
-mytable.ylim1 = mypos(2);
+%
+microscope.setXYZ([-1000000,-1000000]);
+microscope.core.waitForDevice(microscope.xyStageDevice);
+microscope.core.setOriginXY(microscope.xyStageDevice);
+mypos = microscope.getXYZ;
+myjson.xlim1 = mypos(1);
+myjson.ylim1 = mypos(2);
 %% XY: Move the stage to the lower-right corner
 %
-mmhandle.setXYZ([1000000,1000000]);
-mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
-% myflag = true;
-% while myflag
-%     if ~mmhandle.core.deviceBusy(mmhandle.xyStageDevice)
-%         myflag = false;
-%     end
-% end
-mypos = mmhandle.getXYZ;
-%pause(1); %A delay of this length ensures the position is updated.
-mytable.xlim2 = mypos(1);
-mytable.ylim2 = mypos(2);
+microscope.setXYZ([1000000,1000000]);
+microscope.core.waitForDevice(microscope.xyStageDevice);
+mypos = microscope.getXYZ;
+myjson.xlim2 = mypos(1);
+myjson.ylim2 = mypos(2);
 %% update the settings file with the new information
 %
-writetable(mytable,fullfile(mfilepath,mystr));
-mmhandle.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
-mmhandle.zLimits = [mytable.zmin,mytable.zmax];
+core_jsonparser.export_json(myjson,fullfile(mfilepath,'user',mystr));
+microscope.xyStageLimits = [myjson.xlim1,myjson.xlim2,myjson.ylim1,myjson.ylim2];

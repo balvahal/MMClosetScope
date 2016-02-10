@@ -11,7 +11,7 @@
 %
 % # Data structures that are more than 2 dimensions are not handled.
 % # Data structures must be fully defined, i.e. no empty brackets [].
-function matlabData = Core_py2matlab(pythonData)
+function matlabData = core_py2matlab(pythonData)
 %%%
 % convert Python into MATLAB
 matlabData = recursiveFunPy2Matlab(pythonData);

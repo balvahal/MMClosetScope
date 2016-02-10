@@ -32,10 +32,10 @@
 % greater than the limits mentioned above assuming the origin is chosen to
 % be within the accessible regions of the hardware.
 %% Inputs
-% mmhandle
+% microscope
 %% Outputs
-% mmhandle
-function [mmhandle] = Core_special_findThenSetAbsoluteOriginXY(mmhandle)
+% microscope
+function [microscope] = microscope_findThenSetAbsoluteOriginXYZ(microscope)
 % Construct a questdlg with three options
 str = sprintf('Remove anything that could obstruct the objective, including any stage plates, to ensure safe exploration of the microscope movement limitations.\n\nDo you wish to proceed?');
 choice = questdlg(str, ...
@@ -46,7 +46,7 @@ if strcmp(choice,'No')
     return;
 end
 
-str = sprintf('Please be aware that damage to the objective or microscope could cost thousands of dollars and this app offers no guaruntees.\n\nDo you still wish to proceed?');
+str = sprintf('Please be aware that damage to the objective or microscope could cost thousands of dollars and this app offers no guarantees.\n\nDo you still wish to proceed?');
 choice = questdlg(str, ...
     'Warning! Do you still wish to proceed?', ...
     'Yes','No','No');
@@ -55,34 +55,60 @@ if strcmp(choice,'No')
     return;
 end
 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-my_comp_name = mmhandle.core.getHostName.toCharArray';
-mystr = sprintf('settings_%s.txt',my_comp_name);
-if exist(fullfile(mfilepath,mystr),'file')
-    mytable = readtable(fullfile(mfilepath,mystr));
-else
-    mytable = table;
+mystr = sprintf('microscope_json_%s.txt',microscope.computerName);
+if exist(fullfile(mfilepath,'user',mystr),'file')
+    myjson = core_jsonparser.import_json(fullfile(mfilepath,'user',mystr));
 end
-%% Z: Move the objective to its lowest level to avoid obstructions
-% 
-mypos = mmhandle.getXYZ;
-mmhandle.setXYZ([mypos(1:2),1000]);
-mmhandle.core.waitForDevice(mmhandle.FocusDevice);
-%% XY: Move the stage to its upper-left most corner
+%% Z: Move the objective to its upper and lower limit
+% The FocusDevice that controls the Z movement does not update its position
+% until after the objective reaches its final position.
 %
-mmhandle.setXYZ([-1000000,-1000000]);
-mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
-mmhandle.core.setOriginXY(mmhandle.xyStageDevice);
-mypos = mmhandle.getXYZ;
-mytable.xlim1 = mypos(1);
-mytable.ylim1 = mypos(2);
+% There is something broken about sending the TIZDrive to positions it
+% cannot reach, which makes the waitForDevice() command not function
+% properly. Therefore, the code that employs this strategy has been
+% removed. An alternative is to have a dialog with the user to manually set
+% the objective to highest and lowest position and then poll the microscope
+% for its position value at each point.
+
+% microscope.setXYZ(microscope.pos + [0,0,100000]);
+% microscope.core.waitForDevice(microscope.FocusDevice);
+% mypos = microscope.getXYZ;
+myjson.zmax = 9500;
+
+% microscope.setXYZ(mypos + [0,0,-100000]);
+% microscope.core.waitForDevice(microscope.FocusDevice);
+% mypos = microscope.getXYZ;
+myjson.zmin = 0;
+
+%% XY: Move the stage to its upper-left most corner
+% microscope.core.waitForDevice(microscope.xyStageDevice); cannot be used here
+% because it times out after 5 seconds and the stage takes longer than 5
+% seconds to traverse its full range across the diagonal or X-axis.
+microscope.setXYZ([-100,-100]);%microscope.setXYZ([-1000000,-1000000]);
+% try
+%     microscope.core.waitForDevice(microscope.xyStageDevice);
+% catch
+%     disp('timeout');
+% end
+microscope.core.setOriginXY(microscope.xyStageDevice);
+mypos = microscope.getXYZ;
+%pause(1); %A delay of this length ensures the position is updated.
+myjson.xlim1 = mypos(1);
+myjson.ylim1 = mypos(2);
 %% XY: Move the stage to the lower-right corner
 %
-mmhandle.setXYZ([1000000,1000000]);
-mmhandle.core.waitForDevice(mmhandle.xyStageDevice);
-mypos = mmhandle.getXYZ;
-mytable.xlim2 = mypos(1);
-mytable.ylim2 = mypos(2);
+microscope.setXYZ([100,100]);%microscope.setXYZ([1000000,1000000]);
+% try
+%     microscope.core.waitForDevice(microscope.xyStageDevice);
+% catch
+%     disp('timeout');
+% end
+mypos = microscope.getXYZ;
+%pause(1); %A delay of this length ensures the position is updated.
+myjson.xlim2 = mypos(1);
+myjson.ylim2 = mypos(2);
 %% update the settings file with the new information
 %
-writetable(mytable,fullfile(mfilepath,mystr));
-mmhandle.xyStageLimits = [mytable.xlim1,mytable.xlim2,mytable.ylim1,mytable.ylim2];
+core_jsonparser.export_json(myjson,fullfile(mfilepath,'user',mystr));
+microscope.xyStageLimits = [myjson.xlim1,myjson.xlim2,myjson.ylim1,myjson.ylim2];
+microscope.zLimits = [myjson.zmin,myjson.zmax];
