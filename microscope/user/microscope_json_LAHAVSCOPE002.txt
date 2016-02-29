@@ -1,2 +1,0 @@
-xlim1,ylim1,xlim2,ylim2,zmax,zmin,calibrationAngle
-0,0,115295,73572,9688.20014436543,0,-0.751879534652499
