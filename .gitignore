@@ -170,6 +170,11 @@ pip-log.txt
 *.pdf
 *.eps
 
+microscope/user
+!microscope/user/binning_function_NOSCOPE.m
+!microscope/user/microscope_config_NOSCOPE.m
+!microscope/user/microscope_json_NOSCOPE.m
+
 #############
 ## Node.js and Bower
 #############

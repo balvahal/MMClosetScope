@@ -17,20 +17,23 @@ choice = questdlg(str, ...
 if strcmp(choice,'Cancel')
     return;
 end
-
 %%
 %
-
 pixWidth = microscope.core.getImageWidth;
 pixHeight = microscope.core.getImageHeight;
 pixSize = microscope.core.getPixelSizeUm;
 microscope.getXYZ;
 oldPos = microscope.pos;
-
+%%%
+% The high contrast image is in the center of the image. Move the stage 40
+% percent of the viewing area to right in the _x_ direction. The high
+% contrast object will still be in view.
 microscope.setXYZ(microscope.pos(1) + pixSize*round((pixWidth*.4)),'x');
 microscope.core.waitForDevice(microscope.xyStageDevice);
 microscope.getXYZ;
-
+%%%
+% The pattern is the center, 10 percent width x 10 percent height, of the
+% image.
 fixed = microscope.snapImage;
 innerWidth = round(0.1*pixWidth);
 innerHeight = round(0.1*pixHeight);
@@ -40,7 +43,10 @@ innerLeft = round((pixWidth*.1-innerWidth/2));
 innerRight = round((pixWidth*.1+innerWidth/2))-1;
 pattern = fixed(innerTop:innerBottom,...
     innerLeft:innerRight);
-
+%%%
+% A large jump followed by smaller jumps of varying sides ensures the
+% translation will not be a number close to zero and the calculated offset
+% will not suffer from rounding errors when converting from um to pixels.
 microscope.setXYZ(microscope.pos(1) - pixSize*round((pixWidth*.7)),'x');
 microscope.core.waitForDevice(microscope.xyStageDevice);
 moving = microscope.snapImage;
@@ -142,7 +148,6 @@ end
 
 mytable.calibrationAngle = microscope.calibrationAngle;
 writetable(mytable,fullfile(mfilepath,mystr));
-
 
     function [corr_offset] = cc2translation(mov,pattern)
         c = normxcorr2(pattern,mov);
