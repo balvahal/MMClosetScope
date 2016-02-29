@@ -1,5 +1,10 @@
-%%
+%% microscope, the class that is an interface to the uManager API
 %
+%% Inputs
+% None
+%% Outputs
+% * obj: the object that utilizes the uManager API. Represented as
+% *microscope* in other files that interact with this object.
 classdef microscope_class < handle
     properties
         gui
@@ -43,7 +48,7 @@ classdef microscope_class < handle
             %%
             % Change a few settings
             obj.core.enableStderrLog(0); %Log info sent to MATLAB command window is suppressed
-            obj.core.enableDebugLog(0); %Debug info will not be saved to the log file
+            %obj.core.enableDebugLog(0); %Debug info will not be saved to the log file
             obj.core.setProperty('Core', 'TimeoutMs', 19999); %The Nikon TI-e supposedly has an internal timeout of 20000ms.
             %% A NOTE ABOUT ALL DEVICES
             % * |core.deviceBusy| = boolean that indicates if the device is
@@ -150,7 +155,7 @@ classdef microscope_class < handle
             % Apparently, this check can also be made using the method
             % |core.getChannelGroup|.
             %
-            % This function assumes the Channel group exists, but a check
+            % This class assumes the Channel group exists, but a check
             % is made first...
             obj.CameraDevice = obj.core.getCameraDevice;
             
@@ -184,11 +189,11 @@ classdef microscope_class < handle
             obj.computerName = regexprep(obj.core.getHostName.toCharArray','-',''); %the hostname is used as a unique identifier
             customFileName = sprintf('microscope_config_%s',obj.computerName);
             if exist(customFileName,'file')
-                microscopeFcn = str2func(customFileName);
+                microscope_config = str2func(customFileName);
             else
-                microscopeFcn = @microscope_config_NOSCOPE;
+                microscope_config = @microscope_config_NOSCOPE;
             end
-            obj = microscopeFcn(obj);
+            obj = microscope_config(obj);
             %%
             % update stage position initialize image "buffer".
             obj.pos = obj.getXYZ;

@@ -1,9 +1,9 @@
 %% Get x, y, and z position of microscope
-% 
+% Utilize the uManager API to query where
 %% Inputs
-% * microscope, the struct that contains micro-manager objects
+% * microscope: the object that utilizes the uManager API.
 %% Outputs
-% * microscope, the struct that contains micro-manager objects
+% * pos: a 1x3 array that specifies the (X,Y,Z) of the microscope.
 function [pos] = microscope_getXYZ(microscope)
 %% retrieve x, y, and z
 %

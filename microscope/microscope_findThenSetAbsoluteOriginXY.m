@@ -1,40 +1,31 @@
-%% Find and set the origin for the x, y, and z positions of the device
-% It is important to not entirely rely upon the absolute origin, but it can
-% be useful to set the absolute origin consistently to serve as a point of
-% reference. The best system would have a consistent enough absolute origin
-% that is further refined using the a relative origin that is defined by a
-% visual landmark in the sample that is being imaged in case that sample
-% needs to be imaged again or is being imaged over long lengths of time
-% where stage drift is a concern. This is especially true, because of stage
-% drift and subtle movements in the sample. Anchor the relative origin to
-% an image of a particular spot of the sample and then later redefine the
-% relative origin using this image.
+%% Find and set the origin for the (X,Y) of a motorized stage
+% It can be useful to set the absolute origin consistently to serve as a
+% point of reference. A natural reference is the upper-left corner of the
+% stage, because this will reflect the origin of matlab matrices and 3D
+% axes traditionally drawn on paper. The origin z position is the lowest
+% position the scope can achieve.
 %
-% Initially I found, the x and y origin in the lower-right corner for the
-% closet-scope stage; I thought it was installed 180 degrees incorrectly,
-% because traditionally the upper-left is the origin. However, I later
-% discovered the origin can be relocated using hardware settings
+% If the x and y origin is in the lower-right corner of the stage and
+% positive movement is to the left and away from the face of the
+% microscope, then the origin can be relocated using hardware settings
 % |TransposeMirrorX| and |TransposeMirrorY|.
-%
-% Normally the upper-left is preferred, because this will reflect the
-% origin of matlab matrices and 3D axes traditionally drawn on paper. The
-% origin z position is the lowest position the scope can achieve.
 %
 % The microscope and stage have mechanisms built-in that will detect when
 % their limits have been reached. Sending a command to the microscope to
 % move to a position it cannot reach will only cause the scope to move to
 % its limit where a hardware signal will tell the microscope to stop,
-% without doing harm to the scope. Therefore, the easiest way to reach a
-% limit is to send the scope to a position it cannot possibly reach. We
-% know something about the limits beforehand. The stage is a 4 inch x 3
-% inch rectangle and the objective cannot travel more than 1cm. The numbers
-% that will be used to reach the limits are arbitrarily chosen to be
-% greater than the limits mentioned above assuming the origin is chosen to
-% be within the accessible regions of the hardware.
+% without doing harm to the scope. This function was designed for use with
+% a Prior ProScan II stage. It is not guarunteed to work on this stage or
+% any other stage, so consider the risk before using it. The ProScan II is
+% a 4 inch x 3 inch rectangle and the objective cannot travel more than 1cm
+% vertically. The numbers that will be used to reach the limits are
+% arbitrarily chosen to be greater than the limits mentioned above assuming
+% the origin is chosen to be within the accessible regions of the hardware.
+% The units of movement are micro-meters.
 %% Inputs
-% microscope
+% * microscope: the object that utilizes the uManager API.
 %% Outputs
-% microscope
+% * microscope: the object that utilizes the uManager API.
 function [microscope] = microscope_findThenSetAbsoluteOriginXY(microscope)
 % Construct a questdlg with three options
 str = sprintf('Remove anything that could obstruct the objective, including any stage plates, to ensure safe exploration of the microscope movement limitations.\n\nDo you wish to proceed?');
@@ -46,7 +37,7 @@ if strcmp(choice,'No')
     return;
 end
 
-str = sprintf('Please be aware that damage to the objective or microscope could cost thousands of dollars and this app offers no guaruntees.\n\nDo you still wish to proceed?');
+str = sprintf('Please be aware that damage to the objective or microscope could cost thousands of dollars (circa 2016) and this app offers no guarantees.\n\nDo you still wish to proceed?');
 choice = questdlg(str, ...
     'Warning! Do you still wish to proceed?', ...
     'Yes','No','No');
@@ -54,14 +45,16 @@ choice = questdlg(str, ...
 if strcmp(choice,'No')
     return;
 end
+%%
+% import the configuration file that will be updated.
 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-mystr = sprintf('settings_%s.txt',microscope.computerName);
-if exist(fullfile(mfilepath,mystr),'file')
-    myjson = readtable(fullfile(mfilepath,mystr));
+mystr = sprintf('microscope_json_%s.txt',microscope.computerName);
+if exist(fullfile(mfilepath,'user',mystr),'file')
+    myjson = core_jsonparser.import_json(fullfile(mfilepath,'user',mystr));
 else
-    myjson = table;
+    myjson = core_jsonparser.import_json(fullfile(mfilepath,'user','microscope_json_NOSCOPE.txt'));
 end
-%% Z: Move the objective to its lowest level to avoid obstructions
+%% Z: Move the objective to a low level to avoid obstructions
 % 
 mypos = microscope.getXYZ;
 microscope.setXYZ([mypos(1:2),1000]);
@@ -81,7 +74,7 @@ microscope.core.waitForDevice(microscope.xyStageDevice);
 mypos = microscope.getXYZ;
 myjson.xlim2 = mypos(1);
 myjson.ylim2 = mypos(2);
-%% update the settings file with the new information
+%% update the configuration file with the new information
 %
 core_jsonparser.export_json(myjson,fullfile(mfilepath,'user',mystr));
 microscope.xyStageLimits = [myjson.xlim1,myjson.xlim2,myjson.ylim1,myjson.ylim2];

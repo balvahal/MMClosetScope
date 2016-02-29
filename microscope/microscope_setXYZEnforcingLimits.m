@@ -1,11 +1,13 @@
 %% Initialize communication between MATLAB, uManager, and the microscope
-% This script will move the microscope to a defined x, y, z position
+% This script will move the microscope to a defined x, y, z position, but
+% no beyond the limits defined in the microscope object.
 %% Inputs
-% * microscope, the struct that contains micro-manager objects
-% * x, y, z target positions
+% * microscope: the object that utilizes the uManager API.
+% * direction: _x_, _y_, or _z_. When paired with a single number the
+% microscope will move in the specified direction to that position.
 %% Outputs
-% * microscope, the struct that contains micro-manager objects
-function microscope = microscope_setXYZEnforcingLimits(microscope, pos, varargin)
+% * microscope: the object that utilizes the uManager API.
+function [microscope] = microscope_setXYZEnforcingLimits(microscope, pos, varargin)
 p = inputParser;
 addRequired(p, 'microscope', @(x) isa(x,'microscope_class'));
 addRequired(p, 'pos', @(x) numel(x) >=1 && numel(x) <=3);
@@ -13,7 +15,7 @@ addOptional(p, 'direction', 'x', @(x) any(strcmp(x,{'x', 'y', 'z'})));
 parse(p,microscope,pos,varargin{:});
 %%
 % Define default positions as the current ones
-microscope = microscope_getXYZ(microscope);
+microscope.getXYZ;
 x = microscope.pos(1);
 y = microscope.pos(2);
 z = microscope.pos(3); %#ok<NASGU>

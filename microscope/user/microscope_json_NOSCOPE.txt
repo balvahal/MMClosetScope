@@ -1,0 +1,1 @@
+{"ylim2": 10000.0, "xlim1": 0.0, "zmin": 0.0, "ylim1": 0.0, "xlim2": 10000.0, "zmax": 9500.0, "calibrationAngle": 0.0}

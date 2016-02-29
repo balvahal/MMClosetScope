@@ -1,9 +1,13 @@
-%% Core_method_calibrateSensorAlignment
+%% calibrate the sensor alignment
 % # Ask user to focus on some cells or other objects of high contrast in
 % the center of the field of view. A brightfield image is suggested.
-% # Uses a square in the center
-
-function [mm] = Core_method_calibrateSensorAlignment(mm)
+% # Uses a square in the center that is the inner 10% of the image to find
+% cross correlation and x/y translation.
+%% Inputs
+% * microscope: the object that utilizes the uManager API.
+%% Outputs
+% * microscope: the object that utilizes the uManager API.
+function [microscope] = microscope_calibrateSensorAlignment(microscope)
 % Construct a questdlg with three options
 str = sprintf('Place an object of high entropy in the center of the field of view.\n\nAre you ready to proceed?');
 choice = questdlg(str, ...
@@ -17,17 +21,17 @@ end
 %%
 %
 
-pixWidth = mm.core.getImageWidth;
-pixHeight = mm.core.getImageHeight;
-pixSize = mm.core.getPixelSizeUm;
-mm.getXYZ;
-oldPos = mm.pos;
+pixWidth = microscope.core.getImageWidth;
+pixHeight = microscope.core.getImageHeight;
+pixSize = microscope.core.getPixelSizeUm;
+microscope.getXYZ;
+oldPos = microscope.pos;
 
-mm.setXYZ(mm.pos(1) + pixSize*round((pixWidth*.4)),'x');
-mm.core.waitForDevice(mm.xyStageDevice);
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(1) + pixSize*round((pixWidth*.4)),'x');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+microscope.getXYZ;
 
-fixed = mm.snapImage;
+fixed = microscope.snapImage;
 innerWidth = round(0.1*pixWidth);
 innerHeight = round(0.1*pixHeight);
 innerTop = round((pixHeight*.5-innerHeight/2));
@@ -37,45 +41,45 @@ innerRight = round((pixWidth*.1+innerWidth/2))-1;
 pattern = fixed(innerTop:innerBottom,...
     innerLeft:innerRight);
 
-mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.7)),'x');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(1) - pixSize*round((pixWidth*.7)),'x');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset = cc2translation(moving,pattern);
 
-mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.03)),'x');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(1) - pixSize*round((pixWidth*.03)),'x');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = cc2translation(moving,pattern);
 
-mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.035)),'x');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(1) - pixSize*round((pixWidth*.035)),'x');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = cc2translation(moving,pattern);
 
-mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.04)),'x');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(1) - pixSize*round((pixWidth*.04)),'x');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = cc2translation(moving,pattern);
 
-mm.setXYZ(mm.pos(1) - pixSize*round((pixWidth*.045)),'x');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(1) - pixSize*round((pixWidth*.045)),'x');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = cc2translation(moving,pattern);
 
-mm.setXYZ(oldPos(1),'x');
-mm.core.waitForDevice(mm.xyStageDevice);
-mm.getXYZ;
+microscope.setXYZ(oldPos(1),'x');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+microscope.getXYZ;
 
-mm.setXYZ(mm.pos(2) + pixSize*round((pixHeight*.4)),'y');
-mm.core.waitForDevice(mm.xyStageDevice);
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(2) + pixSize*round((pixHeight*.4)),'y');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+microscope.getXYZ;
 
-fixed = mm.snapImage;
+fixed = microscope.snapImage;
 innerWidth = round(0.1*pixWidth);
 innerHeight = round(0.1*pixHeight);
 innerTop = round((pixHeight*.1-innerHeight/2));
@@ -85,50 +89,50 @@ innerRight = round((pixWidth*.5+innerWidth/2))-1;
 pattern = fixed(innerTop:innerBottom,...
     innerLeft:innerRight);
 
-mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.7)),'y');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(2) - pixSize*round((pixHeight*.7)),'y');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
-mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.03)),'y');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(2) - pixSize*round((pixHeight*.03)),'y');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
-mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.035)),'y');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(2) - pixSize*round((pixHeight*.035)),'y');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
-mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.04)),'y');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(2) - pixSize*round((pixHeight*.04)),'y');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
-mm.setXYZ(mm.pos(2) - pixSize*round((pixHeight*.045)),'y');
-mm.core.waitForDevice(mm.xyStageDevice);
-moving = mm.snapImage;
-mm.getXYZ;
+microscope.setXYZ(microscope.pos(2) - pixSize*round((pixHeight*.045)),'y');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+moving = microscope.snapImage;
+microscope.getXYZ;
 myOffset(end+1,:) = fliplr(cc2translation(moving,pattern));
 
-mm.setXYZ(oldPos(2),'y');
-mm.core.waitForDevice(mm.xyStageDevice);
-mm.getXYZ;
+microscope.setXYZ(oldPos(2),'y');
+microscope.core.waitForDevice(microscope.xyStageDevice);
+microscope.getXYZ;
 
 %% Calculate calibrationAngle
 %
 myOffsetMean = mean(myOffset,1);
-mm.calibrationAngle = atand(myOffsetMean(2)/myOffsetMean(1));
-fprintf('\r\nThe calibration angle is...\r\n%f',mm.calibrationAngle);
+microscope.calibrationAngle = atand(myOffsetMean(2)/myOffsetMean(1));
+fprintf('\r\nThe calibration angle is...\r\n%f',microscope.calibrationAngle);
 %% update the settings file with the new information
 %
 
 [mfilepath,~,~] = fileparts(mfilename('fullpath'));
-my_comp_name = mm.core.getHostName.toCharArray';
+my_comp_name = microscope.core.getHostName.toCharArray';
 mystr = sprintf('settings_%s.txt',my_comp_name);
 if exist(fullfile(mfilepath,mystr),'file')
     mytable = readtable(fullfile(mfilepath,mystr));
@@ -136,25 +140,14 @@ else
     mytable = table;
 end
 
-mytable.calibrationAngle = mm.calibrationAngle;
+mytable.calibrationAngle = microscope.calibrationAngle;
 writetable(mytable,fullfile(mfilepath,mystr));
 
 
     function [corr_offset] = cc2translation(mov,pattern)
-        % uses the inner 10% of the image to find cross correlation and x/y
-        % translation.
-%         innerWidth = round(0.1*pixWidth);
-%         innerHeight = round(0.1*pixHeight);
-%         innerTop = round((pixHeight-innerHeight)/2);
-%         innerBottom = round((pixHeight+innerHeight)/2)-1;
-%         innerLeft = round((pixWidth-innerWidth)/2);
-%         innerRight = round((pixWidth+innerWidth)/2)-1;
-%         IMinner10 = fix(innerTop:innerBottom,...
-%             innerLeft:innerRight);
         c = normxcorr2(pattern,mov);
         [~, imax] = max(abs(c(:)));
         [ypeak, xpeak] = ind2sub(size(c),imax);
-        % the problem is here... this should not be absolute value
         corr_offset = [(xpeak-size(pattern,2)+1-innerLeft),...
             (ypeak-size(pattern,1)+1-innerTop)];
         if corr_offset(1) < 0
