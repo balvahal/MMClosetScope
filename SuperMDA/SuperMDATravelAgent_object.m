@@ -7,7 +7,7 @@
 %    | || '_/ _` \ V / -_) |  / _ \/ _` / -_) ' \  _|
 %    |_||_| \__,_|\_/\___|_| /_/ \_\__, \___|_||_\__|
 %                                  |___/
-classdef SuperMDATravelAgent_object < handle
+classdef travelagent_class < handle
     %% Properties
     %   ___                       _   _
     %  | _ \_ _ ___ _ __  ___ _ _| |_(_)___ ___
@@ -16,9 +16,9 @@ classdef SuperMDATravelAgent_object < handle
     %              |_|
     %
     properties
-        ity; %the SuperMDAItineraryTimeFixed_object
+        itinerary;
         gui_main;
-        mm;
+        microscope;
         pointerGroup = 1;
         pointerPosition = 1;
         pointerSettings = 1;
@@ -39,17 +39,17 @@ classdef SuperMDATravelAgent_object < handle
         %
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
-        function obj = SuperMDATravelAgent_object(smdaITF,mm)
+        function obj = travelagent_class(microscope,itinerary)
             %%%
             % parse the input
             q = inputParser;
-            addRequired(q, 'smdaITF', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addRequired(q, 'mm', @(x) isa(x,'Core_MicroManagerHandle'));
-            parse(q,smdaITF,mm);
+            addRequired(q, 'microscope', @(x) isa(x,'microscope_class'));
+            addRequired(q, 'itinerary', @(x) isa(x,'itinerary_class'));
+            parse(q,itinerary,microscope);
             %% Initialzing the SuperMDA object
             %
-            obj.ity = q.Results.smdaITF;
-            obj.mm = q.Results.mm;
+            obj.microscope = q.Results.microscope;
+            obj.itinerary = q.Results.itinerary;
             %% Create a gui to enable pausing and stopping
             %    ___ _   _ ___    ___              _   _
             %   / __| | | |_ _|  / __|_ _ ___ __ _| |_(_)___ _ _
@@ -111,7 +111,7 @@ classdef SuperMDATravelAgent_object < handle
             
             heditFundamentalPeriod = uicontrol('Style','edit','Units','characters',...
                 'FontSize',14,'FontName','Verdana',...
-                'String',num2str(obj.ity.fundamental_period),...
+                'String',num2str(obj.itinerary.fundamental_period),...
                 'Position',[region1(1)+2, region1(2)+6.5385, buttonSize(1),buttonSize(2)],...
                 'Callback',{@obj.editFundamentalPeriod_Callback});
             
@@ -121,7 +121,7 @@ classdef SuperMDATravelAgent_object < handle
             
             heditDuration = uicontrol('Style','edit','Units','characters',...
                 'FontSize',14,'FontName','Verdana',...
-                'String',num2str(obj.ity.duration),...
+                'String',num2str(obj.itinerary.duration),...
                 'Position',[region1(1)+24, region1(2)+0.7692, buttonSize(1),buttonSize(2)],...
                 'Callback',{@obj.editDuration_Callback});
             
@@ -131,7 +131,7 @@ classdef SuperMDATravelAgent_object < handle
             
             heditNumberOfTimepoints = uicontrol('Style','edit','Units','characters',...
                 'FontSize',14,'FontName','Verdana',...
-                'String',num2str(obj.ity.number_of_timepoints),...
+                'String',num2str(obj.itinerary.number_of_timepoints),...
                 'Position',[region1(1)+24, region1(2)+6.5385, buttonSize(1),buttonSize(2)],...
                 'Callback',{@obj.editNumberOfTimepoints_Callback});
             
@@ -142,7 +142,7 @@ classdef SuperMDATravelAgent_object < handle
             %
             heditOutputDirectory = uicontrol('Style','edit','Units','characters',...
                 'FontSize',12,'FontName','Verdana','HorizontalAlignment','left',...
-                'String',obj.ity.output_directory,...
+                'String',obj.itinerary.output_directory,...
                 'Position',[region1(1)+46, region1(2)+0.7692, buttonSize(1)*3.5,buttonSize(2)],...
                 'Callback',{@obj.editOutputDirectory_Callback});
             
@@ -384,7 +384,7 @@ classdef SuperMDATravelAgent_object < handle
                 'BackgroundColor',[textBackgroundColorRegion4;buttonBackgroundColorRegion4],...
                 'ColumnName',{'channel','exposure','binning','Z step size','Z upper','Z lower','# of Z steps','Z offset','period mult.','function','settings #'},...
                 'ColumnEditable',logical([1,1,1,1,1,1,0,1,1,0,0]),...
-                'ColumnFormat',{transpose(obj.mm.Channel),'numeric','numeric','numeric','numeric','numeric','numeric','numeric','numeric','char','numeric'},...
+                'ColumnFormat',{transpose(obj.microscope.Channel),'numeric','numeric','numeric','numeric','numeric','numeric','numeric','numeric','char','numeric'},...
                 'ColumnWidth',{'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto' 'auto'},...
                 'FontSize',8,'FontName','Verdana',...
                 'CellEditCallback',@obj.tableSettings_CellEditCallback,...
@@ -547,7 +547,7 @@ classdef SuperMDATravelAgent_object < handle
         function obj = editFundamentalPeriod_Callback(obj,~,~)
             handles = guidata(obj.gui_main);
             myValue = str2double(handles.editFundamentalPeriod.String)*obj.uot_conversion;
-            obj.ity.newFundamentalPeriod(myValue);
+            obj.itinerary.newFundamentalPeriod(myValue);
             obj.refresh_gui_main;
         end
         %% editDuration_Callback
@@ -555,7 +555,7 @@ classdef SuperMDATravelAgent_object < handle
         function obj = editDuration_Callback(obj,~,~)
             handles = guidata(obj.gui_main);
             myValue = str2double(handles.editDuration.String)*obj.uot_conversion;
-            obj.ity.newDuration(myValue);
+            obj.itinerary.newDuration(myValue);
             obj.refresh_gui_main;
         end
         %% editNumberOfTimepoints_Callback
@@ -563,7 +563,7 @@ classdef SuperMDATravelAgent_object < handle
         function obj = editNumberOfTimepoints_Callback(obj,~,~)
             handles = guidata(obj.gui_main);
             myValue = str2double(handles.editNumberOfTimepoints.String);
-            obj.ity.newNumberOfTimepoints(myValue);
+            obj.itinerary.newNumberOfTimepoints(myValue);
             obj.refresh_gui_main;
         end
         %% editOutputDirectory_Callback
@@ -572,7 +572,7 @@ classdef SuperMDATravelAgent_object < handle
             handles = guidata(obj.gui_main);
             folder_name = handles.editOutputDirectory.String;
             if exist(folder_name,'dir')
-                obj.ity.output_directory = folder_name;
+                obj.itinerary.output_directory = folder_name;
             else
                 str = sprintf('''%s'' is not a directory',folder_name);
                 disp(str);
@@ -586,7 +586,7 @@ classdef SuperMDATravelAgent_object < handle
             if folder_name==0
                 return
             elseif exist(folder_name,'dir')
-                obj.ity.output_directory = folder_name;
+                obj.itinerary.output_directory = folder_name;
             else
                 str = sprintf('''%s'' is not a directory',folder_name);
                 disp(str);
@@ -596,18 +596,18 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonSave_Callback
         %
         function obj = pushbuttonSave_Callback(obj,~,~)
-            obj.ity.export;
+            obj.itinerary.export;
         end
         %%
         %
         function obj = pushbuttonLoad_Callback(obj,~,~)
             uiwait(warndlg('The current SuperMDA will be erased!','Load a SuperMDA','modal'));
             mypwd = pwd;
-            cd(obj.ity.output_directory);
+            cd(obj.itinerary.output_directory);
             [filename,pathname] = uigetfile({'*.mat'},'Load a SuperMDAItinerary');
             cd(mypwd);
             if exist(fullfile(pathname,filename),'file')
-                obj.ity.import(fullfile(pathname,filename));
+                obj.itinerary.import(fullfile(pathname,filename));
             else
                 disp('The SuperMDAItinerary file selected was invalid.');
             end
@@ -625,14 +625,14 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % |obj.pointerGroup| should always be a singleton in this case
             myCol = eventdata.Indices(2);
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             myRow = myGroupOrder(eventdata.Indices(1));
             switch myCol
                 case 1 %label change
                     if isempty(eventdata.NewData) || any(regexp(eventdata.NewData,'\W'))
                         return
                     else
-                        obj.ity.group_label{myRow} = eventdata.NewData;
+                        obj.itinerary.group_label{myRow} = eventdata.NewData;
                     end
             end
             obj.refresh_gui_main;
@@ -643,7 +643,7 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % The main purpose of this function is to keep the information
             % displayed in the table consistent with the Itinerary object.
-            % Changes to the object either through the command line or the gui
+            % Changes to the object either through the comicroscopeand line or the gui
             % can affect the information that is displayed in the gui and this
             % function will keep the gui information consistent with the
             % Itinerary information.
@@ -653,17 +653,17 @@ classdef SuperMDATravelAgent_object < handle
             if isempty(eventdata.Indices)
                 % if nothing is selected, which triggers after deleting data,
                 % make sure the pointer is still valid
-                if any(obj.pointerGroup > obj.ity.number_group)
+                if any(obj.pointerGroup > obj.itinerary.number_group)
                     % move pointer to last entry
-                    obj.pointerGroup = obj.ity.number_group;
+                    obj.pointerGroup = obj.itinerary.number_group;
                 end
                 return
             else
                 obj.pointerGroup = sort(unique(eventdata.Indices(:,1)));
             end
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            if any(obj.pointerPosition > obj.ity.number_position(gInd))
+            if any(obj.pointerPosition > obj.itinerary.number_position(gInd))
                 % move pointer to first entry
                 obj.pointerPosition = 1;
             end
@@ -672,37 +672,37 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonGroupAdd_Callback
         %
         function obj = pushbuttonGroupAdd_Callback(obj,~,~)
-            gInd = obj.ity.newGroup;
-            obj.pointerGroup = obj.ity.number_group;
-            pInd = obj.ity.newPosition;
-            obj.ity.connectGPS('g',gInd,'p',pInd,'s',obj.ity.order_settings{1});
+            gInd = obj.itinerary.newGroup;
+            obj.pointerGroup = obj.itinerary.number_group;
+            pInd = obj.itinerary.newPosition;
+            obj.itinerary.connectGPS('g',gInd,'p',pInd,'s',obj.itinerary.order_settings{1});
             obj.refresh_gui_main;
         end
         %% pushbuttonGroupDrop_Callback
         %
         function obj = pushbuttonGroupDrop_Callback(obj,~,~)
-            if obj.ity.number_group == 1
+            if obj.itinerary.number_group == 1
                 return
-            elseif length(obj.pointerGroup) == obj.ity.number_group
+            elseif length(obj.pointerGroup) == obj.itinerary.number_group
                 obj.pointerGroup(1) = [];
             end
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInds = myGroupOrder(obj.pointerGroup);
             for i = 1:length(gInds)
-                obj.ity.dropGroup(gInds(i));
+                obj.itinerary.dropGroup(gInds(i));
             end
-            obj.pointerGroup = obj.ity.number_group;
+            obj.pointerGroup = obj.itinerary.number_group;
             obj.refresh_gui_main;
         end
         %% pushbuttonGroupFunctionBefore_Callback
         %
         function obj = pushbuttonGroupFunctionBefore_Callback(obj,~,~)
-            myGroupInd = obj.ity.ind_group;
+            myGroupInd = obj.itinerary.ind_group;
             mypwd = pwd;
-            cd(obj.ity.output_directory);
+            cd(obj.itinerary.output_directory);
             [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-before');
             if exist(fullfile(pathname,filename),'file')
-                [obj.ity.group_function_before{myGroupInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+                [obj.itinerary.group_function_before{myGroupInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
             else
                 disp('The group-function-before selection was invalid.');
             end
@@ -712,12 +712,12 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonGroupFunctionAfter_Callback
         %
         function obj = pushbuttonGroupFunctionAfter_Callback(obj,~,~)
-            myGroupInd = obj.ity.ind_group;
+            myGroupInd = obj.itinerary.ind_group;
             mypwd = pwd;
-            cd(obj.ity.output_directory);
+            cd(obj.itinerary.output_directory);
             [filename,pathname] = uigetfile({'*.m'},'Choose the group-function-after');
             if exist(fullfile(pathname,filename),'file')
-                [obj.ity.group_function_after{myGroupInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+                [obj.itinerary.group_function_after{myGroupInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
             else
                 disp('The group-function-after selection was invalid.');
             end
@@ -730,17 +730,17 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % What follows below might have a more elegant solution.
             % essentially all selected rows are moved down 1.
-            if max(obj.pointerGroup) == obj.ity.number_group
+            if max(obj.pointerGroup) == obj.itinerary.number_group
                 return
             end
-            currentOrder = 1:obj.ity.number_group; % what the table looks like now
+            currentOrder = 1:obj.itinerary.number_group; % what the table looks like now
             movingGroup = obj.pointerGroup+1; % where the selected rows want to go
             reactingGroup = setdiff(currentOrder,obj.pointerGroup); % the rows that are not moving
             fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
             fillmeinArray(movingGroup) = obj.pointerGroup; % the selected rows are moved
             fillmeinArray(fillmeinArray==0) = reactingGroup; % the remaining rows are moved
             % use the fillmeinArray to rearrange the groups
-            obj.ity.order_group = obj.ity.order_group(fillmeinArray);
+            obj.itinerary.order_group = obj.itinerary.order_group(fillmeinArray);
             %
             obj.pointerGroup = movingGroup;
             obj.refresh_gui_main;
@@ -754,14 +754,14 @@ classdef SuperMDATravelAgent_object < handle
             if min(obj.pointerGroup) == 1
                 return
             end
-            currentOrder = 1:obj.ity.number_group; % what the table looks like now
+            currentOrder = 1:obj.itinerary.number_group; % what the table looks like now
             movingGroup = obj.pointerGroup-1; % where the selected rows want to go
             reactingGroup = setdiff(currentOrder,obj.pointerGroup); % the rows that are not moving
             newOrderArray = zeros(1,length(currentOrder)); % a vector to store the new order
             newOrderArray(movingGroup) = obj.pointerGroup; % the selected rows are moved
             newOrderArray(newOrderArray==0) = reactingGroup; % the remaining rows are moved
             % use the newOrderArray to rearrange the groups
-            obj.ity.order_group = obj.ity.order_group(newOrderArray);
+            obj.itinerary.order_group = obj.itinerary.order_group(newOrderArray);
             %
             obj.pointerGroup = movingGroup;
             obj.refresh_gui_main;
@@ -778,33 +778,33 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % |obj.pointerPosition| should always be a singleton in this
             % case
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
             myCol = eventdata.Indices(2);
-            myPositionOrder = obj.ity.order_position{gInd};
+            myPositionOrder = obj.itinerary.order_position{gInd};
             myRow = myPositionOrder(eventdata.Indices(1));
             switch myCol
                 case 1 %label change
                     if isempty(eventdata.NewData) || any(regexp(eventdata.NewData,'\W'))
                         return
                     else
-                        obj.ity.position_label{myRow} = eventdata.NewData;
+                        obj.itinerary.position_label{myRow} = eventdata.NewData;
                     end
                 case 3 %X
-                    obj.ity.position_xyz(myRow,1) = eventdata.NewData;
+                    obj.itinerary.position_xyz(myRow,1) = eventdata.NewData;
                 case 4 %Y
-                    obj.ity.position_xyz(myRow,2) = eventdata.NewData;
+                    obj.itinerary.position_xyz(myRow,2) = eventdata.NewData;
                 case 5 %Z
-                    obj.ity.position_xyz(myRow,3) = eventdata.NewData;
+                    obj.itinerary.position_xyz(myRow,3) = eventdata.NewData;
                 case 6 %PFS
                     if strcmp(eventdata.NewData,'yes')
-                        obj.ity.position_continuous_focus_bool(myRow) = true;
+                        obj.itinerary.position_continuous_focus_bool(myRow) = true;
                     else
-                        obj.ity.position_continuous_focus_bool(myRow) = false;
+                        obj.itinerary.position_continuous_focus_bool(myRow) = false;
                     end
-                    obj.ity.position_continuous_focus_bool(myPositionOrder) = obj.ity.position_continuous_focus_bool(myRow);
+                    obj.itinerary.position_continuous_focus_bool(myPositionOrder) = obj.itinerary.position_continuous_focus_bool(myRow);
                 case 7 %PFS offset
-                    obj.ity.position_continuous_focus_offset(myRow) = eventdata.NewData;
+                    obj.itinerary.position_continuous_focus_offset(myRow) = eventdata.NewData;
             end
             obj.refresh_gui_main;
         end
@@ -814,21 +814,21 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % The main purpose of this function is to keep the information
             % displayed in the table consistent with the Itinerary object.
-            % Changes to the object either through the command line or the gui
+            % Changes to the object either through the comicroscopeand line or the gui
             % can affect the information that is displayed in the gui and this
             % function will keep the gui information consistent with the
             % Itinerary information.
             %
             % The pointer of the TravelAgent should always point to a valid
             % position from the the position_order in a given group.
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
             if isempty(eventdata.Indices)
                 % if nothing is selected, which triggers after deleting data,
                 % make sure the pointer is still valid
-                if any(obj.pointerPosition > obj.ity.number_position(gInd))
+                if any(obj.pointerPosition > obj.itinerary.number_position(gInd))
                     % move pointer to last entry
-                    obj.pointerPosition = obj.ity.number_position(gInd);
+                    obj.pointerPosition = obj.itinerary.number_position(gInd);
                 end
                 return
             else
@@ -839,29 +839,29 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonPositionAdd_Callback
         %
         function obj = pushbuttonPositionAdd_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pFirst = obj.ity.order_position{gInd}(1);
-            pInd = obj.ity.newPosition;
-            obj.ity.connectGPS('g',gInd,'p',pInd,'s',obj.ity.order_settings{pFirst});
-            obj.pointerPosition = obj.ity.number_position(gInd);
+            pFirst = obj.itinerary.order_position{gInd}(1);
+            pInd = obj.itinerary.newPosition;
+            obj.itinerary.connectGPS('g',gInd,'p',pInd,'s',obj.itinerary.order_settings{pFirst});
+            obj.pointerPosition = obj.itinerary.number_position(gInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonPositionDrop_Callback
         %
         function obj = pushbuttonPositionDrop_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            if obj.ity.number_position(gInd)==1
+            if obj.itinerary.number_position(gInd)==1
                 return
-            elseif length(obj.pointerPosition) == obj.ity.number_position(gInd)
+            elseif length(obj.pointerPosition) == obj.itinerary.number_position(gInd)
                 obj.pointerPosition(1) = [];
             end
-            myPositionInd = obj.ity.order_position{gInd};
+            myPositionInd = obj.itinerary.order_position{gInd};
             for i = 1:length(obj.pointerPosition)
-                obj.ity.dropPosition(myPositionInd(obj.pointerPosition(i)));
+                obj.itinerary.dropPosition(myPositionInd(obj.pointerPosition(i)));
             end
-            obj.pointerPosition = obj.ity.number_position(gInd);
+            obj.pointerPosition = obj.itinerary.number_position(gInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonPositionDown_Callback
@@ -870,19 +870,19 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % What follows below might have a more elegant solution.
             % essentially all selected rows are moved down 1.
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            if max(obj.pointerPosition) == obj.ity.number_position(gInd)
+            if max(obj.pointerPosition) == obj.itinerary.number_position(gInd)
                 return
             end
-            currentOrder = 1:obj.ity.number_position(gInd); % what the table looks like now
+            currentOrder = 1:obj.itinerary.number_position(gInd); % what the table looks like now
             movingPosition = obj.pointerPosition+1; % where the selected rows want to go
             reactingPosition = setdiff(currentOrder,obj.pointerPosition); % the rows that are not moving
             fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
             fillmeinArray(movingPosition) = obj.pointerPosition; % the selected rows are moved
             fillmeinArray(fillmeinArray==0) = reactingPosition; % the remaining rows are moved
             % use the fillmeinArray to rearrange the positions
-            obj.ity.order_position{gInd} = obj.ity.order_position{gInd}(fillmeinArray);
+            obj.itinerary.order_position{gInd} = obj.itinerary.order_position{gInd}(fillmeinArray);
             %
             obj.pointerPosition = movingPosition;
             obj.refresh_gui_main;
@@ -893,19 +893,19 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % What follows below might have a more elegant solution.
             % essentially all selected rows are moved up 1.
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
             if min(obj.pointerPosition) == 1
                 return
             end
-            currentOrder = 1:obj.ity.number_position(gInd); % what the table looks like now
+            currentOrder = 1:obj.itinerary.number_position(gInd); % what the table looks like now
             movingPosition = obj.pointerPosition-1; % where the selected rows want to go
             reactingPosition = setdiff(currentOrder,obj.pointerPosition); % the rows that are not moving
             fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
             fillmeinArray(movingPosition) = obj.pointerPosition; % the selected rows are moved
             fillmeinArray(fillmeinArray==0) = reactingPosition; % the remaining rows are moved
             % use the fillmeinArray to rearrange the positions
-            obj.ity.order_position{gInd} = obj.ity.order_position{gInd}(fillmeinArray);
+            obj.itinerary.order_position{gInd} = obj.itinerary.order_position{gInd}(fillmeinArray);
             %
             obj.pointerPosition = movingPosition;
             obj.refresh_gui_main;
@@ -913,75 +913,75 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonPositionMove_Callback
         %
         function obj = pushbuttonPositionMove_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.order_position{gInd};
+            pInd = obj.itinerary.order_position{gInd};
             pInd = pInd(obj.pointerPosition(1));
-            xyz = obj.ity.position_xyz(pInd,:);
-            if obj.ity.position_continuous_focus_bool(pInd)
+            xyz = obj.itinerary.position_xyz(pInd,:);
+            if obj.itinerary.position_continuous_focus_bool(pInd)
                 %% PFS lock-on will be attempted
                 %
-                obj.mm.setXYZ(xyz(1:2)); % setting the z through the focus device will disable the PFS. Therefore, the stage is moved in the XY direction before assessing the status of the PFS system.
-                obj.mm.core.waitForDevice(obj.mm.xyStageDevice);
-                if strcmp(obj.mm.core.getProperty(obj.mm.AutoFocusStatusDevice,'State'),'Off')
+                obj.microscope.setXYZ(xyz(1:2)); % setting the z through the focus device will disable the PFS. Therefore, the stage is moved in the XY direction before assessing the status of the PFS system.
+                obj.microscope.core.waitForDevice(obj.microscope.xyStageDevice);
+                if strcmp(obj.microscope.core.getProperty(obj.microscope.AutoFocusStatusDevice,'State'),'Off')
                     %%
                     % If the PFS is |OFF|, then the scope is moved to an
                     % absolute z that will give the system the best chance of
                     % locking onto the correct z.
-                    obj.mm.setXYZ(xyz(3),'direction','z');
-                    obj.mm.core.waitForDevice(obj.mm.FocusDevice);
-                    obj.mm.core.setProperty(obj.mm.AutoFocusDevice,'Position',obj.ity.position_continuous_focus_offset(pInd));
-                    obj.mm.core.fullFocus(); % PFS will return to |OFF|
+                    obj.microscope.setXYZ(xyz(3),'direction','z');
+                    obj.microscope.core.waitForDevice(obj.microscope.FocusDevice);
+                    obj.microscope.core.setProperty(obj.microscope.AutoFocusDevice,'Position',obj.itinerary.position_continuous_focus_offset(pInd));
+                    obj.microscope.core.fullFocus(); % PFS will return to |OFF|
                 else
                     %%
                     % If the PFS system is already on, then changing the offset
                     % will adjust the z-position. fullFocus() will have the
                     % system wait until the new z-position has been reached.
-                    obj.mm.core.setProperty(obj.mm.AutoFocusDevice,'Position',obj.ity.position_continuous_focus_offset(pInd));
-                    obj.mm.core.fullFocus(); % PFS will remain |ON|
+                    obj.microscope.core.setProperty(obj.microscope.AutoFocusDevice,'Position',obj.itinerary.position_continuous_focus_offset(pInd));
+                    obj.microscope.core.fullFocus(); % PFS will remain |ON|
                 end
             else
                 %% PFS will not be utilized
                 %
-                obj.mm.setXYZ(xyz);
-                obj.mm.core.waitForDevice(obj.mm.FocusDevice);
-                obj.mm.core.waitForDevice(obj.mm.xyStageDevice);
+                obj.microscope.setXYZ(xyz);
+                obj.microscope.core.waitForDevice(obj.microscope.FocusDevice);
+                obj.microscope.core.waitForDevice(obj.microscope.xyStageDevice);
             end
         end
         %% pushbuttonPositionSet_Callback
         %
         function obj = pushbuttonPositionSet_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.order_position{gInd};
+            pInd = obj.itinerary.order_position{gInd};
             pInd = pInd(obj.pointerPosition(1));
-            obj.mm.getXYZ;
-            obj.ity.position_xyz(pInd,:) = obj.mm.pos;
-            obj.ity.position_continuous_focus_offset(pInd) = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
+            obj.microscope.getXYZ;
+            obj.itinerary.position_xyz(pInd,:) = obj.microscope.pos;
+            obj.itinerary.position_continuous_focus_offset(pInd) = str2double(obj.microscope.core.getProperty(obj.microscope.AutoFocusDevice,'Position'));
             obj.refresh_gui_main;
         end
         %% pushbuttonSetAllZ_Callback
         %
         function obj = pushbuttonSetAllZ_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            myPInd = obj.ity.ind_position{gInd};
-            obj.ity.position_continuous_focus_offset(myPInd) = str2double(obj.mm.core.getProperty(obj.mm.AutoFocusDevice,'Position'));
-            xyz = obj.mm.getXYZ;
-            obj.ity.position_xyz(myPInd,3) = xyz(3);
+            myPInd = obj.itinerary.ind_position{gInd};
+            obj.itinerary.position_continuous_focus_offset(myPInd) = str2double(obj.microscope.core.getProperty(obj.microscope.AutoFocusDevice,'Position'));
+            xyz = obj.microscope.getXYZ;
+            obj.itinerary.position_xyz(myPInd,3) = xyz(3);
             fprintf('positions in group %d have Z postions updated!\n',gInd);
         end
         %% pushbuttonPositionFunctionBefore_Callback
         %
         function obj = pushbuttonPositionFunctionBefore_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
             mypwd = pwd;
-            myPositionInd = obj.ity.ind_position{gInd};
-            cd(obj.ity.output_directory);
+            myPositionInd = obj.itinerary.ind_position{gInd};
+            cd(obj.itinerary.output_directory);
             [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-before');
             if exist(fullfile(pathname,filename),'file')
-                [obj.ity.position_function_before{myPositionInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+                [obj.itinerary.position_function_before{myPositionInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
             else
                 disp('The position-function-before selection was invalid.');
             end
@@ -991,14 +991,14 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonPositionFunctionAfter_Callback
         %
         function obj = pushbuttonPositionFunctionAfter_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
             mypwd = pwd;
-            myPositionInd = obj.ity.ind_position{gInd};
-            cd(obj.ity.output_directory);
+            myPositionInd = obj.itinerary.ind_position{gInd};
+            cd(obj.itinerary.output_directory);
             [filename,pathname] = uigetfile({'*.m'},'Choose the position-function-after');
             if exist(fullfile(pathname,filename),'file')
-                [obj.ity.position_function_after{myPositionInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+                [obj.itinerary.position_function_after{myPositionInd}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
             else
                 disp('The position-function-before selection was invalid.');
             end
@@ -1017,30 +1017,30 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % |obj.pointerSettings| should always be a singleton in this
             % case
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(1);
             myCol = eventdata.Indices(2);
-            mySettingsOrder = obj.ity.order_settings{pInd};
+            mySettingsOrder = obj.itinerary.order_settings{pInd};
             myRow = mySettingsOrder(eventdata.Indices(1));
             switch myCol
                 case 1 %channel
-                    obj.ity.settings_channel(myRow) = find(strcmp(eventdata.NewData,obj.mm.Channel));
+                    obj.itinerary.settings_channel(myRow) = find(strcmp(eventdata.NewData,obj.microscope.Channel));
                 case 2 %exposure
-                    obj.ity.settings_exposure(myRow) = eventdata.NewData;
+                    obj.itinerary.settings_exposure(myRow) = eventdata.NewData;
                 case 3 %binning
-                    obj.ity.settings_binning(myRow) = eventdata.NewData;
+                    obj.itinerary.settings_binning(myRow) = eventdata.NewData;
                 case 4 %Z step size
-                    obj.ity.settings_z_step_size(myRow) = eventdata.NewData;
+                    obj.itinerary.settings_z_step_size(myRow) = eventdata.NewData;
                 case 5 %Z upper
-                    obj.ity.settings_z_stack_upper_offset(myRow) = eventdata.NewData;
+                    obj.itinerary.settings_z_stack_upper_offset(myRow) = eventdata.NewData;
                 case 6 %Z lower
-                    obj.ity.settings_z_stack_lower_offset(myRow) = eventdata.NewData;
+                    obj.itinerary.settings_z_stack_lower_offset(myRow) = eventdata.NewData;
                 case 8 %Z offset
-                    obj.ity.settings_z_origin_offset(myRow) = eventdata.NewData;
+                    obj.itinerary.settings_z_origin_offset(myRow) = eventdata.NewData;
                 case 9 %period multiplier
-                    obj.ity.settings_period_multiplier(myRow) = eventdata.NewData;
+                    obj.itinerary.settings_period_multiplier(myRow) = eventdata.NewData;
             end
             obj.refresh_gui_main;
         end
@@ -1050,22 +1050,22 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % The |Travel Agent| aims to recreate the experience that
             % microscope users expect from a multi-dimensional acquistion tool.
-            % Therefore, most of the customizability is masked by the
+            % Therefore, most of the customizabilitinerary is masked by the
             % |TravelAgent| to provide a streamlined presentation and simple
             % manipulation of the |Itinerary|. Unlike the group and position
             % tables, which edit the itinerary directly, the settings table
             % will modify the the prototype, which will then be pushed to all
             % positions in a group.
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(1);
             if isempty(eventdata.Indices)
                 % if nothing is selected, which triggers after deleting data,
                 % make sure the pointer is still valid
-                if any(obj.pointerSettings > obj.ity.number_settings(pInd))
+                if any(obj.pointerSettings > obj.itinerary.number_settings(pInd))
                     % move pointer to last entry
-                    obj.pointerSettings = obj.ity.number_settings(pInd);
+                    obj.pointerSettings = obj.itinerary.number_settings(pInd);
                 end
                 return
             else
@@ -1076,47 +1076,47 @@ classdef SuperMDATravelAgent_object < handle
         %% pushbuttonSettingsAdd_Callback
         %
         function obj = pushbuttonSettingsAdd_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pFirst = obj.ity.order_position{gInd}(1);
-            sInd = obj.ity.newSettings;
-            obj.ity.connectGPS('p',pFirst,'s',sInd);
-            obj.ity.mirrorSettings(pFirst,gInd);
-            obj.pointerSettings = obj.ity.number_settings(pFirst);
+            pFirst = obj.itinerary.order_position{gInd}(1);
+            sInd = obj.itinerary.newSettings;
+            obj.itinerary.connectGPS('p',pFirst,'s',sInd);
+            obj.itinerary.mirrorSettings(pFirst,gInd);
+            obj.pointerSettings = obj.itinerary.number_settings(pFirst);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsDrop_Callback
         %
         function obj = pushbuttonSettingsDrop_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(1);
-            if obj.ity.number_settings(pInd) == 1
+            if obj.itinerary.number_settings(pInd) == 1
                 return
-            elseif length(obj.pointerSettings) == obj.ity.number_settings(pInd)
+            elseif length(obj.pointerSettings) == obj.itinerary.number_settings(pInd)
                 obj.pointerSettings(1) = [];
             end
-            mySettingsInd = obj.ity.order_settings{pInd};
+            mySettingsInd = obj.itinerary.order_settings{pInd};
             for i = 1:length(obj.pointerSettings)
-                obj.ity.dropSettings(mySettingsInd(obj.pointerSettings(i)));
+                obj.itinerary.dropSettings(mySettingsInd(obj.pointerSettings(i)));
             end
-            obj.pointerSettings = obj.ity.number_settings(pInd);
+            obj.pointerSettings = obj.itinerary.number_settings(pInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsFunction_Callback
         %
         function obj = pushbuttonSettingsFunction_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(1);
-            sInds = obj.ity.ind_settings{pInd};
+            sInds = obj.itinerary.ind_settings{pInd};
             mypwd = pwd;
-            cd(obj.ity.output_directory);
+            cd(obj.itinerary.output_directory);
             [filename,pathname] = uigetfile({'*.m'},'Choose the settings-function');
             if exist(fullfile(pathname,filename),'file')
-                [obj.ity.settings_function{sInds}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
+                [obj.itinerary.settings_function{sInds}] = deal(char(regexp(filename,'.*(?=\.m)','match')));
             else
                 disp('The settings-function selection was invalid.');
             end
@@ -1129,23 +1129,23 @@ classdef SuperMDATravelAgent_object < handle
             %%
             % What follows below might have a more elegant solution.
             % essentially all selected rows are moved down 1.
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(1);
-            if max(obj.pointerSettings) == obj.ity.number_settings(pInd);
+            if max(obj.pointerSettings) == obj.itinerary.number_settings(pInd);
                 return
             end
-            currentOrder = 1:obj.ity.number_settings(pInd); % what the table looks like now
+            currentOrder = 1:obj.itinerary.number_settings(pInd); % what the table looks like now
             movingSettings = obj.pointerSettings+1; % where the selected rows want to go
             reactingSettings = setdiff(currentOrder,obj.pointerSettings); % the rows that are not moving
             fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
             fillmeinArray(movingSettings) = obj.pointerSettings; % the selected rows are moved
             fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
             % use the fillmeinArray to rearrange the settings
-            obj.ity.order_settings{pInd} = obj.ity.order_settings{pInd}(fillmeinArray);
+            obj.itinerary.order_settings{pInd} = obj.itinerary.order_settings{pInd}(fillmeinArray);
             obj.pointerSettings = movingSettings;
-            obj.ity.mirrorSettings(pInd,gInd);
+            obj.itinerary.mirrorSettings(pInd,gInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsUp_Callback
@@ -1155,70 +1155,70 @@ classdef SuperMDATravelAgent_object < handle
             % What follows below might have a more elegant solution.
             % essentially all selected rows are moved up 1. This will only work
             % if all positions have the same settings
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(obj.pointerPosition(1));
             if min(obj.pointerSettings) == 1
                 return
             end
-            currentOrder = 1:obj.ity.number_settings(pInd); % what the table looks like now
+            currentOrder = 1:obj.itinerary.number_settings(pInd); % what the table looks like now
             movingSettings = obj.pointerSettings-1; % where the selected rows want to go
             reactingSettings = setdiff(currentOrder,obj.pointerSettings); % the rows that are not moving
             fillmeinArray = zeros(1,length(currentOrder)); % a vector to store the new order
             fillmeinArray(movingSettings) = obj.pointerSettings; % the selected rows are moved
             fillmeinArray(fillmeinArray==0) = reactingSettings; % the remaining rows are moved
             % use the fillmeinArray to rearrange the settings
-            obj.ity.order_settings{pInd} = obj.ity.order_settings{pInd}(fillmeinArray);
+            obj.itinerary.order_settings{pInd} = obj.itinerary.order_settings{pInd}(fillmeinArray);
             obj.pointerSettings = movingSettings;
-            obj.ity.mirrorSettings(pInd,gInd);
+            obj.itinerary.mirrorSettings(pInd,gInd);
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsZLower_Callback
         %
         function obj = pushbuttonSettingsZLower_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(obj.pointerPosition(1));
-            mySettingsOrder = obj.ity.ind_settings{pInd};
+            mySettingsOrder = obj.itinerary.ind_settings{pInd};
             sInd = mySettingsOrder(obj.pointerSettings);
-            obj.mm.getXYZ;
-            xyz = obj.mm.pos;
-            if strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Status'),'On')
-                currentPFS = str2double(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Position'));
-                offset = obj.ity.position_continuous_focus_offset(pInd) - currentPFS;
+            obj.microscope.getXYZ;
+            xyz = obj.microscope.pos;
+            if strcmp(smdaPilot.microscope.core.getProperty(smdaPilot.microscope.AutoFocusDevice,'Status'),'On')
+                currentPFS = str2double(smdaPilot.microscope.core.getProperty(smdaPilot.microscope.AutoFocusDevice,'Position'));
+                offset = obj.itinerary.position_continuous_focus_offset(pInd) - currentPFS;
             else
-                offset = obj.ity.position_xyz(pInd,3)-xyz(3);
+                offset = obj.itinerary.position_xyz(pInd,3)-xyz(3);
             end
             if offset <0
-                obj.ity.settings_z_stack_lower_offset(sInd) = 0;
+                obj.itinerary.settings_z_stack_lower_offset(sInd) = 0;
             else
-                obj.ity.settings_z_stack_lower_offset(sInd) = -offset;
+                obj.itinerary.settings_z_stack_lower_offset(sInd) = -offset;
             end
             obj.refresh_gui_main;
         end
         %% pushbuttonSettingsZUpper_Callback
         %
         function obj = pushbuttonSettingsZUpper_Callback(obj,~,~)
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            pInd = obj.ity.ind_position{gInd};
+            pInd = obj.itinerary.ind_position{gInd};
             pInd = pInd(obj.pointerPosition(1));
-            mySettingsOrder = obj.ity.ind_settings{pInd};
+            mySettingsOrder = obj.itinerary.ind_settings{pInd};
             sInd = mySettingsOrder(obj.pointerSettings);
-            obj.mm.getXYZ;
-            xyz = obj.mm.pos;
-            if strcmp(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Status'),'On')
-                currentPFS = str2double(smdaPilot.mm.core.getProperty(smdaPilot.mm.AutoFocusDevice,'Position'));
-                offset = currentPFS - obj.ity.position_continuous_focus_offset(pInd);
+            obj.microscope.getXYZ;
+            xyz = obj.microscope.pos;
+            if strcmp(smdaPilot.microscope.core.getProperty(smdaPilot.microscope.AutoFocusDevice,'Status'),'On')
+                currentPFS = str2double(smdaPilot.microscope.core.getProperty(smdaPilot.microscope.AutoFocusDevice,'Position'));
+                offset = currentPFS - obj.itinerary.position_continuous_focus_offset(pInd);
             else
-                offset = xyz(3)-obj.ity.position_xyz(pInd,3);
+                offset = xyz(3)-obj.itinerary.position_xyz(pInd,3);
             end
             if offset <0
-                obj.ity.settings_z_stack_upper_offset(sInd) = 0;
+                obj.itinerary.settings_z_stack_upper_offset(sInd) = 0;
             else
-                obj.ity.settings_z_stack_upper_offset(sInd) = offset;
+                obj.itinerary.settings_z_stack_upper_offset(sInd) = offset;
             end
             obj.refresh_gui_main;
         end
@@ -1234,10 +1234,10 @@ classdef SuperMDATravelAgent_object < handle
             p = inputParser;
             addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
             parse(p,obj,varargin{:});
-            for i = obj.ity.ind_group
+            for i = obj.itinerary.ind_group
                 counter = 1;
-                for j = obj.ity.order_position{i}
-                    obj.ity.position_label{j} = sprintf('position%d',counter);
+                for j = obj.itinerary.order_position{i}
+                    obj.itinerary.position_label{j} = sprintf('position%d',counter);
                     counter = counter + 1;
                 end
             end
@@ -1250,36 +1250,36 @@ classdef SuperMDATravelAgent_object < handle
             %
             %% Time elements
             %
-            set(handles.editFundamentalPeriod,'String',num2str(obj.ity.fundamental_period/obj.uot_conversion));
-            set(handles.editDuration,'String',num2str(obj.ity.duration/obj.uot_conversion));
-            set(handles.editNumberOfTimepoints,'String',num2str(obj.ity.number_of_timepoints));
+            set(handles.editFundamentalPeriod,'String',num2str(obj.itinerary.fundamental_period/obj.uot_conversion));
+            set(handles.editDuration,'String',num2str(obj.itinerary.duration/obj.uot_conversion));
+            set(handles.editNumberOfTimepoints,'String',num2str(obj.itinerary.number_of_timepoints));
             %% Output Directory
             %
-            set(handles.editOutputDirectory,'String',obj.ity.output_directory);
+            set(handles.editOutputDirectory,'String',obj.itinerary.output_directory);
             %% Region 2
             %
             %% Group Table
-            % Show the data in the ity |group_order| property
-            tableGroupData = cell(obj.ity.number_group,...
+            % Show the data in the itinerary |group_order| property
+            tableGroupData = cell(obj.itinerary.number_group,...
                 length(get(handles.tableGroup,'ColumnName')));
             n=1;
-            for i = obj.ity.order_group
-                tableGroupData{n,1} = obj.ity.group_label{i};
+            for i = obj.itinerary.order_group
+                tableGroupData{n,1} = obj.itinerary.group_label{i};
                 tableGroupData{n,2} = i;
-                tableGroupData{n,3} = obj.ity.number_position(i);
-                tableGroupData{n,4} = obj.ity.group_function_before{i};
-                tableGroupData{n,5} = obj.ity.group_function_after{i};
+                tableGroupData{n,3} = obj.itinerary.number_position(i);
+                tableGroupData{n,4} = obj.itinerary.group_function_before{i};
+                tableGroupData{n,5} = obj.itinerary.group_function_after{i};
                 n = n + 1;
             end
             set(handles.tableGroup,'Data',tableGroupData);
             %% Region 3
             %
             %% Position Table
-            % Show the data in the ity |position_order| property for a given
+            % Show the data in the itinerary |position_order| property for a given
             % group
-            myGroupOrder = obj.ity.order_group;
+            myGroupOrder = obj.itinerary.order_group;
             gInd = myGroupOrder(obj.pointerGroup(1));
-            myPositionOrder = obj.ity.order_position{gInd};
+            myPositionOrder = obj.itinerary.order_position{gInd};
             if isempty(myPositionOrder)
                 set(handles.tablePosition,'Data',cell(1,10));
             else
@@ -1287,20 +1287,20 @@ classdef SuperMDATravelAgent_object < handle
                     length(get(handles.tablePosition,'ColumnName')));
                 n=1;
                 for i = myPositionOrder
-                    tablePositionData{n,1} = obj.ity.position_label{i};
+                    tablePositionData{n,1} = obj.itinerary.position_label{i};
                     tablePositionData{n,2} = i;
-                    tablePositionData{n,3} = obj.ity.position_xyz(i,1);
-                    tablePositionData{n,4} = obj.ity.position_xyz(i,2);
-                    tablePositionData{n,5} = obj.ity.position_xyz(i,3);
-                    if obj.ity.position_continuous_focus_bool(i)
+                    tablePositionData{n,3} = obj.itinerary.position_xyz(i,1);
+                    tablePositionData{n,4} = obj.itinerary.position_xyz(i,2);
+                    tablePositionData{n,5} = obj.itinerary.position_xyz(i,3);
+                    if obj.itinerary.position_continuous_focus_bool(i)
                         tablePositionData{n,6} = 'yes';
                     else
                         tablePositionData{n,6} = 'no';
                     end
-                    tablePositionData{n,7} = obj.ity.position_continuous_focus_offset(i);
-                    tablePositionData{n,8} = obj.ity.position_function_before{i};
-                    tablePositionData{n,9} = obj.ity.position_function_after{i};
-                    tablePositionData{n,10} = obj.ity.number_settings(i);
+                    tablePositionData{n,7} = obj.itinerary.position_continuous_focus_offset(i);
+                    tablePositionData{n,8} = obj.itinerary.position_function_before{i};
+                    tablePositionData{n,9} = obj.itinerary.position_function_after{i};
+                    tablePositionData{n,10} = obj.itinerary.number_settings(i);
                     n = n + 1;
                 end
                 set(handles.tablePosition,'Data',tablePositionData);
@@ -1309,8 +1309,8 @@ classdef SuperMDATravelAgent_object < handle
             %
             %% Settings Table
             % Show the prototype_settings
-            pInd = obj.ity.order_position{gInd}(1);
-            mySettingsOrder = obj.ity.order_settings{pInd};
+            pInd = obj.itinerary.order_position{gInd}(1);
+            mySettingsOrder = obj.itinerary.order_settings{pInd};
             if isempty(mySettingsOrder)
                 set(handles.tableSettings,'Data',cell(1,11));
             else
@@ -1318,18 +1318,18 @@ classdef SuperMDATravelAgent_object < handle
                     length(get(handles.tableSettings,'ColumnName')));
                 n=1;
                 for i = mySettingsOrder
-                    tableSettingsData{n,1} = obj.ity.channel_names{obj.ity.settings_channel(i)};
-                    tableSettingsData{n,2} = obj.ity.settings_exposure(i);
-                    tableSettingsData{n,3} = obj.ity.settings_binning(i);
-                    tableSettingsData{n,4} = obj.ity.settings_z_step_size(i);
-                    tableSettingsData{n,5} = obj.ity.settings_z_stack_upper_offset(i);
-                    tableSettingsData{n,6} = obj.ity.settings_z_stack_lower_offset(i);
-                    tableSettingsData{n,7} = length(obj.ity.settings_z_stack_lower_offset(i)...
-                        :obj.ity.settings_z_step_size(i)...
-                        :obj.ity.settings_z_stack_upper_offset(i));
-                    tableSettingsData{n,8} = obj.ity.settings_z_origin_offset(i);
-                    tableSettingsData{n,9} = obj.ity.settings_period_multiplier(i);
-                    tableSettingsData{n,10} = obj.ity.settings_function{i};
+                    tableSettingsData{n,1} = obj.itinerary.channel_names{obj.itinerary.settings_channel(i)};
+                    tableSettingsData{n,2} = obj.itinerary.settings_exposure(i);
+                    tableSettingsData{n,3} = obj.itinerary.settings_binning(i);
+                    tableSettingsData{n,4} = obj.itinerary.settings_z_step_size(i);
+                    tableSettingsData{n,5} = obj.itinerary.settings_z_stack_upper_offset(i);
+                    tableSettingsData{n,6} = obj.itinerary.settings_z_stack_lower_offset(i);
+                    tableSettingsData{n,7} = length(obj.itinerary.settings_z_stack_lower_offset(i)...
+                        :obj.itinerary.settings_z_step_size(i)...
+                        :obj.itinerary.settings_z_stack_upper_offset(i));
+                    tableSettingsData{n,8} = obj.itinerary.settings_z_origin_offset(i);
+                    tableSettingsData{n,9} = obj.itinerary.settings_period_multiplier(i);
+                    tableSettingsData{n,10} = obj.itinerary.settings_function{i};
                     tableSettingsData{n,11} = i;
                     n = n + 1;
                 end
@@ -1349,32 +1349,32 @@ classdef SuperMDATravelAgent_object < handle
             %
             p = inputParser;
             addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
-            addRequired(p, 'gInd', @(x) ismember(x,obj.ity.ind_group));
+            addRequired(p, 'gInd', @(x) ismember(x,obj.itinerary.ind_group));
             addRequired(p, 'grid', @(x) isstruct(x));
             parse(p,obj,gInd,grid);
             
-            if  obj.ity.number_position(gInd) == 1
+            if  obj.itinerary.number_position(gInd) == 1
                 %replace the first position when assigning grid numbers if only 1
                 %position exists. It is assumed this was the default/place-holder
                 %position.
                 myposition_labels = grid.position_labels; %when cells are embedded into structs MATLAB grinds to a halt
-                pInd = obj.ity.ind_position{gInd};
-                obj.ity.position_xyz(pInd,:) = grid.positions(1,:);
-                obj.ity.position_label{pInd} = myposition_labels{1};
+                pInd = obj.itinerary.ind_position{gInd};
+                obj.itinerary.position_xyz(pInd,:) = grid.positions(1,:);
+                obj.itinerary.position_label{pInd} = myposition_labels{1};
                 for i = 2:size(grid.positions,1)
-                    pInd = obj.ity.newPosition;
-                    obj.ity.connectGPS('g',gInd,'p',pInd,'s',obj.ity.order_settings{1});
-                    obj.ity.position_xyz(pInd,:) = grid.positions(i,:);
-                    obj.ity.position_label{pInd} = myposition_labels{i};
+                    pInd = obj.itinerary.newPosition;
+                    obj.itinerary.connectGPS('g',gInd,'p',pInd,'s',obj.itinerary.order_settings{1});
+                    obj.itinerary.position_xyz(pInd,:) = grid.positions(i,:);
+                    obj.itinerary.position_label{pInd} = myposition_labels{i};
                 end
             else
                 %else, append grid to exisiting positions
                 myposition_labels = grid.position_labels; %when cells are embedded into structs MATLAB grinds to a halt
                 for i = 1:size(grid.positions,1)
-                    pInd = obj.ity.newPosition;
-                    obj.ity.connectGPS('g',gInd,'p',pInd,'s',obj.ity.order_settings{1});
-                    obj.ity.position_xyz(pInd,:) = grid.positions(i,:);
-                    obj.ity.position_label{pInd} = myposition_labels{i};
+                    pInd = obj.itinerary.newPosition;
+                    obj.itinerary.connectGPS('g',gInd,'p',pInd,'s',obj.itinerary.order_settings{1});
+                    obj.itinerary.position_xyz(pInd,:) = grid.positions(i,:);
+                    obj.itinerary.position_label{pInd} = myposition_labels{i};
                 end
             end
         end

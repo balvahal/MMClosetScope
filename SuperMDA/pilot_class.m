@@ -1,6 +1,13 @@
-%% The SuperMDAPilot
-% The SuperMDA allows multiple multi-dimensional-acquisitions to be run
-classdef SuperMDAPilot_object < handle
+%% pilot_class
+% The pilot interfaces with the microscope and itinerary to run a
+% multi-dimensional-acquisition.
+%% Inputs
+% * microscope: the object that utilizes the uManager API.
+% * itinerary: the object that stores the multi-dimensional-acquisition
+% plan and information.
+%% Outputs
+% * obj: the pilot that parses the itinerary to command the microscope.
+classdef pilot_class < handle
     %%
     % * database: 2^20 rows will be set aside to store image metadata. This
     % will represent a soft cap on the number of images that can be
@@ -17,25 +24,25 @@ classdef SuperMDAPilot_object < handle
     % * output_directory: The directory where the output images are stored.
     %
     properties
-        databasefilename;
-        database_imagedescription = '';
-        database_z_number = 1;
-        itinerary;
         clock_absolute;
-        mm;
-        pause_bool = false;
-        running_bool = false;
-        runtime_imagecounter = 0;
-        gps_previous = [0,0,0]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
-        gps_current;
-        gui_pause_stop_resume;
-        gui_lastImage;
-        t = 1;
+        databasefilename;
+        database_z_number = 1;
         flag_group_before = false;
         flag_group_after = false;
         flag_position_before = false;
         flag_position_after = false;
-        uservar1
+        gps_previous = [0,0,0]; %when looping through the MDA object, this will keep track of where it is in the loop. [timepoint,group,position,settings,z_stack]
+        gps_current;
+        gui_pause_stop_resume;
+        gui_lastImage;
+        itinerary;
+        metadata;
+        metadata_imagedescription = '';
+        microscope;
+        pause_bool = false;
+        running_bool = false;
+        runtime_imagecounter = 0;
+        t = 1;
     end
     %%
     %
@@ -46,17 +53,18 @@ classdef SuperMDAPilot_object < handle
     %
     methods
         %% The constructor method
-        % The first argument is always mm
-        function obj = SuperMDAPilot_object(smdaI)
+        % The first argument is always microscope
+        function obj = pilot_class(microscope,itinerary)
             %%%
             % parse the input
             q = inputParser;
-            addRequired(q, 'smdaI', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            parse(q,smdaI);
+            addRequired(q, 'microscope', @(x) isa(x,'microscope_class'));
+            addRequired(q, 'itinerary', @(x) isa(x,'itinerary_class'));
+            parse(q,itinerary);
             %% Initialzing the SuperMDA object
             %
-            obj.itinerary = smdaI;
-            obj.mm = smdaI.mm;
+            obj.itinerary = itinerary;
+            obj.microscope = microscope;
             obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
             if ~isdir(obj.itinerary.output_directory)
                 mkdir(obj.itinerary.output_directory);
@@ -68,7 +76,7 @@ classdef SuperMDAPilot_object < handle
             Pix_SS = get(0,'screensize');
             set(0,'units','characters');
             Char_SS = get(0,'screensize');
-            ppChar = Pix_SS./Char_SS;
+            ppChar = Pix_SS./Char_SS; %#ok<NASGU>
             set(0,'units',myunits);
             fwidth = 91;
             fheight = 35;
@@ -139,7 +147,7 @@ classdef SuperMDAPilot_object < handle
             ppChar = Pix_SS./Char_SS;
             ppChar = ppChar([3,4]);
             set(0,'units',myunits);
-            Isize = size(obj.mm.I);
+            Isize = size(obj.microscope.I);
             image_height = Isize(1);
             image_width = Isize(2);
             
@@ -178,7 +186,7 @@ classdef SuperMDAPilot_object < handle
                 'XLim',[0.5,image_width+0.5],...
                 'YLim',[0.5,image_height+0.5]);
             
-            LIT_sourceImage = image('Parent',LIT_axesLastImage,'CData',obj.mm.I);
+            LIT_sourceImage = image('Parent',LIT_axesLastImage,'CData',obj.microscope.I);
             %%
             % store the uicontrol handles in the figure handles via guidata()
             LIT_handles.LIT_axesLastImage = LIT_axesLastImage;
@@ -187,6 +195,30 @@ classdef SuperMDAPilot_object < handle
             %%
             % make the gui visible
             set(obj.gui_lastImage,'Visible','on');
+            %%
+            % initialize metadata struct
+            metadata.channel_name = '';
+            metadata.filename = '';
+            metadata.group_label = '';
+            metadata.position_label = '';
+            metadata.binning = 0;
+            metadata.channel_number = 0;
+            metadata.continuous_focus_offset = 0;
+            metadata.continuous_focus_bool = 0;
+            metadata.exposure = 0;
+            metadata.group_number = 0;
+            metadata.group_order = 0;
+            metadata.matlab_serial_date_number = 0;
+            metadata.position_number = 0;
+            metadata.position_order = 0;
+            metadata.settings_number = 0;
+            metadata.settings_order = 0;
+            metadata.timepoint = 0;
+            metadata.x = 0;
+            metadata.y = 0;
+            metadata.z = 0;
+            metadata.z_order = 0;
+            metadata.image_description = ''; %#ok<STRNU>
         end
         %%
         %
@@ -358,8 +390,8 @@ classdef SuperMDAPilot_object < handle
             drawnow;
             obj.pause_bool = false;
             disp('All Done!')
-            if obj.mm.twitter.active
-                    obj.mm.twitter.update_status(sprintf('The %s microscope has completed a super MDA! It has %d timepoints. %s', obj.mm.computerName, obj.t, datetime('now','Format','hh:mm:ss a')));
+            if obj.microscope.twitter.active
+                    obj.microscope.twitter.update_status(sprintf('The %s microscope has completed a super MDA! It has %d timepoints. %s', obj.microscope.computerName, obj.t, datetime('now','Format','hh:mm:ss a')));
             end
         end
         %% pause acquisition
@@ -397,10 +429,9 @@ classdef SuperMDAPilot_object < handle
         function obj = oneLoop(obj)
             %%
             % for the n-1 entries in the gps
-            smdaI = obj.itinerary;
-            obj.gps_current = smdaI.gps(smdaI.orderVector(1),:);
+            obj.gps_current = obj.itinerary.gps(obj.itinerary.orderVector(1),:);
             handles_gui_pause_stop_resume = guidata(obj.gui_pause_stop_resume);
-            for i = 1:(length(smdaI.orderVector)-1)
+            for i = 1:(length(obj.itinerary.orderVector)-1)
                 %%
                 % determine which functions to execute
                 g = obj.gps_current(1);
@@ -409,7 +440,7 @@ classdef SuperMDAPilot_object < handle
                 set(handles_gui_pause_stop_resume.PSR_textTime,'String',sprintf('G:%d P:%d S:%d',g,p,s));
                 drawnow;
                 flagcheck_before;
-                flagcheck_after(smdaI.gps(smdaI.orderVector(i+1),:),obj.gps_current);
+                flagcheck_after(obj.itinerary.gps(obj.itinerary.orderVector(i+1),:),obj.gps_current);
                 %%
                 % detect pause event and refresh guis
                 drawnow;
@@ -431,7 +462,7 @@ classdef SuperMDAPilot_object < handle
                 %%
                 % update the pointers
                 obj.gps_previous = obj.gps_current;
-                obj.gps_current = smdaI.gps(smdaI.orderVector(i+1),:);
+                obj.gps_current = obj.itinerary.gps(obj.itinerary.orderVector(i+1),:);
             end
             %%
             % for the nth entry in the gps
@@ -445,8 +476,8 @@ classdef SuperMDAPilot_object < handle
             gps_execute;
             obj.gps_previous = obj.gps_current;
             obj.gps_current = [0,0,0];
-            if obj.mm.twitter.active
-                    obj.mm.twitter.update_status(sprintf('Timepoint %d has been acquired by the %s microscope. %s', obj.t, obj.mm.computerName, datetime('now','Format','hh:mm:ss a')));
+            if obj.microscope.twitter.active
+                    obj.microscope.twitter.update_status(sprintf('Timepoint %d has been acquired by the %s microscope. %s', obj.t, obj.microscope.computerName, datetime('now','Format','hh:mm:ss a')));
             end
             %%
             % functions with the logic to determine which function to execute
@@ -470,26 +501,26 @@ classdef SuperMDAPilot_object < handle
             end
             function gps_execute
                 if obj.flag_group_before
-                    myfun = str2func(smdaI.group_function_before{g});
+                    myfun = str2func(obj.itinerary.group_function_before{g});
                     myfun(obj);
                     obj.flag_group_before = false;
                 end
                 if obj.flag_position_before
-                    myfun = str2func(smdaI.position_function_before{p});
+                    myfun = str2func(obj.itinerary.position_function_before{p});
                     myfun(obj);
                     obj.flag_position_before = false;
                 end
                 
-                myfun = str2func(smdaI.settings_function{s});
+                myfun = str2func(obj.itinerary.settings_function{s});
                 myfun(obj);
                 
                 if obj.flag_position_after
-                    myfun = str2func(smdaI.position_function_after{p});
+                    myfun = str2func(obj.itinerary.position_function_after{p});
                     myfun(obj);
                     obj.flag_position_after = false;
                 end
                 if obj.flag_group_after
-                    myfun = str2func(smdaI.group_function_after{g});
+                    myfun = str2func(obj.itinerary.group_function_after{g});
                     myfun(obj);
                     obj.flag_group_after = false;
                 end
@@ -498,7 +529,7 @@ classdef SuperMDAPilot_object < handle
         %%
         %
         function obj = snap(obj)
-            obj.mm.snapImage;
+            obj.microscope.snapImage;
             obj.updateGuiLastImage;
             obj.runtime_imagecounter = obj.runtime_imagecounter + 1;
         end
@@ -511,125 +542,55 @@ classdef SuperMDAPilot_object < handle
         %% update_database
         %
         function obj = update_database(obj)
-            %% update the internal smdaPect database
-            %
+            %%% 
+            % Initialize values that are not properties of the pilot_class.
             g = obj.gps_current(1); %group
             p = obj.gps_current(2); %position
             s = obj.gps_current(3); %settings
             z = obj.database_z_number;
-            obj.mm.getXYZ;
+            obj.microscope.getXYZ;
             myGroupOrder = obj.itinerary.order_group;
             myPositionOrder = obj.itinerary.order_position{g};
-            mySettingsOrder = obj.itinerary.order_settings{p};
-            varNames = {'channel_name',...
-                'filename',...
-                'group_label',...
-                'position_label',...
-                'binning',...
-                'channel_number',...
-                'continuous_focus_offset',...
-                'continuous_focus_bool',...
-                'exposure',...
-                'group_number',...
-                'group_order',...
-                'matlab_serial_date_number',...
-                'position_number',...
-                'position_order',...
-                'settings_number',...
-                'settings_order',...
-                'timepoint',...
-                'x',...
-                'y',...
-                'z',...
-                'z_order',...
-                'image_description'};
-            myNewDatabaseRow = {...
-                obj.itinerary.channel_names{obj.itinerary.settings_channel(s)},... %channel_name
-                obj.itinerary.database_filenamePNG,... %filename
-                obj.itinerary.group_label{g},... %group_label
-                obj.itinerary.position_label{p},... %position_label
-                obj.itinerary.settings_binning(s),... %binning
-                obj.itinerary.settings_channel(s),... %channel_number
-                obj.itinerary.position_continuous_focus_offset(p),... %continuous_focus_offset
-                obj.itinerary.position_continuous_focus_bool(p),... %continuous_focus_bool
-                obj.itinerary.settings_exposure(s),... %exposure
-                g,... %group_number
-                find(myGroupOrder == g,1,'first'),... %group_order
-                now,... %matlab_serial_date_number
-                p,... %position_number
-                find(myPositionOrder == p,1,'first'),... %position_order,
-                s,... %settings_number
-                find(mySettingsOrder == s,1,'first'),... %settings_order
-                obj.t,... %timepoint
-                obj.mm.pos(1),...%obj.itinerary.group(g).position(p).xyz(obj.t,1),... %x
-                obj.mm.pos(2),...%obj.itinerary.group(g).position(p).xyz(obj.t,2),... %y
-                obj.mm.pos(3),...%     obj.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     obj.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     obj.itinerary.group(g).position(p).xyz(obj.t,3),... %z
-                z,... %the order of zstack from bottom to top
-                obj.database_imagedescription}; %image_description
-            %%
-            %
+            mySettingsOrder = obj.itinerary.order_settings{p};            
+            %%% 
+            % Update metadata struct.
             metadataFilename = sprintf('g%d_s%d_w%d_t%d_z%d.txt',g,p,s,obj.t,z);
+            obj.metadata.channel_name = obj.itinerary.channel_names{obj.itinerary.settings_channel(s)};
+            obj.metadata.filename = obj.itinerary.database_filenamePNG;
+            obj.metadata.group_label = obj.itinerary.group_label{g};
+            obj.metadata.position_label = obj.itinerary.position_label{p};
+            obj.metadata.binning = obj.itinerary.settings_binning(s);
+            obj.metadata.channel_number = obj.itinerary.settings_channel(s);
+            obj.metadata.continuous_focus_offset = obj.itinerary.position_continuous_focus_offset(p);
+            obj.metadata.continuous_focus_bool = obj.itinerary.position_continuous_focus_bool(p);
+            obj.metadata.exposure = obj.itinerary.settings_exposure(s);
+            obj.metadata.group_number = g;
+            obj.metadata.group_order = find(myGroupOrder == g,1,'first');
+            obj.metadata.matlab_serial_date_number = now;
+            obj.metadata.position_number = p;
+            obj.metadata.position_order = find(myPositionOrder == p,1,'first');
+            obj.metadata.settings_number = s;
+            obj.metadata.settings_order = find(mySettingsOrder == s,1,'first');
+            obj.metadata.timepoint = obj.t;
+            obj.metadata.x = obj.microscope.pos(1);
+            obj.metadata.y = obj.microscope.pos(2);
+            obj.metadata.z = obj.microscope.pos(3);
+            obj.metadata.z_order = z;
+            obj.metadata.image_description = obj.metadata_imagedescription;
+            %%%
+            % Erite to a json file.
             try
-                fileID = fopen(fullfile(obj.itinerary.png_path,metadataFilename),'w');
+                core_jsonparser.export_json(struct_out,fullfile(obj.itinerary.png_path,metadataFilename));
             catch
                 pause(1);
                 warning('smdaP:metadata','%s may not have been written to disk',metadataFilename);
-                fileID = fopen(fullfile(obj.itinerary.png_path,metadataFilename),'w');
+                core_jsonparser.export_json(struct_out,fullfile(obj.itinerary.png_path,metadataFilename));
             end
-            formatSpecHeader = strcat(...
-                '%s\t',... %channel_name
-                '%s\t',... %filename
-                '%s\t',... %group_label
-                '%s\t',... %position_label
-                '%s\t',... %binning
-                '%s\t',... %channel_number
-                '%s\t',... %continuous_focus_offset
-                '%s\t',... %continuous_focus_bool
-                '%s\t',... %exposure
-                '%s\t',... %group_number
-                '%s\t',... %group_order
-                '%s\t',... %matlab_serial_date_number
-                '%s\t',... %position_number
-                '%s\t',... %position_order,
-                '%s\t',... %settings_number
-                '%s\t',... %settings_order
-                '%s\t',... %timepoint
-                '%s\t',...%obj.itinerary.group(g).position(p).xyz(t,1),... %x
-                '%s\t',...%obj.itinerary.group(g).position(p).xyz(t,2),... %y
-                '%s\t',...%     obj.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     obj.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     obj.itinerary.group(g).position(p).xyz(t,3),... %z
-                '%s\t',... %the order of zstack from bottom to top
-                '%s\r\n'); %image_description
-            formatSpecDatabaseRow = strcat(...
-                '%s\t',... %channel_name
-                '%s\t',... %filename
-                '%s\t',... %group_label
-                '%s\t',... %position_label
-                '%d\t',... %binning
-                '%d\t',... %channel_number
-                '%1.15g\t',... %continuous_focus_offset
-                '%d\t',... %continuous_focus_bool
-                '%1.15g\t',... %exposure
-                '%d\t',... %group_number
-                '%d\t',... %group_order
-                '%1.30g\t',... %matlab_serial_date_number
-                '%d\t',... %position_number
-                '%d\t',... %position_order,
-                '%d\t',... %settings_number
-                '%d\t',... %settings_order
-                '%d\t',... %timepoint
-                '%1.15g\t',...%obj.itinerary.group(g).position(p).xyz(t,1),... %x
-                '%1.15g\t',...%obj.itinerary.group(g).position(p).xyz(t,2),... %y
-                '%1.20g\t',...%     obj.itinerary.group(g).position(p).settings(s).z_origin_offset + ...%     obj.itinerary.group(g).position(p).settings(s).z_stack(z) + ...%     obj.itinerary.group(g).position(p).xyz(t,3),... %z
-                '%d\t',... %the order of zstack from bottom to top
-                '%s\r\n'); %image_description
-            fprintf(fileID,formatSpecHeader,varNames{:});
-            fprintf(fileID,formatSpecDatabaseRow,myNewDatabaseRow{:});
-            fclose(fileID);
         end
         %%
         %
         function obj = updateGuiLastImage(obj)
-            I = uint8(bitshift(obj.mm.I, -8)); %assumes 16-bit depth
+            I = uint8(bitshift(obj.microscope.I, -8)); %assumes 16-bit depth
             Isize = size(I);
             Iheight = Isize(1);
             Iwidth = Isize(2);
@@ -645,7 +606,7 @@ classdef SuperMDAPilot_object < handle
             i = obj.gps_current(1); %group
             j = obj.gps_current(2); %position
             k = obj.gps_current(3); %settings
-            channelName = obj.mm.Channel{obj.itinerary.settings_channel(k)};
+            channelName = obj.microscope.Channel{obj.itinerary.settings_channel(k)};
             mytitle = sprintf('Group: %d, Position: %d, Channel: %s, Timepoint: %d',i,j,channelName,obj.t);
             set(obj.gui_lastImage,'Name',mytitle);
         end

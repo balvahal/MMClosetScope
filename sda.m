@@ -7,6 +7,9 @@
 
 classdef sda < handle
     methods (Static)
+        function [itinerary_object] = itinerary()
+            itinerary_object = itinerary_class();
+        end
         function [microscope_object] = microscope()
             microscope_object = microscope_class();
         end

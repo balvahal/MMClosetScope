@@ -1,28 +1,12 @@
-%% The SuperMDAItineraryTimeFixed_object
-%   ___                    __  __ ___   _
-%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\
-%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \
-%  |___/\_,_| .__/\___|_| |_|  |_|___/_/ \_\
-%   ___ _   |_|
-%  |_ _| |_(_)_ _  ___ _ _ __ _ _ _ _  _
-%   | ||  _| | ' \/ -_) '_/ _` | '_| || |
-%  |___|\__|_|_||_\___|_| \__,_|_|  \_, |
-%   _____ _           ___ _         |__/
-%  |_   _(_)_ __  ___| __(_)_ _____ __| |
-%    | | | | '  \/ -_) _|| \ \ / -_) _` |
-%    |_| |_|_|_|_\___|_| |_/_\_\___\__,_|
+%% itinerary, the class that contains multi-dimensional acquisition data 
 %
-% The SuperMDA allows multiple multi-dimensional-acquisitions to be run
-% simulataneously. Each group consists of 1 or more positions. Each
-% position consists of 1 or more settings.
-classdef SuperMDAItineraryTimeFixed_object < handle
+%% Inputs
+% None
+%% Outputs
+% * obj: the object that contains and manages the *itinerary*
+classdef itinerary_class < handle
     %% Properties
-    %   ___                       _   _
-    %  | _ \_ _ ___ _ __  ___ _ _| |_(_)___ ___
-    %  |  _/ '_/ _ \ '_ \/ -_) '_|  _| / -_|_-<
-    %  |_| |_| \___/ .__/\___|_|  \__|_\___/__/
-    %              |_|
-    %
+    % 
     properties
         %%% General
         %
@@ -40,7 +24,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         gps;
         gps_logical;
         orderVector;
-        output_directory = fullfile(pwd,'SuperMDA');
+        output_directory = fullfile(userpath,'sda');
         imageHeightNoBin
         imageWidthNoBin
         
@@ -162,11 +146,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         number_of_timepoints = 1;
     end
     %% Methods
-    %   __  __     _   _            _
-    %  |  \/  |___| |_| |_  ___  __| |___
-    %  | |\/| / -_)  _| ' \/ _ \/ _` (_-< 
-    %  |_|  |_\___|\__|_||_\___/\__,_/__/
-    %
     % In general each method was created to help construct a valid,
     % self-consistent itinerary. An itinerary can be constructed without
     % the use of any of these methods, but there are no guaruntees that it
@@ -211,55 +190,51 @@ classdef SuperMDAItineraryTimeFixed_object < handle
     
     methods
         %% The first method is the constructor
-        %    ___             _               _
-        %   / __|___ _ _  __| |_ _ _ _  _ __| |_ ___ _ _
-        %  | (__/ _ \ ' \(_-<  _| '_| || / _|  _/ _ \ '_|
-        %   \___\___/_||_/__/\__|_|  \_,_\__|\__\___/_|
         %
-        function obj = SuperMDAItineraryTimeFixed_object(mm)
+        function obj = itinerary_class(microscope)
             %%%
-            % if micro-manager is unavailable, then do not follow through
-            % with initialization. Itineraries can still be imported, but
-            % some methods may throw errors.
+            % If the microscope object is not provided, then do not follow
+            % through with initialization. Itineraries can still be
+            % imported, but some methods may throw errors.
             if nargin == 0
                 return
             end
-            %%%
+            %%% Initialization
             %
+            if ~isa(microscope,'microscope_class')
+                error('itn:input','The input was not a microscope_class');
+            end
             if ~isdir(obj.output_directory)
                 mkdir(obj.output_directory)
             end
-            if ~isa(mm,'Core_MicroManagerHandle')
-                error('obj:input','The input was not a Core_MicroManagerHandle_object');
-            end
-            obj.channel_names = mm.Channel;
+            obj.channel_names = microscope.Channel;
             obj.gps = [1,1,1];
             obj.gps_logical = true;
             obj.orderVector = 1;
-            mm.binningfun(mm,1);
-            obj.imageHeightNoBin = mm.core.getImageHeight;
-            obj.imageWidthNoBin = mm.core.getImageWidth;
+            microscope.binningfun(microscope,1);
+            obj.imageHeightNoBin = microscope.core.getImageHeight;
+            obj.imageWidthNoBin = microscope.core.getImageWidth;
             %%% initialize the prototype_group
             %
-            obj.group_function_after{1} = 'SuperMDAItineraryTimeFixed_group_function_after';
-            obj.group_function_before{1} = 'SuperMDAItineraryTimeFixed_group_function_before';
+            obj.group_function_after{1} = 'default_group_function_after';
+            obj.group_function_before{1} = 'default_group_function_before';
             obj.group_label{1} = 'group1';
             obj.group_logical = true;
             %%% initialize the prototype_position
             %
-            obj.position_continuous_focus_offset = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_offset = str2double(microscope.core.getProperty(microscope.AutoFocusDevice,'Position'));
             obj.position_continuous_focus_bool = true;
-            obj.position_function_after{1} = 'SuperMDAItineraryTimeFixed_position_function_after';
-            obj.position_function_before{1} = 'SuperMDAItineraryTimeFixed_position_function_before';
+            obj.position_function_after{1} = 'default_position_function_after';
+            obj.position_function_before{1} = 'default_position_function_before';
             obj.position_label{1} = 'position1';
             obj.position_logical = true;
-            obj.position_xyz = mm.getXYZ; %This is a customizable array
+            obj.position_xyz = microscope.getXYZ; %This is a customizable array
             %%% initialize the prototype_settings
             %
             obj.settings_binning = 1;
             obj.settings_channel = 1;
             obj.settings_exposure = 1; %This is a customizable arrray
-            obj.settings_function{1} = 'SuperMDAItineraryTimeFixed_settings_function';
+            obj.settings_function{1} = 'default_settings_function';
             obj.settings_logical = true;
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array
@@ -377,13 +352,13 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             % to ensure self-consistency
             obj.dropEmpty;
             obj.organizeByOrder            
-            fieldnamesExclusionList = {'mm'};
+            %fieldnamesExclusionList = {'microscope'};
             myfields = fieldnames(obj);
-            myfields(ismember(myfields,fieldnamesExclusionList)) = [];
+            %myfields(ismember(myfields,fieldnamesExclusionList)) = [];
             for i = 1:numel(myfields)
                 myexportStruct.(myfields{i}) = obj.(myfields{i});
             end
-            Core_jsonparser.export_json(myexportStruct,fullfile(obj.output_directory,'smdaITF.txt'));
+            core_jsonparser.export_json(myexportStruct,fullfile(obj.output_directory,'smdaITF.txt'));
         end
         %% gpsFromOrder
         %
@@ -410,12 +385,12 @@ classdef SuperMDAItineraryTimeFixed_object < handle
         function [obj] = import(obj,filename)
             %%
             %
-            myimportStruct = Core_jsonparser.import_json(filename);
+            myimportStruct = core_jsonparser.import_json(filename);
             myfields = fieldnames(myimportStruct);
             for i = 1:numel(myfields)
                 obj.(myfields{i}) = myimportStruct.(myfields{i});
             end
-            %%
+            %% convert from arrays of numbers into arrays of logicals
             %
             obj.group_logical = logical(obj.group_logical);
             obj.position_logical = logical(obj.position_logical);
@@ -670,11 +645,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
         end
         %% Group: methods
-        %    ___
-        %   / __|_ _ ___ _  _ _ __
-        %  | (_ | '_/ _ \ || | '_ \
-        %   \___|_| \___/\_,_| .__/
-        %                    |_|
+        %
         %% newGroup
         % A single group is created.
         %
@@ -776,21 +747,17 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
         end
         %% Position: methods
-        %   ___        _ _   _
-        %  | _ \___ __(_) |_(_)___ _ _
-        %  |  _/ _ (_-< |  _| / _ \ ' \
-        %  |_| \___/__/_|\__|_\___/_||_|
         %
         %% newPosition
         % A single position is created.
         %
         % * sNum: this position will have _sNum_ new settings
-        function p = newPosition(obj,mm,varargin)
+        function p = newPosition(obj,microscope,varargin)
             %%%
             % parse the input
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
-            addRequired(q, 'mm', @(x) isa(x,'Core_MicroManagerHandle'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
+            addRequired(q, 'microscope', @(x) isa(x,'microscope_class'));
             parse(q,obj,varargin{:});
             
             %%% create new group
@@ -799,13 +766,13 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             p = obj.pointer_next_position;
             % add the new position properties reflecting the current objective
             % position
-            obj.position_continuous_focus_offset(p) = str2double(mm.core.getProperty(mm.AutoFocusDevice,'Position'));
+            obj.position_continuous_focus_offset(p) = str2double(microscope.core.getProperty(microscope.AutoFocusDevice,'Position'));
             obj.position_continuous_focus_bool(p) = true;
             obj.position_function_after{p} = obj.position_function_after{1};
             obj.position_function_before{p} = obj.position_function_before{1};
             obj.position_label{p} = sprintf('position%d',p);
             obj.position_logical(p) = true;
-            obj.position_xyz(p,:) = mm.getXYZ;
+            obj.position_xyz(p,:) = microscope.getXYZ;
             %%% update order, indices, and pointers
             %
             obj.number_settings(p) = 0;
@@ -878,11 +845,7 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
         end
         %% Settings: methods
-        %   ___      _   _   _
-        %  / __| ___| |_| |_(_)_ _  __ _ ___
-        %  \__ \/ -_)  _|  _| | ' \/ _` (_-<
-        %  |___/\___|\__|\__|_|_||_\__, /__/
-        %                          |___/
+        %      
         %% newSettings
         %
         function s = newSettings(obj,varargin)
@@ -983,10 +946,6 @@ classdef SuperMDAItineraryTimeFixed_object < handle
             end
         end
         %% Grid: methods
-        %    ___     _    _
-        %   / __|_ _(_)__| |
-        %  | (_ | '_| / _` |
-        %   \___|_| |_\__,_|
         %
         
     end
