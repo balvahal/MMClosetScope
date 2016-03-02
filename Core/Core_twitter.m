@@ -1,4 +1,4 @@
-%% Core_twitter
+%% core_twitter
 % Core_twitter wraps the Python Tweepy package. When MATLAB is properly
 % configured with Python Core_twitter can be used to update the user's
 % Twitter status. The Tweepy API is a property of this object, so all other

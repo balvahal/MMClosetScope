@@ -1,4 +1,4 @@
-%% Core_py2matlab
+%% core_py2matlab
 %
 % How to configure Python in MATLAB 2015b (on a Windows Box):
 %

@@ -1,4 +1,4 @@
-%% Core_jsonparser
+%% core_jsonparser
 %
 % How to configure Python in MATLAB 2015b (on a Windows Box):
 %

@@ -185,9 +185,9 @@ matlab_file_exchange/
 #############
 ## HTML Help Files
 #############
-Core/html/
+core/html/
 
 #############
 ## twitter keys and tokens
 #############
-Core/twitter.txt
+core/twitter.txt
