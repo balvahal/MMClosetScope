@@ -1,19 +1,14 @@
-%%
-%   ___                    __  __ ___   _
-%  / __|_  _ _ __  ___ _ _|  \/  |   \ /_\
-%  \__ \ || | '_ \/ -_) '_| |\/| | |) / _ \
-%  |___/\_,_| .__/\___|_| |_|  |_|___/_/ \_\     _
-%  |_   _| _|_| ___ _____| |   /_\  __ _ ___ _ _| |_
-%    | || '_/ _` \ V / -_) |  / _ \/ _` / -_) ' \  _|
-%    |_||_| \__,_|\_/\___|_| /_/ \_\__, \___|_||_\__|
-%                                  |___/
+%% itinerary, the class that contains multi-dimensional acquisition data 
+%
+%% Inputs
+% * microscope: the object that utilizes the uManager API.
+% * itinerary: the object that stores the multi-dimensional-acquisition
+% plan and information.
+%% Outputs
+% * obj: the object with helper functions to manipulate the *itinerary*
+% with or without a gui.
 classdef travelagent_class < handle
     %% Properties
-    %   ___                       _   _
-    %  | _ \_ _ ___ _ __  ___ _ _| |_(_)___ ___
-    %  |  _/ '_/ _ \ '_ \/ -_) '_|  _| / -_|_-<
-    %  |_| |_| \___/ .__/\___|_|  \__|_\___/__/
-    %              |_|
     %
     properties
         itinerary;
@@ -25,18 +20,9 @@ classdef travelagent_class < handle
         uot_conversion = 1;
     end
     %% Methods
-    %   __  __     _   _            _
-    %  |  \/  |___| |_| |_  ___  __| |___
-    %  | |\/| / -_)  _| ' \/ _ \/ _` (_-<
-    %  |_|  |_\___|\__|_||_\___/\__,_/__/
     %
     methods
         %% The first method is the constructor
-        %    ___             _               _
-        %   / __|___ _ _  __| |_ _ _ _  _ __| |_ ___ _ _
-        %  | (__/ _ \ ' \(_-<  _| '_| || / _|  _/ _ \ '_|
-        %   \___\___/_||_/__/\__|_|  \_,_\__|\__\___/_|
-        %
         % |smdai| is the itinerary that has been initalized with the
         % micromanager core handler object
         function obj = travelagent_class(microscope,itinerary)
@@ -51,16 +37,7 @@ classdef travelagent_class < handle
             obj.microscope = q.Results.microscope;
             obj.itinerary = q.Results.itinerary;
             %% Create a gui to enable pausing and stopping
-            %    ___ _   _ ___    ___              _   _
-            %   / __| | | |_ _|  / __|_ _ ___ __ _| |_(_)___ _ _
-            %  | (_ | |_| || |  | (__| '_/ -_) _` |  _| / _ \ ' \
-            %   \___|\___/|___|  \___|_| \___\__,_|\__|_\___/_||_|
-            %   / _|___ _ _
-            %  |  _/ _ \ '_|  __  __      _
-            %  |_| \___/_(_) |  \/  |__ _(_)_ _
-            %  / _` | || | | | |\/| / _` | | ' \
-            %  \__, |\_,_|_|_|_|  |_\__,_|_|_||_|
-            %  |___/      |___|
+            %
             % Create the figure
             %
             myunits = get(0,'units');
@@ -92,11 +69,7 @@ classdef travelagent_class < handle
             region4 = [0 0]; %180 pixels
             
             %% Assemble Region 1
-            %   ___          _            _
-            %  | _ \___ __ _(_)___ _ _   / |
-            %  |   / -_) _` | / _ \ ' \  | |
-            %  |_|_\___\__, |_\___/_||_| |_|
-            %          |___/
+            %
             %%% Time Info
             %
             hpopupmenuUnitsOfTime = uicontrol('Style','popupmenu','Units','characters',...
@@ -177,11 +150,7 @@ classdef travelagent_class < handle
                 'FontSize',10,'FontName','Verdana','BackgroundColor',textBackgroundColorRegion1,...
                 'Position',[region1(1)+68, region1(2)+10, buttonSize(1),2.6923]);
             %% Assemble Region 2
-            %   ___          _            ___
-            %  | _ \___ __ _(_)___ _ _   |_  )
-            %  |   / -_) _` | / _ \ ' \   / /
-            %  |_|_\___\__, |_\___/_||_| /___|
-            %          |___/
+            %
             %%% The group table
             %
             htableGroup = uitable('Units','characters',...
@@ -258,11 +227,7 @@ classdef travelagent_class < handle
                 'Position',[fwidth - 6 - buttonSize(1)*1.75, region2(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
                 'Callback',{@obj.pushbuttonGroupUp_Callback});
             %% Assemble Region 3
-            %   ___          _            ____
-            %  | _ \___ __ _(_)___ _ _   |__ /
-            %  |   / -_) _` | / _ \ ' \   |_ \
-            %  |_|_\___\__, |_\___/_||_| |___/
-            %          |___/
+            %
             %%% The position table
             %
             htablePosition = uitable('Units','characters',...
@@ -372,11 +337,7 @@ classdef travelagent_class < handle
                 'Position',[fwidth - 2 - buttonSize(1)*0.5, region3(2)+14.0769+7.6923, buttonSize(1)*.5,buttonSize(2)],...
                 'Callback',{@obj.pushbuttonPositionFunctionAfter_Callback});
             %% Assemble Region 4
-            %   ___          _            _ _
-            %  | _ \___ __ _(_)___ _ _   | | |
-            %  |   / -_) _` | / _ \ ' \  |_  _|
-            %  |_|_\___\__, |_\___/_||_|   |_|
-            %          |___/
+            % 
             %%% The settings table
             %
             
@@ -465,11 +426,7 @@ classdef travelagent_class < handle
                 'Position',[fwidth - 4 - buttonSize(1), region4(2)+7.6923, buttonSize(1)*.5,buttonSize(2)],...
                 'Callback',{@obj.pushbuttonSettingsZUpper_Callback});
             %% Handles
-            %   _  _              _ _
-            %  | || |__ _ _ _  __| | |___ ___
-            %  | __ / _` | ' \/ _` | / -_|_-<
-            %  |_||_\__,_|_||_\__,_|_\___/__/
-            %
+            % 
             % store the uicontrol handles in the figure handles via guidata()
             handles.popupmenuUnitsOfTime = hpopupmenuUnitsOfTime;
             handles.editFundamentalPeriod = heditFundamentalPeriod;
@@ -513,15 +470,7 @@ classdef travelagent_class < handle
             obj.refresh_gui_main;
         end
         %% Callbacks for gui_main
-        %    ___      _ _ _             _
-        %   / __|__ _| | | |__  __ _ __| |__ ___
-        %  | (__/ _` | | | '_ \/ _` / _| / /(_-<
-        %   \___\__,_|_|_|_.__/\__,_\__|_\_\/__/
-        %             _   __  __      _
-        %   __ _ _  _(_) |  \/  |__ _(_)_ _
-        %  / _` | || | | | |\/| / _` | | ' \
-        %  \__, |\_,_|_|_|_|  |_\__,_|_|_||_|
-        %  |___/      |___|
+        % 
         %%
         %
         function obj = fDeleteFcn(obj,~,~)
@@ -529,11 +478,7 @@ classdef travelagent_class < handle
             %window.
         end
         %% Callbacks for Region 1
-        %   ___          _            _
-        %  | _ \___ __ _(_)___ _ _   / |
-        %  |   / -_) _` | / _ \ ' \  | |
-        %  |_|_\___\__, |_\___/_||_| |_|
-        %          |___/
+        % 
         %% popupmenuUnitsOfTime_Callback
         %
         function obj = popupmenuUnitsOfTime_Callback(obj,~,~)
@@ -614,11 +559,7 @@ classdef travelagent_class < handle
             obj.refresh_gui_main;
         end
         %% Callbacks for Region 2
-        %   ___          _            ___
-        %  | _ \___ __ _(_)___ _ _   |_  )
-        %  |   / -_) _` | / _ \ ' \   / /
-        %  |_|_\___\__, |_\___/_||_| /___|
-        %          |___/
+        %   
         %% tableGroup_CellEditCallback
         %
         function obj = tableGroup_CellEditCallback(obj,~,eventdata)
@@ -767,11 +708,7 @@ classdef travelagent_class < handle
             obj.refresh_gui_main;
         end
         %% Callbacks for Region 3
-        %   ___          _            ____
-        %  | _ \___ __ _(_)___ _ _   |__ /
-        %  |   / -_) _` | / _ \ ' \   |_ \
-        %  |_|_\___\__, |_\___/_||_| |___/
-        %          |___/
+        %  
         %% tablePosition_CellEditCallback
         %
         function obj = tablePosition_CellEditCallback(obj,~,eventdata)
@@ -1006,11 +943,7 @@ classdef travelagent_class < handle
             obj.refresh_gui_main;
         end
         %% Callbacks for Region 4
-        %   ___          _            _ _
-        %  | _ \___ __ _(_)___ _ _   | | |
-        %  |   / -_) _` | / _ \ ' \  |_  _|
-        %  |_|_\___\__, |_\___/_||_|   |_|
-        %          |___/
+        %  
         %% tableSettings_CellEditCallback
         %
         function obj = tableSettings_CellEditCallback(obj,~,eventdata)
@@ -1222,17 +1155,13 @@ classdef travelagent_class < handle
             end
             obj.refresh_gui_main;
         end
-        %%
-        %    ___                       _   __  __     _   _            _
-        %   / __|___ _ _  ___ _ _ __ _| | |  \/  |___| |_| |_  ___  __| |___
-        %  | (_ / -_) ' \/ -_) '_/ _` | | | |\/| / -_)  _| ' \/ _ \/ _` (_-<
-        %   \___\___|_||_\___|_| \__,_|_| |_|  |_\___|\__|_||_\___/\__,_/__/
-        %
+        %% General Methods
+        % 
         %%
         %
         function obj = createOrdinalLabels(obj,varargin)
             p = inputParser;
-            addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
+            addRequired(p, 'obj', @(x) isa(x,'travelagent_class'));
             parse(p,obj,varargin{:});
             for i = obj.itinerary.ind_group
                 counter = 1;
@@ -1348,7 +1277,7 @@ classdef travelagent_class < handle
             %%
             %
             p = inputParser;
-            addRequired(p, 'obj', @(x) isa(x,'SuperMDATravelAgent_object'));
+            addRequired(p, 'obj', @(x) isa(x,'travelagent_class'));
             addRequired(p, 'gInd', @(x) ismember(x,obj.itinerary.ind_group));
             addRequired(p, 'grid', @(x) isstruct(x));
             parse(p,obj,gInd,grid);
