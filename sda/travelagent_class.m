@@ -31,7 +31,8 @@ classdef travelagent_class < handle
             q = inputParser;
             addRequired(q, 'microscope', @(x) isa(x,'microscope_class'));
             addRequired(q, 'itinerary', @(x) isa(x,'itinerary_class'));
-            parse(q,itinerary,microscope);
+            parse(q,microscope,itinerary);
+            warning('ta:settings','Changes made to the settings using the travelagent gui will be applied to all positions in the selected group and overwrite any prior customization.');
             %% Initialzing the SuperMDA object
             %
             obj.microscope = q.Results.microscope;
@@ -474,8 +475,7 @@ classdef travelagent_class < handle
         %%
         %
         function obj = fDeleteFcn(obj,~,~)
-            %do nothing. This means only the master object can close this
-            %window.
+            obj.delete;
         end
         %% Callbacks for Region 1
         % 

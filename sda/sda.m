@@ -13,6 +13,9 @@ classdef sda < handle
         function [microscope_object] = microscope()
             microscope_object = microscope_class();
         end
+        function [pilot_object] = pilot(varargin)
+            pilot_object = pilot_class(varargin{:});
+        end
         function [travelagent_object] = travelagent(varargin)
             travelagent_object = travelagent_class(varargin{:});
         end

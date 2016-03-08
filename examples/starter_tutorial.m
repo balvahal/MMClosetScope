@@ -56,7 +56,19 @@ myaxes.YLim = [0.5,image_height+0.5];
 %% Create an itinerary
 %
 itinerary = sda.itinerary(microscope);
-%%% Add several positions with different settings
+%% The travelagent
+% Scripting together an itinerary can be cumbersome for traditional
+% multi-dimensional acquisitions. For these cases the travelagent, a gui
+% that manipulates an itinerary, is recommended.
+%
+% Note that the settings in the first position of each group are the only
+% settings represented in the table. This is by design. Any changes made to
+% the settings table will affect all positions within the selected group.
+% To customize the settings at a paticular position either create a new
+% group or use scripting after using the travelagent. The travelagent will
+% overwrite existing customization.
+travelagent = sda.travelagent(microscope,itinerary);
+%% Scripting with the sda
 % When the itinerary is created there is by default 1 group, 1 position,
 % and 1 settings. When new groups, positions, and settings are created
 % these defaults are used as a template.
@@ -93,26 +105,25 @@ fprintf('Position 4 contains settings %d\n',itinerary.ind_settings{4});
 % _channel_names_ property. The _settings_channel_ property is an array of
 % integers representing the rows within the _channel_names_ cell. To change
 % the channel of a settings try the following:
-itinerary.channel_names(2) = 2;
+itinerary.settings_channel(2) = 2;
 %% Set duration and interval of acquisition
 % If the duration is not an integer multiple of the fundamental period,
 % which is the interval of acquisition, then the remainder time is ignored.
 itinerary.newFundamentalPeriod(30);
 itinerary.newDuration(75);
-fprintf('The duration of the acquisition is %d seconds,\n and there are %d timepoints\n',itinerary.duration,itinerary.number_of_timepoints);
+fprintf('The duration of the acquisition is %d seconds,\nand there are %d timepoints\n',itinerary.duration,itinerary.number_of_timepoints);
 %%%
 % If you only want to image a particular settings at specific timepoints,
 % specify this in the _settings_timepoints_ logical array. For example, to
 % only image settings 2 on the second timepoint do the following:
 itinerary.settings_timepoints(2,:) = zeros(size(itinerary.settings_timepoints(2,:)));
+itinerary.settings_timepoints(2,2) = 1;
 %% Validating an Itinerary
 % Configuring an itinerary through scripting can be challenging, because of
 % the rules that the groups, positions, and settings must comply to.
 % Before, running an acquisition with the sda it is advised to run the
 % method that validates and cleans up the itinerary.
 itinerary.organizeByOrder;
-%% The travelagent
-% Scripting together an itinerary can be cumbersome for traditional
-% multi-dimensional acquisitions. For these cases the travelagent, a gui
-% that manipulates an itinerary, is recommended.
-travelagent = sda.travelagent(microscope,itinerary);
+%% Running an acquisition
+%
+pilot = sda.pilot(microscope,itinerary);

@@ -11,12 +11,10 @@ classdef itinerary_class < handle
         %%% General
         %
         % * channel_names
-        % * database_filenamePNG
         % * gps
         % * gps_logical
         % * orderVector
         % * output_directory
-        % * png_path
         % * imageHeightNoBin
         % * imageWidthNoBin
         channel_names;
@@ -203,16 +201,16 @@ classdef itinerary_class < handle
             obj.imageWidthNoBin = microscope.core.getImageWidth;
             %%% initialize the prototype_group
             %
-            obj.group_function_after{1} = 'default_group_function_after';
-            obj.group_function_before{1} = 'default_group_function_before';
+            obj.group_function_after{1} = 'group_function_after_default';
+            obj.group_function_before{1} = 'group_function_before_default';
             obj.group_label{1} = 'group1';
             obj.group_logical = true;
             %%% initialize the prototype_position
             %
             obj.position_continuous_focus_offset = str2double(microscope.core.getProperty(microscope.AutoFocusDevice,'Position'));
             obj.position_continuous_focus_bool = true;
-            obj.position_function_after{1} = 'default_position_function_after';
-            obj.position_function_before{1} = 'default_position_function_before';
+            obj.position_function_after{1} = 'position_function_after_default';
+            obj.position_function_before{1} = 'position_function_before_default';
             obj.position_label{1} = 'position1';
             obj.position_logical = true;
             obj.position_xyz = microscope.getXYZ; %This is a customizable array
@@ -221,7 +219,7 @@ classdef itinerary_class < handle
             obj.settings_binning = 1;
             obj.settings_channel = 1;
             obj.settings_exposure = 1; %This is a customizable arrray
-            obj.settings_function{1} = 'default_settings_function';
+            obj.settings_function{1} = 'settings_function_default';
             obj.settings_logical = true;
             obj.settings_period_multiplier = 1;
             obj.settings_timepoints = 1; %This is a customizable array

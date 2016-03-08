@@ -44,6 +44,11 @@ classdef pilot_class < handle
         runtime_imagecounter = 0;
         t = 1;
     end
+    %% Properties (protected)
+    %
+    properties (SetAccess = protected)
+        datapath;
+    end
     %%
     %
     events
@@ -60,7 +65,7 @@ classdef pilot_class < handle
             q = inputParser;
             addRequired(q, 'microscope', @(x) isa(x,'microscope_class'));
             addRequired(q, 'itinerary', @(x) isa(x,'itinerary_class'));
-            parse(q,itinerary);
+            parse(q,microscope,itinerary);
             %% Initialzing the SuperMDA object
             %
             obj.itinerary = itinerary;
@@ -282,9 +287,9 @@ classdef pilot_class < handle
             if ~isdir(obj.itinerary.output_directory)
                 mkdir(obj.itinerary.output_directory);
             end
-            obj.itinerary.png_path = fullfile(obj.itinerary.output_directory,'RAW_DATA');
-            if ~isdir(obj.itinerary.png_path)
-                mkdir(obj.itinerary.png_path);
+            obj.datapath = fullfile(obj.itinerary.output_directory,'RAW_DATA');
+            if ~isdir(obj.datapath)
+                mkdir(obj.datapath);
             end
             %%
             % initialize key variables
@@ -391,7 +396,7 @@ classdef pilot_class < handle
             obj.pause_bool = false;
             disp('All Done!')
             if obj.microscope.twitter.active
-                    obj.microscope.twitter.update_status(sprintf('The %s microscope has completed a super MDA! It has %d timepoints. %s', obj.microscope.computerName, obj.t, datetime('now','Format','hh:mm:ss a')));
+                    obj.microscope.twitter.update_status(sprintf('The %s microscope has completed a super MDA! It has %d timepoints. %s', obj.microscope.computerName, obj.t, datestr(datetime('now','Format','hh:mm:ss a'))));
             end
         end
         %% pause acquisition
@@ -411,14 +416,14 @@ classdef pilot_class < handle
         %%
         %
         function obj = makeMasterDatabase(obj)
-            mydir = dir(obj.itinerary.png_path);
+            mydir = dir(obj.datapath);
             %%%
             % find all of the text files
             mydir = mydir(cellfun(@(x) ~isempty(regexp(x,'.txt$','start')),{mydir(:).name}));
-            mytable = readtable(fullfile(obj.itinerary.png_path,mydir(1).name),'Delimiter','\t');
+            mytable = readtable(fullfile(obj.datapath,mydir(1).name),'Delimiter','\t');
             if length(mydir) > 1
                 for i = 2:length(mydir)
-                    mytable = vertcat(mytable,readtable(fullfile(obj.itinerary.png_path,mydir(i).name),'Delimiter','\t')); %#ok<AGROW>
+                    mytable = vertcat(mytable,readtable(fullfile(obj.datapath,mydir(i).name),'Delimiter','\t')); %#ok<AGROW>
                 end
             end
             obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
@@ -477,7 +482,7 @@ classdef pilot_class < handle
             obj.gps_previous = obj.gps_current;
             obj.gps_current = [0,0,0];
             if obj.microscope.twitter.active
-                    obj.microscope.twitter.update_status(sprintf('Timepoint %d has been acquired by the %s microscope. %s', obj.t, obj.microscope.computerName, datetime('now','Format','hh:mm:ss a')));
+                    obj.microscope.twitter.update_status(sprintf('Timepoint %d has been acquired by the %s microscope. %s', obj.t, obj.microscope.computerName, datestr(datetime('now','Format','hh:mm:ss a'))));
             end
             %%
             % functions with the logic to determine which function to execute
@@ -541,7 +546,7 @@ classdef pilot_class < handle
         end
         %% update_database
         %
-        function obj = update_database(obj)
+        function obj = export_metadata(obj,imagefilename)
             %%% 
             % Initialize values that are not properties of the pilot_class.
             g = obj.gps_current(1); %group
@@ -556,7 +561,8 @@ classdef pilot_class < handle
             % Update metadata struct.
             metadataFilename = sprintf('g%d_s%d_w%d_t%d_z%d.txt',g,p,s,obj.t,z);
             obj.metadata.channel_name = obj.itinerary.channel_names{obj.itinerary.settings_channel(s)};
-            obj.metadata.filename = obj.itinerary.database_filenamePNG;
+            obj.metadata.col = 1;
+            obj.metadata.filename = imagefilename;
             obj.metadata.group_label = obj.itinerary.group_label{g};
             obj.metadata.position_label = obj.itinerary.position_label{p};
             obj.metadata.binning = obj.itinerary.settings_binning(s);
@@ -569,6 +575,7 @@ classdef pilot_class < handle
             obj.metadata.matlab_serial_date_number = now;
             obj.metadata.position_number = p;
             obj.metadata.position_order = find(myPositionOrder == p,1,'first');
+            obj.metadata.row = 1;
             obj.metadata.settings_number = s;
             obj.metadata.settings_order = find(mySettingsOrder == s,1,'first');
             obj.metadata.timepoint = obj.t;
@@ -580,11 +587,11 @@ classdef pilot_class < handle
             %%%
             % Erite to a json file.
             try
-                core_jsonparser.export_json(struct_out,fullfile(obj.itinerary.png_path,metadataFilename));
+                core_jsonparser.export_json(obj.metadata,fullfile(obj.datapath,metadataFilename));
             catch
                 pause(1);
                 warning('smdaP:metadata','%s may not have been written to disk',metadataFilename);
-                core_jsonparser.export_json(struct_out,fullfile(obj.itinerary.png_path,metadataFilename));
+                core_jsonparser.export_json(obj.metadata,fullfile(obj.datapath,metadataFilename));
             end
         end
         %%
