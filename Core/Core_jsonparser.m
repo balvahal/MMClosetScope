@@ -67,6 +67,7 @@ classdef core_jsonparser < handle
             %%%
             % export JSON file
             pyFile = py.open(mypath,'w');
+            %py.json.dump(pyData,pyFile,pyargs('indent',int32(4),'sort_keys',true));
             py.json.dump(pyData,pyFile);
             pyFile.close;
         end

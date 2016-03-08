@@ -5,7 +5,8 @@ toc footers:
   - <a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a>
   
 includes:
-  - microscope
+  - installation
+  - microscope/microscope
 
 search: true
 ---

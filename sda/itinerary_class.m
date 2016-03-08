@@ -19,25 +19,21 @@ classdef itinerary_class < handle
         % * png_path
         % * imageHeightNoBin
         % * imageWidthNoBin
-        
         channel_names;
         gps;
         gps_logical;
         orderVector;
-        output_directory = fullfile(userpath,'sda');
+        output_directory;
         imageHeightNoBin
         imageWidthNoBin
-        
         %%% Indices
         %
         % * ind_group
         % * ind_position
         % * ind_settings
-        
         ind_group; % a single row with the indices of the groups
         ind_position; % as many rows as groups. each row with the indices of positions within that group.
         ind_settings; % as many rows as positions. each row has the indices of settings at that position.
-        
         %%% Number
         % Each number refers to the number of active elements. An active
         % element is defined by the corresponding value within the logical
@@ -48,40 +44,27 @@ classdef itinerary_class < handle
         % number of positions within that group.
         % * number_settings: as many rows as positions. each row has the
         % number of settings at that position.
-        
         number_group;
         number_position;
         number_settings;
-        
         %%% Order
         %
         % * order_group
         % * order_position
         % * order_settings
-        
         order_group; % a single row with the order of the groups
         order_position; % as many rows as groups. each row with the order of positions within that group.
-        order_settings; % as many rows as positions. each row has the order of settings at that position.
-        
-        %%% Pointers
-        %
-        pointer_next_gps;
-        pointer_next_group;
-        pointer_next_position;
-        pointer_next_settings;
-        
+        order_settings; % as many rows as positions. each row has the order of settings at that position.      
         %%% Group
         %
         % * group_function_after
         % * group_function_before
         % * group_label
         % * group_logical
-        
         group_function_after;
         group_function_before;
         group_label;
         group_logical;
-        
         %%% Position
         %
         % * position_continuous_focus_offset
@@ -91,7 +74,6 @@ classdef itinerary_class < handle
         % * position_label
         % * position_logical
         % * position_xyz
-        
         position_continuous_focus_offset;
         position_continuous_focus_bool;
         position_function_after;
@@ -99,7 +81,6 @@ classdef itinerary_class < handle
         position_label;
         position_logical;
         position_xyz;
-        
         %%% Settings
         % * settings_binning
         % * settings_channel
@@ -112,7 +93,6 @@ classdef itinerary_class < handle
         % * settings_z_stack_lower_offset
         % * settings_z_stack_upper_offset
         % * settings_z_step_size
-        
         settings_binning;
         settings_channel;
         settings_exposure;
@@ -125,7 +105,7 @@ classdef itinerary_class < handle
         settings_z_stack_upper_offset;
         settings_z_step_size;
     end
-    %% Properties (private)
+    %% Properties (protected)
     %
     properties (SetAccess = protected)
         %%% Time
@@ -139,11 +119,16 @@ classdef itinerary_class < handle
         % * fundamental_period
         % * clock_relative
         % * number_of_timepoints
-        
         duration = 0;
         fundamental_period = 600; %The units are seconds. 600 is 10 minutes.
         clock_relative = 0;
         number_of_timepoints = 1;
+        %%% Pointers
+        %
+        pointer_next_gps;
+        pointer_next_group;
+        pointer_next_position;
+        pointer_next_settings;
     end
     %% Methods
     % In general each method was created to help construct a valid,
@@ -154,7 +139,7 @@ classdef itinerary_class < handle
     %
     % *CONSTRUCTOR*
     %
-    % * SuperMDAItineraryTimeFixed_object
+    % * itinerary_class
     %
     % *GENERAL*
     %
@@ -204,6 +189,8 @@ classdef itinerary_class < handle
             if ~isa(microscope,'microscope_class')
                 error('itn:input','The input was not a microscope_class');
             end
+            pathstr = userpath; %userpath adds a semicolon at the end that must be removed
+            obj.output_directory = fullfile(pathstr(1:end-1),'sda');
             if ~isdir(obj.output_directory)
                 mkdir(obj.output_directory)
             end
@@ -263,7 +250,7 @@ classdef itinerary_class < handle
             %%%
             % parse the input
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
             addParameter(q, 'g',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
             addParameter(q, 'p',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
             addParameter(q, 's',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
@@ -351,7 +338,7 @@ classdef itinerary_class < handle
             %% organize and clean up the object
             % to ensure self-consistency
             obj.dropEmpty;
-            obj.organizeByOrder            
+            obj.organizeByOrder;            
             %fieldnamesExclusionList = {'microscope'};
             myfields = fieldnames(obj);
             %myfields(ismember(myfields,fieldnamesExclusionList)) = [];
@@ -465,7 +452,7 @@ classdef itinerary_class < handle
             obj.settings_function = obj.settings_function(superOrderSettings);
             obj.settings_logical = obj.settings_logical(superOrderSettings);
             obj.settings_period_multiplier = obj.settings_period_multiplier(superOrderSettings);
-            obj.settings_timepoints = obj.settings_timepoints(superOrderSettings);
+            obj.settings_timepoints = obj.settings_timepoints(superOrderSettings,:);
             obj.settings_z_origin_offset = obj.settings_z_origin_offset(superOrderSettings);
             obj.settings_z_stack_lower_offset = obj.settings_z_stack_lower_offset(superOrderSettings);
             obj.settings_z_stack_upper_offset = obj.settings_z_stack_upper_offset(superOrderSettings);
@@ -492,6 +479,7 @@ classdef itinerary_class < handle
             obj.number_of_timepoints = round(mynum);
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+            obj.validateSettingsTimepoints;
         end
         %% newFundamentalPeriod
         % a method to change the fundamental period (units in seconds)
@@ -508,6 +496,7 @@ classdef itinerary_class < handle
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+            obj.validateSettingsTimepoints;
         end
         %% newDuration
         % a method to change the duration
@@ -524,6 +513,17 @@ classdef itinerary_class < handle
             obj.number_of_timepoints = floor(obj.duration/obj.fundamental_period)+1; %ensures fundamental period and duration are consistent with each other
             obj.duration = obj.fundamental_period*(obj.number_of_timepoints-1);
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
+            obj.validateSettingsTimepoints;
+        end
+        %% validateSettingsTimepoints
+        %
+        function obj = validateSettingsTimepoints(obj)
+            timepointDifference = size(obj.settings_timepoints,2) - obj.number_of_timepoints;
+            if timepointDifference < 0
+                obj.settings_timepoints = horzcat(obj.settings_timepoints,ones(size(obj.settings_timepoints,1),-timepointDifference));
+            elseif timepointDifference > 0
+                obj.settings_timepoints(:,end-timepointDifference+1) = [];
+            end
         end
         %% dropEmpty
         % The following conditions will be considered empty and will
@@ -655,7 +655,7 @@ classdef itinerary_class < handle
             %%%
             % parse the input
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
             addOptional(q, 'pNum',0, @(x) mod(x,1)==0);
             addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
             parse(q,obj,varargin{:});
@@ -691,7 +691,7 @@ classdef itinerary_class < handle
             existingG = 1:numel(obj.group_logical);
             existingG = existingG(obj.group_logical);
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
             addRequired(q, 'g', @(x) ismember(x,existingG));
             parse(q,obj,g);
             g = q.Results.g;
@@ -752,27 +752,33 @@ classdef itinerary_class < handle
         % A single position is created.
         %
         % * sNum: this position will have _sNum_ new settings
-        function p = newPosition(obj,microscope,varargin)
+        function p = newPosition(obj, varargin)
             %%%
             % parse the input
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
-            addRequired(q, 'microscope', @(x) isa(x,'microscope_class'));
+            addOptional(q, 'microscope', [], @(x) isa(x,'microscope_class'));
             parse(q,obj,varargin{:});
-            
+            microscope = q.Results.microscope;
             %%% create new group
             % Each group property needs a new row. Use the first group as a template
             % for the newest group.
             p = obj.pointer_next_position;
             % add the new position properties reflecting the current objective
             % position
-            obj.position_continuous_focus_offset(p) = str2double(microscope.core.getProperty(microscope.AutoFocusDevice,'Position'));
+            if isempty(microscope)
+                obj.position_continuous_focus_offset(p) = obj.position_continuous_focus_offset(1);
+                obj.position_xyz(p,:) = obj.position_xyz(1,:);
+            else
+                obj.position_continuous_focus_offset(p) = str2double(microscope.core.getProperty(microscope.AutoFocusDevice,'Position'));
+                obj.position_xyz(p,:) = microscope.getXYZ;
+            end            
             obj.position_continuous_focus_bool(p) = true;
             obj.position_function_after{p} = obj.position_function_after{1};
             obj.position_function_before{p} = obj.position_function_before{1};
             obj.position_label{p} = sprintf('position%d',p);
             obj.position_logical(p) = true;
-            obj.position_xyz(p,:) = microscope.getXYZ;
+            
             %%% update order, indices, and pointers
             %
             obj.number_settings(p) = 0;
@@ -791,7 +797,7 @@ classdef itinerary_class < handle
             existingP = 1:numel(obj.position_logical);
             existingP = existingP(obj.position_logical);
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
             addRequired(q, 'p', @(x) ismember(x,existingP));
             parse(q,obj,p);
             %%%
@@ -852,7 +858,7 @@ classdef itinerary_class < handle
             %%%
             % parse the input
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
             addOptional(q, 'sNum',0, @(x) mod(x,1)==0);
             parse(q,obj,varargin{:});
             
@@ -866,7 +872,7 @@ classdef itinerary_class < handle
             obj.settings_function{s} = obj.settings_function{1};
             obj.settings_logical(s) = true;
             obj.settings_period_multiplier(s) = obj.settings_period_multiplier(1);
-            obj.settings_timepoints(s) = obj.settings_timepoints(1);
+            obj.settings_timepoints(s,:) = obj.settings_timepoints(1,:);
             obj.settings_z_origin_offset(s) = obj.settings_z_origin_offset(1);
             obj.settings_z_stack_lower_offset(s) = obj.settings_z_stack_lower_offset(1);
             obj.settings_z_stack_upper_offset(s) = obj.settings_z_stack_upper_offset(1);
@@ -886,7 +892,7 @@ classdef itinerary_class < handle
             existingS = 1:numel(obj.settings_logical);
             existingS = existingS(obj.settings_logical);
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
             addRequired(q, 's', @(x) ismember(x,existingS));
             parse(q,obj,s);
             %%%
@@ -926,7 +932,7 @@ classdef itinerary_class < handle
             %%%
             % parse the input
             q = inputParser;
-            addRequired(q, 'obj', @(x) isa(x,'SuperMDAItineraryTimeFixed_object'));
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
             addOptional(q, 'g',0, @(x) mod(x,1)==0);
             parse(q,obj,varargin{:});
             g = q.Results.g;

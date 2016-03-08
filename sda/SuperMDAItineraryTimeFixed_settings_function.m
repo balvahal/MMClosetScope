@@ -12,6 +12,9 @@ k = smdaPilot.gps_current(3); %settings
 if mod((t-1),smdaPilot.itinerary.settings_period_multiplier(k)) ~= 0
     return
 end
+if ~smdaPilot.itinerary.settings_timepoints(k,t)
+    return
+end
 %%
 % else continue with capturing of the image
 smdaPilot.mm.core.setConfig('Channel',smdaPilot.itinerary.channel_names{smdaPilot.itinerary.settings_channel(k)});

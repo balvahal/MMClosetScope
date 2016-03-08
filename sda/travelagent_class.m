@@ -6,7 +6,7 @@
 % plan and information.
 %% Outputs
 % * obj: the object with helper functions to manipulate the *itinerary*
-% with or without a gui.
+% with a gui.
 classdef travelagent_class < handle
     %% Properties
     %
