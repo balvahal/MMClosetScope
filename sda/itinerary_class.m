@@ -949,6 +949,21 @@ classdef itinerary_class < handle
                 [obj.number_settings(p)] = deal(mySettingsNum);
             end
         end
+        %%
+        %
+        function obj = copySettings(obj,sfrom,sto)
+            obj.settings_binning(sto) = obj.settings_binning(sfrom);
+            obj.settings_channel(sto) = obj.settings_channel(sfrom);
+            obj.settings_exposure(sto) = obj.settings_exposure(sfrom);
+            obj.settings_function{sto} = obj.settings_function{sfrom};
+            obj.settings_logical(sto) = obj.settings_logical(sfrom);
+            obj.settings_period_multiplier(sto) = obj.settings_period_multiplier(sfrom);
+            obj.settings_timepoints(sto,:) = obj.settings_timepoints(sfrom,:);
+            obj.settings_z_origin_offset(sto) = obj.settings_z_origin_offset(sfrom);
+            obj.settings_z_stack_lower_offset(sto) = obj.settings_z_stack_lower_offset(sfrom);
+            obj.settings_z_stack_upper_offset(sto) = obj.settings_z_stack_upper_offset(sfrom);
+            obj.settings_z_step_size(sto) = obj.settings_z_step_size(sfrom);
+        end
         %% Grid: methods
         %
         
