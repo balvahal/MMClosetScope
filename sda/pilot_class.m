@@ -25,7 +25,6 @@ classdef pilot_class < handle
     %
     properties
         clock_absolute;
-        databasefilename;
         database_z_number = 1;
         flag_group_before = false;
         flag_group_after = false;
@@ -70,7 +69,6 @@ classdef pilot_class < handle
             %
             obj.itinerary = itinerary;
             obj.microscope = microscope;
-            obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
             if ~isdir(obj.itinerary.output_directory)
                 mkdir(obj.itinerary.output_directory);
             end
@@ -420,14 +418,40 @@ classdef pilot_class < handle
             %%%
             % find all of the text files
             mydir = mydir(cellfun(@(x) ~isempty(regexp(x,'.txt$','start')),{mydir(:).name}));
-            mytable = readtable(fullfile(obj.datapath,mydir(1).name),'Delimiter','\t');
-            if length(mydir) > 1
-                for i = 2:length(mydir)
-                    mytable = vertcat(mytable,readtable(fullfile(obj.datapath,mydir(i).name),'Delimiter','\t')); %#ok<AGROW>
-                end
+            importstruct(length(mydir)).channel_name = [];
+            importstruct(length(mydir)).col = [];
+            importstruct(length(mydir)).filename = [];
+            importstruct(length(mydir)).group_label = [];
+            importstruct(length(mydir)).position_label = [];
+            importstruct(length(mydir)).binning = [];
+            importstruct(length(mydir)).channel_number = [];
+            importstruct(length(mydir)).continuous_focus_offset = [];
+            importstruct(length(mydir)).continuous_focus_bool = [];
+            importstruct(length(mydir)).exposure = [];
+            importstruct(length(mydir)).group_number = [];
+            importstruct(length(mydir)).group_order = [];
+            importstruct(length(mydir)).matlab_serial_date_number = [];
+            importstruct(length(mydir)).position_number = [];
+            importstruct(length(mydir)).position_order = [];
+            importstruct(length(mydir)).row = [];
+            importstruct(length(mydir)).settings_number = [];
+            importstruct(length(mydir)).settings_order = [];
+            importstruct(length(mydir)).timepoint = [];
+            importstruct(length(mydir)).x = [];
+            importstruct(length(mydir)).y = [];
+            importstruct(length(mydir)).z = [];
+            importstruct(length(mydir)).z_order = [];
+            importstruct(length(mydir)).image_description = [];
+            myfields = fieldnames(importstruct);
+            for i = 1:length(mydir)
+                            myjson = core_jsonparser.import_json(fullfile(obj.datapath,mydir(i).name));
+            for j = 1:numel(myfields)
+                importstruct(i).(myfields{j}) = myjson.(myfields{j});
             end
-            obj.databasefilename = fullfile(obj.itinerary.output_directory,'smda_database.txt');
-            writetable(mytable,obj.databasefilename,'Delimiter','tab');
+            end
+            mytable = struct2table(importstruct);
+            tablefilename = fullfile(obj.itinerary.output_directory,'sda_table.txt');
+            writetable(mytable,tablefilename,'Delimiter','tab');
         end
         %% execute 1 round of acquisition
         %
