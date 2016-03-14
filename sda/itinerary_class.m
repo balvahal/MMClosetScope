@@ -211,7 +211,7 @@ classdef itinerary_class < handle
             obj.position_continuous_focus_bool = true;
             obj.position_function_after{1} = 'position_function_after_default';
             obj.position_function_before{1} = 'position_function_before_default';
-            obj.position_label{1} = 'position1';
+            obj.position_label{1} = 'position1'; 
             obj.position_logical = true;
             obj.position_xyz = microscope.getXYZ; %This is a customizable array
             %%% initialize the prototype_settings
@@ -924,8 +924,9 @@ classdef itinerary_class < handle
             end
         end
         %%
-        % Take all the settings for a given position, p, and mirror
-        % these settings across all positions
+        % Take all the settings for a given position, p, and mirror these
+        % settings across all positions in all groups (default), or in a
+        % specific group.
         function obj = mirrorSettings(obj,p,varargin)
             %%%
             % parse the input
@@ -949,8 +950,9 @@ classdef itinerary_class < handle
                 [obj.number_settings(p)] = deal(mySettingsNum);
             end
         end
-        %%
-        %
+        %% copySettings
+        % This is a straightforward copy. The values of one settings are
+        % directly copied into another settings.
         function obj = copySettings(obj,sfrom,sto)
             obj.settings_binning(sto) = obj.settings_binning(sfrom);
             obj.settings_channel(sto) = obj.settings_channel(sfrom);
@@ -963,6 +965,53 @@ classdef itinerary_class < handle
             obj.settings_z_stack_lower_offset(sto) = obj.settings_z_stack_lower_offset(sfrom);
             obj.settings_z_stack_upper_offset(sto) = obj.settings_z_stack_upper_offset(sfrom);
             obj.settings_z_step_size(sto) = obj.settings_z_step_size(sfrom);
+        end
+        %% copyPosition
+        % The position values are copied directly. The receiving
+        % position also inherits the same settings as the copied position.
+        function obj = copyPosition(obj,pfrom,pto)
+            obj.position_continuous_focus_offset(pto) = obj.position_continuous_focus_offset(pfrom);
+            obj.position_continuous_focus_bool(pto) = obj.position_continuous_focus_bool(pfrom);
+            obj.position_function_after{pto} = obj.position_function_after{pfrom};
+            obj.position_function_before{pto} = obj.position_function_before{pfrom};
+            obj.position_xyz(pto,:) = obj.position_xyz(pfrom,:); %This is a customizable array
+            
+            obj.order_settings{pto} = obj.order_settings{pfrom};
+            obj.ind_settings{pto} = obj.ind_settings{pfrom};
+            obj.number_settings(pto) = obj.number_settings(pfrom);
+        end
+        %% copyGroup
+        % The receiving group drops all old positions within and new
+        % positions are created that are copies of the positions within the
+        % copied group. New settings are also created for the settings, so
+        % that the groups are independent of each other.
+        function obj = copyGroup(obj,gfrom,gto)
+            obj.dropGroup(gto);
+            obj.newGroup;
+            obj.group_function_after{gto} = obj.group_function_after{gfrom};
+            obj.group_function_before{gto} = obj.group_function_before{gfrom};
+            for i = 1:numel(obj.order_position{gfrom})
+                pnew = obj.newPosition;
+                obj.copyPosition(obj.order_position{gfrom}(i),pnew)
+                obj.connectGPS('g',gto,'p',pnew);
+            end
+            gfromSettings = obj.ind_settings(obj.ind_position{gfrom});
+            if isrow(gfromSettings)
+                gfromSettings = unique(cell2mat(gfromSettings));
+            else
+                gfromSettings = unique(cell2mat(transpose(gfromSettings)));
+            end
+            gtoSettings = zeros(size(gfromSettings));
+            for i = 1:numel(gfromSettings)
+                gtoSettings(i) = obj.newSettings;
+                obj.copySettings(gfromSettings(i),gtoSettings(i));
+            end
+            for i = 1:numel(obj.order_position{gto})
+                pto = obj.order_position{gto}(i);
+                [~,ia,~] = intersect(gfromSettings,obj.order_settings{pto},'stable');
+                obj.ind_settings{pto} = [];
+                obj.connectGPS('p',pto,'s',gtoSettings(ia));
+            end
         end
         %% Grid: methods
         %
