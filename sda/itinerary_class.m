@@ -1017,4 +1017,7 @@ classdef itinerary_class < handle
         %
         
     end
+    methods (Access = protected)
+        
+    end
 end
