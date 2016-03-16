@@ -79,6 +79,8 @@ classdef itinerary_class < handle
         position_label;
         position_logical;
         position_xyz;
+        position_row;
+        position_col;
         %%% Settings
         % * settings_binning
         % * settings_channel
@@ -214,6 +216,8 @@ classdef itinerary_class < handle
             obj.position_label{1} = 'position1'; 
             obj.position_logical = true;
             obj.position_xyz = microscope.getXYZ; %This is a customizable array
+            obj.position_row = 0;
+            obj.position_col = 0;
             %%% initialize the prototype_settings
             %
             obj.settings_binning = 1;
@@ -345,26 +349,7 @@ classdef itinerary_class < handle
             end
             core_jsonparser.export_json(myexportStruct,fullfile(obj.output_directory,'smdaITF.txt'));
         end
-        %% gpsFromOrder
-        %
-        function obj = gpsFromOrder(obj)
-            newGPS = zeros(sum(obj.number_settings),3);
-            grpOrder = obj.order_group;
-            mycount = 0;
-            for i = grpOrder
-                posOrder = obj.order_position{i};
-                for j = posOrder
-                    setOrder = obj.order_settings{j};
-                    for k = setOrder
-                        mycount = mycount + 1;
-                        newGPS(mycount,:) = [i,j,k];
-                    end
-                end
-            end
-            obj.gps = newGPS;
-            obj.orderVector = 1:size(newGPS,1);
-            obj.gps_logical = true(size(newGPS,1),1);
-        end
+
         %%
         %
         function [obj] = import(obj,filename)
@@ -435,6 +420,8 @@ classdef itinerary_class < handle
             obj.position_label = obj.position_label(superOrderPosition);
             obj.position_logical = obj.position_logical(superOrderPosition);
             obj.position_xyz = obj.position_xyz(superOrderPosition,:);
+            obj.position_row = obj.position_row(superOrderPosition);
+            obj.position_col = obj.position_col(superOrderPosition);
             %% Rearrange settings
             %
             superOrderSettings = obj.order_settings(superOrderPosition);
@@ -513,16 +500,6 @@ classdef itinerary_class < handle
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
             obj.validateSettingsTimepoints;
         end
-        %% validateSettingsTimepoints
-        %
-        function obj = validateSettingsTimepoints(obj)
-            timepointDifference = size(obj.settings_timepoints,2) - obj.number_of_timepoints;
-            if timepointDifference < 0
-                obj.settings_timepoints = horzcat(obj.settings_timepoints,ones(size(obj.settings_timepoints,1),-timepointDifference));
-            elseif timepointDifference > 0
-                obj.settings_timepoints(:,end-timepointDifference+1) = [];
-            end
-        end
         %% dropEmpty
         % The following conditions will be considered empty and will
         % therefore be dropped:
@@ -579,69 +556,7 @@ classdef itinerary_class < handle
                 obj.number_settings(i) = numel(obj.ind_settings{i});
             end
         end
-        %% refresh
-        %
-        function [obj] = refreshIndAndOrder(obj)
-            %%% ind_group and number_group
-            %
-            gpsGrp = 1:numel(obj.group_logical);
-            obj.ind_group = gpsGrp(obj.group_logical);
-            obj.number_group = sum(obj.group_logical);
-            %%% pointers
-            %
-            obj.find_pointer_next_group;
-            obj.find_pointer_next_position;
-            obj.find_pointer_next_settings;
-            %%% ind_position and number_position
-            %
-            obj.ind_position = cell(length(obj.group_logical),1);
-            obj.number_position = zeros(length(obj.group_logical),1);
-            for i = obj.ind_group
-                gpsPosLogical = obj.gps(:,1) == i;
-                gpsPos = obj.gps(gpsPosLogical,2);
-                obj.ind_position{i} = transpose(unique(gpsPos,'sorted'));
-                obj.number_position(i) = numel(obj.ind_position{i});
-            end
-            %%% ind_settings and number_settings
-            %
-            obj.ind_settings = cell(length(obj.position_logical),1);
-            obj.number_settings = zeros(length(obj.position_logical),1);
-            for i = obj.ind_group
-                posInd = obj.ind_position{i};
-                gpsPosLogical = obj.gps(:,1) == i;
-                for j = posInd
-                    gpsSetLogical = obj.gps(:,2) == j;
-                    gpsSet = obj.gps(gpsPosLogical & gpsSetLogical,3);
-                    obj.ind_settings{j} = transpose(unique(gpsSet,'sorted'));
-                    obj.number_settings(j) = numel(obj.ind_settings{j});
-                end
-            end
-            %%% order_group
-            %
-            gpsOrder = obj.gps(obj.orderVector,:);
-            gpsGrp = gpsOrder(:,1);
-            obj.order_group = transpose(unique(gpsGrp,'stable'));
-            %%% order_position
-            %
-            obj.order_position = cell(length(obj.group_logical),1);
-            for i = obj.ind_group
-                gpsPosLogical = gpsOrder(:,1) == i;
-                gpsPos = gpsOrder(gpsPosLogical,2);
-                obj.order_position{i} = transpose(unique(gpsPos,'stable'));
-            end
-            %%% order_settings
-            %
-            obj.order_settings = cell(length(obj.position_logical),1);
-            for i = obj.ind_group
-                posInd = obj.ind_position{i};
-                gpsPosLogical = gpsOrder(:,1) == i;
-                for j = posInd
-                    gpsSetLogical = gpsOrder(:,2) == j;
-                    gpsSet = gpsOrder(gpsPosLogical & gpsSetLogical,3);
-                    obj.order_settings{j} = transpose(unique(gpsSet,'stable'));
-                end
-            end
-        end
+        
         %% Group: methods
         %
         %% newGroup
@@ -735,15 +650,7 @@ classdef itinerary_class < handle
             obj.find_pointer_next_position;
             obj.find_pointer_next_settings;
         end
-        %% find_pointer_next_group
-        %
-        function obj = find_pointer_next_group(obj)
-            if any(~obj.group_logical)
-                obj.pointer_next_group = find(~obj.group_logical,1,'first');
-            else
-                obj.pointer_next_group = numel(obj.group_logical) + 1;
-            end
-        end
+
         %% Position: methods
         %
         %% newPosition
@@ -776,6 +683,8 @@ classdef itinerary_class < handle
             obj.position_function_before{p} = obj.position_function_before{1};
             obj.position_label{p} = sprintf('position%d',p);
             obj.position_logical(p) = true;
+            obj.position_row = 0;
+            obj.position_col = 0;
             
             %%% update order, indices, and pointers
             %
@@ -839,15 +748,7 @@ classdef itinerary_class < handle
             obj.find_pointer_next_position;
             obj.find_pointer_next_settings;
         end
-        %%
-        %
-        function obj = find_pointer_next_position(obj)
-            if any(~obj.position_logical)
-                obj.pointer_next_position = find(~obj.position_logical,1,'first');
-            else
-                obj.pointer_next_position = numel(obj.position_logical) + 1;
-            end
-        end
+
         %% Settings: methods
         %      
         %% newSettings
@@ -914,15 +815,7 @@ classdef itinerary_class < handle
             end
             obj.find_pointer_next_settings;
         end
-        %%
-        %
-        function obj = find_pointer_next_settings(obj)
-            if any(~obj.settings_logical)
-                obj.pointer_next_settings = find(~obj.settings_logical,1,'first');
-            else
-                obj.pointer_next_settings = numel(obj.settings_logical) + 1;
-            end
-        end
+
         %%
         % Take all the settings for a given position, p, and mirror these
         % settings across all positions in all groups (default), or in a
@@ -975,6 +868,8 @@ classdef itinerary_class < handle
             obj.position_function_after{pto} = obj.position_function_after{pfrom};
             obj.position_function_before{pto} = obj.position_function_before{pfrom};
             obj.position_xyz(pto,:) = obj.position_xyz(pfrom,:); %This is a customizable array
+            obj.position_row(pto) = obj.position_row(pfrom);
+            obj.position_col(pto) = obj.position_col(pfrom);
             
             obj.order_settings{pto} = obj.order_settings{pfrom};
             obj.ind_settings{pto} = obj.ind_settings{pfrom};
@@ -1012,12 +907,128 @@ classdef itinerary_class < handle
                 obj.ind_settings{pto} = [];
                 obj.connectGPS('p',pto,'s',gtoSettings(ia));
             end
-        end
-        %% Grid: methods
-        %
-        
+        end        
     end
     methods (Access = protected)
-        
+                %% gpsFromOrder
+        %
+        function obj = gpsFromOrder(obj)
+            newGPS = zeros(sum(obj.number_settings),3);
+            grpOrder = obj.order_group;
+            mycount = 0;
+            for i = grpOrder
+                posOrder = obj.order_position{i};
+                for j = posOrder
+                    setOrder = obj.order_settings{j};
+                    for k = setOrder
+                        mycount = mycount + 1;
+                        newGPS(mycount,:) = [i,j,k];
+                    end
+                end
+            end
+            obj.gps = newGPS;
+            obj.orderVector = 1:size(newGPS,1);
+            obj.gps_logical = true(size(newGPS,1),1);
+        end
+                %% validateSettingsTimepoints
+        %
+        function obj = validateSettingsTimepoints(obj)
+            timepointDifference = size(obj.settings_timepoints,2) - obj.number_of_timepoints;
+            if timepointDifference < 0
+                obj.settings_timepoints = horzcat(obj.settings_timepoints,ones(size(obj.settings_timepoints,1),-timepointDifference));
+            elseif timepointDifference > 0
+                obj.settings_timepoints(:,end-timepointDifference+1) = [];
+            end
+        end
+        %% refresh
+        %
+        function [obj] = refreshIndAndOrder(obj)
+            %%% ind_group and number_group
+            %
+            gpsGrp = 1:numel(obj.group_logical);
+            obj.ind_group = gpsGrp(obj.group_logical);
+            obj.number_group = sum(obj.group_logical);
+            %%% pointers
+            %
+            obj.find_pointer_next_group;
+            obj.find_pointer_next_position;
+            obj.find_pointer_next_settings;
+            %%% ind_position and number_position
+            %
+            obj.ind_position = cell(length(obj.group_logical),1);
+            obj.number_position = zeros(length(obj.group_logical),1);
+            for i = obj.ind_group
+                gpsPosLogical = obj.gps(:,1) == i;
+                gpsPos = obj.gps(gpsPosLogical,2);
+                obj.ind_position{i} = transpose(unique(gpsPos,'sorted'));
+                obj.number_position(i) = numel(obj.ind_position{i});
+            end
+            %%% ind_settings and number_settings
+            %
+            obj.ind_settings = cell(length(obj.position_logical),1);
+            obj.number_settings = zeros(length(obj.position_logical),1);
+            for i = obj.ind_group
+                posInd = obj.ind_position{i};
+                gpsPosLogical = obj.gps(:,1) == i;
+                for j = posInd
+                    gpsSetLogical = obj.gps(:,2) == j;
+                    gpsSet = obj.gps(gpsPosLogical & gpsSetLogical,3);
+                    obj.ind_settings{j} = transpose(unique(gpsSet,'sorted'));
+                    obj.number_settings(j) = numel(obj.ind_settings{j});
+                end
+            end
+            %%% order_group
+            %
+            gpsOrder = obj.gps(obj.orderVector,:);
+            gpsGrp = gpsOrder(:,1);
+            obj.order_group = transpose(unique(gpsGrp,'stable'));
+            %%% order_position
+            %
+            obj.order_position = cell(length(obj.group_logical),1);
+            for i = obj.ind_group
+                gpsPosLogical = gpsOrder(:,1) == i;
+                gpsPos = gpsOrder(gpsPosLogical,2);
+                obj.order_position{i} = transpose(unique(gpsPos,'stable'));
+            end
+            %%% order_settings
+            %
+            obj.order_settings = cell(length(obj.position_logical),1);
+            for i = obj.ind_group
+                posInd = obj.ind_position{i};
+                gpsPosLogical = gpsOrder(:,1) == i;
+                for j = posInd
+                    gpsSetLogical = gpsOrder(:,2) == j;
+                    gpsSet = gpsOrder(gpsPosLogical & gpsSetLogical,3);
+                    obj.order_settings{j} = transpose(unique(gpsSet,'stable'));
+                end
+            end
+        end
+                %% find_pointer_next_group
+        %
+        function obj = find_pointer_next_group(obj)
+            if any(~obj.group_logical)
+                obj.pointer_next_group = find(~obj.group_logical,1,'first');
+            else
+                obj.pointer_next_group = numel(obj.group_logical) + 1;
+            end
+        end
+                %%
+        %
+        function obj = find_pointer_next_position(obj)
+            if any(~obj.position_logical)
+                obj.pointer_next_position = find(~obj.position_logical,1,'first');
+            else
+                obj.pointer_next_position = numel(obj.position_logical) + 1;
+            end
+        end
+                %%
+        %
+        function obj = find_pointer_next_settings(obj)
+            if any(~obj.settings_logical)
+                obj.pointer_next_settings = find(~obj.settings_logical,1,'first');
+            else
+                obj.pointer_next_settings = numel(obj.settings_logical) + 1;
+            end
+        end
     end
 end
