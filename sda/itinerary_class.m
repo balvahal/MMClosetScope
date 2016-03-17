@@ -246,6 +246,223 @@ classdef itinerary_class < handle
             obj.number_position = 1;
             obj.number_settings = 1;
         end
+        %%
+        %
+        function obj = add(obj,varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
+            addParameter(q, 'g',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 'p',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 's',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            parse(q,obj,varargin{:});
+            g = q.Results.g;
+            p = q.Results.p;
+            s = q.Results.s;
+            decisionString = '000'; %'gps'
+            %%%
+            % inputs should refer to existing groups, positions, and
+            % settings.
+            existingG = 1:numel(obj.group_logical);
+            existingG = existingG(obj.group_logical);
+            if all(ismember(g,existingG))
+                decisionString(1) = '1';
+                if iscolumn(g)
+                    g = transpose(g);
+                end
+            else
+                error('itn:addG','There is a nonexistent group in the input.');
+            end
+            existingP = 1:numel(obj.position_logical);
+            existingP = existingP(obj.position_logical);
+            if all(ismember(p,existingP))
+                decisionString(2) = '1';
+                if iscolumn(p)
+                    p = transpose(p);
+                end
+            else
+                error('itn:addP','There is a nonexistent position in the input.');
+            end
+            existingS = 1:numel(obj.settings_logical);
+            existingS = existingS(obj.settings_logical);
+            if all(ismember(s,existingS))
+                decisionString(3) = '1';
+                if iscolumn(s)
+                    s = transpose(s);
+                end
+            else
+                error('itn:addS','There is a nonexistent settings in the input.');
+            end
+            %%%
+            %
+            decisionNumber = bin2dec(decisionString);
+            switch decisionNumber
+                case 1
+                    %%% 's'
+                    % settings: the settings in _s_ array will be added to
+                    % all positions
+                    for i = existingP
+                        s2add = setdiff(s,obj.order_settings{i},'stable');
+                        obj.order_settings{i} = horzcat(obj.order_settings{i},s2add);
+                        obj.ind_settings{i} = sort(horzcat(obj.ind_settings{i},s2add));
+                        obj.number_settings(i) = obj.number_settings(i) + numel(s2add);
+                    end
+                case 2
+                    %%% 'p'
+                    % position: add the positions in the _p_ array to all
+                    % groups
+                    for i = existingG
+                        p2add = setdiff(p,obj.order_position{i},'stable');
+                        obj.order_position{i} = horzcat(obj.order_position{i},p2add);
+                        obj.ind_position{i} = sort(horzcat(obj.ind_position{i},p2add));
+                        obj.number_position(i) = obj.number_position(i) + numel(p2add);
+                    end
+                case 3
+                    %%% 'p' + 's'
+                    % position and settings: The settings in the _s_ array
+                    % will be added to specified positions _p_.
+                    for i = p
+                        s2add = setdiff(s,obj.order_settings{i},'stable');
+                        obj.order_settings{i} = horzcat(obj.order_settings{i},s2add);
+                        obj.ind_settings{i} = sort(horzcat(obj.ind_settings{i},s2add));
+                        obj.number_settings(i) = obj.number_settings(i) + numel(s2add);
+                    end
+                case 4
+                    %%% 'g'
+                    % undefined
+                case 5
+                    %%% 'g' + 's'
+                    % group and settings: The settings in the _s_ array
+                    % will be added to all positions in the specified
+                    % groups _g_.
+                    for i = g
+                        p = obj.ind_position{i};
+                        for j = p
+                            s2add = setdiff(s,obj.order_settings{j},'stable');
+                            obj.order_settings{j} = horzcat(obj.order_settings{j},s2add);
+                            obj.ind_settings{j} = sort(horzcat(obj.ind_settings{j},s2add));
+                            obj.number_settings(j) = obj.number_settings(j) + numel(s2add);
+                        end
+                    end
+                case 6
+                    %%% 'g' + 'p'
+                    % group and position: The positions in the _p_ array
+                    % will be added to specified groups _g_.
+                    for i = g
+                        p2add = setdiff(p,obj.order_position{i},'stable');
+                        obj.order_position{i} = horzcat(obj.order_position{i},p2add);
+                        obj.ind_position{i} = sort(horzcat(obj.ind_position{i},p2add));
+                        obj.number_position(i) = obj.number_position(i) + numel(p2add);
+                    end
+                case 7
+                    %%% 'g' + 'p' + 's'
+                    % group and position and settings: The settings in _s_
+                    % will be added to the positions in _p_. Then the
+                    % positions in _p_ will be added to the groups in _g_.
+                    for i = p
+                        s2add = setdiff(s,obj.order_settings{i},'stable');
+                        obj.order_settings{i} = horzcat(obj.order_settings{i},s2add);
+                        obj.ind_settings{i} = sort(horzcat(obj.ind_settings{i},s2add));
+                        obj.number_settings(i) = obj.number_settings(i) + numel(s2add);
+                    end
+                    for i = g
+                        p2add = setdiff(p,obj.order_position{i},'stable');
+                        obj.order_position{i} = horzcat(obj.order_position{i},p2add);
+                        obj.ind_position{i} = sort(horzcat(obj.ind_position{i},p2add));
+                        obj.number_position(i) = obj.number_position(i) + numel(p2add);
+                    end
+                otherwise
+                    error('smdaITF:conGPS','The input parameters were an invalid combination.');
+            end
+        end
+        %%
+        %
+        function ind = new(obj, gps, varargin)
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
+            addRequired(q, 'gps', @(x) any(strcmp(x,{'g','p','s'})));
+            addOptional(q, 'microscope', [], @(x) isa(x,'microscope_class'));
+            parse(q, obj, gps, varargin{:});
+            microscope = q.Results.microscope;
+            switch q.Results.gps
+                case 'g'
+                    %%% create new group
+                    % Each group property needs a new row. Use the first group as a template
+                    % for the newest group.
+                    g = obj.pointer_next_group;
+                    obj.group_function_after{g} = obj.group_function_after{1};
+                    obj.group_function_before{g} = obj.group_function_before{1};
+                    obj.group_label{g} = sprintf('group%d',g);
+                    obj.group_logical(g) = true;
+                    
+                    %%% update order, indices, and pointers
+                    %
+                    obj.find_pointer_next_group;
+                    obj.number_group = obj.number_group + 1;
+                    obj.number_position(g) = 0;
+                    obj.ind_group = sort(horzcat(obj.ind_group,g));
+                    obj.order_group(end+1) = g;
+                    obj.ind_position{g} = [];
+                    obj.order_position{g} = [];
+                    ind = g;
+                case 'p'
+                    %%% create new position
+                    % Each group property needs a new row. Use the first group as a template
+                    % for the newest group.
+                    p = obj.pointer_next_position;
+                    % add the new position properties reflecting the current objective
+                    % position
+                    if isempty(microscope)
+                        obj.position_continuous_focus_offset(p) = obj.position_continuous_focus_offset(1);
+                        obj.position_xyz(p,:) = obj.position_xyz(1,:);
+                    else
+                        obj.position_continuous_focus_offset(p) = str2double(microscope.core.getProperty(microscope.AutoFocusDevice,'Position'));
+                        obj.position_xyz(p,:) = microscope.getXYZ;
+                    end
+                    obj.position_continuous_focus_bool(p) = true;
+                    obj.position_function_after{p} = obj.position_function_after{1};
+                    obj.position_function_before{p} = obj.position_function_before{1};
+                    obj.position_label{p} = sprintf('position%d',p);
+                    obj.position_logical(p) = true;
+                    obj.position_row = 0;
+                    obj.position_col = 0;
+                    
+                    %%% update order, indices, and pointers
+                    %
+                    obj.number_settings(p) = 0;
+                    obj.find_pointer_next_position;
+                    obj.ind_settings{p} = [];
+                    obj.order_settings{p} = [];
+                    ind = p;
+                case 's'
+                    %%% create new settings
+                    % Each settings property needs a new row. Use the first
+                    % settings as a template for the newest settings.
+                    s = obj.pointer_next_settings;
+                    obj.settings_binning(s) = obj.settings_binning(1);
+                    obj.settings_channel(s) = obj.settings_channel(1);
+                    obj.settings_exposure(s) = obj.settings_exposure(1);
+                    obj.settings_function{s} = obj.settings_function{1};
+                    obj.settings_logical(s) = true;
+                    obj.settings_period_multiplier(s) = obj.settings_period_multiplier(1);
+                    obj.settings_timepoints(s,:) = obj.settings_timepoints(1,:);
+                    obj.settings_z_origin_offset(s) = obj.settings_z_origin_offset(1);
+                    obj.settings_z_stack_lower_offset(s) = obj.settings_z_stack_lower_offset(1);
+                    obj.settings_z_stack_upper_offset(s) = obj.settings_z_stack_upper_offset(1);
+                    obj.settings_z_step_size(s) = obj.settings_z_step_size(1);
+                    
+                    %%% update order, indices, and pointers
+                    %
+                    obj.find_pointer_next_settings;
+                    ind = s;
+            end
+        end
+        %%
+        %
+        function obj = remove(obj)
+            
+        end
         %% connectGPS
         %
         function obj = connectGPS(obj,varargin)
