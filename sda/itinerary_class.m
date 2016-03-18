@@ -460,8 +460,216 @@ classdef itinerary_class < handle
         end
         %%
         %
-        function obj = remove(obj)
-            
+        function obj = remove(obj, varargin)
+            %%%
+            % parse the input
+            q = inputParser;
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
+            addParameter(q, 'g',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 'p',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addParameter(q, 's',0, @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            parse(q,obj,varargin{:});
+            g = sort(q.Results.g);
+            p = sort(q.Results.p);
+            s = sort(q.Results.s);
+            decisionString = '000'; %'gps'
+            %%%
+            % inputs should refer to existing groups, positions, and
+            % settings.
+            existingG = 1:numel(obj.group_logical);
+            existingG = existingG(obj.group_logical);
+            if all(ismember(g,existingG))
+                decisionString(1) = '1';
+                if iscolumn(g)
+                    g = transpose(g);
+                end
+            else
+                error('itn:removeG','There is a nonexistent group in the input.');
+            end
+            existingP = 1:numel(obj.position_logical);
+            existingP = existingP(obj.position_logical);
+            if all(ismember(p,existingP))
+                decisionString(2) = '1';
+                if iscolumn(p)
+                    p = transpose(p);
+                end
+            else
+                error('itn:removeP','There is a nonexistent position in the input.');
+            end
+            existingS = 1:numel(obj.settings_logical);
+            existingS = existingS(obj.settings_logical);
+            if all(ismember(s,existingS))
+                decisionString(3) = '1';
+                if iscolumn(s)
+                    s = transpose(s);
+                end
+            else
+                error('itn:removeS','There is a nonexistent settings in the input.');
+            end
+            %%%
+            %
+            decisionNumber = bin2dec(decisionString);
+            switch decisionNumber
+                case 1
+                    %%% 's'
+                    % settings: the settings in _s_ array will be removed
+                    % from all positions
+                    %
+                    % find the position(s) that contains the settings
+                    pslogical = cellfun(@(x) any(ismember(s,x)),obj.ind_settings);
+                    p = 1:numel(obj.position_logical);
+                    p = p(pslogical);
+                    %%%
+                    % remove settings from the ind and order arrays
+                    for i = p
+                        obj.ind_settings{i} = obj.ind_settings{i}(~ismember(obj.ind_settings{i},s));
+                        obj.order_settings{i} = obj.order_settings{i}(~ismember(obj.order_settings{i},s));
+                        obj.number_settings(i) = numel(obj.ind_settings{i});
+                    end
+                    %%%
+                    % update the numbers and pointers and logical
+                    obj.settings_logical(s) = false;
+                    obj.find_pointer_next_settings;
+                case 2
+                    %%% 'p'
+                    % position: remove the positions in the _p_ array from
+                    % all groups. Any settings unique to the positions in
+                    % _p_ will also be removed.
+                    %%%
+                    % Find the settings unique to the position
+                    pDiff = setdiff(existingP,p);
+                    s = unique(horzcat(obj.ind_settings{p}));
+                    spDiff = unique(horzcat(obj.ind_settings{pDiff}));
+                    sUnique = setdiff(s,intersect(s,spDiff));
+                    obj.settings_logical(sUnique) = false;
+                    %%%
+                    % find the group(s) that contains the position
+                    gplogical = cellfun(@(x) any(ismember(p,x)),obj.ind_position);
+                    g = 1:numel(obj.group_logical);
+                    g = g(gplogical);
+                    %%%
+                    % remove the position and its unique settings from the
+                    % ind and order arrays
+                    for i = g
+                        obj.ind_position{i} = obj.ind_position{i}(~ismember(obj.ind_position{i},p));
+                        obj.order_position{i} = obj.order_position{i}(~ismember(obj.order_position{i},p));
+                        obj.number_position(i) = numel(obj.ind_position{i});
+                    end
+                    obj.ind_settings{p} = [];
+                    obj.order_settings{p} = [];
+                    obj.number_settings(p) = 0;
+                    %%%
+                    % update the pointers
+                    obj.position_logical(p) = false;
+                    obj.find_pointer_next_position;
+                    obj.find_pointer_next_settings;
+                case 3
+                    %%% 'p' + 's'
+                    % position and settings: The settings in the _s_ array
+                    % will be removed from the specified positions _p_. Any
+                    % settings unique to the set of positions _p_ will also
+                    % be removed
+                    %
+                    % Find the position(s) that contains the settings
+                    pslogical = cellfun(@(x) any(ismember(s,x)),obj.ind_settings(p));
+                    p = p(pslogical);
+                    % Find the settings unique to the positions in _p_
+                    pDiff = setdiff(existingP,p);
+                    s = unique(horzcat(obj.ind_settings{p}));
+                    spDiff = unique(horzcat(obj.ind_settings{pDiff}));
+                    sUnique = setdiff(s,intersect(s,spDiff));
+                    obj.settings_logical(sUnique) = false;
+                    %%%
+                    % remove settings from the ind and order arrays
+                    for i = p
+                        obj.ind_settings{i} = obj.ind_settings{i}(~ismember(obj.ind_settings{i},s));
+                        obj.order_settings{i} = obj.order_settings{i}(~ismember(obj.order_settings{i},s));
+                        obj.number_settings(i) = numel(obj.ind_settings{i});
+                    end
+                    %%%
+                    % update the pointer
+                    obj.find_pointer_next_settings;
+                case 4
+                    %%% 'g'
+                    % group: The groups in the _g_ array will be removed.
+                    % Any positions and settings unique to the groups in
+                    % _g_ will also be removed.
+                    %
+                    % Find the positions and settings unique to the group
+                    gDiff = setdiff(existingG,g);
+                    p = unique(horzcat(obj.ind_position{g}));
+                    pDiff = unique(horzcat(obj.ind_position{gDiff}));
+                    pUnique = setdiff(p,intersect(p,pDiff));
+                    s = unique(horzcat(obj.ind_settings{p}));
+                    spDiff = unique(horzcat(obj.ind_settings{pDiff}));
+                    sUnique = setdiff(s,intersect(s,spDiff));
+                    %%%
+                    % remove the group and its unique positions and settings from
+                    % the logical arrays
+                    obj.position_logical(pUnique) = false;
+                    obj.settings_logical(sUnique) = false;
+                    %%%
+                    % remove the group and its unique positions and settings from
+                    % the ind and order arrays
+                    obj.ind_group(ismember(obj.ind_group,g)) = [];
+                    obj.ind_position{g} = [];
+                    [obj.ind_settings{pUnique}] = deal([]);
+                    obj.order_group(ismember(obj.order_group,g)) = [];
+                    obj.order_position{g} = [];
+                    [obj.order_settings{pUnique}] = deal([]);
+                    %%%
+                    % update the numbers and pointers
+                    obj.number_group = numel(obj.ind_group);
+                    obj.number_position(g) = 0;
+                    obj.number_settings(pUnique) = 0;
+                    obj.group_logical(g) = false;
+                    obj.find_pointer_next_group;
+                    obj.find_pointer_next_position;
+                    obj.find_pointer_next_settings;
+                case 5
+                    %%% 'g' + 's'
+                    % group and settings: The settings in the _s_ array
+                    % will be added to all positions in the specified
+                    % groups _g_.
+                    for i = g
+                        p = obj.ind_position{i};
+                        for j = p
+                            s2add = setdiff(s,obj.order_settings{j},'stable');
+                            obj.order_settings{j} = horzcat(obj.order_settings{j},s2add);
+                            obj.ind_settings{j} = sort(horzcat(obj.ind_settings{j},s2add));
+                            obj.number_settings(j) = obj.number_settings(j) + numel(s2add);
+                        end
+                    end
+                case 6
+                    %%% 'g' + 'p'
+                    % group and position: The positions in the _p_ array
+                    % will be added to specified groups _g_.
+                    for i = g
+                        p2add = setdiff(p,obj.order_position{i},'stable');
+                        obj.order_position{i} = horzcat(obj.order_position{i},p2add);
+                        obj.ind_position{i} = sort(horzcat(obj.ind_position{i},p2add));
+                        obj.number_position(i) = obj.number_position(i) + numel(p2add);
+                    end
+                case 7
+                    %%% 'g' + 'p' + 's'
+                    % group and position and settings: The settings in _s_
+                    % will be added to the positions in _p_. Then the
+                    % positions in _p_ will be added to the groups in _g_.
+                    for i = p
+                        s2add = setdiff(s,obj.order_settings{i},'stable');
+                        obj.order_settings{i} = horzcat(obj.order_settings{i},s2add);
+                        obj.ind_settings{i} = sort(horzcat(obj.ind_settings{i},s2add));
+                        obj.number_settings(i) = obj.number_settings(i) + numel(s2add);
+                    end
+                    for i = g
+                        p2add = setdiff(p,obj.order_position{i},'stable');
+                        obj.order_position{i} = horzcat(obj.order_position{i},p2add);
+                        obj.ind_position{i} = sort(horzcat(obj.ind_position{i},p2add));
+                        obj.number_position(i) = obj.number_position(i) + numel(p2add);
+                    end
+                otherwise
+                    error('smdaITF:conGPS','The input parameters were an invalid combination.');
+            end
         end
         %% connectGPS
         %
