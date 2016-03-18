@@ -575,9 +575,10 @@ classdef itinerary_class < handle
                     p = p(pslogical);
                     % Find the settings unique to the positions in _p_
                     pDiff = setdiff(existingP,p);
-                    s = unique(horzcat(obj.ind_settings{p}));
+                    s2 = unique(horzcat(obj.ind_settings{p}));
                     spDiff = unique(horzcat(obj.ind_settings{pDiff}));
-                    sUnique = setdiff(s,intersect(s,spDiff));
+                    sUnique = setdiff(s2,intersect(s2,spDiff));
+                    sUnique = intersect(s,sUnique);
                     obj.settings_logical(sUnique) = false;
                     %%%
                     % remove settings from the ind and order arrays
@@ -629,44 +630,91 @@ classdef itinerary_class < handle
                 case 5
                     %%% 'g' + 's'
                     % group and settings: The settings in the _s_ array
-                    % will be added to all positions in the specified
-                    % groups _g_.
-                    for i = g
-                        p = obj.ind_position{i};
-                        for j = p
-                            s2add = setdiff(s,obj.order_settings{j},'stable');
-                            obj.order_settings{j} = horzcat(obj.order_settings{j},s2add);
-                            obj.ind_settings{j} = sort(horzcat(obj.ind_settings{j},s2add));
-                            obj.number_settings(j) = obj.number_settings(j) + numel(s2add);
-                        end
+                    % will be removed from all positions in the specified
+                    % groups _g_.  Any settings unique to the set of positions _p_ will also
+                    % be removed
+                    %
+                    % Find the positions and settings unique to the group
+                    gDiff = setdiff(existingG,g);
+                    p = unique(horzcat(obj.ind_position{g}));
+                    pDiff = unique(horzcat(obj.ind_position{gDiff}));
+                    s2 = unique(horzcat(obj.ind_settings{p}));
+                    spDiff = unique(horzcat(obj.ind_settings{pDiff}));
+                    sUnique = setdiff(s2,intersect(s2,spDiff));
+                    sUnique = intersect(s,sUnique);
+                    %%%
+                    % remove the unique settings from
+                    % the logical arrays
+                    obj.settings_logical(sUnique) = false;
+                    %%%
+                    % remove settings from the ind and order arrays
+                    for i = p
+                        obj.ind_settings{i} = obj.ind_settings{i}(~ismember(obj.ind_settings{i},s));
+                        obj.order_settings{i} = obj.order_settings{i}(~ismember(obj.order_settings{i},s));
+                        obj.number_settings(i) = numel(obj.ind_settings{i});
                     end
+                    %%%
+                    % update the pointer
+                    obj.find_pointer_next_settings;
                 case 6
                     %%% 'g' + 'p'
                     % group and position: The positions in the _p_ array
-                    % will be added to specified groups _g_.
+                    % will be removed from specified groups _g_. Settings
+                    % unique to those positions will also be removed.
+                    pDiff = setdiff(existingP,p);
+                    s = unique(horzcat(obj.ind_settings{p}));
+                    spDiff = unique(horzcat(obj.ind_settings{pDiff}));
+                    sUnique = setdiff(s,intersect(s,spDiff));
+                    obj.settings_logical(sUnique) = false;
+                    %%%
+                    % remove the positions from the groups in array _g_
                     for i = g
-                        p2add = setdiff(p,obj.order_position{i},'stable');
-                        obj.order_position{i} = horzcat(obj.order_position{i},p2add);
-                        obj.ind_position{i} = sort(horzcat(obj.ind_position{i},p2add));
-                        obj.number_position(i) = obj.number_position(i) + numel(p2add);
+                        obj.ind_position{i} = obj.ind_position{i}(~ismember(obj.ind_position{i},p));
+                        obj.order_position{i} = obj.order_position{i}(~ismember(obj.order_position{i},p));
+                        obj.number_position(i) = numel(obj.ind_position{i});
                     end
+                    %%%
+                    % remove the positions that were unique to the groups
+                    % in array _g_
+                    gDiff = setdiff(existingG,g);
+                    p2 = unique(horzcat(obj.ind_position{g}));
+                    pDiff = unique(horzcat(obj.ind_position{gDiff}));
+                    pUnique = setdiff(p2,intersect(p2,pDiff));
+                    obj.ind_settings{pUnique} = [];
+                    obj.order_settings{pUnique} = [];
+                    obj.number_settings(pUnique) = 0;
+                    obj.position_logical(pUnique) = false;
+                    %%%
+                    % update the pointers
+                    obj.find_pointer_next_position;
+                    obj.find_pointer_next_settings;
                 case 7
                     %%% 'g' + 'p' + 's'
                     % group and position and settings: The settings in _s_
-                    % will be added to the positions in _p_. Then the
-                    % positions in _p_ will be added to the groups in _g_.
-                    for i = p
-                        s2add = setdiff(s,obj.order_settings{i},'stable');
-                        obj.order_settings{i} = horzcat(obj.order_settings{i},s2add);
-                        obj.ind_settings{i} = sort(horzcat(obj.ind_settings{i},s2add));
-                        obj.number_settings(i) = obj.number_settings(i) + numel(s2add);
-                    end
+                    % will be removed from the positions in _p_ that are
+                    % contained within the groups in _g_.
+                    %
+                    % Find the settings unique to the positions in _p_
+                    pDiff = setdiff(existingP,p);
+                    s2 = unique(horzcat(obj.ind_settings{p}));
+                    spDiff = unique(horzcat(obj.ind_settings{pDiff}));
+                    sUnique = setdiff(s2,intersect(s2,spDiff));
+                    sUnique = intersect(s,sUnique);
+                    obj.settings_logical(sUnique) = false;
+                    %%%
+                    % remove settings from the ind and order arrays
                     for i = g
-                        p2add = setdiff(p,obj.order_position{i},'stable');
-                        obj.order_position{i} = horzcat(obj.order_position{i},p2add);
-                        obj.ind_position{i} = sort(horzcat(obj.ind_position{i},p2add));
-                        obj.number_position(i) = obj.number_position(i) + numel(p2add);
+                        p2 = unique(horzcat(obj.ind_position{g}));
+                        p2 = intersect(p,p2);
+                        for j = p2
+                            obj.ind_settings{j} = obj.ind_settings{j}(~ismember(obj.ind_settings{j},s));
+                            obj.order_settings{j} = obj.order_settings{j}(~ismember(obj.order_settings{j},s));
+                            obj.number_settings(j) = numel(obj.ind_settings{j});
+                        end
                     end
+                    %%%
+                    % update the pointer
+                    obj.find_pointer_next_settings;
                 otherwise
                     error('smdaITF:conGPS','The input parameters were an invalid combination.');
             end
