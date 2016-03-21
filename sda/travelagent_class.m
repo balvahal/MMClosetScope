@@ -492,7 +492,7 @@ classdef travelagent_class < handle
         function obj = editFundamentalPeriod_Callback(obj,~,~)
             handles = guidata(obj.gui_main);
             myValue = str2double(handles.editFundamentalPeriod.String)*obj.uot_conversion;
-            obj.itinerary.newFundamentalPeriod(myValue);
+            obj.itinerary.setFundamentalPeriod(myValue);
             obj.refresh_gui_main;
         end
         %% editDuration_Callback
@@ -500,7 +500,7 @@ classdef travelagent_class < handle
         function obj = editDuration_Callback(obj,~,~)
             handles = guidata(obj.gui_main);
             myValue = str2double(handles.editDuration.String)*obj.uot_conversion;
-            obj.itinerary.newDuration(myValue);
+            obj.itinerary.setDuration(myValue);
             obj.refresh_gui_main;
         end
         %% editNumberOfTimepoints_Callback
@@ -508,7 +508,7 @@ classdef travelagent_class < handle
         function obj = editNumberOfTimepoints_Callback(obj,~,~)
             handles = guidata(obj.gui_main);
             myValue = str2double(handles.editNumberOfTimepoints.String);
-            obj.itinerary.newNumberOfTimepoints(myValue);
+            obj.itinerary.setNumberOfTimepoints(myValue);
             obj.refresh_gui_main;
         end
         %% editOutputDirectory_Callback

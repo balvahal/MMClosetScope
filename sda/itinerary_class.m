@@ -148,9 +148,9 @@ classdef itinerary_class < handle
     % * gpsFromOrder
     % * import
     % * organizeByOrder
-    % * newNumberOfTimepoints
-    % * newFundamentalPeriod
-    % * newDuration
+    % * setNumberOfTimepoints
+    % * setFundamentalPeriod
+    % * setDuration
     % * dropEmpty
     % * refreshIndAndOrder
     %
@@ -378,6 +378,92 @@ classdef itinerary_class < handle
         end
         %%
         %
+        function obj = copy(obj, gps, cpFrom, cpTo)
+            addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
+            addRequired(q, 'gps', @(x) any(strcmp(x,{'g','p','s'})));
+            addRequired(q, 'cpFrom', @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            addRequired(q, 'cpTo', @(x)validateattributes(x,{'numeric'},{'integer','positive'}));
+            parse(q, obj, gps, cpFrom, cpTo);
+            switch q.Results.gps
+                case 'g'
+                    %%%
+                    % inputs should refer to existing groups, positions,
+                    % and settings.
+                    gfrom = q.Results.cpFrom;
+                    gto = q.Results.cpTo;
+                    existingG = 1:numel(obj.group_logical);
+                    existingG = existingG(obj.group_logical);
+                    if ~all(ismember(horzcat(gfrom,gto),existingG))
+                        error('itn:addG','There is a nonexistent group in the input.');
+                    end
+                    obj.dropGroup(gto);
+                    obj.newGroup;
+                    obj.group_function_after{gto} = obj.group_function_after{gfrom};
+                    obj.group_function_before{gto} = obj.group_function_before{gfrom};
+                    for i = 1:numel(obj.order_position{gfrom})
+                        pnew = obj.newPosition;
+                        obj.copyPosition(obj.order_position{gfrom}(i),pnew)
+                        obj.connectGPS('g',gto,'p',pnew);
+                    end
+                    gfromSettings = obj.ind_settings(obj.ind_position{gfrom});
+                    if isrow(gfromSettings)
+                        gfromSettings = unique(cell2mat(gfromSettings));
+                    else
+                        gfromSettings = unique(cell2mat(transpose(gfromSettings)));
+                    end
+                    gtoSettings = zeros(size(gfromSettings));
+                    for i = 1:numel(gfromSettings)
+                        gtoSettings(i) = obj.newSettings;
+                        obj.copySettings(gfromSettings(i),gtoSettings(i));
+                    end
+                    for i = 1:numel(obj.order_position{gto})
+                        pto = obj.order_position{gto}(i);
+                        [~,ia,~] = intersect(gfromSettings,obj.order_settings{pto},'stable');
+                        obj.ind_settings{pto} = [];
+                        obj.connectGPS('p',pto,'s',gtoSettings(ia));
+                    end
+                case 'p'
+                    pfrom = q.Results.cpFrom;
+                    pto = q.Results.cpTo;
+                    existingP = 1:numel(obj.position_logical);
+                    existingP = existingP(obj.position_logical);
+                    if ~all(ismember(horzcat(pfrom,pto),existingP))
+                        error('itn:addP','There is a nonexistent position in the input.');
+                    end
+                    obj.position_continuous_focus_offset(pto) = obj.position_continuous_focus_offset(pfrom);
+                    obj.position_continuous_focus_bool(pto) = obj.position_continuous_focus_bool(pfrom);
+                    obj.position_function_after{pto} = obj.position_function_after{pfrom};
+                    obj.position_function_before{pto} = obj.position_function_before{pfrom};
+                    obj.position_xyz(pto,:) = obj.position_xyz(pfrom,:); %This is a customizable array
+                    obj.position_row(pto) = obj.position_row(pfrom);
+                    obj.position_col(pto) = obj.position_col(pfrom);
+                    
+                    obj.order_settings{pto} = obj.order_settings{pfrom};
+                    obj.ind_settings{pto} = obj.ind_settings{pfrom};
+                    obj.number_settings(pto) = obj.number_settings(pfrom);
+                case 's'
+                    sfrom = q.Results.cpFrom;
+                    sto = q.Results.cpTo;
+                    existingS = 1:numel(obj.settings_logical);
+                    existingS = existingS(obj.settings_logical);
+                    if ~all(ismember(horzcat(sfrom,sto),existingS))
+                        error('itn:addS','There is a nonexistent settings in the input.');
+                    end
+                    obj.settings_binning(sto) = obj.settings_binning(sfrom);
+                    obj.settings_channel(sto) = obj.settings_channel(sfrom);
+                    obj.settings_exposure(sto) = obj.settings_exposure(sfrom);
+                    obj.settings_function{sto} = obj.settings_function{sfrom};
+                    obj.settings_logical(sto) = obj.settings_logical(sfrom);
+                    obj.settings_period_multiplier(sto) = obj.settings_period_multiplier(sfrom);
+                    obj.settings_timepoints(sto,:) = obj.settings_timepoints(sfrom,:);
+                    obj.settings_z_origin_offset(sto) = obj.settings_z_origin_offset(sfrom);
+                    obj.settings_z_stack_lower_offset(sto) = obj.settings_z_stack_lower_offset(sfrom);
+                    obj.settings_z_stack_upper_offset(sto) = obj.settings_z_stack_upper_offset(sfrom);
+                    obj.settings_z_step_size(sto) = obj.settings_z_step_size(sfrom);
+            end
+        end
+        %%
+        %
         function ind = new(obj, gps, varargin)
             q = inputParser;
             addRequired(q, 'obj', @(x) isa(x,'itinerary_class'));
@@ -425,8 +511,8 @@ classdef itinerary_class < handle
                     obj.position_function_before{p} = obj.position_function_before{1};
                     obj.position_label{p} = sprintf('position%d',p);
                     obj.position_logical(p) = true;
-                    obj.position_row = 0;
-                    obj.position_col = 0;
+                    obj.position_row(p) = 0;
+                    obj.position_col(p) = 0;
                     
                     %%% update order, indices, and pointers
                     %
@@ -483,6 +569,8 @@ classdef itinerary_class < handle
                 if iscolumn(g)
                     g = transpose(g);
                 end
+            elseif g == 0
+                decisionString(1) = '0';
             else
                 error('itn:removeG','There is a nonexistent group in the input.');
             end
@@ -493,6 +581,8 @@ classdef itinerary_class < handle
                 if iscolumn(p)
                     p = transpose(p);
                 end
+            elseif p == 0
+                decisionString(2) = '0';
             else
                 error('itn:removeP','There is a nonexistent position in the input.');
             end
@@ -503,6 +593,8 @@ classdef itinerary_class < handle
                 if iscolumn(s)
                     s = transpose(s);
                 end
+            elseif s == 0
+                decisionString(3) = '0';
             else
                 error('itn:removeS','There is a nonexistent settings in the input.');
             end
@@ -923,9 +1015,9 @@ classdef itinerary_class < handle
             %
             obj.refreshIndAndOrder;
         end
-        %% newNumberOfTimepoints
+        %% setNumberOfTimepoints
         % Method to change the number of timepoints
-        function obj = newNumberOfTimepoints(obj,mynum)
+        function obj = setNumberOfTimepoints(obj,mynum)
             %%%
             % check to see that number of timepoints is a reasonable number
             % , i.e. it must be a positive integer
@@ -939,9 +1031,9 @@ classdef itinerary_class < handle
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
             obj.validateSettingsTimepoints;
         end
-        %% newFundamentalPeriod
+        %% setFundamentalPeriod
         % a method to change the fundamental period (units in seconds)
-        function obj = newFundamentalPeriod(obj,mynum)
+        function obj = setFundamentalPeriod(obj,mynum)
             %%%
             % check to see that number of timepoints is a reasonable number
             % , i.e. it must be greater than zero
@@ -956,9 +1048,9 @@ classdef itinerary_class < handle
             obj.clock_relative = 0:obj.fundamental_period:obj.duration;
             obj.validateSettingsTimepoints;
         end
-        %% newDuration
+        %% setDuration
         % a method to change the duration
-        function obj = newDuration(obj,mynum)
+        function obj = setDuration(obj,mynum)
             %%%
             % check to see that number of timepoints is a reasonable number
             % , i.e. it must zero of greater

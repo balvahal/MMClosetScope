@@ -75,10 +75,14 @@ travelagent = sda.travelagent(microscope,itinerary);
 %
 % When a new position is created with the input of the microscope object,
 % then the current location of the microscope will be used
-itinerary.newPosition(microscope);
-itinerary.newPosition(microscope);
-itinerary.newPosition(microscope);
-itinerary.newSettings;
+% % itinerary.newPosition(microscope);
+% % itinerary.newPosition(microscope);
+% % itinerary.newPosition(microscope);
+% % itinerary.newSettings;
+itinerary.new('p',microscope);
+itinerary.new('p',microscope);
+itinerary.new('p',microscope);
+itinerary.new('s');
 %%
 % Verify the existence of the new positions in the _position_logical_ and
 % _settings_logical_ properties.
@@ -93,9 +97,12 @@ fprintf('Number of settings %d\n', sum(itinerary.settings_logical));
 % position, or settings is their row number in the group, position, or
 % settings property arrays. Enter the connection between the GPS hierarchy
 % as follows:
-itinerary.connectGPS('g',1,'p',2,'s',1);
-itinerary.connectGPS('g',1,'p',3,'s',2);
-itinerary.connectGPS('g',1,'p',4,'s',[1,2]);
+% % itinerary.connectGPS('g',1,'p',2,'s',1);
+% % itinerary.connectGPS('g',1,'p',3,'s',2);
+% % itinerary.connectGPS('g',1,'p',4,'s',[1,2]);
+itinerary.add('g',1,'p',2,'s',1);
+itinerary.add('g',1,'p',3,'s',2);
+itinerary.add('g',1,'p',4,'s',[1,2]);
 %%%
 % Position 4 will have two settings. To confirm this is true look at
 % _ind_settings_ cell array in the 4th column.
@@ -109,8 +116,8 @@ itinerary.settings_channel(2) = 2;
 %% Set duration and interval of acquisition
 % If the duration is not an integer multiple of the fundamental period,
 % which is the interval of acquisition, then the remainder time is ignored.
-itinerary.newFundamentalPeriod(30);
-itinerary.newDuration(75);
+itinerary.setFundamentalPeriod(30);
+itinerary.setDuration(75);
 fprintf('The duration of the acquisition is %d seconds,\nand there are %d timepoints\n',itinerary.duration,itinerary.number_of_timepoints);
 %%%
 % If you only want to image a particular settings at specific timepoints,
@@ -127,3 +134,4 @@ itinerary.organizeByOrder;
 %% Running an acquisition
 %
 pilot = sda.pilot(microscope,itinerary);
+pilot.startAcquisition;

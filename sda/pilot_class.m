@@ -394,7 +394,7 @@ classdef pilot_class < handle
             obj.pause_bool = false;
             disp('All Done!')
             if obj.microscope.twitter.active
-                    obj.microscope.twitter.update_status(sprintf('The %s microscope has completed a super MDA! It has %d timepoints. %s', obj.microscope.computerName, obj.t, datestr(datetime('now','Format','hh:mm:ss a'))));
+                    obj.microscope.twitter.update_status(sprintf('The %s microscope has completed the multi-dimensional-acquisition! It has %d timepoints. %s', obj.microscope.computerName, obj.t, datestr(datetime('now','Format','hh:mm:ss a'))));
             end
         end
         %% pause acquisition
