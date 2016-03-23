@@ -91,7 +91,7 @@
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[]">
+  <body class="index" data-languages="[&quot;matlab&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -101,6 +101,7 @@
     <div class="tocify-wrapper">
       <img src="images/logo.png" />
         <div class="lang-selector">
+              <a href="#" data-language-name="matlab">matlab</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -114,23 +115,49 @@
       <div class="content">
         <h1 id="introduction">Introduction</h1>
 
-<p>Welcome to the Super-Dimensional-Acquistion (SDA) documentation! With SDA you can control your microscope programatically with MATLAB. SDA is powered by and made possible by Micro-Manager, the open-source software by <a href="https://open-imaging.com/">Open Imaging</a>.</p>
+<p>Welcome to the Super-Dimensional-Acquistion (SDA) documentation! With SDA you can control your microscope programatically with MATLAB. SDA is powered by and made possible by Micro-Manager, the open-source software by <a href="https://open-imaging.com/">Open Imaging</a>. SDA is part of the p53-Cinema project developed by the <a href="http://lahav.med.harvard.edu/">Lahav Lab</a>.</p>
 
           <h1 id="installation">Installation</h1>
 
 <p>This a guide to installing Super-Dimensional-Acquisition on a Windows machine.</p>
 
-<h2 id="install-micro-manager">Install Micro-Manager</h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/hYHKAqgF4O0" frameborder="0" allowfullscreen></iframe>
 
-<h2 id="install-python">Install Python</h2>
+<ol>
+<li>Install Micro-Manager</li>
+</ol>
 
-<h2 id="modify-the-windows-path-variable">Modify the Windows Path Variable</h2>
+<p>Use the latest version of Micro-Manager. Micro-Manager can be downloaded <a href="https://micro-manager.org/wiki/Version_2.0">here</a>.</p>
 
-<h2 id="download-sda-from-github">Download SDA from Github</h2>
+<ol>
+<li>Install Python</li>
+</ol>
 
-<h2 id="modify-the-matlab-path">Modify the MATLAB Path</h2>
+<p>Use the latest version of <a href="www.python.org/downloads/">Python 3</a>.</p>
 
-<h2 id="modify-the-matlab-javaclass-path">Modify the MATLAB Javaclass Path</h2>
+<ol>
+<li>Modify the Windows Path Variable</li>
+</ol>
+
+<p>From the Windows Search Bar, enter &ldquo;environment variables&rdquo; and select the best match to &ldquo;Edit the system environment variables&rdquo;. From the Systems Properties dialog box select &ldquo;Environment Variables&hellip;&rdquo; in the lower right. Edit the variable named &ldquo;Path&rdquo;. Add 2 new lines that point to the directory with Python and the Python sub-directory Scripts; e.g. &ldquo;C:\Python35&rdquo; and &ldquo;C:\Python35\Scripts&rdquo;.</p>
+
+<ol>
+<li>Download SDA from Github</li>
+</ol>
+
+<p>Download the <a href="https://github.com/balvahal/supdimacq/archive/master.zip">SDA</a> zip file and extract the contents.</p>
+
+<ol>
+<li>Modify the MATLAB Path</li>
+</ol>
+
+<p>Within MATLAB in the Enviroment section of the Toolstrip there is a &ldquo;Set Path&rdquo; icon. Selecting this icon will open a window where the SDA files extracted from the prior step can be added to the MATLAB path. Select &ldquo;Add with Subfolders&hellip;&rdquo; and save before exiting.</p>
+
+<ol>
+<li>Modify the MATLAB Javaclass Path</li>
+</ol>
+
+<p>The MATLAB Javaclass Path is a separate path from the one modified in the prior step. From the command line run the scrip <code class="prettyprint">core_setup_javaclasspath</code> and input the static path to the Micro-Manager installation as a string. Then navigate to the MATLAB prefdir from a Windows File Explorer and create (or modify) a file named &ldquo;javaclasspath.txt&rdquo;. Copy the contents of &ldquo;MMjavaclasspath.txt&rdquo; into the other file. MATLAB must be restarted before it recognizes this modification.</p>
 
           <h1 id="microscope">Microscope</h1>
 
@@ -166,11 +193,16 @@ imagesc(microscope.I);
 <li>Duplicate Positions and Settings cannot be contained within unique Groups and Positions, respectively.</li>
 </ul>
 
-<p><img src="images/gps-hierarchy.png" /></p>
+<p><img alt="A visualization of the GPS hierarchy" src="images/gps-hierarchy.png" /></p>
+
+<p>When the SDA is executed the commands that order of events is determined by 5 functions that can be customized for each Group, Position, or Settings. GPS hierarchy, or tree, is travered depth-first. Starting with the first Group all of its Positions are executed before moving to the next Group. Additionally, within each Position all of its Settings are executed before moving on to the next Position. Importantly, Groups and Positions have 2 functions each: one the triggers just before changing to a Group or Position and another just after leaving a Group or Position. Settings have a single function.</p>
+
+<p><img alt="A visualization of the execution of the SDA determined in the GPS" src="images/images/gps-function.png" /></p>
 
       </div>
       <div class="dark-box">
           <div class="lang-selector">
+                <a href="#" data-language-name="matlab">matlab</a>
           </div>
       </div>
     </div>
