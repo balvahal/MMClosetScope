@@ -124,53 +124,53 @@
 <iframe width="560" height="315" src="https://www.youtube.com/embed/hYHKAqgF4O0" frameborder="0" allowfullscreen></iframe>
 
 <ol>
-<li>Install Micro-Manager</li>
+<li>Install Micro-Manager
+
+<ul>
+<li>Use the latest version of Micro-Manager. Micro-Manager can be downloaded <a href="https://micro-manager.org/wiki/Version_2.0">here</a>.</li>
+</ul></li>
+<li>Install Python
+
+<ul>
+<li>Use the latest version of <a href="www.python.org/downloads/">Python 3</a>.</li>
+</ul></li>
+<li>Modify the Windows Path Variable
+
+<ul>
+<li>From the Windows Search Bar, enter &ldquo;environment variables&rdquo; and select the best match to &ldquo;Edit the system environment variables&rdquo;. From the Systems Properties dialog box select &ldquo;Environment Variables&hellip;&rdquo; in the lower right. Edit the variable named &ldquo;Path&rdquo;. Add 2 new lines that point to the directory with Python and the Python sub-directory Scripts; e.g. &ldquo;C:\Python35&rdquo; and &ldquo;C:\Python35\Scripts&rdquo;.</li>
+</ul></li>
+<li>Download SDA from Github
+
+<ul>
+<li>Download the <a href="https://github.com/balvahal/supdimacq/archive/master.zip">SDA</a> zip file and extract the contents.</li>
+</ul></li>
+<li>Modify the MATLAB Path
+
+<ul>
+<li>Within MATLAB in the Enviroment section of the Toolstrip there is a &ldquo;Set Path&rdquo; icon. Selecting this icon will open a window where the SDA files extracted from the prior step can be added to the MATLAB path. Select &ldquo;Add with Subfolders&hellip;&rdquo; and save before exiting.</li>
+</ul></li>
+<li>Modify the MATLAB Javaclass Path
+
+<ul>
+<li>The MATLAB Javaclass Path is a separate path from the one modified in the prior step. From the command line run the scrip <code class="prettyprint">core_setup_javaclasspath</code> and input the static path to the Micro-Manager installation as a string. Then navigate to the MATLAB prefdir from a Windows File Explorer and create (or modify) a file named &ldquo;javaclasspath.txt&rdquo;. Copy the contents of &ldquo;MMjavaclasspath.txt&rdquo; into the other file. MATLAB must be restarted before it recognizes this modification.</li>
+</ul></li>
 </ol>
-
-<p>Use the latest version of Micro-Manager. Micro-Manager can be downloaded <a href="https://micro-manager.org/wiki/Version_2.0">here</a>.</p>
-
-<ol>
-<li>Install Python</li>
-</ol>
-
-<p>Use the latest version of <a href="www.python.org/downloads/">Python 3</a>.</p>
-
-<ol>
-<li>Modify the Windows Path Variable</li>
-</ol>
-
-<p>From the Windows Search Bar, enter &ldquo;environment variables&rdquo; and select the best match to &ldquo;Edit the system environment variables&rdquo;. From the Systems Properties dialog box select &ldquo;Environment Variables&hellip;&rdquo; in the lower right. Edit the variable named &ldquo;Path&rdquo;. Add 2 new lines that point to the directory with Python and the Python sub-directory Scripts; e.g. &ldquo;C:\Python35&rdquo; and &ldquo;C:\Python35\Scripts&rdquo;.</p>
-
-<ol>
-<li>Download SDA from Github</li>
-</ol>
-
-<p>Download the <a href="https://github.com/balvahal/supdimacq/archive/master.zip">SDA</a> zip file and extract the contents.</p>
-
-<ol>
-<li>Modify the MATLAB Path</li>
-</ol>
-
-<p>Within MATLAB in the Enviroment section of the Toolstrip there is a &ldquo;Set Path&rdquo; icon. Selecting this icon will open a window where the SDA files extracted from the prior step can be added to the MATLAB path. Select &ldquo;Add with Subfolders&hellip;&rdquo; and save before exiting.</p>
-
-<ol>
-<li>Modify the MATLAB Javaclass Path</li>
-</ol>
-
-<p>The MATLAB Javaclass Path is a separate path from the one modified in the prior step. From the command line run the scrip <code class="prettyprint">core_setup_javaclasspath</code> and input the static path to the Micro-Manager installation as a string. Then navigate to the MATLAB prefdir from a Windows File Explorer and create (or modify) a file named &ldquo;javaclasspath.txt&rdquo;. Copy the contents of &ldquo;MMjavaclasspath.txt&rdquo; into the other file. MATLAB must be restarted before it recognizes this modification.</p>
 
           <h1 id="microscope">Microscope</h1>
 
-<p>An object created with the <code class="prettyprint">microscope</code> class is a wrapper for the instantiation of Micro-Manager within MATLAB. The methods of microscope have been created to handle common tasks, such as moving a motorized stage or snapping and image.</p>
+<p>An object created with the <code class="prettyprint">microscope_class</code> is a wrapper for the instantiation of Micro-Manager within MATLAB. The methods of microscope have been created to handle common tasks, such as moving a motorized stage or snapping and image.</p>
 
 <h2 id="snapping-an-image">Snapping an Image</h2>
 
-<p>Capturing an image and interacting with this data in MATLAB requires just a few steps. Try out this code:
-<code class="prettyprint">matlab
-microscope = sda.microscope;
-microscope.snapImage;
-imagesc(microscope.I);
-</code></p>
+<blockquote>
+<p>Try out this code to snap an image:</p>
+</blockquote>
+<pre class="highlight matlab"><code><span class="n">microscope</span> <span class="o">=</span> <span class="n">sda</span><span class="o">.</span><span class="n">microscope</span><span class="p">;</span> <span class="c1">%If a microscope object already exists, skip this.</span>
+<span class="n">microscope</span><span class="o">.</span><span class="n">snapImage</span><span class="p">;</span>
+<span class="nb">imagesc</span><span class="p">(</span><span class="n">microscope</span><span class="o">.</span><span class="n">I</span><span class="p">);</span>
+</code></pre>
+
+<p>Capturing an image and interacting with this data in MATLAB requires just a few steps. </p>
 
           <h1 id="gps-group-position-settings">GPS: Group, Position, Settings</h1>
 
@@ -197,7 +197,7 @@ imagesc(microscope.I);
 
 <p>When the SDA is executed the commands that order of events is determined by 5 functions that can be customized for each Group, Position, or Settings. GPS hierarchy, or tree, is travered depth-first. Starting with the first Group all of its Positions are executed before moving to the next Group. Additionally, within each Position all of its Settings are executed before moving on to the next Position. Importantly, Groups and Positions have 2 functions each: one the triggers just before changing to a Group or Position and another just after leaving a Group or Position. Settings have a single function.</p>
 
-<p><img alt="A visualization of the execution of the SDA determined in the GPS" src="images/images/gps-function.png" /></p>
+<p><img alt="A visualization of the execution of the SDA determined in the GPS" src="images/gps-function.png" /></p>
 
       </div>
       <div class="dark-box">
