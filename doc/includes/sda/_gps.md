@@ -14,4 +14,8 @@ The relationship between each layer of the GPS conforms to the following rules:
 * The default order of acquisition is the order of creation. Groups have priority over Positions.
 * Duplicate Positions and Settings cannot be contained within unique Groups and Positions, respectively.
 
-![](images/gps-hierarchy.png)
+![A visualization of the GPS hierarchy](images/gps-hierarchy.png)
+
+When the SDA is executed the commands that order of events is determined by 5 functions that can be customized for each Group, Position, or Settings. GPS hierarchy, or tree, is travered depth-first. Starting with the first Group all of its Positions are executed before moving to the next Group. Additionally, within each Position all of its Settings are executed before moving on to the next Position. Importantly, Groups and Positions have 2 functions each: one the triggers just before changing to a Group or Position and another just after leaving a Group or Position. Settings have a single function.
+
+![A visualization of the execution of the SDA determined in the GPS](images/gps-function.png)
