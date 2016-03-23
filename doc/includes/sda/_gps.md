@@ -13,3 +13,5 @@ The relationship between each layer of the GPS conforms to the following rules:
 * Positions and Settings can belong to multiple Groups and Positions, respectively.
 * The default order of acquisition is the order of creation. Groups have priority over Positions.
 * Duplicate Positions and Settings cannot be contained within unique Groups and Positions, respectively.
+
+![](images/gps-hierarchy.png)
