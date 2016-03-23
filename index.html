@@ -114,7 +114,7 @@
       <div class="content">
         <h1 id="introduction">Introduction</h1>
 
-<p>Welcome to the Super-Dimensional-Acquistion (SDA) documentation! With SDA to you can control your microscope programatically with MATLAB. SDA is powered by and made possible by Micro-Manager, the open-source software by Open Imaging.</p>
+<p>Welcome to the Super-Dimensional-Acquistion (SDA) documentation! With SDA you can control your microscope programatically with MATLAB. SDA is powered by and made possible by Micro-Manager, the open-source software by <a href="https://open-imaging.com/">Open Imaging</a>.</p>
 
           <h1 id="installation">Installation</h1>
 
@@ -135,6 +135,38 @@
           <h1 id="microscope">Microscope</h1>
 
 <p>An object created with the <code class="prettyprint">microscope</code> class is a wrapper for the instantiation of Micro-Manager within MATLAB. The methods of microscope have been created to handle common tasks, such as moving a motorized stage or snapping and image.</p>
+
+<h2 id="snapping-an-image">Snapping an Image</h2>
+
+<p>Capturing an image and interacting with this data in MATLAB requires just a few steps. Try out this code:
+<code class="prettyprint">matlab
+microscope = sda.microscope;
+microscope.snapImage;
+imagesc(microscope.I);
+</code></p>
+
+          <h1 id="gps-group-position-settings">GPS: Group, Position, Settings</h1>
+
+<p>The organization of the multi-dimensional-acquisition is encompassed within the GPS hierarchy, which is the relationship between groups, positions, and settings.</p>
+
+<ul>
+<li>Group: a collection of positions</li>
+<li>Position: a collection of settings in addition to the (x,y,z) of a motorized stage, objective, and Perfect Focus System by Nikon.</li>
+<li>Settings: the parameters and variables that describe the imaging conditions of the microscope. The settings also specifiy z-stacks.</li>
+</ul>
+
+<p>The relationship between each layer of the GPS conforms to the following rules:</p>
+
+<ul>
+<li>A valid Group must contain at least 1 Position and all Positions must be valid.</li>
+<li>A valid Position must contain at least 1 Settings. A Position is not valid if it is not contained within a group.</li>
+<li>A Settings is valid if it is contained within at least 1 Position.</li>
+<li>Positions and Settings can belong to multiple Groups and Positions, respectively.</li>
+<li>The default order of acquisition is the order of creation. Groups have priority over Positions.</li>
+<li>Duplicate Positions and Settings cannot be contained within unique Groups and Positions, respectively.</li>
+</ul>
+
+<p><img src="images/gps-hierarchy.png" /></p>
 
       </div>
       <div class="dark-box">
