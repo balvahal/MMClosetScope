@@ -1,7 +1,7 @@
 # Microscope
-An object created with the `microscope_class` is a wrapper for the instantiation of Micro-Manager within MATLAB. The methods of microscope have been created to handle common tasks, such as moving a motorized stage or snapping and image.
+An object created with the `microscope_class` is a wrapper for the instantiation of Micro-Manager within MATLAB. The methods of microscope have been created to handle common tasks, such as moving a motorized stage or snapping an image.
 
-## Snapping an Image
+## Snapping an Image Is a Snap
 
 > Try out this code to snap an image:
 

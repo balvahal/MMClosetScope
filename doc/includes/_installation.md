@@ -2,7 +2,7 @@
 
 This a guide to installing Super-Dimensional-Acquisition on a Windows machine.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/hYHKAqgF4O0" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" max-width="560px" src="https://www.youtube.com/embed/hYHKAqgF4O0" frameborder="0" allowfullscreen></iframe>
 
 1. Install Micro-Manager
   + Use the latest version of Micro-Manager. Micro-Manager can be downloaded [here](https://micro-manager.org/wiki/Version_2.0).
